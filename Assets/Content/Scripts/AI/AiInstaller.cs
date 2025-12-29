@@ -1,5 +1,6 @@
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Core;
 using Reflex.Core;
 using Reflex.Extensions;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Content.Scripts.Core {
       Debug.Log("AI INSTALLER");
 
       builder.AddSingleton(new GoapFactory());
+      builder.AddSingleton(GoalsBankModule.GetFromResources());
       builder.AddSingleton(new AgentFactory(agentPrefab));
     }
 

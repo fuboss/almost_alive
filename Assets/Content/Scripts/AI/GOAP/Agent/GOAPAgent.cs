@@ -1,24 +1,28 @@
-using System.Collections.Generic;
-using System.Linq;
 using Content.Scripts.AI.GOAP.Core;
-using Content.Scripts.AI.GOAP.Planning;
-using Content.Scripts.AI.GOAP.Strategies;
 using Content.Scripts.Animation;
-using Content.Scripts.Core;
 using ImprovedTimers;
-using Reflex.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  [RequireComponent(typeof(NavMeshAgent))]
-  public class GOAPAgent : SerializedMonoBehaviour {
-    [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
-    private Sensor _chaseSensor;
+  public interface IGoapAgent {
+    AgentBrain agentBrain { get; }
+    NavMeshAgent navMeshAgent { get; }
+    Rigidbody rigidbody { get; }
+    AnimationController animationController { get; }
 
-    [VerticalGroup("Sensors")] [SerializeField]
-    private Sensor _attackSensor;
+    public Vector3 position => navMeshAgent.transform.position;
+    public Vector3 nextPosition => navMeshAgent.nextPosition;
+    
+    public AgentBelief GetBelief(string beliefName) {
+      return agentBrain.beliefs.Get(beliefName);
+    }
+  }
+
+  [RequireComponent(typeof(NavMeshAgent))]
+  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
+    public AgentBrain _agentBrain;
 
     [Header("Known Locations")] [SerializeField]
     private Transform _restingPosition;
@@ -32,28 +36,20 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private AnimationController _animations;
     private Vector3 _destination;
 
-    [Inject] private GoapFactory _gFactory;
-    private IGoapPlanner _gPlanner;
-
-    private AgentGoal _lastGoal;
-
     private NavMeshAgent _navMeshAgent;
     private Rigidbody _rb;
 
     private CountdownTimer _statsTimer;
 
     private GameObject _target;
-    public ActionPlan actionPlan;
-    public HashSet<AgentAction> actions;
 
-    public Dictionary<string, AgentBelief> beliefs;
-    public AgentAction currentAction;
-    public AgentGoal currentGoal;
-    public HashSet<AgentGoal> goals;
+    public AgentBrain agentBrain => _agentBrain;
+    public NavMeshAgent navMeshAgent => _navMeshAgent;
+    public new Rigidbody rigidbody => _rb;
+    public AnimationController animationController => _animations;
 
     private void Awake() {
       RefreshLinks();
-     // _rb.Sleep();
     }
 
     private void OnValidate() {
@@ -64,197 +60,20 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (_navMeshAgent == null) _navMeshAgent = GetComponent<NavMeshAgent>();
       if (_animations == null) _animations = GetComponent<AnimationController>();
       if (_rb == null) _rb = GetComponent<Rigidbody>();
+      if (_agentBrain == null) _agentBrain = GetComponent<AgentBrain>();
     }
 
     public void OnCreated() {
-      Debug.LogError($"{name} crated. Injected: {_gFactory != null}", this);
-      if (_gFactory != null) {
-        _gPlanner = _gFactory.CreatePlanner();
-      }
-      else {
-        Debug.LogError("GoapFactory not injected!", this);
-      }
-      
+      agentBrain.Initialize(this);
     }
-    
+
     private void Start() {
       SetupTimers();
-      SetupBeliefs();
-      SetupActions();
-      SetupGoals();
     }
 
     private void Update() {
       _statsTimer.Tick();
-      return;
       _animations.SetSpeed(_navMeshAgent.velocity.magnitude);
-
-      // Update the plan and current action if there is one
-      if (currentAction == null) {
-        CalculatePlan();
-
-        if (actionPlan != null && actionPlan.Actions.Count > 0) {
-          _navMeshAgent.ResetPath();
-
-          currentGoal = actionPlan.AgentGoal;
-          Debug.Log($"Goal: {currentGoal.Name} with {actionPlan.Actions.Count} actions in plan");
-          currentAction = actionPlan.Actions.Pop();
-          Debug.Log($"Popped action: {currentAction.Name}");
-          // Verify all precondition effects are true
-          if (currentAction.Preconditions.All(b => b.Evaluate())) {
-            currentAction.Start();
-          }
-          else {
-            Debug.Log("Preconditions not met, clearing current action and goal");
-            currentAction = null;
-            currentGoal = null;
-          }
-        }
-      }
-
-      // If we have a current action, execute it
-      if (actionPlan != null && currentAction != null) {
-        currentAction.Update(Time.deltaTime);
-
-        if (currentAction.Complete) {
-          Debug.Log($"{currentAction.Name} complete");
-          currentAction.Stop();
-          currentAction = null;
-
-          if (actionPlan.Actions.Count == 0) {
-            Debug.Log("Plan complete");
-            _lastGoal = currentGoal;
-            currentGoal = null;
-          }
-        }
-      }
-    }
-
-    private void OnEnable() {
-      _chaseSensor.OnTargetChanged += HandleTargetChanged;
-    }
-
-    private void OnDisable() {
-      _chaseSensor.OnTargetChanged -= HandleTargetChanged;
-    }
-
-    private void SetupBeliefs() {
-      beliefs = new Dictionary<string, AgentBelief>();
-      return;
-      var factory = new BeliefFactory(this, beliefs);
-
-      factory.AddBelief("Nothing", () => false);
-
-      factory.AddBelief("AgentIdle", () => !_navMeshAgent.hasPath);
-      factory.AddBelief("AgentMoving", () => _navMeshAgent.hasPath);
-      factory.AddBelief("AgentHealthLow", () => health < 30);
-      factory.AddBelief("AgentIsHealthy", () => health >= 50);
-      factory.AddBelief("AgentStaminaLow", () => stamina < 10);
-      factory.AddBelief("AgentIsRested", () => stamina >= 50);
-
-      factory.AddLocationBelief("AgentAtDoorOne", 3f, _doorOnePosition);
-      factory.AddLocationBelief("AgentAtDoorTwo", 3f, _doorTwoPosition);
-      factory.AddLocationBelief("AgentAtRestingPosition", 3f, _restingPosition);
-      factory.AddLocationBelief("AgentAtFoodShack", 3f, _foodShack);
-
-      factory.AddSensorBelief("PlayerInChaseRange", _chaseSensor);
-      factory.AddSensorBelief("PlayerInAttackRange", _attackSensor);
-      factory.AddBelief("AttackingPlayer", () => false); // Player can always be attacked, this will never become true
-    }
-
-    private void SetupActions() {
-      actions = new HashSet<AgentAction>();
-      return;
-      actions.Add(new AgentAction.Builder("Relax")
-        .WithStrategy(new IdleStrategy(5))
-        .AddEffect(beliefs["Nothing"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("Wander Around")
-        .WithStrategy(new WanderStrategy(_navMeshAgent, 10))
-        .AddEffect(beliefs["AgentMoving"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("MoveToEatingPosition")
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => _foodShack.position))
-        .AddEffect(beliefs["AgentAtFoodShack"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("Eat")
-        .WithStrategy(new IdleStrategy(5)) // Later replace with a Command
-        .AddPrecondition(beliefs["AgentAtFoodShack"])
-        .AddEffect(beliefs["AgentIsHealthy"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("MoveToDoorOne")
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => _doorOnePosition.position))
-        .AddEffect(beliefs["AgentAtDoorOne"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("MoveToDoorTwo")
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => _doorTwoPosition.position))
-        .AddEffect(beliefs["AgentAtDoorTwo"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("MoveFromDoorOneToRestArea")
-        .WithCost(2)
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => _restingPosition.position))
-        .AddPrecondition(beliefs["AgentAtDoorOne"])
-        .AddEffect(beliefs["AgentAtRestingPosition"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("MoveFromDoorTwoRestArea")
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => _restingPosition.position))
-        .AddPrecondition(beliefs["AgentAtDoorTwo"])
-        .AddEffect(beliefs["AgentAtRestingPosition"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("Rest")
-        .WithStrategy(new IdleStrategy(5))
-        .AddPrecondition(beliefs["AgentAtRestingPosition"])
-        .AddEffect(beliefs["AgentIsRested"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("ChasePlayer")
-        .WithStrategy(new MoveStrategy(_navMeshAgent, () => beliefs["PlayerInChaseRange"].Location))
-        .AddPrecondition(beliefs["PlayerInChaseRange"])
-        .AddEffect(beliefs["PlayerInAttackRange"])
-        .Build());
-
-      actions.Add(new AgentAction.Builder("AttackPlayer")
-        .WithStrategy(new AttackStrategy(_animations))
-        .AddPrecondition(beliefs["PlayerInAttackRange"])
-        .AddEffect(beliefs["AttackingPlayer"])
-        .Build());
-    }
-
-    private void SetupGoals() {
-      goals = new HashSet<AgentGoal>();
-      return;
-      goals.Add(new AgentGoal.Builder("Chill Out")
-        .WithPriority(1)
-        .WithDesiredEffect(beliefs["Nothing"])
-        .Build());
-
-      goals.Add(new AgentGoal.Builder("Wander")
-        .WithPriority(1)
-        .WithDesiredEffect(beliefs["AgentMoving"])
-        .Build());
-
-      goals.Add(new AgentGoal.Builder("KeepHealthUp")
-        .WithPriority(2)
-        .WithDesiredEffect(beliefs["AgentIsHealthy"])
-        .Build());
-
-      goals.Add(new AgentGoal.Builder("KeepStaminaUp")
-        .WithPriority(2)
-        .WithDesiredEffect(beliefs["AgentIsRested"])
-        .Build());
-
-      goals.Add(new AgentGoal.Builder("SeekAndDestroy")
-        .WithPriority(3)
-        .WithDesiredEffect(beliefs["AttackingPlayer"])
-        .Build());
     }
 
     private void SetupTimers() {
@@ -273,53 +92,5 @@ namespace Content.Scripts.AI.GOAP.Agent {
       // stamina = Mathf.Clamp(stamina, 0, 100);
       // health = Mathf.Clamp(health, 0, 100);
     }
-
-    private bool InRangeOf(Vector3 pos, float range) {
-      return Vector3.Distance(transform.position, pos) < range;
-    }
-
-    private void HandleTargetChanged() {
-      Debug.Log("Target changed, clearing current action and goal");
-      // Force the planner to re-evaluate the plan
-      currentAction = null;
-      currentGoal = null;
-    }
-
-    private void CalculatePlan() {
-      var priorityLevel = currentGoal?.Priority ?? 0;
-
-      var goalsToCheck = goals;
-
-      // If we have a current goal, we only want to check goals with higher priority
-      if (currentGoal != null) {
-        Debug.Log("Current goal exists, checking goals with higher priority");
-        goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
-      }
-
-      var potentialPlan = _gPlanner?.Plan(this, goalsToCheck, _lastGoal);
-      if (potentialPlan != null) actionPlan = potentialPlan;
-    }
-
-    [VerticalGroup("Sensors")]
-    [Button]
-    [EnableIf("@_chaseSensor == null || _attackSensor == null")]
-    private void CreateSensors() {
-      if (_chaseSensor == null) {
-        _chaseSensor = SpawnSensor("ChaseSensor");
-      }
-
-      if (_attackSensor == null) {
-        _attackSensor = SpawnSensor("AttackSensor");
-      }
-    }
-
-    private Sensor SpawnSensor(string name) {
-      var sensor = new GameObject(name).AddComponent<Sensor>();
-      sensor.transform.SetParent(transform);
-      sensor.transform.localPosition = Vector3.zero;
-      return sensor;
-    }
-
-   
   }
 }

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Core {
+  [Serializable]
   public class AgentBelief {
     private Func<bool> _condition = () => false;
     private Func<Vector3> _observedLocation = () => Vector3.zero;

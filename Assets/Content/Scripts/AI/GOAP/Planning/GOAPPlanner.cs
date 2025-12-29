@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Planning {
   public interface IGoapPlanner {
-    ActionPlan Plan(GOAPAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
+    ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
   }
 
   public class GOAPPlanner : IGoapPlanner {
@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       Debug.LogError("GOAP PLANNER created");
     }
 
-    public ActionPlan Plan(GOAPAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
+    public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       // Order goals by priority, descending
       var orderedGoals = goals
         .Where(g => g.DesiredEffects.Any(b => !b.Evaluate()))
@@ -26,7 +26,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
         var goalNode = new PlannerNode(null, null, goal.DesiredEffects, 0);
 
         // If we can find a path to the goal, return the plan
-        if (FindPath(goalNode, agent.actions)) {
+        if (FindPath(goalNode, agent.agentBrain.actions)) {
           // If the goalNode has no leaves and no action to perform try a different goal
           if (goalNode.IsLeafDead) continue;
 

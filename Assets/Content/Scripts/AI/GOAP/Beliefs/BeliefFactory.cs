@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Core {
   public class BeliefFactory {
-    private readonly GOAPAgent _agent;
+    private readonly IGoapAgent _agent;
     private readonly Dictionary<string, AgentBelief> _beliefs;
 
-    public BeliefFactory(GOAPAgent agent, Dictionary<string, AgentBelief> beliefs) {
+    public BeliefFactory(IGoapAgent agent, Dictionary<string, AgentBelief> beliefs) {
       _agent = agent;
       _beliefs = beliefs;
     }
@@ -38,7 +38,7 @@ namespace Content.Scripts.AI.GOAP.Core {
     }
 
     private bool InRangeOf(Vector3 pos, float range) {
-      return Vector3.Distance(_agent.transform.position, pos) < range;
+      return Vector3.Distance(_agent.position, pos) < range;
     }
   }
 }

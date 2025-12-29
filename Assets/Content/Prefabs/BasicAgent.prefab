@@ -81,6 +81,8 @@ GameObject:
   - component: {fileID: 5134860562953363226}
   - component: {fileID: 4380568038661484250}
   - component: {fileID: 3385872056700084885}
+  - component: {fileID: 5718246931229446156}
+  - component: {fileID: 6455422648683638632}
   m_Layer: 0
   m_Name: BasicAgent
   m_TagString: Untagged
@@ -126,27 +128,8 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: actionPlan
-      Entry: 6
-      Data: 
-    - Name: actions
-      Entry: 6
-      Data: 
-    - Name: beliefs
-      Entry: 6
-      Data: 
-    - Name: currentAction
-      Entry: 6
-      Data: 
-    - Name: currentGoal
-      Entry: 6
-      Data: 
-    - Name: goals
-      Entry: 6
-      Data: 
-  _chaseSensor: {fileID: 1859987891189598933}
-  _attackSensor: {fileID: 3067664724731331787}
+    SerializationNodes: []
+  _agentBrain: {fileID: 5718246931229446156}
   _restingPosition: {fileID: 0}
   _foodShack: {fileID: 0}
   _doorOnePosition: {fileID: 0}
@@ -217,6 +200,78 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &5718246931229446156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569093495672454940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 596ad759789b4115b75c0b527ffc1643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.AgentBrain
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: actions
+      Entry: 6
+      Data: 
+    - Name: goals
+      Entry: 6
+      Data: 
+  _chaseSensor: {fileID: 1859987891189598933}
+  _attackSensor: {fileID: 3067664724731331787}
+  beliefs: {fileID: 6455422648683638632}
+--- !u!114 &6455422648683638632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569093495672454940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc50c5b154e041a6a5fb654e3e69f6b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.BrainBeliefsController
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: beliefs
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Core.AgentBelief,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  _agentBrain: {fileID: 5718246931229446156}
 --- !u!1 &5785814355086398748
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,6 +380,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3521155888649223776}
     m_Modifications:
+    - target: {fileID: 1104346649488452835, guid: bb96394e9629f20408ea23d3760ba123, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 084ed73b7e7c0754eb337259e9209468, type: 2}
     - target: {fileID: 5978688025392802851, guid: bb96394e9629f20408ea23d3760ba123, type: 3}
       propertyPath: m_Name
       value: Human_BasicMotionsDummy_M
