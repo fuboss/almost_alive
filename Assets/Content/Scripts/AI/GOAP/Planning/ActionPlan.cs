@@ -8,7 +8,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       AgentGoal = goal;
       Actions = actions;
       TotalCost = totalCost;
-      Debug.LogError($"ActionPlan created with goal: {goal.Name}, totalCost: {totalCost}");
+      Debug.Log($"ActionPlan created with goal: {goal.Name}, totalCost: {totalCost}");
     }
 
     public AgentGoal AgentGoal { get; }

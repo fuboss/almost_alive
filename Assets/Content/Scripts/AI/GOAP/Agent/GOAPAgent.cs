@@ -1,4 +1,3 @@
-using Content.Scripts.AI.GOAP.Core;
 using Content.Scripts.Animation;
 using ImprovedTimers;
 using Sirenix.OdinInspector;
@@ -6,78 +5,70 @@ using UnityEngine;
 using UnityEngine.AI;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  public interface IGoapAgent {
-    AgentBrain agentBrain { get; }
-    NavMeshAgent navMeshAgent { get; }
-    Rigidbody rigidbody { get; }
-    AnimationController animationController { get; }
-
-    public Vector3 position => navMeshAgent.transform.position;
-    public Vector3 nextPosition => navMeshAgent.nextPosition;
-    
-    public AgentBelief GetBelief(string beliefName) {
-      return agentBrain.beliefs.Get(beliefName);
-    }
-  }
-
   [RequireComponent(typeof(NavMeshAgent))]
   public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
     public AgentBrain _agentBrain;
 
-    [Header("Known Locations")] [SerializeField]
-    private Transform _restingPosition;
-
-    [SerializeField] private Transform _foodShack;
-    [SerializeField] private Transform _doorOnePosition;
-    [SerializeField] private Transform _doorTwoPosition;
-
-    [Header("Stats")] public float health = 100;
-    public float stamina = 100;
-    private AnimationController _animations;
     private Vector3 _destination;
-
-    private NavMeshAgent _navMeshAgent;
-    private Rigidbody _rb;
 
     private CountdownTimer _statsTimer;
 
     private GameObject _target;
-
-    public AgentBrain agentBrain => _agentBrain;
-    public NavMeshAgent navMeshAgent => _navMeshAgent;
-    public new Rigidbody rigidbody => _rb;
-    public AnimationController animationController => _animations;
+    [SerializeField] private float _statsUpdateInterval = 1f;
+    [SerializeField] private float _sprintSpeedModifier = 1.5f;
 
     private void Awake() {
       RefreshLinks();
+    }
+
+    private void Start() {
+    }
+
+    private void Update() {
+      _statsTimer.Tick();
+      var rotation = GetRotation();
+      var speedNorm = navMeshAgent.velocity.magnitude / (navMeshAgent.speed * _sprintSpeedModifier);
+      animationController.SetParams(speedNorm, rotation, speedNorm < 0.05);
     }
 
     private void OnValidate() {
       RefreshLinks();
     }
 
+    public AgentBrain agentBrain => _agentBrain;
+    public NavMeshAgent navMeshAgent { get; private set; }
+
+    public new Rigidbody rigidbody { get; private set; }
+
+    public AnimationController animationController { get; private set; }
+
     private void RefreshLinks() {
-      if (_navMeshAgent == null) _navMeshAgent = GetComponent<NavMeshAgent>();
-      if (_animations == null) _animations = GetComponent<AnimationController>();
-      if (_rb == null) _rb = GetComponent<Rigidbody>();
-      if (_agentBrain == null) _agentBrain = GetComponent<AgentBrain>();
+      if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
+      if (animationController == null) animationController = GetComponentInChildren<AnimationController>();
+      if (rigidbody == null) rigidbody = GetComponent<Rigidbody>();
+      if (_agentBrain == null) _agentBrain = GetComponentInChildren<AgentBrain>();
     }
 
     public void OnCreated() {
       agentBrain.Initialize(this);
-    }
-
-    private void Start() {
       SetupTimers();
     }
 
-    private void Update() {
-      _statsTimer.Tick();
-      _animations.SetSpeed(_navMeshAgent.velocity.magnitude);
+    private float GetRotation() {
+      var vel = navMeshAgent.velocity;
+      if (vel.sqrMagnitude < 0.0001f) return 0.5f;
+
+      var velDir = new Vector3(vel.x, 0f, vel.z).normalized;
+      if (velDir == Vector3.zero) return 0.5f;
+
+      var angle = Vector3.SignedAngle(transform.forward, velDir, Vector3.up);
+
+      var normalized = angle / 360f + 0.5f;
+      return Mathf.Clamp01(normalized);
     }
 
     private void SetupTimers() {
-      _statsTimer = new CountdownTimer(2f);
+      _statsTimer = new CountdownTimer(_statsUpdateInterval);
       _statsTimer.OnTimerStop += () => {
         UpdateStats();
         _statsTimer.Start();

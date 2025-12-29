@@ -8,6 +8,14 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
+  public class AgentBody : SerializedMonoBehaviour {
+    private IGoapAgent _agent;
+
+    public void Initialize(IGoapAgent agent) {
+      _agent = agent;
+    }
+  }
+  
   [RequireComponent(typeof(BrainBeliefsController))]
   public class AgentBrain : SerializedMonoBehaviour {
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
@@ -16,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [VerticalGroup("Sensors")] [SerializeField]
     private Sensor _attackSensor;
 
-    public BrainBeliefsController beliefs;
+    public BrainBeliefsController beliefsController;
 
     [Inject] private GoapFactory _gFactory;
     [Inject] private GoalsBankModule _goalsBankModule;
@@ -96,7 +104,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void Initialize(IGoapAgent agent) {
       _agent = agent;
       _gPlanner = _gFactory?.CreatePlanner();
-      beliefs.SetupBeliefs(_agent);
+      beliefsController.SetupBeliefs(_agent);
       SetupActions();
       SetupGoals();
     }
@@ -138,12 +146,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
       actions = new HashSet<AgentAction>();
       actions.Add(new AgentAction.Builder("Relax")
         .WithStrategy(new IdleStrategy(5))
-        .AddEffect(beliefs.Get("Nothing"))
+        .AddEffect(beliefsController.Get("Nothing"))
         .Build());
 
       actions.Add(new AgentAction.Builder("Wander Around")
         .WithStrategy(new WanderStrategy(_agent.navMeshAgent, 10))
-        .AddEffect(beliefs.Get("AgentMoving"))
+        .AddEffect(beliefsController.Get("AgentMoving"))
         .Build());
 
       // actions.Add(new AgentAction.Builder("MoveToEatingPosition")
@@ -182,20 +190,20 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       actions.Add(new AgentAction.Builder("Rest")
         .WithStrategy(new IdleStrategy(5))
-        .AddPrecondition(beliefs.Get("AgentAtRestingPosition"))
-        .AddEffect(beliefs.Get("AgentIsRested"))
+        .AddPrecondition(beliefsController.Get("AgentAtRestingPosition"))
+        .AddEffect(beliefsController.Get("AgentIsRested"))
         .Build());
 
       actions.Add(new AgentAction.Builder("ChasePlayer")
-        .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefs.Get("PlayerInChaseRange").Location))
-        .AddPrecondition(beliefs.Get("PlayerInChaseRange"))
-        .AddEffect(beliefs.Get("PlayerInAttackRange"))
+        .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefsController.Get("PlayerInChaseRange").Location))
+        .AddPrecondition(beliefsController.Get("PlayerInChaseRange"))
+        .AddEffect(beliefsController.Get("PlayerInAttackRange"))
         .Build());
 
       actions.Add(new AgentAction.Builder("AttackPlayer")
         .WithStrategy(new AttackStrategy(_agent.animationController))
-        .AddPrecondition(beliefs.Get("PlayerInAttackRange"))
-        .AddEffect(beliefs.Get("AttackingPlayer"))
+        .AddPrecondition(beliefsController.Get("PlayerInAttackRange"))
+        .AddEffect(beliefsController.Get("AttackingPlayer"))
         .Build());
     }
 

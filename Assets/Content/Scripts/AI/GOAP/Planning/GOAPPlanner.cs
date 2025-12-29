@@ -10,10 +10,6 @@ namespace Content.Scripts.AI.GOAP.Planning {
   }
 
   public class GOAPPlanner : IGoapPlanner {
-    public GOAPPlanner() {
-      Debug.LogError("GOAP PLANNER created");
-    }
-
     public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       // Order goals by priority, descending
       var orderedGoals = goals
@@ -26,19 +22,19 @@ namespace Content.Scripts.AI.GOAP.Planning {
         var goalNode = new PlannerNode(null, null, goal.DesiredEffects, 0);
 
         // If we can find a path to the goal, return the plan
-        if (FindPath(goalNode, agent.agentBrain.actions)) {
-          // If the goalNode has no leaves and no action to perform try a different goal
-          if (goalNode.IsLeafDead) continue;
+        if (!FindPath(goalNode, agent.agentBrain.actions)) continue;
 
-          var actionStack = new Stack<AgentAction>();
-          while (goalNode.Leaves.Count > 0) {
-            var cheapestLeaf = goalNode.Leaves.OrderBy(leaf => leaf.Cost).First();
-            goalNode = cheapestLeaf;
-            actionStack.Push(cheapestLeaf.Action);
-          }
+        // If the goalNode has no leaves and no action to perform try a different goal
+        if (goalNode.IsLeafDead) continue;
 
-          return new ActionPlan(goal, actionStack, goalNode.Cost);
+        var actionStack = new Stack<AgentAction>();
+        while (goalNode.Leaves.Count > 0) {
+          var cheapestLeaf = goalNode.Leaves.OrderBy(leaf => leaf.Cost).First();
+          goalNode = cheapestLeaf;
+          actionStack.Push(cheapestLeaf.Action);
         }
+
+        return new ActionPlan(goal, actionStack, goalNode.Cost);
       }
 
       Debug.LogWarning("No plan found");

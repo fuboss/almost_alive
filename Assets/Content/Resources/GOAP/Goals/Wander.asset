@@ -21,6 +21,6 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  defaultPriority: 1
+  defaultPriority: 2
   desiredEffects:
   - AgentMoving

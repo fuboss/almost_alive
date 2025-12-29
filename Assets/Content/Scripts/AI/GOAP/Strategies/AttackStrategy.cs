@@ -10,9 +10,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public AttackStrategy(AnimationController animations) {
       _animations = animations;
-      _timer = new CountdownTimer(animations.GetAnimationLength(animations.attackClip));
-      _timer.OnTimerStart += () => Complete = false;
-      _timer.OnTimerStop += () => Complete = true;
+      // _timer = new CountdownTimer(animations.GetAnimationLength(animations.attackClip));
+      // _timer.OnTimerStart += () => Complete = false;
+      // _timer.OnTimerStop += () => Complete = true;
     }
 
     public bool CanPerform => true; // Agent can always attack
@@ -20,7 +20,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public void Start() {
       _timer.Start();
-      _animations.Attack();
+     // _animations.Attack();
     }
 
     public void Update(float deltaTime) {

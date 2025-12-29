@@ -5,9 +5,9 @@ namespace Content.Scripts.Animation {
   public abstract class AnimationController : MonoBehaviour {
     private const float KCrossfadeDuration = 0.1f;
 
-    [HideInInspector] public int locomotionClip = Animator.StringToHash("Locomotion");
-    [HideInInspector] public int speedHash = Animator.StringToHash("Speed");
-    [HideInInspector] public int attackClip = Animator.StringToHash("Attack");
+    private readonly int speedHash = Animator.StringToHash("speed");
+    private readonly int rotationHash = Animator.StringToHash("rotation");
+    private readonly int idleHash = Animator.StringToHash("isIdle");
 
     private float _animationLength;
 
@@ -16,27 +16,25 @@ namespace Content.Scripts.Animation {
 
     private void Awake() {
       _animator = GetComponentInChildren<Animator>();
-      SetLocomotionClip();
-      SetAttackClip();
-      SetSpeedHash();
+      SetClipNames();
     }
 
     private void Update() {
       _timer?.Tick();
     }
 
-    public void SetSpeed(float speed) {
-      _animator.SetFloat(speedHash, speed);
+    public void SetParams(float speed, float rotation, bool isIdle) {
+      _animator.SetFloat(speedHash, Mathf.Clamp01(speed));
+
+      _animator.SetFloat(rotationHash, Mathf.Clamp01(rotation));
+      _animator.SetBool(idleHash, isIdle);
+      //Debug.Log($"set({_animator.name}) speed:{speed:f3}, rotation:{rotation}, isIdle:{isIdle}", _animator);
     }
 
-    public void Attack() {
-      PlayAnimationUsingTimer(attackClip);
-    }
 
     private void PlayAnimationUsingTimer(int clipHash) {
       _timer = new CountdownTimer(GetAnimationLength(clipHash));
       _timer.OnTimerStart += () => _animator.CrossFade(clipHash, KCrossfadeDuration);
-      _timer.OnTimerStop += () => _animator.CrossFade(locomotionClip, KCrossfadeDuration);
       _timer.Start();
     }
 
@@ -52,8 +50,6 @@ namespace Content.Scripts.Animation {
       return -1f;
     }
 
-    protected abstract void SetLocomotionClip();
-    protected abstract void SetAttackClip();
-    protected abstract void SetSpeedHash();
+    protected abstract void SetClipNames();
   }
 }
