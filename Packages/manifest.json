@@ -2,6 +2,7 @@
   "dependencies": {
     "com.gitamend.improvedtimers": "https://github.com/adammyhre/Unity-Improved-Timers.git",
     "com.gitamend.unityutils": "https://github.com/adammyhre/Unity-Utils.git",
+    "com.gustavopsantos.reflex": "https://github.com/gustavopsantos/reflex.git?path=/Assets/Reflex/#13.0.3",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.behavior": "1.0.14",
     "com.unity.charactercontroller": "1.4.1",
