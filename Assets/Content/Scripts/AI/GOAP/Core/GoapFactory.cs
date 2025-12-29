@@ -2,7 +2,7 @@ using Content.Scripts.AI.GOAP.Planning;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP {
-  public class GoapFactory : IPlannerFactory{
+  public class GoapFactory : IPlannerFactory {
     public GoapFactory() {
       Debug.LogError("GOAP FACTORY created");
     }

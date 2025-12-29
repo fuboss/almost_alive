@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -518,7 +518,7 @@ TerrainCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 60097cf54c6a448f98f0949f89a8b81d, type: 2}
@@ -545,7 +545,7 @@ Terrain:
   m_HeightmapMaximumLOD: 0
   m_ShadowCastingMode: 2
   m_DrawHeightmap: 1
-  m_DrawInstanced: 0
+  m_DrawInstanced: 1
   m_DrawTreesAndFoliage: 1
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
@@ -563,38 +563,6 @@ Terrain:
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
---- !u!1 &900163674 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4569093495672454940, guid: eb09877c1ffca49229229b188da07636, type: 3}
-  m_PrefabInstance: {fileID: 208278924854662637}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &900163679
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900163674}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 0
 --- !u!1 &1610628656
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,6 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7160c4cd44749079eea8f47eb2392e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Core.AiInstaller
+  agentPrefab: {fileID: 777123925879179789, guid: eb09877c1ffca49229229b188da07636, type: 3}
 --- !u!1001 &208278924854662637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -723,17 +692,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3501281712211037094, guid: eb09877c1ffca49229229b188da07636, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 084ed73b7e7c0754eb337259e9209468, type: 2}
     - target: {fileID: 4569093495672454940, guid: eb09877c1ffca49229229b188da07636, type: 3}
       propertyPath: m_Name
       value: BasicAgent
       objectReference: {fileID: 0}
+    - target: {fileID: 4569093495672454940, guid: eb09877c1ffca49229229b188da07636, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4569093495672454940, guid: eb09877c1ffca49229229b188da07636, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 900163679}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb09877c1ffca49229229b188da07636, type: 3}
 --- !u!1001 &3306388954427848708
 PrefabInstance:

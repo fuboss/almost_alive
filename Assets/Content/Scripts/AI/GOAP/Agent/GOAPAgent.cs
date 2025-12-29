@@ -4,6 +4,7 @@ using Content.Scripts.AI.GOAP.Core;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.AI.GOAP.Strategies;
 using Content.Scripts.Animation;
+using Content.Scripts.Core;
 using ImprovedTimers;
 using Reflex.Attributes;
 using Sirenix.OdinInspector;
@@ -51,22 +52,31 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public HashSet<AgentGoal> goals;
 
     private void Awake() {
-      _rb.freezeRotation = true;
+      RefreshLinks();
+     // _rb.Sleep();
+    }
 
+    private void OnValidate() {
+      RefreshLinks();
+    }
+
+    private void RefreshLinks() {
+      if (_navMeshAgent == null) _navMeshAgent = GetComponent<NavMeshAgent>();
+      if (_animations == null) _animations = GetComponent<AnimationController>();
+      if (_rb == null) _rb = GetComponent<Rigidbody>();
+    }
+
+    public void OnCreated() {
+      Debug.LogError($"{name} crated. Injected: {_gFactory != null}", this);
       if (_gFactory != null) {
         _gPlanner = _gFactory.CreatePlanner();
       }
       else {
         Debug.LogError("GoapFactory not injected!", this);
       }
+      
     }
-
-    private void OnValidate() {
-      _navMeshAgent = GetComponent<NavMeshAgent>();
-      _animations = GetComponent<AnimationController>();
-      _rb = GetComponent<Rigidbody>();
-    }
-
+    
     private void Start() {
       SetupTimers();
       SetupBeliefs();
@@ -76,6 +86,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void Update() {
       _statsTimer.Tick();
+      return;
       _animations.SetSpeed(_navMeshAgent.velocity.magnitude);
 
       // Update the plan and current action if there is one
@@ -257,10 +268,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     // TODO move to stats system
     private void UpdateStats() {
-      stamina += InRangeOf(_restingPosition.position, 3f) ? 20 : -10;
-      health += InRangeOf(_foodShack.position, 3f) ? 20 : -5;
-      stamina = Mathf.Clamp(stamina, 0, 100);
-      health = Mathf.Clamp(health, 0, 100);
+      // stamina += InRangeOf(_restingPosition.position, 3f) ? 20 : -10;
+      // health += InRangeOf(_foodShack.position, 3f) ? 20 : -5;
+      // stamina = Mathf.Clamp(stamina, 0, 100);
+      // health = Mathf.Clamp(health, 0, 100);
     }
 
     private bool InRangeOf(Vector3 pos, float range) {
@@ -285,7 +296,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
       }
 
-      var potentialPlan = _gPlanner.Plan(this, goalsToCheck, _lastGoal);
+      var potentialPlan = _gPlanner?.Plan(this, goalsToCheck, _lastGoal);
       if (potentialPlan != null) actionPlan = potentialPlan;
     }
 
@@ -308,5 +319,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       sensor.transform.localPosition = Vector3.zero;
       return sensor;
     }
+
+   
   }
 }
