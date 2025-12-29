@@ -7,15 +7,14 @@ using UnityEngine.AI;
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
   public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
-    public AgentBrain _agentBrain;
+    [SerializeField] private AgentBrain _agentBrain;
 
-    private Vector3 _destination;
-
-    private CountdownTimer _statsTimer;
-
-    private GameObject _target;
     [SerializeField] private float _statsUpdateInterval = 1f;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
+    private Vector3 _destination;
+    private CountdownTimer _statsTimer;
+    private GameObject _target;
+    private AgentBody _agentBody;
 
     private void Awake() {
       RefreshLinks();
@@ -25,10 +24,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void Update() {
-      _statsTimer.Tick();
-      var rotation = GetRotation();
+      //_statsTimer.Tick();
+      _agentBody.TickStats(Time.deltaTime);
       var speedNorm = navMeshAgent.velocity.magnitude / (navMeshAgent.speed * _sprintSpeedModifier);
-      animationController.SetParams(speedNorm, rotation, speedNorm < 0.05);
+      animationController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05);
     }
 
     private void OnValidate() {
@@ -42,16 +41,19 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public AnimationController animationController { get; private set; }
 
+    public AgentBody body => _agentBody;
+
     private void RefreshLinks() {
       if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
       if (animationController == null) animationController = GetComponentInChildren<AnimationController>();
       if (rigidbody == null) rigidbody = GetComponent<Rigidbody>();
       if (_agentBrain == null) _agentBrain = GetComponentInChildren<AgentBrain>();
+      if (_agentBody == null) _agentBody = GetComponentInChildren<AgentBody>();
     }
 
     public void OnCreated() {
       agentBrain.Initialize(this);
-      SetupTimers();
+      _agentBody.Initialize(this);
     }
 
     private float GetRotation() {
@@ -61,27 +63,19 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var velDir = new Vector3(vel.x, 0f, vel.z).normalized;
       if (velDir == Vector3.zero) return 0.5f;
 
-      var angle = Vector3.SignedAngle(transform.forward, velDir, Vector3.up);
+      var angle = Vector3.SignedAngle(animationController.transform.forward, velDir, Vector3.up);
 
       var normalized = angle / 360f + 0.5f;
       return Mathf.Clamp01(normalized);
     }
 
-    private void SetupTimers() {
-      _statsTimer = new CountdownTimer(_statsUpdateInterval);
-      _statsTimer.OnTimerStop += () => {
-        UpdateStats();
-        _statsTimer.Start();
-      };
-      _statsTimer.Start();
-    }
-
-    // TODO move to stats system
-    private void UpdateStats() {
-      // stamina += InRangeOf(_restingPosition.position, 3f) ? 20 : -10;
-      // health += InRangeOf(_foodShack.position, 3f) ? 20 : -5;
-      // stamina = Mathf.Clamp(stamina, 0, 100);
-      // health = Mathf.Clamp(health, 0, 100);
-    }
+    // private void SetupTimers() {
+    //   _statsTimer = new CountdownTimer(_statsUpdateInterval);
+    //   _statsTimer.OnTimerStop += () => {
+    //     UpdateStats();
+    //     _statsTimer.Start();
+    //   };
+    //   _statsTimer.Start();
+    // }
   }
 }

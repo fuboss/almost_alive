@@ -18,4 +18,5 @@ namespace Content.Scripts.AI.GOAP.Core {
       return builder.Build();
     }
   }
+  //AgentStat
 }

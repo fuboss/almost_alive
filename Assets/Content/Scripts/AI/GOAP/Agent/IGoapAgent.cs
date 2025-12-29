@@ -7,6 +7,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
   public interface IGoapAgent {
     AgentBrain agentBrain { get; }
     NavMeshAgent navMeshAgent { get; }
+    AgentBody body { get; }
     Rigidbody rigidbody { get; }
     AnimationController animationController { get; }
 

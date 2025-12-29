@@ -294,8 +294,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3521155888649223776}
   - component: {fileID: 2154383295327905082}
+  - component: {fileID: 7452301355623674139}
   m_Layer: 0
-  m_Name: View
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -329,6 +330,100 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e3e73646ec5414cbb6cf8529dc363cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Animation.AgentAnimationController
+--- !u!114 &7452301355623674139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5785814355086398748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dab6499c6214be4b6794e7be4c6c2b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.AgentBody
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: _stats
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.GOAP.Core.Stats.AgentStat,
+        Assembly-CSharp]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 4
+    - Name: 
+      Entry: 7
+      Data: 1|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
+    - Name: _name
+      Entry: 1
+      Data: Hunger
+    - Name: _maxValue
+      Entry: 4
+      Data: 100
+    - Name: _value
+      Entry: 4
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 2|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
+    - Name: _name
+      Entry: 1
+      Data: Fatigue
+    - Name: _maxValue
+      Entry: 4
+      Data: 100
+    - Name: _value
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 3|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
+    - Name: _name
+      Entry: 1
+      Data: Sleep
+    - Name: _maxValue
+      Entry: 4
+      Data: 100
+    - Name: _value
+      Entry: 4
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 4|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
+    - Name: _name
+      Entry: 1
+      Data: Toilet
+    - Name: _maxValue
+      Entry: 4
+      Data: 100
+    - Name: _value
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
 --- !u!1 &8152361966992903976
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Core;
+using Content.Scripts.AI.GOAP.Core.Stats;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.AI.GOAP.Strategies;
 using Reflex.Attributes;
@@ -8,14 +9,6 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  public class AgentBody : SerializedMonoBehaviour {
-    private IGoapAgent _agent;
-
-    public void Initialize(IGoapAgent agent) {
-      _agent = agent;
-    }
-  }
-  
   [RequireComponent(typeof(BrainBeliefsController))]
   public class AgentBrain : SerializedMonoBehaviour {
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
@@ -43,6 +36,30 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private IGoapAgent _agent;
     public Sensor chaseSensor => _chaseSensor;
     public Sensor attackSensor => _attackSensor;
+
+
+    public void Initialize(IGoapAgent agent) {
+      _agent = agent;
+      _gPlanner = _gFactory?.CreatePlanner();
+      beliefsController.SetupBeliefs(_agent);
+      SetupActions();
+      SetupGoals();
+
+      SetupStats();
+    }
+
+    private void SetupStats() {
+      _agent.body.AdjustStatPerTickDelta(StatConstants.HUNGER, -0.2f);
+      _agent.body.AdjustStatPerTickDelta(StatConstants.SLEEP, -0.1f);
+    }
+
+    private void OnEnable() {
+      _chaseSensor.OnTargetChanged += HandleTargetChanged;
+    }
+
+    private void OnDisable() {
+      _chaseSensor.OnTargetChanged -= HandleTargetChanged;
+    }
 
     private void Update() {
       var processed = false;
@@ -100,23 +117,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       return true;
     }
 
-
-    public void Initialize(IGoapAgent agent) {
-      _agent = agent;
-      _gPlanner = _gFactory?.CreatePlanner();
-      beliefsController.SetupBeliefs(_agent);
-      SetupActions();
-      SetupGoals();
-    }
-
-
-    private void OnEnable() {
-      _chaseSensor.OnTargetChanged += HandleTargetChanged;
-    }
-
-    private void OnDisable() {
-      _chaseSensor.OnTargetChanged -= HandleTargetChanged;
-    }
 
     [VerticalGroup("Sensors")]
     [Button]
