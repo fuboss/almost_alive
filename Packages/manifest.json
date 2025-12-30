@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.gitamend.improvedtimers": "https://github.com/adammyhre/Unity-Improved-Timers.git",
     "com.gitamend.unityutils": "https://github.com/adammyhre/Unity-Utils.git",
     "com.gustavopsantos.reflex": "https://github.com/gustavopsantos/reflex.git?path=/Assets/Reflex/#13.0.3",

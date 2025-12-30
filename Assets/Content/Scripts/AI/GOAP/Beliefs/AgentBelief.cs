@@ -1,21 +1,16 @@
 using System;
+using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class AgentBelief {
-    private Func<bool> _condition = () => false;
+    public string name;
+    protected Func<bool> _condition = () => false;
     private Func<Vector3> _observedLocation = () => Vector3.zero;
-
-    private AgentBelief(string name) {
-      Name = name;
-    }
-
-    public string Name { get; }
-
     public Vector3 Location => _observedLocation();
 
-    public bool Evaluate() {
+    public virtual bool Evaluate(IGoapAgent agent) {
       return _condition();
     }
 
@@ -23,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       private readonly AgentBelief _belief;
 
       public Builder(string name) {
-        _belief = new AgentBelief(name);
+        _belief = new AgentBelief { name = name };
       }
 
       public Builder WithCondition(Func<bool> condition) {

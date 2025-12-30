@@ -1,7 +1,9 @@
+using Content.Scripts.AI.GOAP.Agent;
+
 namespace Content.Scripts.AI.GOAP.Actions {
   public interface IActionStrategy {
-    bool CanPerform { get; }
-    bool Complete { get; }
+    bool canPerform { get; }
+    bool complete { get; }
 
     void Start() {
       // noop
@@ -14,5 +16,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
     void Stop() {
       // noop
     }
+
+    IActionStrategy Create(IGoapAgent agent);
   }
 }

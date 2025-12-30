@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Goals;
 using UnityEngine;
@@ -9,7 +10,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
       AgentGoal = goal;
       Actions = actions;
       TotalCost = totalCost;
-      Debug.Log($"ActionPlan created with goal: {goal.Name}, totalCost: {totalCost}\n {actions.Count} actions in plan.");
+      Debug.Log(
+        $"ActionPlan created with goal: {goal.Name}, totalCost: {totalCost}\n {actions.Count} actions in plan.\n");
     }
 
     public AgentGoal AgentGoal { get; }

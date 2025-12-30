@@ -1,31 +1,58 @@
+using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityUtils;
+using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
+  [Serializable]
   public class WanderStrategy : IActionStrategy {
-    private readonly IGoapAgent _agent;
-    private readonly float _wanderRadius;
+    public int navMeshSamples = 5;
+    public float defaultWanderRadius = 10f;
 
-    public WanderStrategy(IGoapAgent agent, float wanderRadius) {
-      _agent = agent;
-      _wanderRadius = wanderRadius;
+    private IGoapAgent _agent;
+    private Func<float> _wanderRadius;
+    private Vector3? _targetPosition;
+
+    public WanderStrategy() {
     }
 
-    public bool CanPerform => !Complete;
-    public bool Complete => _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+    public WanderStrategy(IGoapAgent agent, Func<float> wanderRadius, Vector3? targetPosition = null) {
+      _agent = agent;
+      _wanderRadius = wanderRadius;
+      _targetPosition = targetPosition;
+    }
+
+    public WanderStrategy Set(IGoapAgent agent, Func<float> wanderRadius, Vector3? targetPosition = null) {
+      _agent = agent;
+      _wanderRadius = wanderRadius;
+      _targetPosition = targetPosition;
+      return this;
+    }
+
+    public bool canPerform => !complete;
+    public bool complete => _agent.navMeshAgent.remainingDistance <= 1f && !_agent.navMeshAgent.pathPending;
 
     public void Start() {
-      for (var i = 0; i < 5; i++) {
-        var randomDirection = (Random.insideUnitSphere * _wanderRadius).With(y: 0);
+      var radius = _wanderRadius?.Invoke() ?? defaultWanderRadius;
+      var targetPosition = _agent.position;
+      var agentPosition = _targetPosition ?? _agent.position;
 
-        if (!NavMesh.SamplePosition(_agent.navMeshAgent.transform.position + randomDirection,
-              out var hit, _wanderRadius, 1)) continue;
-        _agent.navMeshAgent.SetDestination(hit.position);
-        return;
+      for (var i = 0; i < navMeshSamples; i++) {
+        var randomDirection = (Random.insideUnitSphere * radius).With(y: 0);
+        if (!NavMesh.SamplePosition(agentPosition + randomDirection, out var hit, radius, 1)) continue;
+        targetPosition = hit.position;
+        break;
       }
+
+
+      _agent.navMeshAgent.SetDestination(targetPosition);
+    }
+
+    public IActionStrategy Create(IGoapAgent agent) {
+      return new WanderStrategy(agent, null);
     }
   }
 }

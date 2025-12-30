@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Stats {
   public static class StatConstants {
-    public const string HUNGER = "Hunger";
-    public const string FATIGUE = "Fatigue";
-    public const string SLEEP = "Sleep";
-    public const string TOILET = "Toilet";
+    public const string HUNGER = "HUNGER";
+    public const string FATIGUE = "FATIGUE";
+    public const string SLEEP = "SLEEP";
+    public const string TOILET = "TOILET";
   }
 
   [Serializable]
   public abstract class AgentStat {
-    [SerializeField] protected string _name;
-    public string name => _name;
+    [SerializeField] protected StatType _type;
+    public StatType type => _type;
     public abstract float Normalized { get; }
   }
 
@@ -24,10 +24,10 @@ namespace Content.Scripts.AI.GOAP.Stats {
     [SerializeField] private T _value;
     public event Action OnChanged;
 
-    public AgentStat(string name, T initialValue, T maxValue) {
+    public AgentStat(StatType type, T initialValue, T maxValue) {
       _value = initialValue;
       _maxValue = maxValue;
-      _name = name;
+      _type = type;
     }
 
     public virtual T Value {

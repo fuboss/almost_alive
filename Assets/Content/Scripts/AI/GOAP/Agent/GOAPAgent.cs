@@ -7,6 +7,7 @@ using UnityEngine.AI;
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
   public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
+    [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
 
     [SerializeField] private float _statsUpdateInterval = 1f;
@@ -44,6 +45,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AnimationController animationController { get; private set; }
 
     public AgentBody body => _agentBody;
+
+    public AgentStatSetSO defaultStatSet => _defaultStatSet;
 
     private void RefreshLinks() {
       if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();

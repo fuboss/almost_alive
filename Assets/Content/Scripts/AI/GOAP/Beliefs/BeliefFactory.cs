@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Stats;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
@@ -21,7 +22,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
         .Build());
     }
     
-    public void AddStatBelief(string key, string statName, Func<float, bool> condition) {
+    public void AddStatBelief(string key, StatType statName, Func<float, bool> condition) {
       _beliefs.Add(key, new AgentBelief.Builder(key)
         .WithCondition(() => condition(_agent.body.GetStat(statName).Normalized))
         .Build());

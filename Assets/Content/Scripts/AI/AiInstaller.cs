@@ -13,7 +13,7 @@ namespace Content.Scripts.Core {
     public GOAPAgent agentPrefab;
 
     public void InstallBindings(ContainerBuilder builder) {
-      Debug.Log("AI INSTALLER");
+      //Debug.Log("AI INSTALLER");
 
       builder.AddSingleton(new GoapPlanFactory());
       builder.AddSingleton(GoalsBankModule.GetFromResources());
@@ -21,8 +21,6 @@ namespace Content.Scripts.Core {
     }
 
     // // // TEST // // //
-
-
     private void Update() {
       var jump = InputSystem.actions.FindAction("Jump");
       if (!jump.WasReleasedThisFrame()) return;

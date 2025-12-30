@@ -12,12 +12,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
       UpdatedMemory,
       Failed
     }
-    
-    [ShowInInspector]
-    private List<MemorySnapshot> _memory = new();
-    [ShowInInspector]
-    private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
-    
+
+    [ShowInInspector] private List<MemorySnapshot> _memory = new();
+    [ShowInInspector] private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
+
     private readonly Stack<List<MemorySnapshot>> _listPool = new();
     public int count => _memory.Count;
 
@@ -207,32 +205,45 @@ namespace Content.Scripts.AI.GOAP.Agent {
       }
     }
 
+
     public MemorySnapshot GetNearest(Vector3 position, string[] tags = null,
-      Func<MemorySnapshot, bool> predicate = null, bool includeOutdated = false) {
+      Func<MemorySnapshot, bool> predicate = null, bool includeOutdated = false,
+      bool sortByConfidence = false) { //todo: impl sortByConfidence
+      return Remember(position, tags, predicate, includeOutdated);
+    }
+
+    private MemorySnapshot Remember(Vector3 position, string[] tags, Func<MemorySnapshot, bool> predicate,
+      bool includeOutdated) {
+      if (tags == null || tags.Length == 0) {
+        return Remember(position, predicate, includeOutdated);
+      }
+
       MemorySnapshot best = null;
       var bestDist = float.MaxValue;
-
-      if (tags == null || tags.Length == 0) {
-        foreach (var snap in _memory) {
-          if (snap == null) continue;
-          if (!includeOutdated && snap.IsExpired) continue;
-          if (predicate != null && !predicate(snap)) continue;
-          var d = (snap.location - position).sqrMagnitude;
-          if (d < bestDist) {
-            bestDist = d;
-            best = snap;
-          }
+      ForEachWithAllTags(tags, snap => {
+        if (predicate != null && !predicate(snap)) return;
+        var d = (snap.location - position).sqrMagnitude;
+        if (d < bestDist) {
+          bestDist = d;
+          best = snap;
         }
-      }
-      else {
-        ForEachWithAllTags(tags, snap => {
-          if (predicate != null && !predicate(snap)) return;
-          var d = (snap.location - position).sqrMagnitude;
-          if (d < bestDist) {
-            bestDist = d;
-            best = snap;
-          }
-        }, includeOutdated);
+      }, includeOutdated);
+
+      return best;
+    }
+
+    private MemorySnapshot Remember(Vector3 position, Func<MemorySnapshot, bool> predicate, bool includeOutdated) {
+      MemorySnapshot best = null;
+      var bestDist = float.MaxValue;
+      foreach (var snap in _memory) {
+        if (snap == null) continue;
+        if (!includeOutdated && snap.IsExpired) continue;
+        if (predicate != null && !predicate(snap)) continue;
+        var d = (snap.location - position).sqrMagnitude;
+        if (d < bestDist) {
+          bestDist = d;
+          best = snap;
+        }
       }
 
       return best;

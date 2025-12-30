@@ -20,6 +20,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [Inject] private GoalsBankModule _goalsBankModule;
 
     [Required] [SerializeField] private AgentMemory _memory = new AgentMemory();
+    [SerializeField] private List<ActionDataSO> _defaultActions = new();
 
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
     private SimpleSensor _chaseSensor;
@@ -54,13 +55,13 @@ namespace Content.Scripts.AI.GOAP.Agent {
       beliefsController.SetupBeliefs(_agent);
       SetupActions();
       SetupGoals();
-
       SetupStats();
     }
 
     private void SetupStats() {
-      _agent.body.AdjustStatPerTickDelta(StatConstants.HUNGER, -1.5f);
-      _agent.body.AdjustStatPerTickDelta(StatConstants.SLEEP, -0.1f);
+      foreach (var agentStat in _agent.defaultStatSet.defaultPerTickDelta) {
+        _agent.body.AdjustStatPerTickDelta(agentStat.Key, agentStat.Value);
+      }
     }
 
     private void OnEnable() {
@@ -105,28 +106,27 @@ namespace Content.Scripts.AI.GOAP.Agent {
       processed |= ExecutePlan();
       if (processed) return;
 
-      if (_currentAction == null || _actionPlan == null) {
-        Debug.Log("lost a plan.", this);
+      if (_currentAction == null && (_actionPlan == null || _actionPlan.Actions.Count == 0)) {
         CalculatePlan();
       }
     }
 
     private bool TryPickNextPlannedAction() {
       // Update the plan and current action if there is one
-      if (_currentAction != null) return false;
       if (_actionPlan == null || _actionPlan.Actions.Count <= 0) return false;
+      if (_currentAction != null) return true;
 
       _agent.navMeshAgent.ResetPath();
 
       _currentGoal = _actionPlan.AgentGoal;
-      //      Debug.Log($"Goal: {_currentGoal.Name} with {_actionPlan.Actions.Count} actions in plan", this);
       _currentAction = _actionPlan.Actions.Pop();
-//        Debug.Log($"Popped action: {_currentAction.Name}", this);
+      _currentAction.agent = _agent;
 
       CalculatePlan();
       // Verify all precondition effects are true
-      if (_currentAction.Preconditions.All(b => b.Evaluate())) {
-        _currentAction.Start();
+      var allPreconditionsMet = _currentAction.AreAllPreconditionsMet(_agent);
+      if (allPreconditionsMet) {
+        _currentAction.OnStart();
       }
       else {
         Debug.Log("Preconditions not met, clearing current action and goal", this);
@@ -140,11 +140,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private bool ExecutePlan() {
       // If we have a current action, execute it
       if (_actionPlan == null || _currentAction == null) return false;
-      _currentAction.Update(Time.deltaTime);
-      if (!_currentAction.Complete) return true;
+      _currentAction.OnUpdate(Time.deltaTime);
+      if (!_currentAction.complete) return true;
 
       // Debug.Log($"{_currentAction.Name} complete", this);
-      _currentAction.Stop();
+      _currentAction.OnStop();
       _currentAction = null;
 
       if (_actionPlan.Actions.Count != 0) return true;
@@ -166,37 +166,44 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void SetupActions() {
       actions = new HashSet<AgentAction>();
-      actions.Add(new AgentAction.Builder("Relax")
-        .WithStrategy(new IdleStrategy(5))
-        .AddEffect(beliefsController.Get(AgentConstants.Nothing))
-        .WithCost(1)
-        .Build());
 
-      actions.Add(new AgentAction.Builder("Wander Around")
-        .WithStrategy(new WanderStrategy(_agent, 5))
-        .AddEffect(beliefsController.Get(AgentConstants.Moving))
-        .WithCost(1)
-        .Build());
+      foreach (var actionData in _defaultActions) {
+        var action = actionData.GetAction(_agent);
+        actions.Add(action);
+      }
 
-      actions.Add(new AgentAction.Builder("MoveToNearestFood")
-        .WithStrategy(new MoveStrategy(_agent, ()
-          => memory.GetNearest(
-            _agent.position,
-            new[] { "FOOD" },
-            ms => ms.target != null
-          ).location))
-        .WithCost(2)
-        .AddPrecondition(beliefsController.Get("RemembersFoodNearby"))
-        .AddEffect(beliefsController.Get("AgentAtFood"))
-        .Build());
+      Debug.Log($"Action created: {actions.Count}", this);
 
-      actions.Add(new AgentAction.Builder("Eat")
-        .AddPrecondition(beliefsController.Get("AgentAtFood"))
-        //.AddPrecondition(beliefsController.Get("AgentSeeFood"))
-        .WithStrategy(new EatNearestStrategy(_agent)) // Later replace with a Command
-        .WithCost(1)
-        .AddEffect(beliefsController.Get("AgentIsNotHungry"))
-        .Build());
+      // actions.Add(new AgentAction.Builder("Relax")
+      //   .WithStrategy(new IdleStrategy(5))
+      //   .AddEffect(beliefsController.Get(AgentConstants.Nothing))
+      //   .WithCost(1)
+      //   .Build());
+
+      // actions.Add(new AgentAction.Builder("Wander Around")
+      //   .WithStrategy(new WanderStrategy(_agent, () => Random.value * 20f + 5f, Vector3.zero))
+      //   .AddEffect(beliefsController.Get(AgentConstants.Moving))
+      //   .WithCost(1)
+      //   .Build());
+      //
+      // actions.Add(new AgentAction.Builder("MoveToNearestFood")
+      //   .WithStrategy(
+      //     new MoveStrategy()
+      //       .SetAgent(_agent)
+      //       .SetDestination(() => memory.GetNearest(_agent.position, new[] { "FOOD" }, ms => ms.target != null))
+      //   )
+      //   .WithCost(2)
+      //   .AddPrecondition(beliefsController.Get("RemembersFoodNearby"))
+      //   .AddEffect(beliefsController.Get("AgentAtFood"))
+      //   .Build());
+
+      // actions.Add(new AgentAction.Builder("Eat")
+      //   .AddPrecondition(beliefsController.Get("AgentAtFood"))
+      //   //.AddPrecondition(beliefsController.Get("AgentSeeFood"))
+      //   .WithStrategy(new EatNearestStrategy(_agent))
+      //   .WithCost(1)
+      //   .AddEffect(beliefsController.Get("AgentIsNotHungry"))
+      //   .Build());
 
       // actions.Add(new AgentAction.Builder("MoveToEatingPosition")
       //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _foodShack.position))
@@ -231,7 +238,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       //   .AddPrecondition(beliefs["AgentAtDoorTwo"])
       //   .AddEffect(beliefs["AgentAtRestingPosition"])
       //   .Build());
-
 
       // actions.Add(new AgentAction.Builder("ChasePlayer")
       //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefsController.Get("PlayerInChaseRange").Location))

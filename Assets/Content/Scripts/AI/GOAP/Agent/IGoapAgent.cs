@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   public interface IGoapAgent {
+    AgentStatSetSO defaultStatSet { get; }
     AgentBrain agentBrain { get; }
     AgentMemory memory => agentBrain.memory;
     NavMeshAgent navMeshAgent { get; }
@@ -13,9 +14,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     AnimationController animationController { get; }
     public Vector3 position => navMeshAgent.transform.position;
     public Vector3 nextPosition => navMeshAgent.nextPosition;
-    
+
     public AgentBelief GetBelief(string beliefName) {
       return agentBrain.beliefsController.Get(beliefName);
     }
+
+    public bool isMoving => navMeshAgent.velocity.sqrMagnitude > 0.01f && navMeshAgent.hasPath;
   }
 }

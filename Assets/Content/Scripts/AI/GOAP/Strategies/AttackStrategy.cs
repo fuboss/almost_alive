@@ -1,8 +1,11 @@
+using System;
 using Content.Scripts.AI.GOAP.Actions;
+using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Animation;
 using ImprovedTimers;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
+  [Serializable]
   public class AttackStrategy : IActionStrategy {
     private readonly AnimationController _animations;
 
@@ -15,16 +18,20 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       // _timer.OnTimerStop += () => Complete = true;
     }
 
-    public bool CanPerform => true; // Agent can always attack
-    public bool Complete { get; private set; }
+    public bool canPerform => true; // Agent can always attack
+    public bool complete { get; private set; }
 
     public void Start() {
       _timer.Start();
-     // _animations.Attack();
+      // _animations.Attack();
     }
 
     public void Update(float deltaTime) {
       _timer.Tick();
+    }
+
+    public IActionStrategy Create(IGoapAgent agent) {
+      return new AttackStrategy(agent.animationController);
     }
   }
 }

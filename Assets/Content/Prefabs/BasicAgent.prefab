@@ -239,6 +239,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  _defaultStatSet: {fileID: 11400000, guid: 1b9f1f4e6a31b49f5b48af9060368ab1, type: 2}
   _agentBrain: {fileID: 9167206683187934627}
   _statsUpdateInterval: 1
   _sprintSpeedModifier: 1.1
@@ -368,9 +369,9 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 1|Content.Scripts.AI.GOAP.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Hunger
+    - Name: _type
+      Entry: 3
+      Data: 0
     - Name: _maxValue
       Entry: 4
       Data: 100
@@ -383,9 +384,9 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 2|Content.Scripts.AI.GOAP.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Fatigue
+    - Name: _type
+      Entry: 3
+      Data: 0
     - Name: _maxValue
       Entry: 4
       Data: 100
@@ -398,9 +399,9 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 3|Content.Scripts.AI.GOAP.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Sleep
+    - Name: _type
+      Entry: 3
+      Data: 0
     - Name: _maxValue
       Entry: 4
       Data: 100
@@ -413,9 +414,9 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 4|Content.Scripts.AI.GOAP.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Toilet
+    - Name: _type
+      Entry: 3
+      Data: 0
     - Name: _maxValue
       Entry: 4
       Data: 100

@@ -23,7 +23,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _snap.tags = other.tags != null ? new List<string>(other.tags) : null;
       _snap.location = other.location;
       _snap.target = other.target;
-      _snap.optionalTargets = other.optionalTargets != null ? new List<Object>(other.optionalTargets) : null;
+      _snap.optionalTargets = other.optionalTargets != null
+        ? new List<GameObject>(other.optionalTargets)
+        : null;
       _snap.isOutdated = other.isOutdated;
       _snap.confidence = other.confidence;
       _snap.lifetimeSeconds = other.lifetimeSeconds;
@@ -70,17 +72,17 @@ namespace Content.Scripts.AI.GOAP.Agent {
       return this;
     }
 
-    public MemorySnapshotBuilder WithOptionalTarget(Object target) {
+    public MemorySnapshotBuilder WithOptionalTarget(GameObject target) {
       _snap.target = target;
       _snap.lastUpdateTime = DateTime.UtcNow;
       return this;
     }
 
-    public MemorySnapshotBuilder WithOptionalTargets(IEnumerable<Object> targets) {
+    public MemorySnapshotBuilder WithOptionalTargets(IEnumerable<GameObject> targets) {
       if (targets == null)
         _snap.optionalTargets = null;
       else
-        _snap.optionalTargets = new List<Object>(targets);
+        _snap.optionalTargets = new List<GameObject>(targets);
 
       _snap.lastUpdateTime = DateTime.UtcNow;
       return this;
@@ -127,7 +129,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
         tags = _snap.tags != null ? new List<string>(_snap.tags) : null,
         location = _snap.location,
         target = _snap.target,
-        optionalTargets = _snap.optionalTargets != null ? new List<Object>(_snap.optionalTargets) : null,
+        optionalTargets = _snap.optionalTargets != null
+          ? new List<GameObject>(_snap.optionalTargets)
+          : null,
         isOutdated = _snap.isOutdated,
         creationTime = _hasCreationTimeSet ? _snap.creationTime : DateTime.UtcNow,
         lastUpdateTime = _snap.lastUpdateTime == DateTime.MinValue

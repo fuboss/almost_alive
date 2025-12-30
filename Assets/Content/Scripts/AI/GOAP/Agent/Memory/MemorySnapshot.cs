@@ -10,8 +10,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public List<string> tags;
     public Vector3 location;
 
-    public Object target;
-    public List<Object> optionalTargets;
+    public GameObject target;
+    public List<GameObject> optionalTargets;
 
     public bool isOutdated;
     public DateTime creationTime;
