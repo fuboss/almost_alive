@@ -51,5 +51,9 @@ namespace Content.Scripts.Animation {
     }
 
     protected abstract void SetClipNames();
+
+    public void Eat() {
+      Debug.LogError("Eat animation not implemented", this);
+    }
   }
 }

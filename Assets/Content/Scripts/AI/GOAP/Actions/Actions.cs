@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Beliefs;
+using JetBrains.Annotations;
 
 namespace Content.Scripts.AI.GOAP.Actions {
   public class AgentAction {
@@ -49,18 +51,18 @@ namespace Content.Scripts.AI.GOAP.Actions {
         return this;
       }
 
-      public Builder WithStrategy(IActionStrategy strategy) {
-        _action._strategy = strategy;
+      public Builder WithStrategy([NotNull] IActionStrategy strategy) {
+        _action._strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
         return this;
       }
 
       public Builder AddPrecondition(AgentBelief precondition) {
-        _action.Preconditions.Add(precondition);
+        if (precondition != null) _action.Preconditions.Add(precondition);
         return this;
       }
 
       public Builder AddEffect(AgentBelief effect) {
-        _action.Effects.Add(effect);
+        if (effect != null) _action.Effects.Add(effect);
         return this;
       }
 

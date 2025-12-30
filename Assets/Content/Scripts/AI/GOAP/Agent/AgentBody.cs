@@ -49,5 +49,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void SetPerTickDelta(string statName, float delta) {
       _perTickDelta[statName] = delta;
     }
+
+    public void ConsumeFood(GameObject foodActor) {
+      if (foodActor == null) return;
+      Destroy(foodActor);
+
+      if (GetStat(StatConstants.HUNGER) is FloatAgentStat hungerStat) {
+        hungerStat.Value += 15f;
+        Debug.LogError($"AgentBody: Consumed food, new hunger value: {hungerStat.Value}({hungerStat.Normalized})");
+      }
+    }
   }
 }

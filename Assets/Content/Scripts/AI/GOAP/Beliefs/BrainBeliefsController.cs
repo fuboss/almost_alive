@@ -21,7 +21,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       
       //stat based beliefs
       factory.AddStatBelief("AgentIsHungry", StatConstants.HUNGER, v => v < 0.3f);
-      factory.AddStatBelief("AgentIsTired", StatConstants.FATIGUE, v => v > 0.6f);
+      factory.AddStatBelief("AgentIsNotHungry", StatConstants.HUNGER, v => v > 0.65f);
+      factory.AddStatBelief("AgentIsTired", StatConstants.FATIGUE, v => v > 0.65f);
       factory.AddStatBelief("AgentToiletCritical", StatConstants.TOILET, v => v > 0.8f);
       factory.AddStatBelief("AgentIsExhausted", StatConstants.SLEEP, v => v < 0.2f);
       factory.AddBelief("AgentFeelsGood", ()
@@ -44,7 +45,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       factory.AddVisionBelief("AgentSeeOtherAgents", new[] { "Agent" });
       
       //memory based beliefs
-      factory.AddMemoryBelief("RemembersFood", new[] { "Food" });
+      factory.AddMemoryBelief("RemembersFoodNearby", new[] { "Food" });
     }
 
     private void OnValidate() {

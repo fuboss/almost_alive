@@ -59,7 +59,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void SetupStats() {
-      _agent.body.AdjustStatPerTickDelta(StatConstants.HUNGER, -0.2f);
+      _agent.body.AdjustStatPerTickDelta(StatConstants.HUNGER, -1.5f);
       _agent.body.AdjustStatPerTickDelta(StatConstants.SLEEP, -0.1f);
     }
 
@@ -91,13 +91,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var snapshot = MemorySnapshotBuilder.Create()
         .WithCreationTime(DateTime.Now)
         .With(visibleActor.descriptionData)
-        .WithOptionalTarget(visibleActor)
+        .WithOptionalTarget(visibleActor.gameObject)
         .WithConfidence(Random.Range(0.5f, 1f))
         .WithLifetime(5 + 40 * Random.value)
         .WithLocation(visibleActor.transform.position)
         .Build();
       var result = _memory.Remember(snapshot);
-      Debug.LogError($"Remembered {visibleActor.name}, result: {result}", visibleActor.gameObject);
     }
 
     private void ExecutePlanning() {
@@ -170,11 +169,33 @@ namespace Content.Scripts.AI.GOAP.Agent {
       actions.Add(new AgentAction.Builder("Relax")
         .WithStrategy(new IdleStrategy(5))
         .AddEffect(beliefsController.Get(AgentConstants.Nothing))
+        .WithCost(1)
         .Build());
 
       actions.Add(new AgentAction.Builder("Wander Around")
-        .WithStrategy(new WanderStrategy(_agent.navMeshAgent, 5))
+        .WithStrategy(new WanderStrategy(_agent, 5))
         .AddEffect(beliefsController.Get(AgentConstants.Moving))
+        .WithCost(1)
+        .Build());
+
+      actions.Add(new AgentAction.Builder("MoveToNearestFood")
+        .WithStrategy(new MoveStrategy(_agent, ()
+          => memory.GetNearest(
+            _agent.position,
+            new[] { "FOOD" },
+            ms => ms.target != null
+          ).location))
+        .WithCost(2)
+        .AddPrecondition(beliefsController.Get("RemembersFoodNearby"))
+        .AddEffect(beliefsController.Get("AgentAtFood"))
+        .Build());
+
+      actions.Add(new AgentAction.Builder("Eat")
+        .AddPrecondition(beliefsController.Get("AgentAtFood"))
+        //.AddPrecondition(beliefsController.Get("AgentSeeFood"))
+        .WithStrategy(new EatNearestStrategy(_agent)) // Later replace with a Command
+        .WithCost(1)
+        .AddEffect(beliefsController.Get("AgentIsNotHungry"))
         .Build());
 
       // actions.Add(new AgentAction.Builder("MoveToEatingPosition")

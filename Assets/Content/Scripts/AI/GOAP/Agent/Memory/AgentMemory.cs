@@ -81,7 +81,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (snapshot == null) return;
       if (_memory.Remove(snapshot)) {
         RemoveFromIndex(snapshot);
-        Debug.LogError($"Forget About :{snapshot.target?.name}", snapshot.target);
       }
     }
 
