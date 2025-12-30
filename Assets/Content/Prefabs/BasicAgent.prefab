@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2371573243318829067
+--- !u!1 &1674225987784196965
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3429428417669731644}
-  - component: {fileID: 3853577903889658195}
-  - component: {fileID: 3067664724731331787}
+  - component: {fileID: 9183937351687052308}
+  - component: {fileID: 2966109854800138905}
+  - component: {fileID: 4901184440295357167}
   m_Layer: 0
-  m_Name: AttackSensor
+  m_Name: VisionSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3429428417669731644
+--- !u!4 &9183937351687052308
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2371573243318829067}
+  m_GameObject: {fileID: 1674225987784196965}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,13 +33,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3571428584125765354}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &3853577903889658195
+--- !u!135 &2966109854800138905
 SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2371573243318829067}
+  m_GameObject: {fileID: 1674225987784196965}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -52,22 +52,23 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 7
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3067664724731331787
+--- !u!114 &4901184440295357167
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2371573243318829067}
+  m_GameObject: {fileID: 1674225987784196965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c0c3d9327d431dba6a170a2f8a0a26, type: 3}
+  m_Script: {fileID: 11500000, guid: f3694bba6df64921a3b27233a713a4f8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.Sensor
-  _detectionRadius: 5
-  _timerInterval: 1
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.VisionSensor
+  _detectionRadius: 7
+  _fieldOfViewAngle: 90
+  _checkInterval: 0.2
 --- !u!1 &4352278873515701977
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,7 +101,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2442764051163762505}
-  - {fileID: 3429428417669731644}
+  - {fileID: 9183937351687052308}
   m_Father: {fileID: 2179949752209691751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1018863174855730251
@@ -126,7 +127,7 @@ MonoBehaviour:
     SerializationNodes:
     - Name: beliefs
       Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Core.AgentBelief,
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Beliefs.AgentBelief,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 7
@@ -173,7 +174,7 @@ MonoBehaviour:
       Entry: 6
       Data: 
   _chaseSensor: {fileID: 1859987891189598933}
-  _attackSensor: {fileID: 3067664724731331787}
+  _visionSensor: {fileID: 4901184440295357167}
   beliefsController: {fileID: 1018863174855730251}
 --- !u!1 &4569093495672454940
 GameObject:
@@ -353,70 +354,22 @@ MonoBehaviour:
     SerializationNodes:
     - Name: _stats
       Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.GOAP.Core.Stats.AgentStat,
+      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.GOAP.Stats.AgentStat,
         Assembly-CSharp]], mscorlib
     - Name: 
       Entry: 12
       Data: 4
     - Name: 
-      Entry: 7
-      Data: 1|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Hunger
-    - Name: _maxValue
-      Entry: 4
-      Data: 100
-    - Name: _value
-      Entry: 4
-      Data: 100
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
-      Entry: 7
-      Data: 2|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Fatigue
-    - Name: _maxValue
-      Entry: 4
-      Data: 100
-    - Name: _value
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
-      Entry: 7
-      Data: 3|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Sleep
-    - Name: _maxValue
-      Entry: 4
-      Data: 100
-    - Name: _value
-      Entry: 4
-      Data: 100
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
-      Entry: 7
-      Data: 4|Content.Scripts.AI.GOAP.Core.Stats.FloatAgentStat, Assembly-CSharp
-    - Name: _name
-      Entry: 1
-      Data: Toilet
-    - Name: _maxValue
-      Entry: 4
-      Data: 100
-    - Name: _value
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
+      Entry: 6
       Data: 
     - Name: 
       Entry: 13

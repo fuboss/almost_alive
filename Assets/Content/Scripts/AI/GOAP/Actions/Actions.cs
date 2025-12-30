@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Content.Scripts.AI.GOAP.Beliefs;
 
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Actions {
   public class AgentAction {
     private IActionStrategy _strategy;
 

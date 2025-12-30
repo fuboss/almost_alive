@@ -1,5 +1,5 @@
 using System;
-using Content.Scripts.AI.GOAP.Core;
+using Content.Scripts.AI.GOAP.Actions;
 using UnityEngine;
 using UnityEngine.AI;
 

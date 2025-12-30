@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Core;
+using Content.Scripts.AI.GOAP.Beliefs;
+using Content.Scripts.AI.GOAP.Goals;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Planning {

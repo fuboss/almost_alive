@@ -1,28 +1,33 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.GOAP.Core;
-using Content.Scripts.AI.GOAP.Core.Stats;
+using Content.Scripts.AI.GOAP.Actions;
+using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Beliefs;
+using Content.Scripts.AI.GOAP.Goals;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.AI.GOAP.Stats;
 using Content.Scripts.AI.GOAP.Strategies;
 using Reflex.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(BrainBeliefsController))]
   public class AgentBrain : SerializedMonoBehaviour {
+    [Inject] private GoapPlanFactory _gPlanFactory;
+    [Inject] private GoalsBankModule _goalsBankModule;
+
+    [Required] [SerializeField] private AgentMemory _memory = new AgentMemory();
+
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
-    private Sensor _chaseSensor;
+    private SimpleSensor _chaseSensor;
 
     [VerticalGroup("Sensors")] [SerializeField]
-    private Sensor _attackSensor;
+    private VisionSensor _visionSensor;
 
-    public BrainBeliefsController beliefsController;
-
-    [Inject] private GoapFactory _gFactory;
-    [Inject] private GoalsBankModule _goalsBankModule;
-    private IGoapPlanner _gPlanner;
-    private AgentGoal _lastGoal;
+    [Required] public BrainBeliefsController beliefsController;
 
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentAction> actions;
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentGoal> goals;
@@ -34,13 +39,18 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [FoldoutGroup("Debug")] [ReadOnly] private AgentGoal _currentGoal;
 
     private IGoapAgent _agent;
-    public Sensor chaseSensor => _chaseSensor;
-    public Sensor attackSensor => _attackSensor;
+    public SimpleSensor chaseSensor => _chaseSensor;
+    public VisionSensor visionSensor => _visionSensor;
+
+    public AgentMemory memory => _memory;
+
+    private IGoapPlanner _gPlanner;
+    private AgentGoal _lastGoal;
 
 
     public void Initialize(IGoapAgent agent) {
       _agent = agent;
-      _gPlanner = _gFactory?.CreatePlanner();
+      _gPlanner = _gPlanFactory?.CreatePlanner();
       beliefsController.SetupBeliefs(_agent);
       SetupActions();
       SetupGoals();
@@ -55,20 +65,49 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void OnEnable() {
       _chaseSensor.OnTargetChanged += HandleTargetChanged;
+      _visionSensor.OnActorEntered += HandleVisibilityStart;
+      _visionSensor.OnActorExited += HandleVisibilityEnd;
     }
 
     private void OnDisable() {
       _chaseSensor.OnTargetChanged -= HandleTargetChanged;
+      _visionSensor.OnActorEntered -= HandleVisibilityStart;
+      _visionSensor.OnActorExited -= HandleVisibilityEnd;
     }
 
-    private void Update() {
+    public void Tick(float deltaTime) {
+      ExecutePlanning();
+      ExecuteMemory(deltaTime);
+    }
+
+    private void ExecuteMemory(float deltaTime) {
+      _memory.PurgeExpired(); //todo: use cooldown
+    }
+
+    private void HandleVisibilityEnd(ActorDescription noMoreVisibleActor) {
+    }
+
+    private void HandleVisibilityStart(ActorDescription visibleActor) {
+      var snapshot = MemorySnapshotBuilder.Create()
+        .WithCreationTime(DateTime.Now)
+        .With(visibleActor.descriptionData)
+        .WithOptionalTarget(visibleActor)
+        .WithConfidence(Random.Range(0.5f, 1f))
+        .WithLifetime(5 + 40 * Random.value)
+        .WithLocation(visibleActor.transform.position)
+        .Build();
+      var result = _memory.Remember(snapshot);
+      Debug.LogError($"Remembered {visibleActor.name}, result: {result}", visibleActor.gameObject);
+    }
+
+    private void ExecutePlanning() {
       var processed = false;
       processed |= TryPickNextPlannedAction();
       processed |= ExecutePlan();
       if (processed) return;
 
       if (_currentAction == null || _actionPlan == null) {
-        Debug.LogError("lost a plan.", this);
+        Debug.Log("lost a plan.", this);
         CalculatePlan();
       }
     }
@@ -81,9 +120,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _agent.navMeshAgent.ResetPath();
 
       _currentGoal = _actionPlan.AgentGoal;
-      Debug.Log($"Goal: {_currentGoal.Name} with {_actionPlan.Actions.Count} actions in plan", this);
+      //      Debug.Log($"Goal: {_currentGoal.Name} with {_actionPlan.Actions.Count} actions in plan", this);
       _currentAction = _actionPlan.Actions.Pop();
-      Debug.Log($"Popped action: {_currentAction.Name}", this);
+//        Debug.Log($"Popped action: {_currentAction.Name}", this);
 
       CalculatePlan();
       // Verify all precondition effects are true
@@ -105,32 +144,16 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _currentAction.Update(Time.deltaTime);
       if (!_currentAction.Complete) return true;
 
-      Debug.Log($"{_currentAction.Name} complete", this);
+      // Debug.Log($"{_currentAction.Name} complete", this);
       _currentAction.Stop();
       _currentAction = null;
 
       if (_actionPlan.Actions.Count != 0) return true;
-      Debug.Log("Plan complete", this);
+      // Debug.Log("Plan complete", this);
       _lastGoal = _currentGoal;
       _currentGoal = null;
 
       return true;
-    }
-
-
-    [VerticalGroup("Sensors")]
-    [Button]
-    [EnableIf("@_chaseSensor == null || _attackSensor == null")]
-    private void CreateSensors() {
-      if (_chaseSensor == null) _chaseSensor = SpawnSensor("ChaseSensor");
-      if (_attackSensor == null) _attackSensor = SpawnSensor("AttackSensor");
-    }
-
-    private Sensor SpawnSensor(string name) {
-      var sensor = new GameObject(name).AddComponent<Sensor>();
-      sensor.transform.SetParent(transform);
-      sensor.transform.localPosition = Vector3.zero;
-      return sensor;
     }
 
 
@@ -146,12 +169,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
       actions = new HashSet<AgentAction>();
       actions.Add(new AgentAction.Builder("Relax")
         .WithStrategy(new IdleStrategy(5))
-        .AddEffect(beliefsController.Get("Nothing"))
+        .AddEffect(beliefsController.Get(AgentConstants.Nothing))
         .Build());
 
       actions.Add(new AgentAction.Builder("Wander Around")
-        .WithStrategy(new WanderStrategy(_agent.navMeshAgent, 10))
-        .AddEffect(beliefsController.Get("AgentMoving"))
+        .WithStrategy(new WanderStrategy(_agent.navMeshAgent, 5))
+        .AddEffect(beliefsController.Get(AgentConstants.Moving))
         .Build());
 
       // actions.Add(new AgentAction.Builder("MoveToEatingPosition")
@@ -188,23 +211,18 @@ namespace Content.Scripts.AI.GOAP.Agent {
       //   .AddEffect(beliefs["AgentAtRestingPosition"])
       //   .Build());
 
-      actions.Add(new AgentAction.Builder("Rest")
-        .WithStrategy(new IdleStrategy(5))
-        .AddPrecondition(beliefsController.Get("AgentAtRestingPosition"))
-        .AddEffect(beliefsController.Get("AgentIsRested"))
-        .Build());
 
-      actions.Add(new AgentAction.Builder("ChasePlayer")
-        .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefsController.Get("PlayerInChaseRange").Location))
-        .AddPrecondition(beliefsController.Get("PlayerInChaseRange"))
-        .AddEffect(beliefsController.Get("PlayerInAttackRange"))
-        .Build());
-
-      actions.Add(new AgentAction.Builder("AttackPlayer")
-        .WithStrategy(new AttackStrategy(_agent.animationController))
-        .AddPrecondition(beliefsController.Get("PlayerInAttackRange"))
-        .AddEffect(beliefsController.Get("AttackingPlayer"))
-        .Build());
+      // actions.Add(new AgentAction.Builder("ChasePlayer")
+      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefsController.Get("PlayerInChaseRange").Location))
+      //   .AddPrecondition(beliefsController.Get("PlayerInChaseRange"))
+      //   .AddEffect(beliefsController.Get("PlayerInAttackRange"))
+      //   .Build());
+      //
+      // actions.Add(new AgentAction.Builder("AttackPlayer")
+      //   .WithStrategy(new AttackStrategy(_agent.animationController))
+      //   .AddPrecondition(beliefsController.Get("PlayerInAttackRange"))
+      //   .AddEffect(beliefsController.Get("AttackingPlayer"))
+      //   .Build());
     }
 
 
@@ -217,12 +235,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void CalculatePlan() {
       var priorityLevel = _currentGoal?.Priority ?? 0;
-
       var goalsToCheck = goals;
 
       // If we have a current goal, we only want to check goals with higher priority
       if (_currentGoal != null) {
-        Debug.Log("Current goal exists, checking goals with higher priority");
+        // Debug.Log("Current goal exists, checking goals with higher priority");
         goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
       }
 

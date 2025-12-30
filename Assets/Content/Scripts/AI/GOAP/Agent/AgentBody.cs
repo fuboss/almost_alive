@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Content.Scripts.AI.GOAP.Core.Stats;
+using System.Linq;
+using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -28,10 +29,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
           Debug.LogError("FloatStat has no name assigned.", this);
           continue;
         }
+
         if (_perTickDelta.TryGetValue(floatStat.name, out var delta)) {
           floatStat.Value = Mathf.Clamp(floatStat.Value + delta * deltaTime, 0f, floatStat.MaxValue);
         }
       }
+    }
+
+    public AgentStat GetStat(string statName) {
+      return _stats.FirstOrDefault(s => s.name == statName);
     }
 
     public void AdjustStatPerTickDelta(string statName, float delta) {

@@ -4,7 +4,7 @@ using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Goals {
   [CreateAssetMenu(fileName = "Goal", menuName = "GOAP/Goal", order = 0)]
   public class GoalSO : SerializedScriptableObject {
     public int defaultPriority = 1;

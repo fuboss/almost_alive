@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Content.Scripts.AI.GOAP.Beliefs;
 using Sirenix.Utilities;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Goals {
 
   [Serializable]
   public class AgentGoal {

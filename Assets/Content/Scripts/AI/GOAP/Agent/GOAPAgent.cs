@@ -26,6 +26,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private void Update() {
       //_statsTimer.Tick();
       _agentBody.TickStats(Time.deltaTime);
+      _agentBrain.Tick(Time.deltaTime);
+
       var speedNorm = navMeshAgent.velocity.magnitude / (navMeshAgent.speed * _sprintSpeedModifier);
       animationController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05);
     }

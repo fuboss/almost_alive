@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class AgentBelief {
     private Func<bool> _condition = () => false;

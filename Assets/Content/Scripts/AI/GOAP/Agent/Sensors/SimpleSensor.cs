@@ -5,7 +5,9 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(SphereCollider))]
-  public class Sensor : MonoBehaviour {
+  public class SimpleSensor : MonoBehaviour {
+    public event Action OnTargetChanged = delegate { };
+    
     [SerializeField] private float _detectionRadius = 5f;
     [SerializeField] private float _timerInterval = 1f;
 
@@ -51,8 +53,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (!other.CompareTag("Player")) return;
       UpdateTargetPosition();
     }
-
-    public event Action OnTargetChanged = delegate { };
 
     private void UpdateTargetPosition(GameObject target = null) {
       _target = target;

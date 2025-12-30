@@ -1,4 +1,4 @@
-using Content.Scripts.AI.GOAP.Core;
+using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.Animation;
 using ImprovedTimers;
 

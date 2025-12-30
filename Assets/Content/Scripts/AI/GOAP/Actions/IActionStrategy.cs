@@ -1,4 +1,4 @@
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Actions {
   public interface IActionStrategy {
     bool CanPerform { get; }
     bool Complete { get; }

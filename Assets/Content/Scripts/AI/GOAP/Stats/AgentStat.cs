@@ -2,7 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Core.Stats {
+namespace Content.Scripts.AI.GOAP.Stats {
   public static class StatConstants {
     public const string HUNGER = "Hunger";
     public const string FATIGUE = "Fatigue";

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Content.Scripts.AI.GOAP.Core;
+using Content.Scripts.AI.GOAP.Actions;
+using Content.Scripts.AI.GOAP.Beliefs;
 
 namespace Content.Scripts.AI.GOAP.Planning {
   public class PlannerNode {

@@ -3,7 +3,7 @@ using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Core {
+namespace Content.Scripts.AI.GOAP.Goals {
   public class GoalsBankModule {
     private List<GoalSO> _goalSOs;
 
