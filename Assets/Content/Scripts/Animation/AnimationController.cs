@@ -55,5 +55,9 @@ namespace Content.Scripts.Animation {
     public void Eat() {
       Debug.LogError("Eat animation not implemented", this);
     }
+
+    public void PickUp() {
+      Debug.LogError("PickUp animation not implemented", this);
+    }
   }
 }

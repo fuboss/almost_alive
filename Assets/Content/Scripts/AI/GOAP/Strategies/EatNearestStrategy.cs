@@ -17,7 +17,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private CountdownTimer _timer;
 
     public IActionStrategy Create(IGoapAgent agent) {
-      return new EatNearestStrategy(agent);
+      return new EatNearestStrategy(agent) {
+        consumeDuration = consumeDuration
+      };
     }
 
     public EatNearestStrategy() {

@@ -23,13 +23,14 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_EatFoodOnFloor
-    cost: 1
+    cost: 2
     strategy:
       rid: 7960999237110989242
     preconditions:
     - HasTransientTarget
     effects:
     - IsNotHungry
+    - NoTransientTarget
   references:
     version: 2
     RefIds:

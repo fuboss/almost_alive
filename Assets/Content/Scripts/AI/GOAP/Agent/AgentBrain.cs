@@ -47,10 +47,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public ActionPlan actionPlan {
       get => _actionPlan;
       set {
-        Debug.Log(
-          value != null
-            ? $"New ActionPlane set: {value.AgentGoal.Name}::{string.Join(", ", value.Actions.Select(a => a.name))}"
-            : "NULL", this);
+        // Debug.Log(
+        //   value != null
+        //     ? $"New ActionPlane set: {value.AgentGoal.Name}::{string.Join(", ", value.Actions.Select(a => a.name))}"
+        //     : "NULL", this);
         _actionPlan = value;
       }
     }

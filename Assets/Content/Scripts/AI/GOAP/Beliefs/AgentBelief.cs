@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
     public virtual bool Evaluate(IGoapAgent agent) {
       var evaluate = _condition != null && _condition();
-      Debug.Log($"{ToString()} evaluate {evaluate}");
+     // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
       return evaluate;
     }
 

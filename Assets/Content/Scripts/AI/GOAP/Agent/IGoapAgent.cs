@@ -12,6 +12,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     AgentBody body { get; }
     Rigidbody rigidbody { get; }
     AnimationController animationController { get; }
+    AgentInventory inventory { get; }
     public Vector3 position => navMeshAgent.transform.position;
     public Vector3 nextPosition => navMeshAgent.nextPosition;
 
@@ -20,6 +21,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public bool isMoving => navMeshAgent.velocity.sqrMagnitude > 0.01f && navMeshAgent.hasPath;
-    GameObject transientTarget { get; set; } 
+    GameObject transientTarget { get; set; }
   }
 }

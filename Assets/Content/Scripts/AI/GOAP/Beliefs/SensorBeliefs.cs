@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
     public override bool Evaluate(IGoapAgent agent) {
       var sensor = agent.agentBrain.interactSensor;
-      _condition ??= () => sensor.HasObjectsWithTagsArea(tags);
+      _condition = () => sensor.HasObjectsWithTagsArea(tags);
 
       return base.Evaluate(agent);
     }

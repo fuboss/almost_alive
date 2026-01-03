@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3322c70943d24039abcc1a67ccb793e8, type: 3}
-  m_Name: goal_IsNotHungry
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Core.GoalSO
+  m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
+  m_Name: Transient_IsNotFood
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -21,6 +21,15 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  defaultPriority: 3
-  desiredEffects:
-  - IsNotHungry
+  belief:
+    rid: 365112705763246270
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112705763246270
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: Transient_IsNotFood
+        tags:
+        - FOOD
+        inverse: 1

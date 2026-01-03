@@ -18,6 +18,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
         if (withTags.Length == 0) {
           Debug.LogWarning($"HasInMemoryBelief: No items found with tags: '{string.Join(", ", tags)}'");
         }
+
         if (!checkDistance) {
           return withTags.Length > 0;
         }
@@ -27,7 +28,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
       return base.Evaluate(agent);
     }
-    
+
     public override AgentBelief Copy(IGoapAgent agent) {
       var copy = new HasInMemoryBelief {
         tags = tags,

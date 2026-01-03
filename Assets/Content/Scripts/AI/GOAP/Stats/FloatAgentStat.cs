@@ -7,14 +7,7 @@ namespace Content.Scripts.AI.GOAP.Stats {
     public FloatAgentStat(StatType type, float initialValue, float maxValue) 
       : base(type, initialValue, maxValue) {
     }
-
-    public Data GetData() {
-      return new Data {
-        statType = type,
-        minValue = value,
-        maxValue = maxValue
-      };
-    }
+    
     [Serializable]
     public class Data {
       public StatType statType;

@@ -173,3 +173,14 @@ MonoBehaviour:
     onUseAddStatPerTick:
     - statType: 1
       delta: 15
+    stackData:
+      rid: 365112705763246239
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112705763246239
+      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
+      data:
+        min: 0
+        max: 15
+        current: 1
