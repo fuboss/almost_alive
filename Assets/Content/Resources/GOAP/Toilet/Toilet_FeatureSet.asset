@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ec80fd63ae24623a83843bf5c46baf3, type: 3}
-  m_Name: Fatigue_FeatureSet
+  m_Name: Toilet_FeatureSet
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.GoatFeatureSO
   serializationData:
     SerializedFormat: 2
@@ -22,13 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   goals:
-  - {fileID: 11400000, guid: 1226ad2714c1240199293a94e30b8f39, type: 2}
+  - {fileID: 11400000, guid: 565a3944dfa434abd8612818d827e63d, type: 2}
   beliefs:
-  - {fileID: 11400000, guid: 4909e3fbba7bf4de9ba99e5bf8aed916, type: 2}
-  - {fileID: 11400000, guid: 24edc28d401af4bd79cf185e31a31d12, type: 2}
-  - {fileID: 11400000, guid: cdea0ea5d50a4495eb74b99a5fc78633, type: 2}
-  - {fileID: 11400000, guid: 850ae249efb784ea7924be281bafec4f, type: 2}
-  - {fileID: 11400000, guid: 5d2ae6cc72f924e94bd9bb9ee098129c, type: 2}
+  - {fileID: 11400000, guid: 53e62dff2d0534c32a94ed16dbe1d595, type: 2}
+  - {fileID: 11400000, guid: 54e697f5a50ff41dcb3d5438b3e2783f, type: 2}
+  - {fileID: 11400000, guid: be2317fedc3fa48bcbdbfd335f3bb8ea, type: 2}
+  - {fileID: 11400000, guid: a13d3021e34c74782ada4a6dd71b29f6, type: 2}
   actionDatas:
-  - {fileID: 11400000, guid: 1c46083ed38b44f7ebfd65b17fb51cfd, type: 2}
-  - {fileID: 11400000, guid: 4584dfc72182443c19104b766629f524, type: 2}
+  - {fileID: 11400000, guid: 1e86bfd77e38d4f4bab2a0e5324fa290, type: 2}
+  - {fileID: 11400000, guid: 41c507a3016e54e5d90dc8505baad885, type: 2}

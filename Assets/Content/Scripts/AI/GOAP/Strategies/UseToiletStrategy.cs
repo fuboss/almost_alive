@@ -4,28 +4,28 @@ using Content.Scripts.AI.GOAP.Agent;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class UseRestPointStrategy : UseActorStrategyBase {
+  public class UseToiletStrategy : UseActorStrategyBase {
     public override IActionStrategy Create(IGoapAgent agent) {
-      return new UseRestPointStrategy(agent) {
+      return new UseToiletStrategy(agent) {
         useDuration = useDuration
       };
     }
 
-    public UseRestPointStrategy() {
+    public UseToiletStrategy() {
     }
 
-    public UseRestPointStrategy(IGoapAgent agent) {
-      base.agent = agent;
+    public UseToiletStrategy(IGoapAgent agent) {
+      this.agent = agent;
     }
 
     protected override void ApplyOnStart() {
       base.ApplyOnStart();
-      agent.body.SetResting(true);
+      agent.body.SetToiletUse(true);
     }
 
     protected override void ApplyOnStop() {
       base.ApplyOnStop();
-      agent.body.SetResting(false);
+      agent.body.SetToiletUse(false);
     }
   }
 }

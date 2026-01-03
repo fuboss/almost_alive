@@ -60,5 +60,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void SetResting(bool isResting) {
       Debug.LogError($"BODY isResting: {isResting}", this);
     }
+
+    public void SetToiletUse(bool inToilet) {
+      Debug.LogError($"BODY inToilet: {inToilet}", this);
+    }
   }
 }

@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
-  m_Name: IsToiletNeeded
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
+  m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
+  m_Name: action_UseTolet
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -21,16 +21,20 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  belief:
-    rid: 7960999259651702889
+  data:
+    name: action_UseTolet
+    cost: 1
+    strategy:
+      rid: 365112711794393201
+    preconditions:
+    - Transient_IsToilet
+    - Toilet_Needed
+    effects:
+    - Toilet_IsOK
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702889
-      type: {class: StatBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112711794393201
+      type: {class: UseRestPointStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
       data:
-        name: IsToiletNeeded
-        statData:
-          statType: 4
-          minValue: 0.8
-          maxValue: 1
+        useDuration: 10

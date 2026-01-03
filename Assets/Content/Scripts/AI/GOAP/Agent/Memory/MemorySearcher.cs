@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityUtils;
 
@@ -6,8 +8,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
   [Serializable]
   public class MemorySearcher {
     public SearchMode searchMode = SearchMode.NEAREST;
-    public string[] requiredTags;
-
+    [ValueDropdown("GetTags")] public string[] requiredTags;
+#if UNITY_EDITOR
+    public List<string> GetTags() {
+      return GOAPEditorHelper.GetTags();
+    }
+#endif
 
     public Func<Vector3> Search(IGoapAgent agent) {
       return SearchImp;
@@ -16,7 +22,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         var targetMem = searchMode switch {
           SearchMode.NEAREST => GetNearest(agent),
           SearchMode.ANY => agent.memory.GetWithAllTags(requiredTags).Random(),
-          _ => GetNearest(agent)//null
+          _ => GetNearest(agent) //null
         };
 
         if (targetMem != null) {

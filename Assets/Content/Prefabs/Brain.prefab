@@ -160,6 +160,7 @@ MonoBehaviour:
   - Common_FeatureSet
   - Hunger_FeatureSet
   - Fatigue_FeatureSet
+  - Toilet_FeatureSet
   _interactSensor: {fileID: 8430148722207983948}
   _visionSensor: {fileID: 5127145853041075914}
 --- !u!1 &8214782044528235277
