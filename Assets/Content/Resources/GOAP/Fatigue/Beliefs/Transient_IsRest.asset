@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
-  m_Name: action_Pickup_FoodFromFloor
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
+  m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
+  m_Name: Transient_IsRest
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -21,19 +21,15 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  data:
-    name: action_Pickup_FoodFromFloor
-    cost: 1
-    strategy:
-      rid: 365112711794393088
-    preconditions:
-    - Transient_IsFood
-    effects:
-    - Inventory_HasFood
+  belief:
+    rid: 365112705763246270
   references:
     version: 2
     RefIds:
-    - rid: 365112711794393088
-      type: {class: PickupTransientStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112705763246270
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
-        duration: 1
+        name: Transient_IsRest
+        tags:
+        - REST
+        inverse: 0

@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class HasInInventoryBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")] public string[] tags;
     public int requiredItemCount = 1;
 
     public override bool Evaluate(IGoapAgent agent) {
@@ -27,7 +28,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
   [Serializable]
   public class HasNoInInventoryBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")] public string[] tags;
     public int requiredItemCount = 1;
 
     public override bool Evaluate(IGoapAgent agent) {

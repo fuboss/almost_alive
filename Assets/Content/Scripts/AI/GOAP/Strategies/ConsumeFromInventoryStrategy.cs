@@ -5,22 +5,23 @@ using Content.Scripts.AI.GOAP.Agent.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
 using Content.Scripts.Animation;
 using ImprovedTimers;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class ConsumeFromInventoryStrategy : IActionStrategy {
+  public class ConsumeFromInventoryStrategy : AgentStrategy {
     public float consumeDuration = 4f;
-    public string[] tags;
+    [ValueDropdown("GetTags")] public string[] tags;
     public int count = 1;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
     private CountdownTimer _timer;
     private InventorySlot _slot;
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new ConsumeFromInventoryStrategy(agent) {
         consumeDuration = consumeDuration,
         tags = tags,
@@ -36,20 +37,21 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _animations = _agent.animationController;
     }
 
-    public bool canPerform => !complete;
-    public bool complete { get; private set; }
+    public override bool canPerform => !complete;
+    public override bool complete { get; internal set; }
 
     public ActorDescription target { get; private set; }
 
-    public void OnStart() {
+    public override void OnStart() {
       _slot = null;
-     
+
       if (!_agent.inventory.TryGetItemWithTags(tags, out var slot)) {
         Debug.LogError("No matching item in inventory, Aborting ConsumeFromInventoryStrategy");
         _timer?.Stop();
         complete = true;
         return;
       }
+
       IniTimer();
 
       _slot = slot;
@@ -65,11 +67,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       if (target == null) return;
       var descriptor = target.GetComponent<ActorDescription>();
       if (descriptor == null) return;
-      if (descriptor.descriptionData.onUseAddStatPerTick == null) return;
-
-      foreach (var change in descriptor.descriptionData.onUseAddStatPerTick) {
-        _agent.body.AdjustStatPerTickDelta(change.statType, multiplier * change.delta);
-      }
+      _agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
 
     private void ApplyUseStat(float multiplier = 1f) {
@@ -92,10 +90,10 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.OnTimerStop += () => complete = true;
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       //discard per-tick stat changes
       ApplyPerStatTick(-1);
-      
+
       if (_timer != null && _timer.IsFinished) {
         OnComplete();
       }
@@ -107,10 +105,10 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     private void OnComplete() {
       if (target == null) return;
-      
+
       //consume!
       ApplyUseStat();
-      
+
       if (_slot.count > count) {
         _slot.stackData.current -= count;
       }

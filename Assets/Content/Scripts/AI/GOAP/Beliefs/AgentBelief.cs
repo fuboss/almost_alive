@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,16 +10,24 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     [ReadOnly] public string name;
 
     internal Func<bool> _condition = () => false;
+    [ShowInInspector, ReadOnly] protected bool _lastEvaluation;
 
     public virtual bool Evaluate(IGoapAgent agent) {
       var evaluate = _condition != null && _condition();
-     // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
+      _lastEvaluation = evaluate;
+      // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
       return evaluate;
     }
 
     public override string ToString() {
       return $"{GetType().Name}";
     }
+    
+#if UNITY_EDITOR
+    public List<string> GetTags() {
+      return GOAPEditorHelper.GetTags();
+    }
+#endif
 
     public class Builder {
       private readonly AgentBelief _belief;

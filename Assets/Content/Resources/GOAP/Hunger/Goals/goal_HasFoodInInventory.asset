@@ -21,6 +21,6 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  defaultPriority: 4
+  defaultPriority: 3
   desiredEffects:
   - Inventory_HasFood

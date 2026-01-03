@@ -9,14 +9,14 @@ using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class EatNearestStrategy : IActionStrategy {
+  public class EatNearestStrategy : AgentStrategy {
     public float consumeDuration = 4f;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
     private MemorySearcher _searcher;
     private CountdownTimer _timer;
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new EatNearestStrategy(agent) {
         consumeDuration = consumeDuration
       };
@@ -33,12 +33,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _animations = _agent.animationController;
     }
 
-    public bool canPerform => !complete;
-    public bool complete { get; private set; }
+    public override bool canPerform => !complete;
+    public override bool complete { get; internal set; }
 
     public GameObject target { get; private set; }
 
-    public void OnStart() {
+    public override void OnStart() {
       IniTimer();
       _searcher ??= new MemorySearcher() {
         requiredTags = new[] { "FOOD" }
@@ -62,11 +62,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private void ApplyPerStatTick(float multiplier = 1f) {
       var descriptor = target.GetComponent<ActorDescription>();
       if (descriptor == null) return;
-      var perTick = descriptor.descriptionData.onUseAddStatPerTick;
-      if (perTick == null) return;
-      foreach (var change in perTick) {
-        _agent.body.AdjustStatPerTickDelta(change.statType, multiplier * change.delta);
-      }
+      _agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
 
     private void IniTimer() {
@@ -77,7 +73,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.OnTimerStop += () => complete = true;
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       //discard per-tick stat changes
       ApplyPerStatTick(-1);
 
@@ -90,7 +86,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer?.Dispose();
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
   }

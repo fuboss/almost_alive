@@ -38,8 +38,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
         var newPlan = new ActionPlan(goal, actionStack, goalNode.Cost);
         Debug.Log(
-          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.TotalCost}. {newPlan.Actions.Count} actions in plan.\n" +
-          $"goals: {string.Join(",", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}");
+          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.TotalCost}. {string.Join(",", actionStack.Select(a=>a.name))} actions in plan.\n" +
+          $"[Goals: {string.Join(",", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}]");
         return newPlan;
       }
 
@@ -47,8 +47,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       return null;
     }
 
-    private static List<AgentGoal>
-      GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal) {
+    private static List<AgentGoal> GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal) {
       var orderedGoals = goals
         .Where(g => g != null && g.desiredEffects.Any(b => {
           if (b == null) {
@@ -65,7 +64,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
           return false;
         }))
-        .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 0.5 : g.Priority)
+        .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 1.5 : g.Priority)
         .ToList();
       return orderedGoals;
     }

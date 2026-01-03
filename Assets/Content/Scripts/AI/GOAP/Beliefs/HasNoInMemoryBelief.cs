@@ -1,11 +1,12 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class HasNoInMemoryBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")]public string[] tags;
 
     public override bool Evaluate(IGoapAgent agent) {
       _condition = () => {

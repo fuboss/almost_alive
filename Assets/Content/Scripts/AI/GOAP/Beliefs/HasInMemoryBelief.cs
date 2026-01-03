@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class HasInMemoryBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")]public string[] tags;
     public bool checkDistance;
     [EnableIf("checkDistance")] public float maxDistance = 20;
 

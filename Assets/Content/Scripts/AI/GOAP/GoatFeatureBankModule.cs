@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP {
 
     private GoatFeatureBankModule(List<GoatFeatureSO> featuresSOs) {
       _featuresSOs = featuresSOs;
-      Debug.LogError($"GoatFeatureBankModule:{_featuresSOs?.Count.ToString() ?? "NULL"}");
+      Debug.Log($"GoatFeatureBankModule:{_featuresSOs?.Count.ToString() ?? "NULL"}");
     }
 
     public static GoatFeatureBankModule GetFromResources() {

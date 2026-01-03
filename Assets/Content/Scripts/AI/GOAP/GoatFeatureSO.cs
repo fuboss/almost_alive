@@ -11,5 +11,12 @@ namespace Content.Scripts.AI.GOAP {
     public List<GoalSO> goals;
     public List<BeliefSO> beliefs;
     public List<ActionDataSO> actionDatas;
+
+    
+    [Button]
+    private void Refresh() {
+
+      Debug.LogError("TDODO!!!");
+    }
   }
 }

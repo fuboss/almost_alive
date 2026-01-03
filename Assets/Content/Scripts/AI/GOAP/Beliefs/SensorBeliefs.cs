@@ -1,10 +1,11 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class VisionBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")]public string[] tags;
 
     public override bool Evaluate(IGoapAgent agent) {
       var sensor = agent.agentBrain.visionSensor;
@@ -20,7 +21,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
   [Serializable]
   public class InteractionBelief : AgentBelief {
-    public string[] tags;
+    [ValueDropdown("GetTags")]public string[] tags;
 
     public override bool Evaluate(IGoapAgent agent) {
       var sensor = agent.agentBrain.interactSensor;

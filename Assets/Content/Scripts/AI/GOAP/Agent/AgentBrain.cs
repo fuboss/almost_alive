@@ -121,7 +121,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         .With(visibleActor.descriptionData)
         .WithOptionalTarget(visibleActor.gameObject)
         .WithConfidence(Random.Range(0.5f, 1f))
-        .WithLifetime(5 + 40 * Random.value)
+        .WithLifetime(visibleActor.descriptionData.rememberDuration + 30 * Random.value)
         .WithLocation(visibleActor.transform.position)
         .Build();
       var result = _memory.Remember(snapshot);
@@ -157,8 +157,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
       }
       else {
         Debug.Log($"{_currentAction.name} Preconditions not met, clearing current action and goal", this);
+        _lastGoal = _currentGoal;
         _currentAction = null;
         _currentGoal = null;
+        _actionPlan = null;
+        return false;
       }
 
       return true;
@@ -184,7 +187,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private bool ExecuteCurrentAction() {
       if (actionPlan == null || _currentAction == null) return false;
-      
+
       _currentAction.OnUpdate(Time.deltaTime);
       if (_currentAction.complete) {
         OnCurrentActionComplete();
@@ -205,7 +208,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _lastGoal = _currentGoal;
         _currentGoal = null;
         actionPlan = null;
-        
       }
     }
 

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
-  m_Name: action_WanderAboutFood
+  m_Name: action_MoveToRest
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
   serializationData:
     SerializedFormat: 2
@@ -22,27 +22,24 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   data:
-    name: action_WanderAboutFood
-    cost: 1
+    name: action_MoveToRest
+    cost: 2
     strategy:
-      rid: 365112705763246234
-    preconditions:
-    - NoFoodRemember
+      rid: 7960999237110989218
+    preconditions: []
     effects:
-    - IsMoving
-    - RemembersFoodNearby
+    - Transient_IsRest
   references:
     version: 2
     RefIds:
-    - rid: 365112705763246234
-      type: {class: WanderUntilStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 7960999237110989218
+      type: {class: MoveStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
       data:
-        visitPointsMinMax: {x: 2, y: 5}
-        navMeshSamples: 5
-        defaultWanderRadius: 10
-        debugWanderAroundCenter: 1
         targetFromMemory:
           searchMode: 0
           requiredTags:
-          - FOOD
-        lookupForCountInMemory: 1
+          - REST
+        updateDestinationContinuously: 0
+        statPerTick:
+        - statType: 2
+          delta: 0.01

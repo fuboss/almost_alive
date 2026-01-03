@@ -14,12 +14,19 @@ namespace Content.Scripts.AI.GOAP.Agent.Descriptors {
   [Serializable]
   [HideReferenceObjectPicker]
   public class DescriptionData {
-    public string[] tags;
+    [ValueDropdown("GetNames")] public string[] tags;
     public bool isInventoryItem = true;
+    public float rememberDuration = 300f;
 
     public List<FloatAgentStat.Data> onUseAddStats = new();
     public List<PerTickStatChange> onUseAddStatPerTick = new();
 
     [SerializeReference] public StackData stackData;
+    
+#if UNITY_EDITOR
+    public List<string> GetNames() {
+      return GOAPEditorHelper.GetTags();
+    }
+#endif
   }
 }

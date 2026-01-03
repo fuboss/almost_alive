@@ -8,13 +8,13 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class PickupTransientStrategy : IActionStrategy {
+  public class PickupTransientStrategy : AgentStrategy {
     public float duration = 1f;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
     private CountdownTimer _timer;
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new PickupTransientStrategy(agent);
     }
 
@@ -26,12 +26,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _animations = _agent.animationController;
     }
 
-    public bool canPerform => !complete && _agent?.transientTarget != null;
-    public bool complete { get; private set; }
+    public override bool canPerform => !complete && _agent?.transientTarget != null;
+    public override bool complete { get; internal set; }
 
     public ActorDescription target { get; private set; }
 
-    public void OnStart() {
+    public override void OnStart() {
       target = _agent?.transientTarget != null
         ? _agent.transientTarget.GetComponent<ActorDescription>()
         : null;
@@ -54,7 +54,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.OnTimerStop += () => complete = true;
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       if (_timer != null && _timer.IsFinished) {
         if (target != null) {
           if (_agent.inventory.TryPutItemInInventory(target)) {
@@ -66,7 +66,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer?.Dispose();
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
   }

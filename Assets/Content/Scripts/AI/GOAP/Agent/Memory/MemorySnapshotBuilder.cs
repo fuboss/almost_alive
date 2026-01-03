@@ -18,22 +18,22 @@ namespace Content.Scripts.AI.GOAP.Agent {
       return new MemorySnapshotBuilder();
     }
 
-    public MemorySnapshotBuilder From(MemorySnapshot other) {
-      if (other == null) return this;
-      _snap.tags = other.tags != null ? new List<string>(other.tags) : null;
-      _snap.location = other.location;
-      _snap.target = other.target;
-      _snap.optionalTargets = other.optionalTargets != null
-        ? new List<GameObject>(other.optionalTargets)
-        : null;
-      _snap.isOutdated = other.isOutdated;
-      _snap.confidence = other.confidence;
-      _snap.lifetimeSeconds = other.lifetimeSeconds;
-      _snap.creationTime = other.creationTime;
-      _snap.lastUpdateTime = other.lastUpdateTime;
-      _hasCreationTimeSet = true;
-      return this;
-    }
+    // public MemorySnapshotBuilder From(MemorySnapshot other) {
+    //   if (other == null) return this;
+    //   _snap.tags = other.tags != null ? new List<string>(other.tags) : null;
+    //   _snap.location = other.location;
+    //   _snap.target = other.target;
+    //   _snap.optionalTargets = other.optionalTargets != null
+    //     ? new List<GameObject>(other.optionalTargets)
+    //     : null;
+    //   _snap.isOutdated = other.isOutdated;
+    //   _snap.confidence = other.confidence;
+    //   _snap.lifetimeSeconds = other.lifetimeSeconds;
+    //   _snap.creationTime = other.creationTime;
+    //   _snap.lastUpdateTime = other.lastUpdateTime;
+    //   _hasCreationTimeSet = true;
+    //   return this;
+    // }
 
     public MemorySnapshotBuilder With(DescriptionData descriptionData) {
       if (descriptionData?.tags == null) return this;

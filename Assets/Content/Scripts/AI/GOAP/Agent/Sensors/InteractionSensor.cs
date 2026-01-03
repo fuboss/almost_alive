@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
@@ -13,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private float _checkInterval = 0.2f;
 
     private readonly HashSet<ActorDescription> _candidates = new();
-    private readonly HashSet<ActorDescription> _visible = new();
+    [ShowInInspector] private readonly HashSet<ActorDescription> _visible = new();
     private float _timer;
     private SphereCollider _trigger;
 

@@ -17,7 +17,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private CountdownTimer _statsTimer;
     private GameObject _target;
     private AgentBody _agentBody;
-    private GameObject _transientTarget;
+    [ShowInInspector, ReadOnly] private GameObject _transientTarget;
 
     private void Awake() {
       RefreshLinks();
@@ -45,14 +45,14 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public new Rigidbody rigidbody { get; private set; }
 
     public AnimationController animationController { get; private set; }
-    
+
     public AgentInventory inventory => _inventory;
 
     public GameObject transientTarget {
       get => _transientTarget;
       set {
         if (_transientTarget == value) return;
-        Debug.LogError($"TransientTarget set {(value != null ? value.name : "null")} on agent {name}", gameObject);
+        Debug.Log($"TransientTarget set {(value != null ? value.name : "null")} on agent {name}", gameObject);
         _transientTarget = value;
       }
     }

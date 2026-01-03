@@ -31,6 +31,10 @@ namespace Content.Scripts.AI.GOAP {
 #endif
       return l;
     }
+
+    public static List<string> GetTags() {
+      return Tag.ALL_TAGS.ToList();
+    }
   }
 }
 

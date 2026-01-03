@@ -1,13 +1,20 @@
 using System;
+using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Stats;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class MoveStrategy : IActionStrategy {
+  public class MoveStrategy : AgentStrategy {
     [SerializeField] public MemorySearcher targetFromMemory;
     public bool updateDestinationContinuously = false;
+
+    public List<PerTickStatChange> statPerTick = new() {
+      new PerTickStatChange() { statType = StatType.HUNGER, delta = -0.1f },
+    };
 
     private IGoapAgent _agent;
     private Func<Vector3> _destination;
@@ -27,11 +34,16 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
 
-    public bool canPerform => !complete;
-    public bool complete => _aborted || _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+    public override bool canPerform => !complete;
+
+    public override bool complete {
+      get => _aborted || _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+      internal set { }
+    }
+
     private bool _aborted;
 
-    public void OnStart() {
+    public override void OnStart() {
       _aborted = false;
 
       if (targetFromMemory != null) {
@@ -46,6 +58,13 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       }
 
       UpdateAgentDestination();
+      ApplyPerStatTick();
+    }
+
+    private void ApplyPerStatTick(float multiplier = 1f) {
+      foreach (var change in statPerTick) {
+        _agent.body.AdjustStatPerTickDelta(change.statType, multiplier * change.delta);
+      }
     }
 
     public MoveStrategy SetDestination(MemorySnapshot snapshot) {
@@ -65,18 +84,20 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       }
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       _agent.navMeshAgent.ResetPath();
       if (_targetSnapshot != null) {
         _agent.transientTarget = _targetSnapshot.target;
       }
+
+      ApplyPerStatTick(-1);
 
       _destination = null;
       _targetSnapshot = null;
     }
 
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       //todo: use cooldown to avoid updating every frame
       if (updateDestinationContinuously) {
         UpdateAgentDestination();
@@ -95,7 +116,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       var dest = _destination;
       if (targetFromMemory != null) {
         dest = targetFromMemory.Search(agent);

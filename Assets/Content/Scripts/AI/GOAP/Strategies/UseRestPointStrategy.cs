@@ -8,33 +8,34 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class UseRestPointStrategy : IActionStrategy {
+  public class UseRestPointStrategy : AgentStrategy {
     public float useDuration = 10;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
     private CountdownTimer _timer;
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new UseRestPointStrategy(agent) {
         useDuration = useDuration
       };
     }
 
+    public UseRestPointStrategy(){}
     public UseRestPointStrategy(IGoapAgent agent) {
       _agent = agent;
       _animations = _agent.animationController;
     }
 
-    public bool canPerform => !complete && _agent.transientTarget != null;
-    public bool complete { get; private set; }
+    public override bool canPerform => !complete && _agent.transientTarget != null;
+
+    public override bool complete { get; internal set; }
 
     public GameObject target { get; private set; }
 
-    public void OnStart() {
+    public override void OnStart() {
       IniTimer();
 
       _timer.Start();
-      _animations.Eat();
       _agent.body.SetResting(true);
 
       target = _agent.transientTarget;
@@ -47,11 +48,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private void ApplyPerStatTick(float multiplier = 1f) {
       var descriptor = target.GetComponent<ActorDescription>();
       if (descriptor == null) return;
-      var perTick = descriptor.descriptionData.onUseAddStatPerTick;
-      if (perTick == null) return;
-      foreach (var change in perTick) {
-        _agent.body.AdjustStatPerTickDelta(change.statType, multiplier * change.delta);
-      }
+      _agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
 
     private void IniTimer() {
@@ -62,7 +59,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.OnTimerStop += () => complete = true;
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       //discard per-tick stat changes
       ApplyPerStatTick(-1);
 
@@ -71,7 +68,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer?.Dispose();
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer.Tick();
 
       if (_agent.transientTarget == null) {

@@ -7,11 +7,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
   // TODO Migrate Strategies, Beliefs, Actions and Goals to Scriptable Objects and create Node Editor for them
 
   [Serializable]
-  public class IdleStrategy : IActionStrategy {
+  public class IdleStrategy : AgentStrategy {
     public float duration;
     private CountdownTimer _timer;
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new IdleStrategy(duration);
     }
 
@@ -29,10 +29,10 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.OnTimerStop += () => complete = true;
     }
 
-    public bool canPerform => true; // Agent can always Idle
-    public bool complete { get; private set; }
+    public override bool canPerform => true; // Agent can always Idle
+    public override bool complete { get; internal set; }
 
-    public void OnStart() {
+    public override void OnStart() {
       if (_timer == null) {
         InitTimer(duration);
       }
@@ -40,7 +40,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer!.Start();
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
   }

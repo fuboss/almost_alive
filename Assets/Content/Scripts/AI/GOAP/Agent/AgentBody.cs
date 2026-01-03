@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Content.Scripts.AI.GOAP.Agent.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -38,19 +39,26 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void AdjustStatPerTickDelta(StatType statName, float delta) {
-      Debug.Log($"try AdjustStatPerTick {statName} {delta}", this);
+      Debug.LogWarning($"try AdjustStatPerTick {statName} {delta}", this);
       if (!_perTickDelta.TryAdd(statName, delta)) {
         _perTickDelta[statName] += delta;
+      }
+    }
+
+    public void AdjustStatPerTickDelta(List<PerTickStatChange> statsChange, float multiplier = 1f) {
+      if (statsChange == null) return;
+      foreach (var change in statsChange.Where(change => change != null)) {
+        AdjustStatPerTickDelta(change.statType, change.delta * multiplier);
       }
     }
 
     public void SetPerTickDelta(StatType statName, float delta) {
       _perTickDelta[statName] = delta;
     }
-    
+
 
     public void SetResting(bool isResting) {
-      Debug.LogError($"isResting: {isResting}", this);
+      Debug.LogError($"BODY isResting: {isResting}", this);
     }
   }
 }

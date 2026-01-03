@@ -28,7 +28,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
     public bool AreAllPreconditionsMet(IGoapAgent agent)
       => preconditions.All(precondition => {
         var result = precondition.Evaluate(agent);
-        if (!result) Debug.LogWarning($"{precondition.name} failed", agent.body);
+        if (!result) Debug.LogWarning($"{name} {precondition.name} failed", agent.body);
         return result;
       });
 

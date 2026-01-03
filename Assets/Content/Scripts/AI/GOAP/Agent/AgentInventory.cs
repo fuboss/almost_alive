@@ -57,6 +57,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (tags == null || tags.Length == 0) {
         return false;
       }
+
       foreach (var slot in occupiedSlots) {
         if (!slot.item.HasAllTags(tags)) continue;
         foundSlot = slot;
@@ -110,7 +111,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       item = actorDescription;
       stackData = item.GetStackData();
 
-      Debug.LogError($"{actorDescription.name} put in slot {index}", _root);
+      Debug.Log($"[Inventory]{actorDescription.name} put in slot {index}", _root);
       return true;
     }
 
@@ -124,7 +125,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       item = null;
       stackData = null;
 
-      Debug.LogError($"slot {index} released", _root);
+      Debug.Log($"[Inventory]slot {index} released", _root);
       return true;
     }
 

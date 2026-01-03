@@ -14,7 +14,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public int lookupForCountInMemory = 1;
     public Func<bool> stopCondition;
 
-    public override bool complete => base.complete || (stopCondition != null && stopCondition.Invoke());
+    public override bool complete {
+      get => base.complete || (stopCondition != null && stopCondition.Invoke());
+      internal set {
+      }
+    }
 
     public override void OnStart() {
       base.OnStart();
@@ -24,7 +28,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
 
   [Serializable]
-  public class WanderStrategy : IActionStrategy {
+  public class WanderStrategy : AgentStrategy {
     [MinMaxSlider(1, 20)] public Vector2Int visitPointsMinMax = new(2, 5);
     public int navMeshSamples = 5;
     public float defaultWanderRadius = 10f;
@@ -32,7 +36,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     protected IGoapAgent _agent;
     private Func<float> _wanderRadius;
-    private int _visitedPoints;
+    private int _visitedPoints= -1;
     private bool _aborted;
     private int _randPointsCount;
 
@@ -50,14 +54,18 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       return this;
     }
 
-    public bool canPerform => !complete;
-    public virtual bool complete => IsOnDesiredPosition() && _visitedPoints >= _randPointsCount;
+    public override bool canPerform => !complete;
+    public override bool complete {
+      get => _visitedPoints >= _randPointsCount && IsOnDesiredPosition();
+      internal set {
+      }
+    }
 
     private bool IsOnDesiredPosition() {
       return _agent.navMeshAgent.remainingDistance <= 1f && !_agent.navMeshAgent.pathPending;
     }
 
-    public virtual void OnStart() {
+    public override void OnStart() {
       _visitedPoints = 0;
       _randPointsCount = Random.Range(visitPointsMinMax.x, visitPointsMinMax.y + 1);
       _agent.navMeshAgent.SetDestination(PickNextWanderPosition());
@@ -78,7 +86,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       return targetPosition;
     }
 
-    public void OnUpdate(float delta) {
+    public override void OnUpdate(float delta) {
       if (IsOnDesiredPosition()) {
         _visitedPoints++;
         _agent.navMeshAgent.SetDestination(PickNextWanderPosition());
@@ -87,11 +95,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       //todo: adjust different stats like hunger, fun, ets
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       Debug.Log("WanderStrategy:Stop", _agent.navMeshAgent);
+      _visitedPoints = -1;
     }
 
-    public IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgent agent) {
       return new WanderStrategy(agent, null);
     }
   }

@@ -169,7 +169,16 @@ MonoBehaviour:
   _descriptionData:
     tags:
     - REST
+    isInventoryItem: 0
+    rememberDuration: 1200
     onUseAddStats: []
     onUseAddStatPerTick:
     - statType: 2
-      delta: -1.5
+      delta: -15
+    stackData:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
