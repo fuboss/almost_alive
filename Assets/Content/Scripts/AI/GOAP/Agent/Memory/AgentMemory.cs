@@ -36,6 +36,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
       snapshot.lastUpdateTime = snapshot.creationTime;
       _memory.Add(snapshot);
       AddToIndex(snapshot);
+      // if (snapshot.tags.Contains("FOOD") && snapshot.target != null) {
+      //   Debug.LogError($"FOOD remembered: {snapshot.target.name}", snapshot.target);
+      // }
+
       return RememberResult.NewMemory;
     }
 

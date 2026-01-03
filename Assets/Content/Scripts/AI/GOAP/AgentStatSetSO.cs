@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -19,5 +20,9 @@ namespace Content.Scripts.AI.GOAP {
       { StatType.SLEEP, -0.7f },
       { StatType.TOILET, 0.25f }
     };
+
+    public List<AgentStat> GetDefaultStats() {
+      return defaultStat.Select(ds=> ds.Clone()).ToList<AgentStat>();
+    }
   }
 }

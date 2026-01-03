@@ -21,12 +21,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public bool canPerform => true; // Agent can always attack
     public bool complete { get; private set; }
 
-    public void Start() {
+    public void OnStart() {
       _timer.Start();
       // _animations.Attack();
     }
 
-    public void Update(float deltaTime) {
+    public void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
 

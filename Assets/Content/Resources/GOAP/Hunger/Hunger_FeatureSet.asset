@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec80fd63ae24623a83843bf5c46baf3, type: 3}
+  m_Name: Hunger_FeatureSet
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.GoatFeatureSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  goals:
+  - {fileID: 11400000, guid: 5b8dcdde23370452d8c6482482eb529e, type: 2}
+  - {fileID: 11400000, guid: f37b924f578ba4e1d96652cff1a1e20a, type: 2}
+  beliefs:
+  - {fileID: 11400000, guid: cd442fbf9b9ef445e96b7f6b7e8e92dd, type: 2}
+  - {fileID: 11400000, guid: 797efcd3aee694057a81c14eff826846, type: 2}
+  - {fileID: 11400000, guid: 16840b1e7bed54c188ccf7fb8abc4000, type: 2}
+  - {fileID: 11400000, guid: d6fdaa72850114e8f859564cc4af86d5, type: 2}
+  - {fileID: 11400000, guid: 318615cd121044cc887da62973b482da, type: 2}
+  actionDatas:
+  - {fileID: 11400000, guid: e3b6a12495bcb4a98a550bef2117060f, type: 2}
+  - {fileID: 11400000, guid: 9ad6e9db7129146ebbe6a87aa7480d7a, type: 2}
+  - {fileID: 11400000, guid: 955332a717685468b887f55e3df6c608, type: 2}

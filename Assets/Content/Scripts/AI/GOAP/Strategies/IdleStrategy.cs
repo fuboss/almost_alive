@@ -32,7 +32,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public bool canPerform => true; // Agent can always Idle
     public bool complete { get; private set; }
 
-    public void Start() {
+    public void OnStart() {
       if (_timer == null) {
         InitTimer(duration);
       }
@@ -40,7 +40,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer!.Start();
     }
 
-    public void Update(float deltaTime) {
+    public void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
   }

@@ -16,9 +16,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public Vector3 nextPosition => navMeshAgent.nextPosition;
 
     public AgentBelief GetBelief(string beliefName) {
-      return agentBrain.beliefsController.Get(beliefName);
+      return agentBrain.Get(beliefName);
     }
 
     public bool isMoving => navMeshAgent.velocity.sqrMagnitude > 0.01f && navMeshAgent.hasPath;
+    GameObject transientTarget { get; set; } 
   }
 }

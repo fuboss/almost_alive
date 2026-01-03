@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ec80fd63ae24623a83843bf5c46baf3, type: 3}
+  m_Name: Common_FeatureSet
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.GoatFeatureSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  goals:
+  - {fileID: 11400000, guid: 19b398a06765d43439fd68af1fa9cdd3, type: 2}
+  - {fileID: 11400000, guid: 482d13f78039e498bae2b05bef160dea, type: 2}
+  beliefs:
+  - {fileID: 11400000, guid: 39a97615b6dc04e1aa42ba3afd80f5d8, type: 2}
+  - {fileID: 11400000, guid: 7b20efe77c1644a78aaa062b7f6ce265, type: 2}
+  - {fileID: 11400000, guid: 49fb57e4ac47346e78fa009fa8dc1de8, type: 2}
+  - {fileID: 11400000, guid: 32448c022682645d39f0d0d456bd68d6, type: 2}
+  - {fileID: 11400000, guid: c4f9e8b7e76824efbbdcda892d557375, type: 2}
+  actionDatas:
+  - {fileID: 11400000, guid: c9ad071cfc64c4aa48140be1ba291f3f, type: 2}
+  - {fileID: 11400000, guid: 0f6b4a76c33c44d4ebc659a9c8dfe4b4, type: 2}

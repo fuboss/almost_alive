@@ -30,7 +30,7 @@ namespace Content.Scripts.AI.GOAP.Stats {
       _type = type;
     }
 
-    public virtual T Value {
+    public virtual T value {
       get => _value;
       set {
         if (_value.Equals(value)) return;
@@ -40,7 +40,7 @@ namespace Content.Scripts.AI.GOAP.Stats {
     }
 
 
-    public virtual T MaxValue {
+    public virtual T maxValue {
       get => _maxValue;
       set {
         if (_maxValue.Equals(value)) return;

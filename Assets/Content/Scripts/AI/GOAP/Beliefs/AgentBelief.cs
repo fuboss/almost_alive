@@ -1,17 +1,23 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
   public class AgentBelief {
-    public string name;
-    protected Func<bool> _condition = () => false;
-    private Func<Vector3> _observedLocation = () => Vector3.zero;
-    public Vector3 Location => _observedLocation();
+    [ReadOnly] public string name;
+
+    internal Func<bool> _condition = () => false;
 
     public virtual bool Evaluate(IGoapAgent agent) {
-      return _condition();
+      var evaluate = _condition != null && _condition();
+      Debug.Log($"{ToString()} evaluate {evaluate}");
+      return evaluate;
+    }
+
+    public override string ToString() {
+      return $"{GetType().Name}";
     }
 
     public class Builder {
@@ -26,14 +32,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
         return this;
       }
 
-      public Builder WithLocation(Func<Vector3> observedLocation) {
-        _belief._observedLocation = observedLocation;
-        return this;
-      }
-
       public AgentBelief Build() {
         return _belief;
       }
+    }
+
+    public virtual AgentBelief Copy(IGoapAgent agent) {
+      return new AgentBelief { _condition = _condition, name = name };
     }
   }
 }

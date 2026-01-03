@@ -8,7 +8,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
   [CreateAssetMenu(fileName = "Goal", menuName = "GOAP/Goal", order = 0)]
   public class GoalSO : SerializedScriptableObject {
     public int defaultPriority = 1;
-    public List<string> desiredEffects = new();
+    [ValueDropdown("GetEffectNames")] public List<string> desiredEffects = new();
 
     public AgentGoal Get(IGoapAgent agent) {
       var builder = new AgentGoal.Builder(name)
@@ -17,5 +17,10 @@ namespace Content.Scripts.AI.GOAP.Goals {
 
       return builder.Build();
     }
+#if UNITY_EDITOR
+    public List<string> GetEffectNames() {
+      return GOAPEditorHelper.GetBeliefsNames();
+    }
+#endif
   }
 }

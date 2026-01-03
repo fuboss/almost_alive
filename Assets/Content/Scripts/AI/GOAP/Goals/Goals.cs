@@ -10,6 +10,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
   public class AgentGoal {
     [SerializeField] private string _name;
     [SerializeField] private float _priority;
+    [SerializeField] private HashSet<AgentBelief> _desiredEffects = new();
 
     private AgentGoal(string name) {
       Name = name;
@@ -25,7 +26,10 @@ namespace Content.Scripts.AI.GOAP.Goals {
       private set => _priority = value;
     }
 
-    public HashSet<AgentBelief> DesiredEffects { get; } = new();
+    public HashSet<AgentBelief> desiredEffects {
+      get => _desiredEffects;
+      set => _desiredEffects = value;
+    }
 
     public class Builder {
       private readonly AgentGoal _goal;
@@ -40,17 +44,17 @@ namespace Content.Scripts.AI.GOAP.Goals {
       }
 
       public Builder WithDesiredEffect(AgentBelief effect) {
-        _goal.DesiredEffects.Add(effect);
+        _goal.desiredEffects.Add(effect);
         return this;
       }
 
       public Builder WithDesiredEffects(IEnumerable<AgentBelief> effect) {
-        _goal.DesiredEffects.AddRange(effect);
+        _goal.desiredEffects.AddRange(effect);
         return this;
       }
 
       public AgentGoal Build() {
-        if (_goal.DesiredEffects.Count == 0) {
+        if (_goal.desiredEffects.Count == 0) {
           Debug.LogError($"{_goal.Name} has no desired effects defined!");
         }
 

@@ -1,7 +1,10 @@
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent.Descriptors {
   public class ActorDescription : SerializedMonoBehaviour {
-    public DescriptionData descriptionData;
+    [SerializeField] private DescriptionData _descriptionData;
+
+    public DescriptionData descriptionData => _descriptionData;
   }
 }

@@ -28,14 +28,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
         .Build());
     }
     
-    public void AddSensorBelief(string key, SimpleSensor sensor) {
+    public void AddInteractSensorBelief(string key, SimpleSensor sensor) {
       _beliefs.Add(key, new AgentBelief.Builder(key)
         .WithCondition(() => sensor.IsTargetInRange)
-        .WithLocation(() => sensor.TargetPosition)
         .Build());
     }
     
-    public void AddVisionBelief(string key, string[] tags) {
+    public void AddVisionSensorBelief(string key, string[] tags) {
       var sensor = _agent.agentBrain.visionSensor;
       _beliefs.Add(key, new AgentBelief.Builder(key)
         .WithCondition(() => sensor.HasObjectsWithTagsInView(tags))
@@ -43,16 +42,16 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
         .Build());
     }
 
-    public void AddLocationBelief(string key, float distance, Transform locationCondition) {
-      AddLocationBelief(key, distance, locationCondition.position);
-    }
-
-    public void AddLocationBelief(string key, float distance, Vector3 locationCondition) {
-      _beliefs.Add(key, new AgentBelief.Builder(key)
-        .WithCondition(() => InRangeOf(locationCondition, distance))
-        .WithLocation(() => locationCondition)
-        .Build());
-    }
+    // public void AddLocationBelief(string key, float distance, Transform locationCondition) {
+    //   AddLocationBelief(key, distance, locationCondition.position);
+    // }
+    //
+    // public void AddLocationBelief(string key, float distance, Vector3 locationCondition) {
+    //   _beliefs.Add(key, new AgentBelief.Builder(key)
+    //     .WithCondition(() => InRangeOf(locationCondition, distance))
+    //     .WithLocation(() => locationCondition)
+    //     .Build());
+    // }
 
     private bool InRangeOf(Vector3 pos, float range) {
       return Vector3.Distance(_agent.position, pos) < range;

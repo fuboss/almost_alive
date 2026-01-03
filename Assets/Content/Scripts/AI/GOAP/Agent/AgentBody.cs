@@ -6,12 +6,7 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   public class AgentBody : SerializedMonoBehaviour {
-    [SerializeField] private List<AgentStat> _stats = new() {
-      new FloatAgentStat(StatType.HUNGER, 100f, 100f),
-      new FloatAgentStat(StatType.FATIGUE, 0f, 100f),
-      new FloatAgentStat(StatType.SLEEP, 100f, 100f),
-      new FloatAgentStat(StatType.TOILET, 0f, 100f)
-    };
+    [SerializeField] private List<AgentStat> _stats = new();
 
     [ShowInInspector] private Dictionary<StatType, float> _perTickDelta = new();
 
@@ -20,10 +15,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void Initialize(IGoapAgent agent) {
       _agent = agent;
       _perTickDelta ??= new Dictionary<StatType, float>();
-      
-      _stats = _agent.defaultStatSet.defaultStat
-        .Cast<AgentStat>()
-        .ToList();
+
+      _stats = _agent.defaultStatSet.GetDefaultStats();
     }
 
     public void TickStats(float deltaTime) {
@@ -35,7 +28,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         }
 
         if (_perTickDelta.TryGetValue(floatStat.type, out var delta)) {
-          floatStat.Value = Mathf.Clamp(floatStat.Value + delta * deltaTime, 0f, floatStat.MaxValue);
+          floatStat.value = Mathf.Clamp(floatStat.value + delta * deltaTime, 0f, floatStat.maxValue);
         }
       }
     }
@@ -45,6 +38,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void AdjustStatPerTickDelta(StatType statName, float delta) {
+      Debug.Log($"try AdjustStatPerTick {statName} {delta}", this);
       if (!_perTickDelta.TryAdd(statName, delta)) {
         _perTickDelta[statName] += delta;
       }
@@ -53,12 +47,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void SetPerTickDelta(StatType statName, float delta) {
       _perTickDelta[statName] = delta;
     }
+    
 
-    public void ConsumeFood(float value) {
-      if (GetStat(StatType.HUNGER) is FloatAgentStat hungerStat) {
-        hungerStat.Value += 15f;
-        Debug.LogError($"AgentBody: Consumed food, new hunger value: {hungerStat.Value}({hungerStat.Normalized})");
-      }
+    public void SetResting(bool isResting) {
+      Debug.LogError($"isResting: {isResting}", this);
     }
   }
 }

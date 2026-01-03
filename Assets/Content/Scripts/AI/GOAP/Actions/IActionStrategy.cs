@@ -5,15 +5,15 @@ namespace Content.Scripts.AI.GOAP.Actions {
     bool canPerform { get; }
     bool complete { get; }
 
-    void Start() {
+    void OnStart() {
       // noop
     }
 
-    void Update(float deltaTime) {
+    void OnUpdate(float deltaTime) {
       // noop
     }
 
-    void Stop() {
+    void OnStop() {
       // noop
     }
 

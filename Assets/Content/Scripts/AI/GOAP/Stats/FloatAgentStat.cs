@@ -3,9 +3,35 @@ using System;
 namespace Content.Scripts.AI.GOAP.Stats {
   [Serializable]
   public class FloatAgentStat : AgentStat<float> {
-    public override float Normalized => MaxValue == 0f ? 0f : Value / MaxValue;
-    public FloatAgentStat(StatType name, float initialValue, float maxValue) 
-      : base(name, initialValue, maxValue) {
+    public override float Normalized => maxValue == 0f ? 0f : value / maxValue;
+    public FloatAgentStat(StatType type, float initialValue, float maxValue) 
+      : base(type, initialValue, maxValue) {
+    }
+
+    public Data GetData() {
+      return new Data {
+        statType = type,
+        minValue = value,
+        maxValue = maxValue
+      };
+    }
+    [Serializable]
+    public class Data {
+      public StatType statType;
+      public float minValue;
+      public float maxValue;
+
+      public Data Copy() {
+        return new Data() {
+          minValue = minValue,
+          maxValue = maxValue,
+          statType = statType
+        };
+      }
+    }
+
+    public FloatAgentStat Clone() {
+      return new FloatAgentStat(type, value, maxValue);
     }
   }
 }

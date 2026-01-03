@@ -67,7 +67,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.VisionSensor
   _detectionRadius: 7
-  _fieldOfViewAngle: 90
+  _fieldOfViewAngle: 120
   _checkInterval: 0.2
   _drawInGameView: 1
   _drawGizmos: 0
@@ -84,7 +84,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3571428584125765354}
-  - component: {fileID: 1018863174855730251}
   - component: {fileID: 9167206683187934627}
   m_Layer: 0
   m_Name: Brain
@@ -110,48 +109,6 @@ Transform:
   - {fileID: 9183937351687052308}
   m_Father: {fileID: 2179949752209691751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1018863174855730251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4352278873515701977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc50c5b154e041a6a5fb654e3e69f6b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.BrainBeliefsController
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes:
-    - Name: beliefs
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Beliefs.AgentBelief,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-  _agentBrain: {fileID: 9167206683187934627}
 --- !u!114 &9167206683187934627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,9 +136,31 @@ MonoBehaviour:
     - Name: goals
       Entry: 6
       Data: 
-  _chaseSensor: {fileID: 1859987891189598933}
+    - Name: beliefs
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Beliefs.AgentBelief,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  availableFeatures:
+  - Common_FeatureSet
+  - Hunger_FeatureSet
+  _interactSensor: {fileID: 8637377573354149225}
   _visionSensor: {fileID: 4901184440295357167}
-  beliefsController: {fileID: 1018863174855730251}
 --- !u!1 &4569093495672454940
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,9 +421,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2442764051163762505}
   - component: {fileID: 4210817382788346227}
-  - component: {fileID: 1859987891189598933}
+  - component: {fileID: 8637377573354149225}
   m_Layer: 0
-  m_Name: ChaseSensor
+  m_Name: InteractSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -459,7 +438,7 @@ Transform:
   m_GameObject: {fileID: 8152361966992903976}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.54, z: 0.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -480,13 +459,13 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1859987891189598933
+--- !u!114 &8637377573354149225
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -495,11 +474,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8152361966992903976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c0c3d9327d431dba6a170a2f8a0a26, type: 3}
+  m_Script: {fileID: 11500000, guid: fdc3f6c4954e452581e872faf2e3b947, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.Sensor
-  _detectionRadius: 5
-  _timerInterval: 1
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.InteractionSensor
+  _detectionRadius: 1.5
+  _checkInterval: 0.2
 --- !u!1001 &4594903380522952517
 PrefabInstance:
   m_ObjectHideFlags: 0

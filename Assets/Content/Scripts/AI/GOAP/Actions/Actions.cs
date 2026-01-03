@@ -4,11 +4,13 @@ using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Beliefs;
 using JetBrains.Annotations;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Actions {
+  [Serializable]
   public class AgentAction {
-    private AgentActionData _data;
+    [ShowInInspector] private AgentActionData _data;
     public float cost = 1f;
 
     private AgentAction(string name) {
@@ -20,33 +22,28 @@ namespace Content.Scripts.AI.GOAP.Actions {
       };
     }
 
-    public AgentAction() {
-      _data = new AgentActionData {
-        name = string.Empty,
-        effects = new List<string>(),
-        preconditions = new List<string>()
-      };
-    }
-
-
-    public string name { get; }
+    [ShowInInspector] public string name { get; }
     public bool complete => _data.strategy.complete;
 
     public bool AreAllPreconditionsMet(IGoapAgent agent)
-      => preconditions.All(precondition => precondition.Evaluate(agent));
+      => preconditions.All(precondition => {
+        var result = precondition.Evaluate(agent);
+        if (!result) Debug.LogWarning($"{precondition.name} failed", agent.body);
+        return result;
+      });
 
-    public HashSet<AgentBelief> effects { get; set; }
-    public HashSet<AgentBelief> preconditions { get; set; }
+    [ShowInInspector] public HashSet<AgentBelief> effects { get; set; }
+    [ShowInInspector] public HashSet<AgentBelief> preconditions { get; set; }
     public IGoapAgent agent { get; set; }
 
     public void OnStart() {
-      Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} starting.");
-      _data.strategy.Start();
+      // Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} starting.");
+      _data.strategy.OnStart();
     }
 
     public void OnUpdate(float deltaTime) {
       // Check if the action can be performed and update the strategy
-      if (_data.strategy.canPerform) _data.strategy.Update(deltaTime);
+      if (_data.strategy.canPerform) _data.strategy.OnUpdate(deltaTime);
 
       // Bail out if the strategy is still executing
       if (!_data.strategy.complete) return;
@@ -60,8 +57,8 @@ namespace Content.Scripts.AI.GOAP.Actions {
     }
 
     public void OnStop() {
-      Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} stopped.");
-      _data.strategy.Stop();
+      // Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} stopped.");
+      _data.strategy.OnStop();
     }
 
     public class Builder {

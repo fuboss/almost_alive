@@ -17,14 +17,11 @@ namespace Content.Scripts.AI.GOAP.Planning {
   public class GOAPPlanner : IGoapPlanner {
     public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       // Order goals by priority, descending
-      var orderedGoals = goals
-        .Where(g => g.DesiredEffects.Any(b => !b.Evaluate(agent)))
-        .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 0.01 : g.Priority)
-        .ToList();
+      var orderedGoals = GetOrderedGoals(agent, goals, mostRecentGoal);
 
       // Try to solve each goal in order
       foreach (var goal in orderedGoals) {
-        var goalNode = new PlannerNode(null, null, goal.DesiredEffects, 0);
+        var goalNode = new PlannerNode(null, null, goal.desiredEffects, 0);
 
         // If we can find a path to the goal, return the plan
         if (!FindPath(goalNode, agent, agent.agentBrain.actions)) continue;
@@ -39,11 +36,38 @@ namespace Content.Scripts.AI.GOAP.Planning {
           actionStack.Push(cheapestLeaf.Action);
         }
 
-        return new ActionPlan(goal, actionStack, goalNode.Cost);
+        var newPlan = new ActionPlan(goal, actionStack, goalNode.Cost);
+        Debug.Log(
+          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.TotalCost}. {newPlan.Actions.Count} actions in plan.\n" +
+          $"goals: {string.Join(",", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}");
+        return newPlan;
       }
 
       Debug.LogWarning("No plan found");
       return null;
+    }
+
+    private static List<AgentGoal>
+      GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal) {
+      var orderedGoals = goals
+        .Where(g => g != null && g.desiredEffects.Any(b => {
+          if (b == null) {
+            Debug.LogError($"goal '{g.Name}' has a null desired effect!");
+            return false;
+          }
+
+          try {
+            return !b.Evaluate(agent);
+          }
+          catch (Exception e) {
+            Debug.LogException(e, agent.agentBrain);
+          }
+
+          return false;
+        }))
+        .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 0.5 : g.Priority)
+        .ToList();
+      return orderedGoals;
     }
 
     public async UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals,
@@ -56,7 +80,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
     // TODO: Consider a more powerful search algorithm like A* or D*
     private static bool FindPath(PlannerNode parent, IGoapAgent agent, HashSet<AgentAction> actions) {
       // Order actions by cost, ascending
-      var orderedActions = actions.OrderBy(a => a.cost);
+      var orderedActions = actions.OrderBy(a => a.cost).ToList();
 
       foreach (var action in orderedActions) {
         var requiredEffects = parent.RequiredEffects;

@@ -16,7 +16,7 @@ namespace Content.Scripts.Core {
       //Debug.Log("AI INSTALLER");
 
       builder.AddSingleton(new GoapPlanFactory());
-      builder.AddSingleton(GoalsBankModule.GetFromResources());
+      builder.AddSingleton(GoatFeatureBankModule.GetFromResources());
       builder.AddSingleton(new AgentFactory(agentPrefab));
     }
 

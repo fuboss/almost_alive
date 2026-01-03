@@ -11,6 +11,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     private IGoapAgent _agent;
     private Func<Vector3> _destination;
+    private MemorySnapshot _targetSnapshot;
 
     public MoveStrategy() {
     }
@@ -25,34 +26,35 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _destination = () => snapshot().location;
     }
 
-    public MoveStrategy SetAgent(IGoapAgent agent) {
-      _agent = agent;
-      return this;
-    }
-
-    public MoveStrategy SetDestination(Func<Vector3> destination) {
-      _destination = destination;
-      return this;
-    }
-
-    public MoveStrategy SetDestination(Func<MemorySnapshot> snapshot) {
-      _destination = () => snapshot().location;
-      return this;
-    }
 
     public bool canPerform => !complete;
-    public bool complete => _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+    public bool complete => _aborted || _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+    private bool _aborted;
 
-    public void Start() {
-      if (_destination == null && targetFromMemory != null) {
+    public void OnStart() {
+      _aborted = false;
+
+      if (targetFromMemory != null) {
         var targetMem = targetFromMemory.GetNearest(_agent);
-        if (targetMem != null) {
-          _destination = () => targetMem.location;
+        if (targetMem == null) {
+          Debug.LogError("Failed to get nearestTarget from memory");
+          _aborted = true;
+          return;
         }
+
+        SetDestination(targetMem);
       }
 
       UpdateAgentDestination();
     }
+
+    public MoveStrategy SetDestination(MemorySnapshot snapshot) {
+      _targetSnapshot = snapshot;
+      _destination = () => _targetSnapshot.location;
+
+      return this;
+    }
+
 
     private void UpdateAgentDestination() {
       if (_destination != null) {
@@ -63,20 +65,39 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       }
     }
 
-    public void Stop() {
+    public void OnStop() {
       _agent.navMeshAgent.ResetPath();
+      if (_targetSnapshot != null) {
+        _agent.transientTarget = _targetSnapshot.target;
+      }
+
+      _destination = null;
+      _targetSnapshot = null;
     }
 
-    public void Update(float deltaTime) {
+
+    public void OnUpdate(float deltaTime) {
       //todo: use cooldown to avoid updating every frame
       if (updateDestinationContinuously) {
         UpdateAgentDestination();
       }
     }
 
+
+    public MoveStrategy SetAgent(IGoapAgent agent) {
+      _agent = agent;
+      return this;
+    }
+
+    public MoveStrategy SetDestination(Func<Vector3> destination) {
+      _destination = destination;
+      return this;
+    }
+
+
     public IActionStrategy Create(IGoapAgent agent) {
       var dest = _destination;
-      if (dest == null && targetFromMemory != null) {
+      if (targetFromMemory != null) {
         dest = targetFromMemory.Search(agent);
       }
 

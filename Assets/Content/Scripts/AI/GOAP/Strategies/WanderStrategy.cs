@@ -1,6 +1,7 @@
 using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityUtils;
@@ -8,13 +9,32 @@ using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
+  public class WanderUntilStrategy : WanderStrategy {
+    [SerializeField] public MemorySearcher targetFromMemory;
+    public int lookupForCountInMemory = 1;
+    public Func<bool> stopCondition;
+
+    public override bool complete => base.complete || (stopCondition != null && stopCondition.Invoke());
+
+    public override void OnStart() {
+      base.OnStart();
+      stopCondition = () => { return _agent.memory.GetWithAllTags(new[] { "FOOD" }).Length >= lookupForCountInMemory; };
+    }
+  }
+
+
+  [Serializable]
   public class WanderStrategy : IActionStrategy {
+    [MinMaxSlider(1, 20)] public Vector2Int visitPointsMinMax = new(2, 5);
     public int navMeshSamples = 5;
     public float defaultWanderRadius = 10f;
+    public bool debugWanderAroundCenter = true;
 
-    private IGoapAgent _agent;
+    protected IGoapAgent _agent;
     private Func<float> _wanderRadius;
-    private Vector3? _targetPosition;
+    private int _visitedPoints;
+    private bool _aborted;
+    private int _randPointsCount;
 
     public WanderStrategy() {
     }
@@ -22,33 +42,53 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public WanderStrategy(IGoapAgent agent, Func<float> wanderRadius, Vector3? targetPosition = null) {
       _agent = agent;
       _wanderRadius = wanderRadius;
-      _targetPosition = targetPosition;
     }
 
     public WanderStrategy Set(IGoapAgent agent, Func<float> wanderRadius, Vector3? targetPosition = null) {
       _agent = agent;
       _wanderRadius = wanderRadius;
-      _targetPosition = targetPosition;
       return this;
     }
 
     public bool canPerform => !complete;
-    public bool complete => _agent.navMeshAgent.remainingDistance <= 1f && !_agent.navMeshAgent.pathPending;
+    public virtual bool complete => IsOnDesiredPosition() && _visitedPoints >= _randPointsCount;
 
-    public void Start() {
+    private bool IsOnDesiredPosition() {
+      return _agent.navMeshAgent.remainingDistance <= 1f && !_agent.navMeshAgent.pathPending;
+    }
+
+    public virtual void OnStart() {
+      _visitedPoints = 0;
+      _randPointsCount = Random.Range(visitPointsMinMax.x, visitPointsMinMax.y + 1);
+      _agent.navMeshAgent.SetDestination(PickNextWanderPosition());
+    }
+
+    private Vector3 PickNextWanderPosition() {
       var radius = _wanderRadius?.Invoke() ?? defaultWanderRadius;
-      var targetPosition = _agent.position;
-      var agentPosition = _targetPosition ?? _agent.position;
+      var aroundPosition = !debugWanderAroundCenter ? _agent.position : Vector3.up;
+      var targetPosition = aroundPosition;
 
       for (var i = 0; i < navMeshSamples; i++) {
         var randomDirection = (Random.insideUnitSphere * radius).With(y: 0);
-        if (!NavMesh.SamplePosition(agentPosition + randomDirection, out var hit, radius, 1)) continue;
+        if (!NavMesh.SamplePosition(aroundPosition + randomDirection, out var hit, radius, 1)) continue;
         targetPosition = hit.position;
         break;
       }
 
+      return targetPosition;
+    }
 
-      _agent.navMeshAgent.SetDestination(targetPosition);
+    public void OnUpdate(float delta) {
+      if (IsOnDesiredPosition()) {
+        _visitedPoints++;
+        _agent.navMeshAgent.SetDestination(PickNextWanderPosition());
+//        Debug.Log($"WanderStrategy:VisitedPoints:{_visitedPoints}/{_randPointsCount}", _agent.navMeshAgent);
+      }
+      //todo: adjust different stats like hunger, fun, ets
+    }
+
+    public void OnStop() {
+      Debug.Log("WanderStrategy:Stop", _agent.navMeshAgent);
     }
 
     public IActionStrategy Create(IGoapAgent agent) {
