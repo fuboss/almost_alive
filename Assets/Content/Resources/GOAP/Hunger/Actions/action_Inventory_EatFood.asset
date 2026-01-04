@@ -25,7 +25,7 @@ MonoBehaviour:
     name: action_Inventory_EatFood
     cost: 1
     strategy:
-      rid: 365112705763246249
+      rid: 365112727136371072
     preconditions:
     - Inventory_HasFood
     effects:
@@ -34,10 +34,10 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 365112705763246249
-      type: {class: ConsumeFromInventoryStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112727136371072
+      type: {class: ConsumeFromInventoryStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Use, asm: Assembly-CSharp}
       data:
-        consumeDuration: 2
+        consumeDuration: 4
         tags:
         - FOOD
         count: 1

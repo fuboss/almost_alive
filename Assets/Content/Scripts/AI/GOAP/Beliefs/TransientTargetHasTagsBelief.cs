@@ -1,6 +1,7 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
+using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
+using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Sensors {
   [RequireComponent(typeof(SphereCollider))]
   public class InteractionSensor : MonoBehaviour {
     [SerializeField] private float _detectionRadius = 1.5f;

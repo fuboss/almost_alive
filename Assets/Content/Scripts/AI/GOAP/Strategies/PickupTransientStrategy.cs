@@ -1,8 +1,9 @@
 using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Animation;
+using Content.Scripts.Game;
 using ImprovedTimers;
 using UnityEngine;
 
@@ -37,7 +38,8 @@ namespace Content.Scripts.AI.GOAP.Strategies {
         : null;
       if (target == null) {
         complete = true;
-        Debug.LogError("Failed to pick up transient target, no ActorDescription found. Aborting PickupTransientStrategy");
+        Debug.LogError(
+          "Failed to pick up transient target, no ActorDescription found. Aborting PickupTransientStrategy");
         return;
       }
 
@@ -56,10 +58,8 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnStop() {
       if (_timer != null && _timer.IsFinished) {
-        if (target != null) {
-          if (_agent.inventory.TryPutItemInInventory(target)) {
-            UnityEngine.Debug.LogError($"{target.name} pickedUp!");
-          }
+        if (target != null && _agent.inventory.TryPutItemInInventory(target)) {
+          Debug.Log($"{target.name} pickedUp!");
         }
       }
 

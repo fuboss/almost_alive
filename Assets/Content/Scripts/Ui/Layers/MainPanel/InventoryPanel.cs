@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace Content.Scripts.Ui.Layers {
+namespace Content.Scripts.Ui.Layers.MainPanel {
   public class InventoryPanel : BaseInfoPanel {
   }
 }

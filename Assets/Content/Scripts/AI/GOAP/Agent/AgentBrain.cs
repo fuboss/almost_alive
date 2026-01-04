@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Actions;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.GOAP.Agent.Sensors;
 using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.AI.GOAP.Goals;
 using Content.Scripts.AI.GOAP.Planning;
-using Reflex.Attributes;
+using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using VContainer;
 using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Agent {
@@ -46,13 +48,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public ActionPlan actionPlan {
       get => _actionPlan;
-      set {
-        // Debug.Log(
-        //   value != null
-        //     ? $"New ActionPlane set: {value.AgentGoal.Name}::{string.Join(", ", value.Actions.Select(a => a.name))}"
-        //     : "NULL", this);
-        _actionPlan = value;
-      }
+      set => _actionPlan = value;
     }
 
     private IGoapPlanner _gPlanner;
@@ -156,7 +152,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _currentAction.OnStart();
       }
       else {
-        Debug.Log($"{_currentAction.name} Preconditions not met, clearing current action and goal", this);
+        Debug.Log($"[Brain] {_currentAction.name} Preconditions not met, clearing current action and goal", this);
         _lastGoal = _currentGoal;
         _currentAction = null;
         _currentGoal = null;
@@ -178,7 +174,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       }
 
       if (_gPlanner == null) {
-        Debug.LogError("Planner is null, cannot calculate plan", this);
+        Debug.LogError("[Brain] Planner is null, cannot calculate plan", this);
         return null;
       }
 
@@ -204,7 +200,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       var allActionsComplete = actionPlan.Actions.Count == 0;
       if (allActionsComplete) {
-        Debug.Log($"Plan {actionPlan.AgentGoal.Name} complete", this);
+        Debug.Log($"[Brain] Plan {actionPlan.AgentGoal.Name} complete", this);
         _lastGoal = _currentGoal;
         _currentGoal = null;
         actionPlan = null;
@@ -218,89 +214,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void SetupActions(List<AgentAction> array) {
       actions = new HashSet<AgentAction>(array);
-      Debug.Log($"Action created: {actions.Count}", this);
-
-      // actions.Add(new AgentAction.Builder("Relax")
-      //   .WithStrategy(new IdleStrategy(5))
-      //   .AddEffect(beliefsController.Get(AgentConstants.Nothing))
-      //   .WithCost(1)
-      //   .Build());
-
-      // actions.Add(new AgentAction.Builder("Wander Around")
-      //   .WithStrategy(new WanderStrategy(_agent, () => Random.value * 20f + 5f, Vector3.zero))
-      //   .AddEffect(beliefsController.Get(AgentConstants.Moving))
-      //   .WithCost(1)
-      //   .Build());
-      //
-      // actions.Add(new AgentAction.Builder("MoveToNearestFood")
-      //   .WithStrategy(
-      //     new MoveStrategy()
-      //       .SetAgent(_agent)
-      //       .SetDestination(() => memory.GetNearest(_agent.position, new[] { "FOOD" }, ms => ms.target != null))
-      //   )
-      //   .WithCost(2)
-      //   .AddPrecondition(beliefsController.Get("RemembersFoodNearby"))
-      //   .AddEffect(beliefsController.Get("AgentAtFood"))
-      //   .Build());
-
-      // actions.Add(new AgentAction.Builder("Eat")
-      //   .AddPrecondition(beliefsController.Get("AgentAtFood"))
-      //   //.AddPrecondition(beliefsController.Get("AgentSeeFood"))
-      //   .WithStrategy(new EatNearestStrategy(_agent))
-      //   .WithCost(1)
-      //   .AddEffect(beliefsController.Get("AgentIsNotHungry"))
-      //   .Build());
-
-      // actions.Add(new AgentAction.Builder("MoveToEatingPosition")
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _foodShack.position))
-      //   .AddEffect(beliefs["AgentAtFoodShack"])
-      //   .Build());
-
-      // actions.Add(new AgentAction.Builder("Eat")
-      //   .WithStrategy(new IdleStrategy(5)) // Later replace with a Command
-      //   .AddPrecondition(beliefs.Get("AgentAtFoodShack"))
-      //   .AddEffect(beliefs.Get("AgentIsHealthy"))
-      // .Build());
-
-      // actions.Add(new AgentAction.Builder("MoveToDoorOne")
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _doorOnePosition.position))
-      //   .AddEffect(beliefs["AgentAtDoorOne"])
-      //   .Build());
-      //
-      // actions.Add(new AgentAction.Builder("MoveToDoorTwo")
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _doorTwoPosition.position))
-      //   .AddEffect(beliefs["AgentAtDoorTwo"])
-      //   .Build());
-      //
-      // actions.Add(new AgentAction.Builder("MoveFromDoorOneToRestArea")
-      //   .WithCost(2)
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _restingPosition.position))
-      //   .AddPrecondition(beliefs["AgentAtDoorOne"])
-      //   .AddEffect(beliefs["AgentAtRestingPosition"])
-      //   .Build());
-      //
-      // actions.Add(new AgentAction.Builder("MoveFromDoorTwoRestArea")
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => _restingPosition.position))
-      //   .AddPrecondition(beliefs["AgentAtDoorTwo"])
-      //   .AddEffect(beliefs["AgentAtRestingPosition"])
-      //   .Build());
-
-      // actions.Add(new AgentAction.Builder("ChasePlayer")
-      //   .WithStrategy(new MoveStrategy(_agent.navMeshAgent, () => beliefsController.Get("PlayerInChaseRange").Location))
-      //   .AddPrecondition(beliefsController.Get("PlayerInChaseRange"))
-      //   .AddEffect(beliefsController.Get("PlayerInAttackRange"))
-      //   .Build());
-      //
-      // actions.Add(new AgentAction.Builder("AttackPlayer")
-      //   .WithStrategy(new AttackStrategy(_agent.animationController))
-      //   .AddPrecondition(beliefsController.Get("PlayerInAttackRange"))
-      //   .AddEffect(beliefsController.Get("AttackingPlayer"))
-      //   .Build());
+      Debug.Log($"[Brain] Action created: {actions.Count}", this);
     }
 
 
     private void HandleInteractionSensor(ActorDescription actorDescription) {
-      // Debug.Log("Target changed, clearing current action and goal");
+      //Debug.Log($"[Brain] Interaction sensor triggered by {actorDescription.name}", actorDescription);
       // // Force the planner to re-evaluate the plan
       // _currentAction = null;
       // _currentGoal = null;

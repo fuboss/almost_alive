@@ -3,9 +3,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Memory {
   public class MemorySnapshot : IEquatable<MemorySnapshot>, IEqualityComparer<MemorySnapshot> {
     public List<string> tags;
     public Vector3 location;

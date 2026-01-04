@@ -1,12 +1,13 @@
+using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.Core.Loop;
-using Reflex.Attributes;
+using VContainer;
+using VContainer.Unity;
 
 namespace Content.Scripts.Ui {
-  public class UiModule : IUpdatable {
-    [Inject] private UILayer[] _uiLayers;
+  public class UiModule : ITickable {
+    [Inject] private IEnumerable<UILayer> _uiLayers;
 
-    public void SetVisibleLayers(params UILayer[] targetLayers) {
+    public void SetLayers(params UILayer[] targetLayers) {
       if (targetLayers.Length == 0) {
         HideAllLayers();
         return;
@@ -25,6 +26,7 @@ namespace Content.Scripts.Ui {
       }
     }
 
+
     public T GetLayer<T>() where T : UILayer {
       foreach (var layer in _uiLayers) {
         if (layer is T tLayer) {
@@ -37,15 +39,29 @@ namespace Content.Scripts.Ui {
 
     public void HideAllLayers() {
       foreach (var layer in _uiLayers) {
-        layer.Hide();
+        if (layer.isVisible) {
+          layer.Hide();
+        }
       }
     }
 
-    public void OnUpdate() {
+    public void Tick() {
       foreach (var uiLayer in _uiLayers) {
         if (uiLayer.isVisible) {
           uiLayer.OnUpdate();
         }
+      }
+    }
+
+    public void RemoveLayer(UILayer layer) {
+      if (layer != null && layer.isVisible) {
+        layer.Hide();
+      }
+    }
+
+    public void AddLayer(UILayer layer) {
+      if (layer != null && !layer.isVisible) {
+        layer.Show();
       }
     }
   }

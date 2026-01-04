@@ -3,7 +3,7 @@ using Content.Scripts.Utility.Extensions;
 using ImprovedTimers;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Sensors {
   [RequireComponent(typeof(SphereCollider))]
   public class SimpleSensor : MonoBehaviour {
     public event Action OnTargetChanged = delegate { };

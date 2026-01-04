@@ -25,15 +25,15 @@ MonoBehaviour:
     name: action_MoveToRest
     cost: 2
     strategy:
-      rid: 7960999237110989218
+      rid: 365112727136371070
     preconditions: []
     effects:
     - Transient_IsRest
   references:
     version: 2
     RefIds:
-    - rid: 7960999237110989218
-      type: {class: MoveStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112727136371070
+      type: {class: MoveStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Move, asm: Assembly-CSharp}
       data:
         targetFromMemory:
           searchMode: 0
@@ -41,5 +41,5 @@ MonoBehaviour:
           - REST
         updateDestinationContinuously: 0
         statPerTick:
-        - statType: 2
-          delta: 0.01
+        - statType: 1
+          delta: -0.1

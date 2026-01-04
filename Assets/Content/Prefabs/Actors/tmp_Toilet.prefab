@@ -177,6 +177,7 @@ MonoBehaviour:
       delta: -20
     stackData:
       rid: -2
+  isSelectable: 1
   references:
     version: 2
     RefIds:

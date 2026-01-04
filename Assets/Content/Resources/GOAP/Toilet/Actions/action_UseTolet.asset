@@ -25,7 +25,7 @@ MonoBehaviour:
     name: action_UseTolet
     cost: 1
     strategy:
-      rid: 365112711794393201
+      rid: 365112727136371076
     preconditions:
     - Transient_IsToilet
     - Toilet_Needed
@@ -34,7 +34,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 365112711794393201
-      type: {class: UseRestPointStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112727136371076
+      type: {class: UseToiletStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Use, asm: Assembly-CSharp}
       data:
         useDuration: 10

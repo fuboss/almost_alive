@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityUtils;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Memory {
   [Serializable]
   public class MemorySearcher {
     public SearchMode searchMode = SearchMode.NEAREST;

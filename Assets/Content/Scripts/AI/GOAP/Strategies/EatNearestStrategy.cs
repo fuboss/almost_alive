@@ -1,8 +1,10 @@
 using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Animation;
+using Content.Scripts.Game;
 using ImprovedTimers;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -24,7 +26,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public EatNearestStrategy() {
       _searcher = new MemorySearcher() {
-        requiredTags = new[] { "FOOD" }
+        requiredTags = new[] { Tag.FOOD }
       };
     }
 
@@ -41,7 +43,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override void OnStart() {
       IniTimer();
       _searcher ??= new MemorySearcher() {
-        requiredTags = new[] { "FOOD" }
+        requiredTags = new[] { Tag.FOOD }
       };
 
       var foodMemory = _searcher.GetNearest(_agent);

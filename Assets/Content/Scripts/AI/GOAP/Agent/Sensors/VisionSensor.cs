@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
+using Content.Scripts.Game;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Sensors {
   //todo: перенести логику гизмо в отдельный модуль
   [RequireComponent(typeof(SphereCollider))]
   public class VisionSensor : MonoBehaviour {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Memory {
   public struct MemoryKey : IEqualityComparer<MemoryKey> {
     public string key;
     public object meta;

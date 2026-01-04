@@ -25,7 +25,7 @@ MonoBehaviour:
     name: action_RestInRestPoint
     cost: 1
     strategy:
-      rid: 365112711794393201
+      rid: 365112727136371071
     preconditions:
     - Transient_IsRest
     - IsTired
@@ -34,7 +34,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 365112711794393201
-      type: {class: UseRestPointStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112727136371071
+      type: {class: UseRestPointStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Use, asm: Assembly-CSharp}
       data:
-        useDuration: 20
+        useDuration: 25

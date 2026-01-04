@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;

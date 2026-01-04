@@ -52,7 +52,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       get => _transientTarget;
       set {
         if (_transientTarget == value) return;
-        Debug.Log($"TransientTarget set {(value != null ? value.name : "null")} on agent {name}", gameObject);
+        //Debug.Log($"TransientTarget set {(value != null ? value.name : "null")} on agent {name}", gameObject);
         _transientTarget = value;
       }
     }

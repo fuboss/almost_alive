@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Content.Scripts.AI.GOAP.Agent.Descriptors;
+using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Memory {
   public class MemorySnapshotBuilder {
     private bool _hasCreationTimeSet;
     private MemorySnapshot _snap;

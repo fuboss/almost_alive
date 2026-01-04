@@ -25,15 +25,17 @@ MonoBehaviour:
     name: action_WanderAround
     cost: 1
     strategy:
-      rid: 7960999237110989217
+      rid: 365112727136371069
     preconditions: []
     effects:
     - IsMoving
   references:
     version: 2
     RefIds:
-    - rid: 7960999237110989217
-      type: {class: WanderStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
+    - rid: 365112727136371069
+      type: {class: WanderStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Move, asm: Assembly-CSharp}
       data:
+        visitPointsMinMax: {x: 1, y: 3}
         navMeshSamples: 5
-        defaultWanderRadius: 10
+        defaultWanderRadius: 15
+        debugWanderAroundCenter: 1

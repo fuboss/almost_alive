@@ -53,11 +53,11 @@ namespace Content.Scripts.Animation {
     protected abstract void SetClipNames();
 
     public void Eat() {
-      Debug.LogError("Eat animation not implemented", this);
+      Debug.LogWarning("Eat animation not implemented", this);
     }
 
     public void PickUp() {
-      Debug.LogError("PickUp animation not implemented", this);
+      Debug.LogWarning("PickUp animation not implemented", this);
     }
   }
 }

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Content.Scripts.Ui.Layers {
+namespace Content.Scripts.Ui.Layers.MainPanel {
   public class TabButton : MonoBehaviour {
     public Image iconImage;
     public Button button;
@@ -16,9 +16,7 @@ namespace Content.Scripts.Ui.Layers {
       get => _isSelected;
       set {
         _isSelected = value;
-        if (infoPanel?.content != null) {
-          infoPanel.content.SetActive(_isSelected);
-        }
+        infoPanel.active = _isSelected;
       }
     }
 
@@ -34,7 +32,7 @@ namespace Content.Scripts.Ui.Layers {
     }
 
     private void OnClick() {
-      _mainInfoPanel.Select(_infoPanel);
+      _mainInfoPanel.SelectTab(_infoPanel);
     }
   }
 }

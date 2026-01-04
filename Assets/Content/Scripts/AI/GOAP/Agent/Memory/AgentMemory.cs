@@ -4,7 +4,7 @@ using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Agent {
+namespace Content.Scripts.AI.GOAP.Agent.Memory {
   [Serializable]
   public class AgentMemory {
     public enum RememberResult {
@@ -36,26 +36,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       snapshot.lastUpdateTime = snapshot.creationTime;
       _memory.Add(snapshot);
       AddToIndex(snapshot);
-      // if (snapshot.tags.Contains("FOOD") && snapshot.target != null) {
-      //   Debug.LogError($"FOOD remembered: {snapshot.target.name}", snapshot.target);
-      // }
 
       return RememberResult.NewMemory;
     }
-
-
-    // public MemorySnapshot Remember(Vector3 location, IEnumerable<string> tags = null,
-    //   Object optionalTarget = null, float lifetimeSeconds = 60f, float confidence = 1f) {
-    //   var snap = new MemorySnapshot {
-    //     location = location,
-    //     optionalTarget = optionalTarget,
-    //     optionalTargets = null,
-    //     lifetimeSeconds = lifetimeSeconds,
-    //     confidence = confidence,
-    //     tags = tags?.ToList()
-    //   };
-    //   return Remember(snap);
-    // }
 
     public bool TryFind<T>(Func<MemorySnapshot, bool> predicate, out T result) {
       result = default;

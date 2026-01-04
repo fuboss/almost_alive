@@ -4,7 +4,7 @@ using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Agent.Descriptors {
+namespace Content.Scripts.AI.GOAP.Agent.Memory.Descriptors {
   [Serializable]
   public class PerTickStatChange {
     public StatType statType;

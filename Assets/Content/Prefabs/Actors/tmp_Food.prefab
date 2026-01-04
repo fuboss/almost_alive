@@ -169,12 +169,15 @@ MonoBehaviour:
   _descriptionData:
     tags:
     - FOOD
+    isInventoryItem: 1
+    rememberDuration: 300
     onUseAddStats: []
     onUseAddStatPerTick:
     - statType: 1
       delta: 15
     stackData:
       rid: 365112705763246239
+  isSelectable: 1
   references:
     version: 2
     RefIds:

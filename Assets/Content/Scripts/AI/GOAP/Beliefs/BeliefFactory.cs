@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.GOAP.Agent.Sensors;
 using Content.Scripts.AI.GOAP.Stats;
 using UnityEngine;
 
