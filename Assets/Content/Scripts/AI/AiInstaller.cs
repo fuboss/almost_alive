@@ -16,19 +16,21 @@ namespace Content.Scripts.Core {
     public GOAPAgent agentPrefab;
 
     public void InstallBindings(ContainerBuilder builder) {
-      //Debug.Log("AI INSTALLER");
-
       builder.AddSingleton(new GoapPlanFactory());
-      builder.AddSingleton(GoatFeatureBankModule.GetFromResources());
-      builder.AddSingleton(new AgentFactory(agentPrefab, agentsRoot));
+      builder.AddSingletonAutoContracts(GoatFeatureBankModule.GetFromResources());
+      builder.AddSingletonAutoContracts(new AgentFactory(agentPrefab, agentsRoot));
     }
 
     // // // TEST // // //
     private void Update() {
       var jump = InputSystem.actions.FindAction("Jump");
-      if (!jump.WasReleasedThisFrame()) return;
+      if (jump.WasReleasedThisFrame()) {
+        SpawnNewAgent();
+      }
+    }
 
-      var agentFactory = gameObject.scene.GetSceneContainer().Resolve<AgentFactory>();
+    private void SpawnNewAgent() {
+      var agentFactory = gameObject.scene.GetSceneContainer().Resolve<IAgentFactory>();
       if (agentFactory != null) {
         var position = transform.position + Random.onUnitSphere * 5;
         var instance = agentFactory.Spawn(position);

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Content.Scripts.Ui.Layers {
@@ -6,7 +7,8 @@ namespace Content.Scripts.Ui.Layers {
     public HorizontalLayoutGroup tabsGroup;
     public TabButton tabPrefab;
 
-    public List<InfoPanel> panels = new List<InfoPanel>();
+    public List<IInfoPanel> panels = new List<IInfoPanel>();
+    private List<TabButton> _tabs = new();
 
     private void Awake() {
       Init();
@@ -20,6 +22,14 @@ namespace Content.Scripts.Ui.Layers {
       foreach (var infoPanel in panels) {
         var tabBtnInstance = Instantiate(tabPrefab, tabsGroup.transform);
         tabBtnInstance.Setup(this, infoPanel);
+        _tabs.Add(tabBtnInstance);
+      }
+    }
+
+    public void Select(IInfoPanel selected) {
+      foreach (var tabButton in _tabs) {
+        var select = selected == tabButton.infoPanel;
+        tabButton.isSelected = select;
       }
     }
   }

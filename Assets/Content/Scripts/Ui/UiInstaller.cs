@@ -12,11 +12,14 @@ namespace Content.Scripts.Ui {
         DontDestroyOnLoad(uiRoot.gameObject);
       }
 
+      builder.AddSingleton(new UiModule());
       foreach (var uiLayer in uiLayers) {
         var instance = Instantiate(uiLayer, uiRoot);
-        builder.AddSingleton(instance);
+        builder.AddSingletonAutoContracts(instance);
         instance.SetVisible(false);
       }
     }
   }
+
+  //todo: this is a simple solution. Impl stack-based layer management
 }
