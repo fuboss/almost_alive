@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using VContainer;
 using VContainer.Unity;
@@ -74,6 +75,12 @@ namespace Content.Scripts.Game.Interaction {
     }
 
     private void TrySelectByMouse() {
+      bool isPointerOverUI = EventSystem.current != null &&
+                           EventSystem.current.IsPointerOverGameObject();
+      if (isPointerOverUI) {
+        return;
+      }
+      
       var castedAgent = RaycastAgentUnderMouse();
       if (castedAgent != null) {
         SelectAgent(castedAgent);

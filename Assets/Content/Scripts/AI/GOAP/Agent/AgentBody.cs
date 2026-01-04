@@ -37,6 +37,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentStat GetStat(StatType statName) {
       return _stats.FirstOrDefault(s => s.type == statName);
     }
+    
+    public IReadOnlyList<AgentStat> GetStatsInfo() {
+      return _stats;
+    }
 
     public void AdjustStatPerTickDelta(StatType statName, float delta) {
       Debug.LogWarning($"try AdjustStatPerTick {statName} {delta}", this);

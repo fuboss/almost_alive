@@ -4,7 +4,7 @@ using VContainer.Unity;
 
 namespace Content.Scripts.Ui {
   [RequireComponent(typeof(Canvas))]
-  public class UILayer : SerializedMonoBehaviour, IInitializable, IStartable {
+  public class UILayer : SerializedMonoBehaviour, IInitializable {
     [SerializeField] private int _sortingOrder;
     [SerializeField] private CanvasGroup _mainCanvasGroup;
     public virtual bool isVisible { get; protected set; }
@@ -38,14 +38,10 @@ namespace Content.Scripts.Ui {
       SetVisible(false);
     }
 
-    public void Start() {
-      isVisible = gameObject.activeSelf;
-      Hide();
-    }
-
     public virtual void Initialize() {
       Debug.LogError($"[UI][{GetType().Name}] Initialize()", this);
-      //GameObjectInjector.InjectRecursive(gameObject, gameObject.scene.GetSceneContainer());
+      isVisible = gameObject.activeSelf;
+      Hide();
     }
 
     public virtual void OnUpdate() {

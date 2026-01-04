@@ -1,4 +1,3 @@
-using System.Collections;
 using Content.Scripts.AI.GOAP.Agent;
 
 using Content.Scripts.Game.Interaction;

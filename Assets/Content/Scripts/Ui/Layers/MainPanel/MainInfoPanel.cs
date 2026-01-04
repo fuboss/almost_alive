@@ -1,20 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using UnityEngine;
 using UnityEngine.UI;
-using VContainer;
 
 namespace Content.Scripts.Ui.Layers.MainPanel {
   public class MainInfoPanel : UILayer {
     public HorizontalLayoutGroup tabsGroup;
     public TabButton tabPrefab;
-
+    public float repaintInterval = 0.5f;
     //[Inject] private AgentUIModule _agentUIModule;
 
     public List<IInfoPanel> panels = new();
     private List<TabButton> _tabs = new();
     private IGoapAgent _agent;
+    private float _lastRepaintTime;
 
     public override void Initialize() {
       base.Initialize();
@@ -23,10 +23,24 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
 
     public override void Show() {
       base.Show();
+      Debug.LogError("MainInfoPanel Show");
     }
 
     private void Init() {
       InitTabs();
+    }
+
+    public override void Hide() {
+      base.Hide();
+      Debug.LogError("MainInfoPanel Hide");
+    }
+
+    public override void OnUpdate() {
+      base.OnUpdate();
+      if (Time.time > _lastRepaintTime + repaintInterval) {
+        var activePanel = panels.First(p => p.active);
+        activePanel?.Repaint();
+      }
     }
 
     private void InitTabs() {
@@ -34,7 +48,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
         var tabBtnInstance = Instantiate(tabPrefab, tabsGroup.transform);
         tabBtnInstance.Setup(this, infoPanel);
         _tabs.Add(tabBtnInstance);
-        infoPanel.active = false;
+        infoPanel.Setup(this);
       }
 
       panels.First().active = true;
