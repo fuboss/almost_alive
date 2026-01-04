@@ -12,6 +12,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     internal Func<bool> _condition = () => false;
     [ShowInInspector, ReadOnly] protected bool _lastEvaluation;
 
+    public bool lastEvaluation => _lastEvaluation;
+
     public virtual bool Evaluate(IGoapAgent agent) {
       var evaluate = _condition != null && _condition();
       _lastEvaluation = evaluate;
@@ -22,7 +24,15 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     public override string ToString() {
       return $"{GetType().Name}";
     }
-    
+
+    public virtual AgentBelief Copy(IGoapAgent agent) {
+      return new AgentBelief { _condition = _condition, name = name };
+    }
+
+    public virtual string GetPresenterString() {
+      return name;
+    }
+
 #if UNITY_EDITOR
     public List<string> GetTags() {
       return GOAPEditorHelper.GetTags();
@@ -44,10 +54,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       public AgentBelief Build() {
         return _belief;
       }
-    }
-
-    public virtual AgentBelief Copy(IGoapAgent agent) {
-      return new AgentBelief { _condition = _condition, name = name };
     }
   }
 }
