@@ -9,13 +9,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
   public class AgentBelief {
     [ReadOnly] public string name;
 
-    internal Func<bool> _condition = () => false;
+    internal Func<bool> condition = () => false;
     [ShowInInspector, ReadOnly] protected bool _lastEvaluation;
 
     public bool lastEvaluation => _lastEvaluation;
 
     public virtual bool Evaluate(IGoapAgent agent) {
-      var evaluate = _condition != null && _condition();
+      var evaluate = condition != null && condition();
       _lastEvaluation = evaluate;
       // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
       return evaluate;
@@ -25,8 +25,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       return $"{GetType().Name}";
     }
 
-    public virtual AgentBelief Copy(IGoapAgent agent) {
-      return new AgentBelief { _condition = _condition, name = name };
+    public virtual AgentBelief Copy() {
+      return new AgentBelief { condition = condition, name = name };
     }
 
     public virtual string GetPresenterString() {
@@ -47,7 +47,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       }
 
       public Builder WithCondition(Func<bool> condition) {
-        _belief._condition = condition;
+        _belief.condition = condition;
         return this;
       }
 

@@ -9,7 +9,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
   public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
-    [SerializeField] private AgentInventory _inventory;
+    [SerializeField] private ActorInventory _inventory;
 
     [SerializeField] private float _statsUpdateInterval = 1f;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
@@ -46,7 +46,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public AnimationController animationController { get; private set; }
 
-    public AgentInventory inventory => _inventory;
+    public ActorInventory inventory => _inventory;
 
     public GameObject transientTarget {
       get => _transientTarget;

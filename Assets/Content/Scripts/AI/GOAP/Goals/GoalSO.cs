@@ -1,26 +1,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Goals {
   [CreateAssetMenu(fileName = "Goal", menuName = "GOAP/Goal", order = 0)]
   public class GoalSO : SerializedScriptableObject {
-    public int defaultPriority = 1;
     [ValueDropdown("GetEffectNames")] public List<string> desiredEffects = new();
 
+    [Title("Utility")] public List<IUtilityEvaluator> utilityEvaluators = new();
+    [MinValue(0f)] public float utilityBias = 1f;
+
     public AgentGoal Get(IGoapAgent agent) {
+      float utility = EvaluateUtility(agent);
       var builder = new AgentGoal.Builder(name)
         .WithDesiredEffects(desiredEffects.Select(agent.GetBelief))
-        .WithPriority(defaultPriority);
+        .WithPriority(utility);
 
       return builder.Build();
     }
-#if UNITY_EDITOR
-    public List<string> GetEffectNames() {
-      return GOAPEditorHelper.GetBeliefsNames();
+
+    private float EvaluateUtility(IGoapAgent agent) {
+      var value = utilityBias;
+
+      foreach (var evaluator in utilityEvaluators) {
+        value *= evaluator?.Evaluate(agent) ?? 1f;
+      }
+
+      return value;
     }
+
+#if UNITY_EDITOR
+    public List<string> GetEffectNames() => GOAPEditorHelper.GetBeliefsNames();
 #endif
   }
 }

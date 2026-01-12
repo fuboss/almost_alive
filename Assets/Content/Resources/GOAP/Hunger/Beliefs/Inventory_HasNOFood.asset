@@ -22,14 +22,14 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365112705763246241
+    rid: 365112727136371150
   references:
     version: 2
     RefIds:
-    - rid: 365112705763246241
-      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371150
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
       data:
         name: Inventory_HasNOFood
         tags:
         - FOOD
-        requiredItemCount: 0
+        requiredItemCount: 1

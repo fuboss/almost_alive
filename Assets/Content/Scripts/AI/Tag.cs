@@ -5,13 +5,15 @@ namespace Content.Scripts.AI {
     public const string TOILET = "TOILET";
     public const string SOCIAL = "SOCIAL";
     public const string AGENT = "AGENT";
+    public const string STORAGE = "STORAGE";
   
     public static string[] ALL_TAGS = {
       FOOD,
       REST,
       TOILET,
       SOCIAL,
-      AGENT
+      AGENT,
+      STORAGE
     };
     
   }

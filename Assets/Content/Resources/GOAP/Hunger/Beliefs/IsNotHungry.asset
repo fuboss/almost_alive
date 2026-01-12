@@ -22,15 +22,15 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 7960999259651702889
+    rid: 365112727136371147
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702889
-      type: {class: StatBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371147
+      type: {class: StatBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Stat, asm: Assembly-CSharp}
       data:
         name: IsNotHungry
         statData:
           statType: 1
-          minValue: 0.6
+          minValue: 0.5
           maxValue: 1

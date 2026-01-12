@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     }
 
     public AgentBelief Get(IGoapAgent agent) {
-      return belief.Copy(agent);
+      return belief.Copy();
     }
   }
 }

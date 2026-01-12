@@ -22,12 +22,11 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 7960999259651702900
+    rid: 365112727136371163
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702900
-      type: {class: NavAgentMovementBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371163
+      type: {class: AgentBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: Idle
-        isMoving: 0

@@ -13,7 +13,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     AgentBody body { get; }
     Rigidbody rigidbody { get; }
     AnimationController animationController { get; }
-    AgentInventory inventory { get; }
+    ActorInventory inventory { get; }
     public Vector3 position => navMeshAgent.transform.position;
     public Vector3 nextPosition => navMeshAgent.nextPosition;
 

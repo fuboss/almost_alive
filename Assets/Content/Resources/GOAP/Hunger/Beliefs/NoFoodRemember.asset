@@ -22,12 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 7960999259651702944
+    rid: 365112727136371146
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702944
-      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371146
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NoFoodRemember
         tags:

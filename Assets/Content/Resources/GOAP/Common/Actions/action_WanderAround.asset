@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_WanderAround
-    cost: 1
+    cost: 2
     strategy:
       rid: 365112727136371069
     preconditions: []
@@ -35,7 +35,7 @@ MonoBehaviour:
     - rid: 365112727136371069
       type: {class: WanderStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Move, asm: Assembly-CSharp}
       data:
-        visitPointsMinMax: {x: 1, y: 3}
+        visitPointsMinMax: {x: 1, y: 2}
         navMeshSamples: 5
         defaultWanderRadius: 15
         debugWanderAroundCenter: 1

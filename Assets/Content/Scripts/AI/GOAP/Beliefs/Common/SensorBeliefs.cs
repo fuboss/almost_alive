@@ -9,13 +9,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
     public override bool Evaluate(IGoapAgent agent) {
       var sensor = agent.agentBrain.visionSensor;
-      _condition = () => sensor.HasObjectsWithTagsInView(tags);
+      condition = () => sensor.HasObjectsWithTagsInView(tags);
 
       return base.Evaluate(agent);
     }
 
-    public override AgentBelief Copy(IGoapAgent agent) {
-      return new VisionBelief() { _condition = _condition, name = name, tags = tags };
+    public override AgentBelief Copy() {
+      return new VisionBelief() { condition = condition, name = name, tags = tags };
     }
   }
 
@@ -25,13 +25,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
     public override bool Evaluate(IGoapAgent agent) {
       var sensor = agent.agentBrain.interactSensor;
-      _condition = () => sensor.HasObjectsWithTagsArea(tags);
+      condition = () => sensor.HasObjectsWithTagsArea(tags);
 
       return base.Evaluate(agent);
     }
 
-    public override AgentBelief Copy(IGoapAgent agent) {
-      return new InteractionBelief() { _condition = _condition, name = name, tags = tags };
+    public override AgentBelief Copy() {
+      return new InteractionBelief() { condition = condition, name = name, tags = tags };
     }
   }
 }

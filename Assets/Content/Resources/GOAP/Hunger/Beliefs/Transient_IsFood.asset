@@ -22,12 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365112705763246270
+    rid: 365112727136371143
   references:
     version: 2
     RefIds:
-    - rid: 365112705763246270
-      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371143
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_IsFood
         tags:

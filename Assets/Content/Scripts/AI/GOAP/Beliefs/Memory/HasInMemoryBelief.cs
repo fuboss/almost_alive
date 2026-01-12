@@ -4,7 +4,7 @@ using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Beliefs {
+namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
   [Serializable]
   public class HasInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")]public string[] tags;
@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     [EnableIf("checkDistance")] public float maxDistance = 20;
 
     public override bool Evaluate(IGoapAgent agent) {
-      _condition = () => {
+      condition = () => {
         var memory = agent.memory;
         var withTags = memory.GetWithAllTags(tags);
         if (withTags.Length == 0) {
@@ -29,13 +29,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       return base.Evaluate(agent);
     }
 
-    public override AgentBelief Copy(IGoapAgent agent) {
+    public override AgentBelief Copy() {
       var copy = new HasInMemoryBelief {
         tags = tags,
         checkDistance = checkDistance,
         maxDistance = maxDistance,
         name = name,
-        _condition = _condition
+        condition = condition
       };
       return copy;
     }

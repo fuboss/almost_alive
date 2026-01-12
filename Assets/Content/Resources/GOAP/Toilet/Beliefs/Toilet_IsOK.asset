@@ -22,14 +22,14 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 7960999259651702889
+    rid: 365112727136371154
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702889
-      type: {class: StatBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371154
+      type: {class: StatBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Stat, asm: Assembly-CSharp}
       data:
-        name: IsToiletOK
+        name: Toilet_IsOK
         statData:
           statType: 4
           minValue: 0

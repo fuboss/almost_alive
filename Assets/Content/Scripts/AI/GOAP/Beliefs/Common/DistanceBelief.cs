@@ -2,7 +2,7 @@ using System;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Beliefs {
+namespace Content.Scripts.AI.GOAP.Beliefs.Common {
   [Serializable]
   public class DistanceBelief : AgentBelief {
     public Vector3 location;
@@ -10,7 +10,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     public bool inverted;
 
     public override bool Evaluate(IGoapAgent agent) {
-      _condition = () => {
+      condition = () => {
         var distance = Vector3.Distance(agent.position, location);
         return !inverted
           ? distance < range
@@ -20,13 +20,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       return base.Evaluate(agent);
     }
 
-    public override AgentBelief Copy(IGoapAgent agent) {
+    public override AgentBelief Copy() {
       var copy = new DistanceBelief {
         location = location,
         range = range,
         inverted = inverted,
         name = name,
-        _condition = _condition
+        condition = condition
       };
       return copy;
     }

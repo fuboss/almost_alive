@@ -22,12 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 7960999259651702904
+    rid: 365112727136371165
   references:
     version: 2
     RefIds:
-    - rid: 7960999259651702904
-      type: {class: HasTransientTargetBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+    - rid: 365112727136371165
+      type: {class: HasTransientTargetBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: NoTransientTarget
         inverse: 1

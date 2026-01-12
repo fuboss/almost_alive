@@ -1,17 +1,16 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 
-namespace Content.Scripts.AI.GOAP.Beliefs {
+namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
   [Serializable]
   public class TransientTargetHasTagsBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool inverse = false;
 
     public override bool Evaluate(IGoapAgent agent) {
-      _condition = () => {
+      condition = () => {
         if (!inverse)
           return agent.transientTarget != null && agent.transientTarget.GetComponent<ActorDescription>().HasAllTags(tags);
         return agent.transientTarget == null || !agent.transientTarget.GetComponent<ActorDescription>().HasAllTags(tags);
@@ -20,11 +19,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       return base.Evaluate(agent);
     }
     
-    public override AgentBelief Copy(IGoapAgent agent) {
+    public override AgentBelief Copy() {
       var copy = new TransientTargetHasTagsBelief {
         inverse = inverse,
         name = name,
-        _condition = _condition,
+        condition = condition,
         tags = tags
       };
       return copy;

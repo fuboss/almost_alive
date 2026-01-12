@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  public class AgentInventory : SerializedMonoBehaviour {
+  public class ActorInventory : SerializedMonoBehaviour {
     [SerializeField] private List<InventorySlot> _slots = new();
     public int slotCount => _slots.Count;
 
@@ -25,6 +24,16 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public InventorySlot GetSlot(int index) {
       return _slots.FirstOrDefault(slot => slot.index == index);
+    }
+
+    public virtual bool TryPutItemInInventory(ActorDescription target) {
+      var slot = FirstFreeSlot();
+      if (slot != null) {
+        slot.Put(target);
+        return true;
+      }
+
+      return AddItemToSlot(target, 0);
     }
 
     public bool AddItemToSlot(ActorDescription item, int slotIndex, int count = 1) {
@@ -82,15 +91,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
       }
     }
 
-    public bool TryPutItemInInventory(ActorDescription target) {
-      var slot = FirstFreeSlot();
-      if (slot != null) {
-        slot.Put(target);
-        return true;
+    public int GetTotalCountWithTags(string[] tags) {
+      int count = 0;
+
+      foreach (var slot in occupiedSlots) {
+        if (!slot.item.HasAllTags(tags)) continue;
+        count += slot.count;
       }
 
-
-      return AddItemToSlot(target, 0);
+      return count;
     }
   }
 
@@ -100,7 +109,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public ActorDescription item;
     public bool isStackable => stackData != null;
     public StackData stackData;
-    private AgentInventory _inventory;
+    private ActorInventory _inventory;
     private Transform _root;
     public int count => stackData?.current ?? (item != null ? 1 : 0);
     public bool isOccupied => item != null;
@@ -130,8 +139,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       return true;
     }
 
-    public void SetReferences(AgentInventory agentInventory, Transform slot) {
-      _inventory = agentInventory;
+    public void SetReferences(ActorInventory actorInventory, Transform slot) {
+      _inventory = actorInventory;
       _root = slot;
     }
   }

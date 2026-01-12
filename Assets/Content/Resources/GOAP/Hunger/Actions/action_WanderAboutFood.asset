@@ -23,7 +23,7 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_WanderAboutFood
-    cost: 1
+    cost: 2
     strategy:
       rid: 365112727136371074
     preconditions:
