@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
   public interface IUtilityEvaluator {
@@ -15,5 +16,9 @@ namespace Content.Scripts.AI.Utility {
       return GOAPEditorHelper.GetTags();
     }
 #endif
+  }
+  
+  public abstract class UtilitySO<TData> : UtilitySO where TData : class, new() {
+    [SerializeField] protected TData data = new TData();
   }
 }

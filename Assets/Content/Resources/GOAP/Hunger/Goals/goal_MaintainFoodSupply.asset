@@ -10,17 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3322c70943d24039abcc1a67ccb793e8, type: 3}
-  m_Name: goal_HasFoodInInventory
+  m_Name: goal_MaintainFoodSupply
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Core.GoalSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: 5a73349b2a7494123b635d457dc43c74, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
-  defaultPriority: 3
+    SerializationNodes:
+    - Name: utilityEvaluators
+      Entry: 7
+      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.Utility.IUtilityEvaluator,
+        Assembly-CSharp]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   desiredEffects:
+  - Inventory_HasEnoughFood
   - Inventory_HasFood
+  utilityBias: 2
