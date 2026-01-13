@@ -9,11 +9,6 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Planning {
-  public interface IGoapPlanner {
-    ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
-    UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
-  }
-
   public class GOAPPlanner : IGoapPlanner {
     public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       // Order goals by priority, descending

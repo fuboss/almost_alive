@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     };
 
     [Required] [SerializeField] private AgentMemory _memory = new();
-
+    [Required] [SerializeField] private MemoryConsolidationModule _memoryConsolidation= new();
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
     private InteractionSensor _interactSensor;
 
@@ -64,6 +64,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       SetupActions(_goalsBankModule.GetActions(agent, availableFeatures));
       SetupGoals(_goalsBankModule.GetGoals(agent, availableFeatures));
       SetupStats();
+      
+      _memory.Initialize(new Bounds(Vector3.zero, Vector3.one * 300));
       _initialized = true;
     }
 
@@ -105,6 +107,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void ExecuteMemory(float deltaTime) {
+      
+      _memoryConsolidation.Tick(memory, deltaTime, _agent.position);
       _memory.PurgeExpired(); //todo: use cooldown
     }
 
@@ -120,7 +124,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
         .WithLifetime(visibleActor.descriptionData.rememberDuration + 30 * Random.value)
         .WithLocation(visibleActor.transform.position)
         .Build();
-      var result = _memory.Remember(snapshot);
+
+      var result = _memory.TryRemember(snapshot);
+      if (result == AgentMemory.RememberResult.UpdatedMemory) 
+        _memoryConsolidation.ReinforceMemory(snapshot);
     }
 
     private void ExecutePlanning() {

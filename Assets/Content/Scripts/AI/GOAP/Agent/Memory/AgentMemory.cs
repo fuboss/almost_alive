@@ -5,8 +5,14 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent.Memory {
+  public struct MemoryConsolidationStats {
+    public int ForgottenCount;
+    public float TimeSinceReinforcement;
+    public int TrackedMemories;
+  }
+
   [Serializable]
-  public class AgentMemory {
+  public class AgentMemory{
     public enum RememberResult {
       NewMemory,
       UpdatedMemory,
@@ -17,13 +23,18 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     [ShowInInspector] private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
 
     private readonly Stack<List<MemorySnapshot>> _listPool = new();
+    private Octree<MemorySnapshot> _octree;
     public int count => _memory.Count;
+
+    public void Initialize(Bounds worldBounds) {
+      _octree = new Octree<MemorySnapshot>(worldBounds, 1f);
+    }
 
     public bool MemoryContains(MemorySnapshot snapshot) {
       return snapshot != null && _memory.Any(ms => ms.Equals(snapshot));
     }
 
-    public RememberResult Remember(MemorySnapshot snapshot) {
+    public RememberResult TryRemember(MemorySnapshot snapshot) {
       if (snapshot == null) return RememberResult.Failed;
 
       if (MemoryContains(snapshot)) {
@@ -40,6 +51,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       return RememberResult.NewMemory;
     }
 
+
     public bool TryFind<T>(Func<MemorySnapshot, bool> predicate, out T result) {
       result = default;
       if (predicate == null) return false;
@@ -55,7 +67,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       return false;
     }
 
-    public MemorySnapshot Recall(MemorySnapshot snapshot, bool includeOutdated = false) {
+    public MemorySnapshot IsValid(MemorySnapshot snapshot, bool includeOutdated = false) {
       if (snapshot == null) return null;
       if (!MemoryContains(snapshot)) return null;
       if (!includeOutdated && snapshot.IsExpired) return null;
@@ -236,6 +248,42 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       return best;
     }
 
+    public MemorySnapshot GetNearest(Vector3 position, float maxDistance, string[] tags = null,
+      Func<MemorySnapshot, bool> predicate = null, bool includeOutdated = false) {
+      var candidates = GetInRadius(position, maxDistance, tags, predicate, includeOutdated);
+
+      MemorySnapshot nearest = null;
+      var minDist = float.MaxValue;
+
+      foreach (var snapshot in candidates) {
+        var dist = Vector3.Distance(position, snapshot.location);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = snapshot;
+        }
+      }
+
+      return nearest;
+    }
+
+    public MemorySnapshot[] GetInRadius(Vector3 position, float radius, string[] tags = null,
+      Func<MemorySnapshot, bool> predicate = null, bool includeOutdated = false) {
+      var bounds = new Bounds(position, Vector3.one * radius * 2f);
+      var candidates = _octree.Query(bounds);
+      var results = new List<MemorySnapshot>();
+
+      foreach (var snapshot in candidates) {
+        if (!includeOutdated && snapshot.IsExpired) continue;
+        if (Vector3.Distance(position, snapshot.location) > radius) continue;
+        if (tags != null && !HasAllTags(snapshot, tags)) continue;
+        if (predicate != null && !predicate(snapshot)) continue;
+
+        results.Add(snapshot);
+      }
+
+      return results.ToArray();
+    }
+
     private List<MemorySnapshot> RentList() {
       return _listPool.Count > 0 ? _listPool.Pop() : new List<MemorySnapshot>();
     }
@@ -254,6 +302,8 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
         }
 
         set.Add(snapshot);
+        _octree.Remove(snapshot);
+        _octree.Add(snapshot, snapshot.location);
       }
     }
 
@@ -262,6 +312,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       foreach (var t in snapshot.tags) {
         if (!_tagIndex.TryGetValue(t, out var set)) continue;
         set.Remove(snapshot);
+        _octree.Remove(snapshot);
         if (set.Count == 0) _tagIndex.Remove(t);
       }
     }
@@ -269,6 +320,11 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     private void UpdateIndexForSnapshot(MemorySnapshot snapshot) {
       RemoveFromIndex(snapshot);
       AddToIndex(snapshot);
+    }
+
+    private bool HasAllTags(MemorySnapshot snapshot, string[] tags) {
+      if (snapshot.tags == null || tags == null) return false;
+      return tags.All(tag => snapshot.tags.Contains(tag));
     }
   }
 }
