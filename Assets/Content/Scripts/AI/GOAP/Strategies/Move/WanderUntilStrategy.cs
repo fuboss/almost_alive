@@ -1,5 +1,6 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.GOAP.Agent.Memory.Query;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
@@ -16,9 +17,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
 
     public override void OnStart() {
       base.OnStart();
-      stopCondition = () => {
-        return _agent.memory.GetWithAllTags(new[] { Tag.FOOD }).Length >= lookupForCountInMemory;//todo: food const???
-      };
+      stopCondition = () => _agent.memory.FindWithTags(Tag.FOOD).Length >= lookupForCountInMemory;
     }
   }
 }
