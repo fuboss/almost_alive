@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
@@ -16,9 +17,17 @@ namespace Content.Scripts.AI.Utility {
       return GOAPEditorHelper.GetTags();
     }
 #endif
+    public abstract IUtilityEvaluator CopyEvaluator();
   }
   
-  public abstract class UtilitySO<TData> : UtilitySO where TData : class, new() {
-    [SerializeField] protected TData data = new TData();
+  public abstract class UtilitySO<TData> : UtilitySO where TData : IUtilityEvaluator, new() {
+    [SerializeReference] protected TData evaluator = new TData();
+    public override float Evaluate(IGoapAgent agent) {
+      return evaluator.Evaluate(agent);
+    }
+
+    public override IUtilityEvaluator CopyEvaluator() {
+      return evaluator.CloneViaSerialization();
+    }
   }
 }

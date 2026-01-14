@@ -15,30 +15,52 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 11400000, guid: 5a73349b2a7494123b635d457dc43c74, type: 2}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: utilityEvaluators
-      Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.Utility.IUtilityEvaluator,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 10
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-  desiredEffects:
-  - Inventory_HasEnoughFood
-  - Inventory_HasFood
-  utilityBias: 2
+    SerializationNodes: []
+  template:
+    name: goal_MaintainFoodSupply
+    desiredEffects:
+    - Inventory_HasEnoughFood
+    - Inventory_HasFood
+    utilityEvaluators:
+    - utility: {fileID: 11400000, guid: 1e4fca547b7d74edfba630c93bedd545, type: 2}
+      evaluator:
+        rid: 365112958778343564
+    utilityBias: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112958778343564
+      type: {class: InventoryMissingItemUUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - FOOD
+        requiredCount: 1
+        missingCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0.0037956238
+            value: 0.4928589
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

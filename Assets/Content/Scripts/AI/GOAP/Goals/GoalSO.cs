@@ -2,35 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Goals {
-
-  [Serializable][HideReferenceObjectPicker][InlineEditor]
-  public class GoalUtility {
-    
-    [OnValueChanged("ResetEvaluator")]
-    [SerializeField] public UtilitySO utility;
-    [ShowIf("@utility != null")]
-    [SerializeField] public IUtilityEvaluator evaluator;
-
-    private void ResetEvaluator() {
-      if (utility == null) {
-        evaluator = null;
-        return;
-      }
-      
-    }
-  }
-  
-  [CreateAssetMenu(fileName = "Goal", menuName = "GOAP/Goal", order = 0)]
-  public class GoalSO : SerializedScriptableObject {
+  [System.Serializable]
+  public class GoalTemplate {
+    public string name;
     [ValueDropdown("GetEffectNames")] public List<string> desiredEffects = new();
 
-    [Title("Utility")] public List<IUtilityEvaluator> utilityEvaluators = new();
-    public List<GoalUtility> utilityEvaluators1 = new();
+    [Title("Utility")] public List<GoalUtility> utilityEvaluators = new();
     [MinValue(0f)] public float utilityBias = 1f;
 
     public AgentGoal Get(IGoapAgent agent) {
@@ -46,7 +27,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
       var value = utilityBias;
 
       foreach (var evaluator in utilityEvaluators) {
-        value *= evaluator?.Evaluate(agent) ?? 1f;
+        value *= evaluator.evaluator.Evaluate(agent);
       }
 
       return value;
@@ -55,5 +36,14 @@ namespace Content.Scripts.AI.GOAP.Goals {
 #if UNITY_EDITOR
     public List<string> GetEffectNames() => GOAPEditorHelper.GetBeliefsNames();
 #endif
+  }
+
+  [CreateAssetMenu(fileName = "Goal", menuName = "GOAP/Goal", order = 0)]
+  public class GoalSO : SerializedScriptableObject {
+    public GoalTemplate template = new GoalTemplate();
+
+    private void OnValidate() {
+      template.name = name;
+    }
   }
 }

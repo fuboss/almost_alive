@@ -1,10 +1,15 @@
+using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
   [CreateAssetMenu(menuName = "GOAP/Utility/InventoryFreeSlots")]
-  public class InventoryFreeSlotsUtilitySO : UtilitySO {
+  public class InventoryFreeSlotsUtilitySO : UtilitySO<InventoryFreeSlotsUtilityEvaluator> {
+  }
+
+  [Serializable]
+  public class InventoryFreeSlotsUtilityEvaluator : EvaluatorBase {
     public int desiredFreeSlots = 1;
 
     public AnimationCurve slotsCurve =

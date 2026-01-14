@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3322c70943d24039abcc1a67ccb793e8, type: 3}
-  m_Name: goal_Idle
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Core.GoalSO
+  m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
+  m_Name: NotRemembers_Toilet
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -21,12 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  template:
-    name: goal_Idle
-    desiredEffects:
-    - Nothing
-    utilityEvaluators: []
-    utilityBias: 1
+  belief:
+    rid: 365112958778343575
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 365112958778343575
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers_Toilet
+        tags:
+        - TOILET

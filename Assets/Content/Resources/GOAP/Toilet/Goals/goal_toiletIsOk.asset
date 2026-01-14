@@ -20,20 +20,45 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: utilityEvaluators
-      Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.Utility.IUtilityEvaluator,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-  desiredEffects:
-  - Toilet_IsOK
-  utilityBias: 2
+    SerializationNodes: []
+  template:
+    name: goal_toiletIsOk
+    desiredEffects:
+    - Toilet_IsOK
+    utilityEvaluators:
+    - utility: {fileID: 11400000, guid: 4f76176b9ab9e47c9864526bb7cb3511, type: 2}
+      evaluator:
+        rid: 365112958778343560
+    utilityBias: 2
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112958778343560
+      type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        statType: 4
+        range: {x: 0.6, y: 1}
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

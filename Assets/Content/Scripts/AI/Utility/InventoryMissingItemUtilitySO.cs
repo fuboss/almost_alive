@@ -1,10 +1,15 @@
+using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
   [CreateAssetMenu(menuName = "GOAP/Utility/InventoryItemMissing")]
-  public class InventoryMissingItemUtilitySO : UtilitySO {
+  public class InventoryMissingItemUtilitySO : UtilitySO<InventoryMissingItemUUtilityEvaluator> {
+  }
+
+  [Serializable]
+  public class InventoryMissingItemUUtilityEvaluator : EvaluatorBase {
     [ValueDropdown("Tags")] public string[] tags;
     public int requiredCount = 1;
 

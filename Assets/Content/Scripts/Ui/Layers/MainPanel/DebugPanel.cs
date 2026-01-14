@@ -73,7 +73,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
     private void UpdatePlanningStats() {
       var brain = agent.agentBrain;
       
-      _currentGoalText.text = brain.actionPlan?.AgentGoal?.Name ?? "None";
+      _currentGoalText.text = brain.actionPlan?.agentGoal?.Name ?? "None";
       _currentActionText.text = GetCurrentActionName(brain);
 
       // if (_planner != null) {
@@ -90,10 +90,10 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
     private string GetCurrentActionName(AgentBrain brain) {
       if (brain.actionPlan == null) return "None";
       
-      var remaining = brain.actionPlan.Actions.Count;
+      var remaining = brain.actionPlan.actions.Count;
       if (remaining == 0) return "Completing...";
 
-      var next = brain.actionPlan.Actions.Peek();
+      var next = brain.actionPlan.actions.Peek();
       return $"{next.name} (+{remaining - 1} more)";
     }
 
@@ -105,7 +105,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
 
       if (brain.actionPlan == null) return;
 
-      var actions = brain.actionPlan.Actions.ToArray();
+      var actions = brain.actionPlan.actions.ToArray();
       for (int i = actions.Length - 1; i >= 0; i--) {
         var action = actions[i];
         var item = Instantiate(_actionItemPrefab, _planActionsContainer);

@@ -65,7 +65,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
 
     private ActionPlan TryRepairPlan(ActionPlan originalPlan, HashSet<AgentBelief> invalidated,
       IGoapAgent agent) {
-      var actions = new Stack<AgentAction>(originalPlan.Actions.Reverse());
+      var actions = new Stack<AgentAction>(originalPlan.actions.Reverse());
       var repairedActions = new Stack<AgentAction>();
       var currentCost = 0f;
 
@@ -96,7 +96,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
 
       if (repairedActions.Count == 0) return null;
 
-      return new ActionPlan(originalPlan.AgentGoal, repairedActions, currentCost);
+      return new ActionPlan(originalPlan.agentGoal, repairedActions, currentCost);
     }
 
     private AgentAction FindReplacementAction(AgentAction failed, IGoapAgent agent,
@@ -135,7 +135,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       var requiredBeliefs = new HashSet<AgentBelief>();
       var beliefStates = new Dictionary<AgentBelief, bool>();
 
-      foreach (var action in plan.Actions) {
+      foreach (var action in plan.actions) {
         foreach (var precondition in action.preconditions) {
           requiredBeliefs.Add(precondition);
           beliefStates[precondition] = precondition.Evaluate(agent);

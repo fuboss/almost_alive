@@ -20,8 +20,8 @@ namespace Content.Scripts.AI.GOAP {
       return new GoatFeatureBankModule(goalSOs);
     }
 
-    public List<AgentGoal> GetGoals(IGoapAgent agent, string[] availableFeatures) {
-      var goals = new List<AgentGoal>();
+    public List<GoalTemplate> GetGoals(string[] availableFeatures) {
+      var goals = new List<GoalTemplate>();
       foreach (var featureName in availableFeatures) {
         var featureSet = _featuresSOs.FirstOrDefault(f => f.name == featureName);
         if (featureSet == null) {
@@ -29,7 +29,7 @@ namespace Content.Scripts.AI.GOAP {
           continue;
         }
 
-        goals.AddRange(featureSet.goals.Select(goalSo => goalSo.Get(agent)).ToList());
+        goals.AddRange(featureSet.goals.Select(g=>g.template));
       }
 
       Debug.Log($"GoatFeatureBankModule:GetGoals:{goals.Count}");

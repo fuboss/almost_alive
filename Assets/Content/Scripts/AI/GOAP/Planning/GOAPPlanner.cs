@@ -33,7 +33,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
         var newPlan = new ActionPlan(goal, actionStack, goalNode.Cost);
         Debug.Log(
-          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.TotalCost}. {string.Join(",", actionStack.Select(a=>a.name))} actions in plan.\n" +
+          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.totalCost}. {string.Join(",", actionStack.Select(a=>a.name))} actions in plan.\n" +
           $"[Goals: {string.Join(",", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}]");
         return newPlan;
       }

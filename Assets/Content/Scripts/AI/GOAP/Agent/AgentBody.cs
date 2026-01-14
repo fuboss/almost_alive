@@ -10,6 +10,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private List<AgentStat> _stats = new();
 
     [ShowInInspector] private Dictionary<StatType, float> _perTickDelta = new();
+    public IReadOnlyDictionary<StatType, float> perTickDelta => _perTickDelta;
 
     private IGoapAgent _agent;
 

@@ -5,7 +5,6 @@ using Sirenix.Utilities;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Goals {
-
   [Serializable]
   public class AgentGoal {
     [SerializeField] private string _name;
@@ -31,6 +30,8 @@ namespace Content.Scripts.AI.GOAP.Goals {
       set => _desiredEffects = value;
     }
 
+    public bool isUrgent { get; private set; }
+
     public class Builder {
       private readonly AgentGoal _goal;
 
@@ -50,6 +51,11 @@ namespace Content.Scripts.AI.GOAP.Goals {
 
       public Builder WithDesiredEffects(IEnumerable<AgentBelief> effect) {
         _goal.desiredEffects.AddRange(effect);
+        return this;
+      }
+
+      public Builder MarkUrgent(bool urgent = true) {
+        _goal.isUrgent = urgent;
         return this;
       }
 

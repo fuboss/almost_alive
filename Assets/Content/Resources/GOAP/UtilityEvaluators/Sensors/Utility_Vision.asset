@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4336ba26d276460f8ce8fb56cdd2a0ca, type: 3}
-  m_Name: Utility_InventoryFoodCount
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.InventoryItemCountUtilitySO
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_Vision
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -22,17 +22,18 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   evaluator:
-    rid: 365112958778343522
+    rid: 365112958778343577
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343522
-      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365112958778343577
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
-        tags:
-        - FOOD
-        desiredCount: 1
-        countCurve:
+        mode: 0
+        tags: []
+        maxCount: 5
+        maxDistance: 20
+        responseCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3

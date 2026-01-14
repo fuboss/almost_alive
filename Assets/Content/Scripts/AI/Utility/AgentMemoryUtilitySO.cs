@@ -1,10 +1,11 @@
+using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
-  [CreateAssetMenu(menuName = "GOAP/Utility/Memory")]
-  public class AgentMemoryUtilitySO : UtilitySO {
+  [Serializable]
+  public class MemoryUtilityEvaluator : EvaluatorBase {
     [ValueDropdown("Tags")] public string[] tags;
     public float maxDistance = 20f;
 
@@ -28,5 +29,9 @@ namespace Content.Scripts.AI.Utility {
 
       return best;
     }
+  }
+
+  [CreateAssetMenu(menuName = "GOAP/Utility/Memory")]
+  public class AgentMemoryUtilitySO : UtilitySO<MemoryUtilityEvaluator> {
   }
 }

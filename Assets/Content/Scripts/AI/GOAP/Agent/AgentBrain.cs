@@ -24,7 +24,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     };
 
     [Required] [SerializeField] private AgentMemory _memory = new();
-    [Required] [SerializeField] private MemoryConsolidationModule _memoryConsolidation= new();
+    [Required] [SerializeField] private MemoryConsolidationModule _memoryConsolidation = new();
+
     [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
     private InteractionSensor _interactSensor;
 
@@ -32,16 +33,18 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private VisionSensor _visionSensor;
 
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentAction> actions;
-    [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentGoal> goals;
+    [FoldoutGroup("Debug")] [ReadOnly] public HashSet<GoalTemplate> goalTemplates;
 
     [Space] [FoldoutGroup("Debug")] [ReadOnly]
     private ActionPlan _actionPlan;
 
     [FoldoutGroup("Debug")] [ReadOnly] private AgentAction _currentAction;
+    [FoldoutGroup("Debug")] [SerializeField] private ActionHistoryTracker _actionHistory = new();
     [FoldoutGroup("Debug")] [ReadOnly] private AgentGoal _currentGoal;
     public Dictionary<string, AgentBelief> beliefs;
     private IGoapAgent _agent;
     public InteractionSensor interactSensor => _interactSensor;
+    public ActionHistoryTracker actionHistory => _actionHistory;
     public VisionSensor visionSensor => _visionSensor;
 
     public AgentMemory memory => _memory;
@@ -62,9 +65,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       SetupBeliefs(_goalsBankModule.GetBeliefs(agent, availableFeatures));
       SetupActions(_goalsBankModule.GetActions(agent, availableFeatures));
-      SetupGoals(_goalsBankModule.GetGoals(agent, availableFeatures));
+      SetupGoals(_goalsBankModule.GetGoals(availableFeatures));
       SetupStats();
-      
+
       _memory.Initialize(new Bounds(Vector3.zero, Vector3.one * 300));
       _initialized = true;
     }
@@ -107,7 +110,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void ExecuteMemory(float deltaTime) {
-      
       _memoryConsolidation.Tick(memory, deltaTime, _agent.position);
       _memory.PurgeExpired(); //todo: use cooldown
     }
@@ -126,7 +128,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         .Build();
 
       var result = _memory.TryRemember(snapshot);
-      if (result == AgentMemory.RememberResult.UpdatedMemory) 
+      if (result == AgentMemory.RememberResult.UpdatedMemory)
         _memoryConsolidation.ReinforceMemory(snapshot);
     }
 
@@ -136,20 +138,20 @@ namespace Content.Scripts.AI.GOAP.Agent {
       processed |= ExecuteCurrentAction();
       if (processed) return;
 
-      if ((actionPlan == null || actionPlan.Actions.Count == 0) && _currentAction == null) {
+      if ((actionPlan == null || actionPlan.actions.Count == 0) && _currentAction == null) {
         actionPlan = CalculatePlan();
       }
     }
 
     private bool TryPickNextPlannedAction() {
       // Update the plan and current action if there is one
-      if (_actionPlan == null || _actionPlan.Actions.Count <= 0) return false;
+      if (_actionPlan == null || _actionPlan.actions.Count <= 0) return false;
       if (_currentAction != null) return true;
 
       _agent.navMeshAgent.ResetPath();
 
-      _currentGoal = actionPlan.AgentGoal;
-      _currentAction = actionPlan.Actions.Pop();
+      _currentGoal = actionPlan.agentGoal;
+      _currentAction = actionPlan.actions.Pop();
       _currentAction.agent = _agent;
 
       //actionPlan = CalculatePlan();
@@ -171,13 +173,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private ActionPlan CalculatePlan() {
-//      Debug.Log($"Calculating new plan. CurrentGoal: {_currentGoal?.Name ?? "NONE"}", this);
-      var priorityLevel = _currentGoal?.Priority ?? 0;
-      var goalsToCheck = goals;
+      var currentCommitment = actionPlan?.commitment ?? 0f;
+      var priorityLevel = (_currentGoal?.Priority ?? 0) + Mathf.InverseLerp(0, 1.5f, currentCommitment);
+
+      var availableGoals = goalTemplates.Select(gt => gt.Get(_agent)).ToHashSet();
+      var goalsToCheck = availableGoals;
 
       // If we have a current goal, we only want to check goals with higher priority
       if (_currentGoal != null) {
-        goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
+        goalsToCheck = new HashSet<AgentGoal>(availableGoals.Where(g => g.isUrgent || g.Priority > priorityLevel));
       }
 
       if (_gPlanner == null) {
@@ -203,11 +207,13 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void OnCurrentActionComplete() {
       _currentAction.OnStop();
+      _actionHistory.OnActionCompleted(_currentAction.name);
       _currentAction = null;
+      _actionPlan?.MarkActionComplete();
 
-      var allActionsComplete = actionPlan.Actions.Count == 0;
+      var allActionsComplete = actionPlan.actions.Count == 0;
       if (allActionsComplete) {
-        Debug.Log($"[Brain] Plan {actionPlan.AgentGoal.Name} complete", this);
+        Debug.Log($"[Brain] Plan {actionPlan.agentGoal.Name} complete", this);
         _lastGoal = _currentGoal;
         _currentGoal = null;
         actionPlan = null;
@@ -215,8 +221,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
 
-    private void SetupGoals(List<AgentGoal> array) {
-      goals = new HashSet<AgentGoal>(array);
+    private void SetupGoals(List<GoalTemplate> array) {
+      goalTemplates = new HashSet<GoalTemplate>(array);
     }
 
     private void SetupActions(List<AgentAction> array) {

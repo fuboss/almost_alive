@@ -1,3 +1,4 @@
+using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Stats;
 using Sirenix.OdinInspector;
@@ -5,7 +6,11 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.Utility {
   [CreateAssetMenu(menuName = "GOAP/Utility/StatRange")]
-  public class AgentStatRangeUtilitySO : UtilitySO {
+  public class AgentStatRangeUtilitySO : UtilitySO<StatRangeUtilityEvaluator> {
+  }
+
+  [Serializable]
+  public class StatRangeUtilityEvaluator : EvaluatorBase {
     public StatType statType;
 
     [MinMaxSlider(0, 1f, true)] public Vector2 range;

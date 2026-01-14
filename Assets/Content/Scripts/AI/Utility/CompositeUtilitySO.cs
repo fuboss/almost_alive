@@ -38,5 +38,9 @@ namespace Content.Scripts.AI.Utility {
           return value;
       }
     }
+
+    public override IUtilityEvaluator CopyEvaluator() {
+      return MemberwiseClone() as IUtilityEvaluator;
+    }
   }
 }
