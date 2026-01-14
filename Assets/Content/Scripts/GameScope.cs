@@ -1,6 +1,7 @@
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Interaction;
 using Content.Scripts.Ui;
@@ -20,6 +21,10 @@ namespace Content.Scripts {
 
     protected override void Configure(IContainerBuilder builder) {
       base.Configure(builder);
+      // Simulation
+      builder.Register<SimulationTimeController>(Lifetime.Singleton).AsSelf();
+      builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
+
       builder.Register<GoapPlanFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

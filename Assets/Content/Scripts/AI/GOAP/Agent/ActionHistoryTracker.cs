@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Content.Scripts.Core.Simulation;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -25,7 +26,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void OnActionCompleted(string actionName) {
       if (string.IsNullOrEmpty(actionName)) return;
       
-      _lastExecutionTime[actionName] = Time.time;
+      _lastExecutionTime[actionName] = SimulationTimeController.instance?.totalSimTime ?? Time.time;
       
       if (_lastActionName == actionName) {
         _consecutiveCount++;
@@ -38,7 +39,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public float GetTimeSinceLastExecution(string actionName) {
       if (_lastExecutionTime.TryGetValue(actionName, out var lastTime)) {
-        return Time.time - lastTime;
+        var currentTime = SimulationTimeController.instance?.totalSimTime ?? Time.time;
+        return currentTime - lastTime;
       }
       return float.MaxValue; // never executed
     }

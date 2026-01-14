@@ -1,65 +1,93 @@
 using Content.Scripts.Animation;
-using ImprovedTimers;
+using Content.Scripts.Core.Simulation;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
+using VContainer;
+using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
-  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent {
+  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable, ITickable {
+    [Inject] private SimulationLoop _simLoop;
+    [Inject] private SimulationTimeController _simTime;
+
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
     [SerializeField] private ActorInventory _inventory;
 
-    [SerializeField] private float _statsUpdateInterval = 1f;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
-    private Vector3 _destination;
-    private CountdownTimer _statsTimer;
-    private GameObject _target;
-    private AgentBody _agentBody;
+
     [ShowInInspector, ReadOnly] private GameObject _transientTarget;
+    [ShowInInspector, ReadOnly] private float _baseNavSpeed;
 
-    private void Awake() {
-      RefreshLinks();
-    }
+    private AgentBody _agentBody;
 
-    private void Start() {
-    }
-
-    private void Update() {
-      //_statsTimer.Tick();
-      _agentBody.TickStats(Time.deltaTime);
-      _agentBrain.Tick(Time.deltaTime);
-
-      var speedNorm = navMeshAgent.velocity.magnitude / (navMeshAgent.speed * _sprintSpeedModifier);
-      animationController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05);
-    }
-
-    private void OnValidate() {
-      RefreshLinks();
-    }
+    public int tickPriority => 0;
 
     public AgentBrain agentBrain => _agentBrain;
     public NavMeshAgent navMeshAgent { get; private set; }
-
     public new Rigidbody rigidbody { get; private set; }
-
     public AnimationController animationController { get; private set; }
-
     public ActorInventory inventory => _inventory;
 
     public GameObject transientTarget {
       get => _transientTarget;
       set {
         if (_transientTarget == value) return;
-        //Debug.Log($"TransientTarget set {(value != null ? value.name : "null")} on agent {name}", gameObject);
         _transientTarget = value;
       }
     }
 
     public AgentBody body => _agentBody;
-
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
+
+
+    private void Awake() {
+      RefreshLinks();
+      _baseNavSpeed = navMeshAgent.speed;
+    }
+
+    private void OnEnable() {
+      _simLoop?.Register(this);
+      if (_simTime != null) _simTime.OnSpeedChanged += OnSimSpeedChanged;
+    }
+
+    private void OnDisable() {
+      _simLoop?.Unregister(this);
+      if (_simTime != null) _simTime.OnSpeedChanged -= OnSimSpeedChanged;
+    }
+
+    public void Tick() {
+      // Visual-only updates (render time)
+      UpdateAnimation();
+    }
+
+    public void SimTick(float simDeltaTime) {
+      _agentBody.TickStats(simDeltaTime);
+      _agentBrain.Tick(simDeltaTime);
+    }
+
+    private void OnSimSpeedChanged(SimSpeed speed) {
+      var scale = _simTime.timeScale;
+      navMeshAgent.speed = _baseNavSpeed * scale;
+
+      if (animationController != null && animationController.animator != null) {
+        animationController.animator.speed = scale;
+      }
+    }
+
+    private void UpdateAnimation() {
+      if (animationController == null) return;
+
+      var maxSpeed = _baseNavSpeed * _sprintSpeedModifier;
+      var speedNorm = navMeshAgent.velocity.magnitude / maxSpeed;
+      animationController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05f);
+    }
+
+    private void OnValidate() {
+      RefreshLinks();
+    }
 
     private void RefreshLinks() {
       if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
@@ -72,6 +100,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void OnCreated() {
       agentBrain.Initialize(this);
       _agentBody.Initialize(this);
+
+      // Apply initial time scale
+      if (_simTime != null) {
+        OnSimSpeedChanged(_simTime.currentSpeed);
+      }
     }
 
     private float GetRotation() {
@@ -82,18 +115,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (velDir == Vector3.zero) return 0.5f;
 
       var angle = Vector3.SignedAngle(animationController.transform.forward, velDir, Vector3.up);
-
       var normalized = angle / 360f + 0.5f;
       return Mathf.Clamp01(normalized);
     }
-
-    // private void SetupTimers() {
-    //   _statsTimer = new CountdownTimer(_statsUpdateInterval);
-    //   _statsTimer.OnTimerStop += () => {
-    //     UpdateStats();
-    //     _statsTimer.Start();
-    //   };
-    //   _statsTimer.Start();
-    // }
   }
 }

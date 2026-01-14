@@ -12,6 +12,7 @@ namespace Content.Scripts.Animation {
     private float _animationLength;
 
     private Animator _animator;
+    public Animator animator => _animator;
     private CountdownTimer _timer;
 
     private void Awake() {
