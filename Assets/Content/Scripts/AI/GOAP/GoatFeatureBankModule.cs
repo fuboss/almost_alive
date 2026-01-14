@@ -45,7 +45,8 @@ namespace Content.Scripts.AI.GOAP {
           continue;
         }
 
-        beliefs.AddRange(featureSet.beliefs.Select(beliefSo => beliefSo.Get(agent)).ToList());
+        beliefs.AddRange(featureSet.beliefs.Select(beliefSo => beliefSo.Get()).ToList());
+        beliefs.AddRange(featureSet.compositeBeliefs.SelectMany(beliefSo => beliefSo.Get()).ToList());
       }
 
       Debug.Log($"GoatFeatureBankModule:GetBeliefs:{beliefs.Count}");

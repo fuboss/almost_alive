@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd175ac0286c4e64a907f2bf3696b623, type: 3}
+  m_Name: Inventory_HasNo
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.CompositeInventoryHasNoBeliefsSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  beliefs:
+  - rid: 365112958778343822
+  - rid: 365112958778343823
+  - rid: 365112958778343824
+  - rid: 365112958778343825
+  - rid: 365112958778343826
+  - rid: 365112958778343827
+  - rid: 365112958778343828
+  - rid: 365112958778343829
+  - rid: 365112958778343830
+  - rid: 365112958778343831
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112958778343822
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/FOOD
+        tags:
+        - FOOD
+        requiredItemCount: 1
+    - rid: 365112958778343823
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/REST
+        tags:
+        - REST
+        requiredItemCount: 1
+    - rid: 365112958778343824
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/TOILET
+        tags:
+        - TOILET
+        requiredItemCount: 1
+    - rid: 365112958778343825
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/SOCIAL
+        tags:
+        - SOCIAL
+        requiredItemCount: 1
+    - rid: 365112958778343826
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/AGENT
+        tags:
+        - AGENT
+        requiredItemCount: 1
+    - rid: 365112958778343827
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/STORAGE
+        tags:
+        - STORAGE
+        requiredItemCount: 1
+    - rid: 365112958778343828
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/TREE
+        tags:
+        - TREE
+        requiredItemCount: 1
+    - rid: 365112958778343829
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/RESOURCE
+        tags:
+        - RESOURCE
+        requiredItemCount: 1
+    - rid: 365112958778343830
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/WOOD
+        tags:
+        - WOOD
+        requiredItemCount: 1
+    - rid: 365112958778343831
+      type: {class: HasNoInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
+      data:
+        name: Inventory_HasNo/STONE
+        tags:
+        - STONE
+        requiredItemCount: 1

@@ -28,15 +28,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f37b924f578ba4e1d96652cff1a1e20a, type: 2}
   beliefs:
   - {fileID: 11400000, guid: ce690cecd6e1c43aa94ace0c02df7cd7, type: 2}
-  - {fileID: 11400000, guid: 0ad6e7a7521e2447c87623940f37b23b, type: 2}
-  - {fileID: 11400000, guid: 54be23091ed4b4407bf11ba0793be4a5, type: 2}
   - {fileID: 11400000, guid: cd442fbf9b9ef445e96b7f6b7e8e92dd, type: 2}
   - {fileID: 11400000, guid: 797efcd3aee694057a81c14eff826846, type: 2}
-  - {fileID: 11400000, guid: 16840b1e7bed54c188ccf7fb8abc4000, type: 2}
-  - {fileID: 11400000, guid: d6fdaa72850114e8f859564cc4af86d5, type: 2}
-  - {fileID: 11400000, guid: 318615cd121044cc887da62973b482da, type: 2}
-  - {fileID: 11400000, guid: 8151f5a5d21514dcc8f3630aeba521cf, type: 2}
-  - {fileID: 11400000, guid: 2431fe476e5d440bbaa12bb321c6ef45, type: 2}
+  compositeBeliefs: []
   actionDatas:
   - {fileID: 11400000, guid: e3b6a12495bcb4a98a550bef2117060f, type: 2}
   - {fileID: 11400000, guid: a61e5f7be4edd4bf59e32f2b3faac8f1, type: 2}

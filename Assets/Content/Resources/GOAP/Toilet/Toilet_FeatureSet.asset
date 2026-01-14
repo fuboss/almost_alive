@@ -24,11 +24,9 @@ MonoBehaviour:
   goals:
   - {fileID: 11400000, guid: 565a3944dfa434abd8612818d827e63d, type: 2}
   beliefs:
-  - {fileID: 11400000, guid: b1ee5437100ba4815bf2f4edb48cdacc, type: 2}
-  - {fileID: 11400000, guid: 53e62dff2d0534c32a94ed16dbe1d595, type: 2}
   - {fileID: 11400000, guid: 54e697f5a50ff41dcb3d5438b3e2783f, type: 2}
   - {fileID: 11400000, guid: be2317fedc3fa48bcbdbfd335f3bb8ea, type: 2}
-  - {fileID: 11400000, guid: a13d3021e34c74782ada4a6dd71b29f6, type: 2}
+  compositeBeliefs: []
   actionDatas:
   - {fileID: 11400000, guid: 1e86bfd77e38d4f4bab2a0e5324fa290, type: 2}
   - {fileID: 11400000, guid: 41c507a3016e54e5d90dc8505baad885, type: 2}

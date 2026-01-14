@@ -1,4 +1,3 @@
-using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
       }
     }
 
-    public AgentBelief Get(IGoapAgent agent) {
+    public AgentBelief Get() {
       return belief.Copy();
     }
   }

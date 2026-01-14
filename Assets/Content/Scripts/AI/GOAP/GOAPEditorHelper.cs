@@ -16,6 +16,13 @@ namespace Content.Scripts.AI.GOAP {
         .Select(AssetDatabase.LoadAssetAtPath<BeliefSO>)
         .ToList()
         .ForEach(so => l.Add(so.name));
+      
+      AssetDatabase.FindAssets("t:CompositeBeliefSO", new[] { "Assets/Content/Resources/GOAP" })
+        .Select(AssetDatabase.GUIDToAssetPath)
+        .Select(AssetDatabase.LoadAssetAtPath<CompositeBeliefSO>)
+        .SelectMany(comp=>comp.Get())
+        .ToList()
+        .ForEach(so => l.Add(so.name));
 #endif
       return l;
     }

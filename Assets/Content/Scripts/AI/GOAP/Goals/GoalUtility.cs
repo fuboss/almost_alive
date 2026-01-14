@@ -9,6 +9,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
   [InlineEditor]
   public class GoalUtility {
     [OnValueChanged("ResetEvaluator")] [SerializeField]
+    //todo: ValueDropdown
     public UtilitySO utility;
 
     [HideLabel] [ShowIf("@utility != null")] [VerticalGroup("Eval")] [SerializeReference]

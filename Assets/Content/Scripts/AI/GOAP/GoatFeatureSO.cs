@@ -11,21 +11,23 @@ namespace Content.Scripts.AI.GOAP {
   public class GoatFeatureSO : SerializedScriptableObject {
     public List<GoalSO> goals;
     public List<BeliefSO> beliefs;
+    public List<CompositeBeliefSO> compositeBeliefs;
     public List<ActionDataSO> actionDatas;
 
 
     [Button]
     private void Refresh() {
-      Debug.LogError("TDODO!!!");
 #if !UNITY_EDITOR
       return;
 #endif
-      
+
       var myPath = UnityEditor.AssetDatabase.GetAssetPath(this);
       myPath = myPath.Substring(0, myPath.LastIndexOf('/'));
       actionDatas = Load<ActionDataSO>("t:ActionDataSO", myPath);
       goals = Load<GoalSO>("t:GoalSO", myPath);
       beliefs = Load<BeliefSO>("t:BeliefSO", myPath);
+      compositeBeliefs = Load<CompositeBeliefSO>("t:CompositeBeliefSO", myPath);
+
 
       return;
 

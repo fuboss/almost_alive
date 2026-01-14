@@ -32,14 +32,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 49fb57e4ac47346e78fa009fa8dc1de8, type: 2}
   - {fileID: 11400000, guid: 32448c022682645d39f0d0d456bd68d6, type: 2}
   - {fileID: 11400000, guid: c4f9e8b7e76824efbbdcda892d557375, type: 2}
-  - {fileID: 11400000, guid: c517d343b14634c9e8f9993c50241bd6, type: 2}
-  - {fileID: 11400000, guid: f43eb209c08ac435292cc05a1865fd2d, type: 2}
-  - {fileID: 11400000, guid: ba748be31deed48ea900076bc55edbcf, type: 2}
-  - {fileID: 11400000, guid: 5ab88b03610aa4d72b5b90eb3e002740, type: 2}
-  - {fileID: 11400000, guid: b8e26a308b5ae410c85ccc8ec49730d1, type: 2}
-  - {fileID: 11400000, guid: deb17d450ff3940dea7002c4fccb857d, type: 2}
-  - {fileID: 11400000, guid: 40f0323931b124d02a90d2a1d74beb4c, type: 2}
-  - {fileID: 11400000, guid: 1cda93ffc4cb44f0a8e2a8d1fe1cbabc, type: 2}
+  compositeBeliefs:
+  - {fileID: 11400000, guid: ccee3d31e5da94df395b14a3f448e157, type: 2}
+  - {fileID: 11400000, guid: 6c8e8fbce9a644ad881c943a81cfc783, type: 2}
+  - {fileID: 11400000, guid: 970536119bbd041249a8e51cef7b054a, type: 2}
+  - {fileID: 11400000, guid: f76201d49580a490b8760e6cf9be105c, type: 2}
+  - {fileID: 11400000, guid: ab7d96d8c327e4362a60af96fa834719, type: 2}
+  - {fileID: 11400000, guid: 69eb7b212e2c14b4daeab4854190264e, type: 2}
+  - {fileID: 11400000, guid: 595d0aba183094c17bc6c66da906dcd2, type: 2}
   actionDatas:
   - {fileID: 11400000, guid: c9ad071cfc64c4aa48140be1ba291f3f, type: 2}
   - {fileID: 11400000, guid: 0f6b4a76c33c44d4ebc659a9c8dfe4b4, type: 2}
