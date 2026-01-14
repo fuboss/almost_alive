@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.Game {
+  [RequireComponent(typeof(ActorId))]
   public class ActorDescription : SerializedMonoBehaviour, IActorDescription, ISelectableActor {
     [SerializeField] private DescriptionData _descriptionData;
     public bool isSelectable;
