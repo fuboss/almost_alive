@@ -3,9 +3,10 @@ using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.Animation;
 using UnityEngine;
 using UnityEngine.AI;
+using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  public interface IGoapAgent {
+  public interface IGoapAgent: ITickable {
     AgentStatSetSO defaultStatSet { get; }
     AgentBrain agentBrain { get; }
     AgentMemory memory => agentBrain.memory;

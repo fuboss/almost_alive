@@ -43,6 +43,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (InputSystem.actions.FindAction("Jump").WasReleasedThisFrame()) {
         SpawnNewAgent(Vector3.zero + Random.onUnitSphere * 5);
       }
+
+      foreach (var goapAgent in _agents) {
+        if(goapAgent == null) continue;
+        goapAgent.Tick();
+      }
     }
 
     private void SpawnNewAgent(Vector3 position) {

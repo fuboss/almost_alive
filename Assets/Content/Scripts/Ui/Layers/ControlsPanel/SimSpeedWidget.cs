@@ -18,7 +18,6 @@ namespace Content.Scripts.Ui.Layers.ControlsPanel {
 
     public void Init(SimulationTimeController simTime) {
       _simTime = simTime;
-      Debug.LogError("_simTime added", this);
       _simTime.OnSpeedChanged -= UpdateButtonStates;
       _simTime.OnSpeedChanged += UpdateButtonStates;
       UpdateButtonStates(_simTime.currentSpeed);

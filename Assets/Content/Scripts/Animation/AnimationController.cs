@@ -29,7 +29,6 @@ namespace Content.Scripts.Animation {
 
       _animator.SetFloat(rotationHash, Mathf.Clamp01(rotation));
       _animator.SetBool(idleHash, isIdle);
-      //Debug.Log($"set({_animator.name}) speed:{speed:f3}, rotation:{rotation}, isIdle:{isIdle}", _animator);
     }
 
 

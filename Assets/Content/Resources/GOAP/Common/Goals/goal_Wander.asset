@@ -29,9 +29,6 @@ MonoBehaviour:
     - utility: {fileID: 11400000, guid: 99f6d7ef7bc334c109de8d2351462af7, type: 2}
       evaluator:
         rid: 365112958778343572
-    - utility: {fileID: 11400000, guid: 7ce0c4f5c435d4311866bca9bc5da1a8, type: 2}
-      evaluator:
-        rid: 365112958778343573
     utilityBias: 1
   references:
     version: 2
@@ -40,7 +37,7 @@ MonoBehaviour:
       type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         statType: 2
-        range: {x: 0.4, y: 1}
+        range: {x: 0.7105263, y: 1}
         responseCurve:
           serializedVersion: 2
           m_Curve:
@@ -56,35 +53,6 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 0.9696045
             value: 0.02381134
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-    - rid: 365112958778343573
-      type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
-      data:
-        statType: 3
-        range: {x: 0, y: 1}
-        responseCurve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0.03164673
-            value: 0.7333374
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.9962185
-            value: 0.01666623
             inSlope: 0
             outSlope: 0
             tangentMode: 0

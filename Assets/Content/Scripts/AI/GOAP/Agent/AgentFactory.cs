@@ -14,6 +14,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     
     public GOAPAgent Spawn(Vector3 position) {
       var instance = _objectResolver.Instantiate(_prefab, position, Quaternion.identity);
+      _objectResolver.Inject(instance);
       instance.OnCreated();
       return instance;
     }
