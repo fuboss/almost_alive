@@ -6,14 +6,22 @@ namespace Content.Scripts.AI {
     public const string SOCIAL = "SOCIAL";
     public const string AGENT = "AGENT";
     public const string STORAGE = "STORAGE";
-  
+    public const string TREE = "TREE";
+    public const string RESOURCE = "RESOURCE";
+    public const string WOOD = "WOOD";
+    public const string STONE = "STONE";
+    
     public static string[] ALL_TAGS = {
       FOOD,
       REST,
       TOILET,
       SOCIAL,
       AGENT,
-      STORAGE
+      STORAGE,
+      TREE,
+      RESOURCE,
+      WOOD,
+      STONE
     };
     
   }

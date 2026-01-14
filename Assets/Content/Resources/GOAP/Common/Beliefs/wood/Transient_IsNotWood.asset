@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
-  m_Name: Remembers_StorageFood
+  m_Name: Transient_IsNotWood
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
@@ -22,15 +22,14 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365112727136371169
+    rid: 365112727136371144
   references:
     version: 2
     RefIds:
-    - rid: 365112727136371169
-      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+    - rid: 365112727136371144
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
-        name: Remembers_StorageFood
+        name: Transient_IsNotWood
         tags:
-        - STORAGE
-        checkDistance: 0
-        maxDistance: 20
+        - WOOD
+        inverse: 1

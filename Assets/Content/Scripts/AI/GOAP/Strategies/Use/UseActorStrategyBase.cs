@@ -16,13 +16,13 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
 
     public override bool complete { get; internal set; }
 
-    public GameObject target { get; private set; }
+    public ActorDescription target { get; private set; }
 
     public override void OnStart() {
       IniTimer();
       _timer.Start();
 
-      target = agent.transientTarget;
+      target = agent.transientTarget.GetComponent<ActorDescription>();
       ApplyOnStart();
     }
 

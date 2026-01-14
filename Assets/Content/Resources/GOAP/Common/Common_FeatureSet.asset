@@ -23,14 +23,26 @@ MonoBehaviour:
     SerializationNodes: []
   goals:
   - {fileID: 11400000, guid: 19b398a06765d43439fd68af1fa9cdd3, type: 2}
+  - {fileID: 11400000, guid: 48d12cd0215094a1fb62cb60d19359a1, type: 2}
   - {fileID: 11400000, guid: 482d13f78039e498bae2b05bef160dea, type: 2}
+  - {fileID: 11400000, guid: cd5b1ff5502774ebaafd4cbf8edc6d89, type: 2}
   beliefs:
   - {fileID: 11400000, guid: 39a97615b6dc04e1aa42ba3afd80f5d8, type: 2}
   - {fileID: 11400000, guid: 7b20efe77c1644a78aaa062b7f6ce265, type: 2}
   - {fileID: 11400000, guid: 49fb57e4ac47346e78fa009fa8dc1de8, type: 2}
   - {fileID: 11400000, guid: 32448c022682645d39f0d0d456bd68d6, type: 2}
   - {fileID: 11400000, guid: c4f9e8b7e76824efbbdcda892d557375, type: 2}
+  - {fileID: 11400000, guid: c517d343b14634c9e8f9993c50241bd6, type: 2}
   - {fileID: 11400000, guid: f43eb209c08ac435292cc05a1865fd2d, type: 2}
+  - {fileID: 11400000, guid: ba748be31deed48ea900076bc55edbcf, type: 2}
+  - {fileID: 11400000, guid: 5ab88b03610aa4d72b5b90eb3e002740, type: 2}
+  - {fileID: 11400000, guid: b8e26a308b5ae410c85ccc8ec49730d1, type: 2}
+  - {fileID: 11400000, guid: deb17d450ff3940dea7002c4fccb857d, type: 2}
+  - {fileID: 11400000, guid: 40f0323931b124d02a90d2a1d74beb4c, type: 2}
+  - {fileID: 11400000, guid: 1cda93ffc4cb44f0a8e2a8d1fe1cbabc, type: 2}
   actionDatas:
   - {fileID: 11400000, guid: c9ad071cfc64c4aa48140be1ba291f3f, type: 2}
   - {fileID: 11400000, guid: 0f6b4a76c33c44d4ebc659a9c8dfe4b4, type: 2}
+  - {fileID: 11400000, guid: 1f9af32c485924f14b9a5445582f7761, type: 2}
+  - {fileID: 11400000, guid: f655fd52bdb9046f891940b25b90c19d, type: 2}
+  - {fileID: 11400000, guid: b8237122b03c049ca95e83c38e4e183a, type: 2}

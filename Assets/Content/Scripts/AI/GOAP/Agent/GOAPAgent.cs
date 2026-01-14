@@ -1,5 +1,6 @@
 using Content.Scripts.Animation;
 using Content.Scripts.Core.Simulation;
+using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,7 +9,7 @@ using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
-  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable, ITickable {
+  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable {
     [Inject] private SimulationLoop _simLoop;
     [Inject] private SimulationTimeController _simTime;
 
@@ -18,7 +19,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
 
-    [ShowInInspector, ReadOnly] private GameObject _transientTarget;
+    [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
     [ShowInInspector, ReadOnly] private float _baseNavSpeed;
 
     private AgentBody _agentBody;
@@ -31,13 +32,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AnimationController animationController { get; private set; }
     public ActorInventory inventory => _inventory;
 
-    public GameObject transientTarget {
+    public ActorDescription transientTarget {
       get => _transientTarget;
       set {
         if (_transientTarget == value) return;
         _transientTarget = value;
       }
     }
+
+    public int transientTargetId => _transientTarget.GetComponent<ActorId>()?.id ?? -1;
 
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;

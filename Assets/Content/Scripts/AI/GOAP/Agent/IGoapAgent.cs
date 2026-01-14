@@ -1,6 +1,7 @@
 using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.Animation;
+using Content.Scripts.Game;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer.Unity;
@@ -23,7 +24,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public bool isMoving => navMeshAgent.velocity.sqrMagnitude > 0.01f && navMeshAgent.hasPath;
-    GameObject transientTarget { get; set; }
+    ActorDescription transientTarget { get; set; }
+    int transientTargetId { get; }
     GameObject gameObject { get; }
   }
 }

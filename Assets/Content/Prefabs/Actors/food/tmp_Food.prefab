@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5463389889905847252
+--- !u!1 &1190918015012770028
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8018877124949413769}
-  - component: {fileID: 2839571786985697932}
-  - component: {fileID: 8382119923530132844}
-  - component: {fileID: 2074257935701617437}
-  m_Layer: 0
+  - component: {fileID: 5916725854092778689}
+  - component: {fileID: 5286291966744142654}
+  - component: {fileID: 1806684632964731438}
+  - component: {fileID: 6161420587474405948}
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8018877124949413769
+--- !u!4 &5916725854092778689
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5463389889905847252}
+  m_GameObject: {fileID: 1190918015012770028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 7496287382631635431}
+  m_Father: {fileID: 6535158295370687232}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2839571786985697932
+--- !u!33 &5286291966744142654
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5463389889905847252}
+  m_GameObject: {fileID: 1190918015012770028}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8382119923530132844
+--- !u!23 &1806684632964731438
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5463389889905847252}
+  m_GameObject: {fileID: 1190918015012770028}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 12f5ec05be1764ba6a64d069d336361c, type: 2}
+  - {fileID: 2100000, guid: 01387612c648e4c268136eeda1890321, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,13 +91,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2074257935701617437
+--- !u!65 &6161420587474405948
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5463389889905847252}
+  m_GameObject: {fileID: 1190918015012770028}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -106,13 +106,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &8946975628802839938
+--- !u!1 &8041409771114869610
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,40 +120,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7496287382631635431}
-  - component: {fileID: 8994062785381792942}
-  - component: {fileID: -6097163307435349231}
-  - component: {fileID: 2527092771944784990}
-  m_Layer: 0
-  m_Name: tmp_Toilet
+  - component: {fileID: 6535158295370687232}
+  - component: {fileID: 7145274956803166683}
+  - component: {fileID: -5252816479587681558}
+  - component: {fileID: -5195146423728848175}
+  m_Layer: 6
+  m_Name: tmp_Food
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7496287382631635431
+--- !u!4 &6535158295370687232
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8946975628802839938}
+  m_GameObject: {fileID: 8041409771114869610}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.54983, y: -1, z: 0.84497}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8018877124949413769}
+  - {fileID: 5916725854092778689}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8994062785381792942
+--- !u!114 &7145274956803166683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8946975628802839938}
+  m_GameObject: {fileID: 8041409771114869610}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 932280e9b8694fa7a79e28802909c547, type: 3}
@@ -170,35 +170,39 @@ MonoBehaviour:
     SerializationNodes: []
   _descriptionData:
     tags:
-    - TOILET
-    isInventoryItem: 0
-    rememberDuration: 1200
+    - FOOD
+    isInventoryItem: 1
+    rememberDuration: 300
     onUseAddStats: []
     onUseAddStatPerTick:
-    - statType: 4
-      delta: -20
+    - statType: 1
+      delta: 15
     stackData:
-      rid: -2
+      rid: 365112705763246239
   isSelectable: 1
   _tagDefinitions:
-  - {fileID: -6097163307435349231}
+  - {fileID: -5252816479587681558}
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
---- !u!114 &-6097163307435349231
+    - rid: 365112705763246239
+      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
+      data:
+        min: 0
+        max: 15
+        current: 1
+--- !u!114 &-5252816479587681558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8946975628802839938}
+  m_GameObject: {fileID: 8041409771114869610}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e24a44ee0454616b1db26fcbc08d0fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ca7f19afa1a4c79a0f3ba51a5a615be, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ToiletTag
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.FoodTag
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -208,13 +212,13 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
---- !u!114 &2527092771944784990
+--- !u!114 &-5195146423728848175
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8946975628802839938}
+  m_GameObject: {fileID: 8041409771114869610}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64cfb1c11cc840a588d89118ffe16498, type: 3}

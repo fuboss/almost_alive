@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
   [Serializable]
-  public class WanderUntilStrategy : WanderStrategy {
+  public class WanderUntilStrategy : WanderStrategy { //todo: rename to WanderUntilMemoryStrategy
     [SerializeField] public MemorySearcher targetFromMemory;
     public int lookupForCountInMemory = 1;
     public Func<bool> stopCondition;
@@ -17,7 +17,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
 
     public override void OnStart() {
       base.OnStart();
-      stopCondition = () => _agent.memory.FindWithTags(Tag.FOOD).Length >= lookupForCountInMemory;
+      stopCondition = () => _agent.memory.FindWithTags(targetFromMemory.requiredTags).Length >= lookupForCountInMemory;
     }
   }
 }

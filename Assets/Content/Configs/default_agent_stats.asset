@@ -61,7 +61,7 @@ MonoBehaviour:
       Data: 2
     - Name: $v
       Entry: 4
-      Data: 0.5
+      Data: 0.75
     - Name: 
       Entry: 8
       Data: 
@@ -73,7 +73,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 4
-      Data: -0.7
+      Data: -0.75
     - Name: 
       Entry: 8
       Data: 
@@ -85,7 +85,7 @@ MonoBehaviour:
       Data: 4
     - Name: $v
       Entry: 4
-      Data: 6
+      Data: 0.25
     - Name: 
       Entry: 8
       Data: 

@@ -5,6 +5,7 @@ using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
+using Content.Scripts.Game;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
@@ -88,7 +89,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public override void OnStop() {
       _agent.navMeshAgent.ResetPath();
       if (_targetSnapshot != null) {
-        _agent.transientTarget = _targetSnapshot.target;
+        _agent.transientTarget = _targetSnapshot.target.GetComponent<ActorDescription>();
       }
 
       ApplyPerStatTick(-1);
