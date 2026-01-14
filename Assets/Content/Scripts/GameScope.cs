@@ -26,15 +26,19 @@ namespace Content.Scripts {
       builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
 
       builder.Register<GoapPlanFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<AgentFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      builder.Register<AgentUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
       builder.RegisterComponent(agentPrefab).AsSelf();
-
       builder.RegisterInstance(GoatFeatureBankModule.GetFromResources()).AsImplementedInterfaces().AsSelf();
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
-      builder.Register<AgentFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
+      
+      builder.Register<AgentUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<GameUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       //ui
       builder.Register<UiModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

@@ -132,7 +132,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -159,16 +159,43 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Next"",
                     ""type"": ""Button"",
                     ""id"": ""b7230bb6-fc9b-4f52-8b25-f5e19cb2c2ba"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Sprint"",
+                    ""name"": ""Pause"",
                     ""type"": ""Button"",
-                    ""id"": ""641cd816-40e6-41b4-8c3d-04687c349290"",
-                    ""expectedControlType"": ""Button"",
+                    ""id"": ""3caba48d-c982-4b8b-b70b-017e6ac1d732"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Speed1"",
+                    ""type"": ""Button"",
+                    ""id"": ""757d4cec-3058-4d96-83f3-8c09ddc058da"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Speed2"",
+                    ""type"": ""Button"",
+                    ""id"": ""ec6339a4-0437-44f0-a095-26873efa6d88"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Speed3"",
+                    ""type"": ""Button"",
+                    ""id"": ""e78b9b6e-0d34-4dd3-92fc-29604c8d5169"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -430,39 +457,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f2e9ba44-c423-42a7-ad56-f20975884794"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8cbb2f4b-a784-49cc-8d5e-c010b8c7f4e6"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d8bf24bf-3f2f-4160-a97c-38ec1eb520ba"",
-                    ""path"": ""<XRController>/trigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""XR"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""eb40bb66-4559-4dfa-9a2f-820438abb426"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -557,6 +551,50 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b65bd59b-39e0-40ae-8237-8d851b6b6856"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""02d6ce6b-6438-43ce-916d-6565113b2879"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Speed1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""159389a1-42cc-4be0-95ef-12a106e14b47"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Speed2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6b4ea82e-e9c1-415a-a277-46674d818891"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Speed3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1152,7 +1190,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
-        m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_Speed1 = m_Player.FindAction("Speed1", throwIfNotFound: true);
+        m_Player_Speed2 = m_Player.FindAction("Speed2", throwIfNotFound: true);
+        m_Player_Speed3 = m_Player.FindAction("Speed3", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1254,7 +1295,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Previous;
     private readonly InputAction m_Player_Next;
-    private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_Speed1;
+    private readonly InputAction m_Player_Speed2;
+    private readonly InputAction m_Player_Speed3;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1299,9 +1343,21 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Next => m_Wrapper.m_Player_Next;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Sprint".
+        /// Provides access to the underlying input action "Player/Pause".
         /// </summary>
-        public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Speed1".
+        /// </summary>
+        public InputAction @Speed1 => m_Wrapper.m_Player_Speed1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Speed2".
+        /// </summary>
+        public InputAction @Speed2 => m_Wrapper.m_Player_Speed2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Speed3".
+        /// </summary>
+        public InputAction @Speed3 => m_Wrapper.m_Player_Speed3;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1352,9 +1408,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Next.started += instance.OnNext;
             @Next.performed += instance.OnNext;
             @Next.canceled += instance.OnNext;
-            @Sprint.started += instance.OnSprint;
-            @Sprint.performed += instance.OnSprint;
-            @Sprint.canceled += instance.OnSprint;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
+            @Speed1.started += instance.OnSpeed1;
+            @Speed1.performed += instance.OnSpeed1;
+            @Speed1.canceled += instance.OnSpeed1;
+            @Speed2.started += instance.OnSpeed2;
+            @Speed2.performed += instance.OnSpeed2;
+            @Speed2.canceled += instance.OnSpeed2;
+            @Speed3.started += instance.OnSpeed3;
+            @Speed3.performed += instance.OnSpeed3;
+            @Speed3.canceled += instance.OnSpeed3;
         }
 
         /// <summary>
@@ -1390,9 +1455,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Next.started -= instance.OnNext;
             @Next.performed -= instance.OnNext;
             @Next.canceled -= instance.OnNext;
-            @Sprint.started -= instance.OnSprint;
-            @Sprint.performed -= instance.OnSprint;
-            @Sprint.canceled -= instance.OnSprint;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
+            @Speed1.started -= instance.OnSpeed1;
+            @Speed1.performed -= instance.OnSpeed1;
+            @Speed1.canceled -= instance.OnSpeed1;
+            @Speed2.started -= instance.OnSpeed2;
+            @Speed2.performed -= instance.OnSpeed2;
+            @Speed2.canceled -= instance.OnSpeed2;
+            @Speed3.started -= instance.OnSpeed3;
+            @Speed3.performed -= instance.OnSpeed3;
+            @Speed3.canceled -= instance.OnSpeed3;
         }
 
         /// <summary>
@@ -1750,12 +1824,33 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNext(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Sprint" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSprint(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Speed1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpeed1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Speed2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpeed2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Speed3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSpeed3(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

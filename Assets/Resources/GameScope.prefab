@@ -53,3 +53,4 @@ MonoBehaviour:
   cameraPrefab: {fileID: 8021852593781628534, guid: 9c3184f7489e4486ca157e9d0021142f, type: 3}
   uiLayers:
   - {fileID: 1276088289653312547, guid: 6ce1e3cd3383549a5b9c7c216970e70b, type: 3}
+  - {fileID: -8401498511303770125, guid: be7d5e28fd312472e944e7297bd6a268, type: 3}
