@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 3385872056700084885}
   - component: {fileID: 1173125512409495127}
   - component: {fileID: 323529392630779770}
+  - component: {fileID: 8345393599165099317}
   m_Layer: 0
   m_Name: BasicAgent
   m_TagString: Untagged
@@ -208,8 +209,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _descriptionData:
-    tags:
-    - AGENT
+    tags: []
     isInventoryItem: 0
     rememberDuration: 12000
     onUseAddStats: []
@@ -217,6 +217,7 @@ MonoBehaviour:
     stackData:
       rid: -2
   isSelectable: 1
+  _tagDefinitions: []
   references:
     version: 2
     RefIds:
@@ -245,6 +246,18 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.8, z: 0}
+--- !u!114 &8345393599165099317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4569093495672454940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64cfb1c11cc840a588d89118ffe16498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorId
 --- !u!1 &5785814355086398748
 GameObject:
   m_ObjectHideFlags: 0

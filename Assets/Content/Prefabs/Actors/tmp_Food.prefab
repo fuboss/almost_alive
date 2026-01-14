@@ -122,6 +122,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6535158295370687232}
   - component: {fileID: 7145274956803166683}
+  - component: {fileID: -5252816479587681558}
+  - component: {fileID: -5195146423728848175}
   m_Layer: 0
   m_Name: tmp_Food
   m_TagString: Untagged
@@ -178,6 +180,8 @@ MonoBehaviour:
     stackData:
       rid: 365112705763246239
   isSelectable: 1
+  _tagDefinitions:
+  - {fileID: -5252816479587681558}
   references:
     version: 2
     RefIds:
@@ -187,3 +191,36 @@ MonoBehaviour:
         min: 0
         max: 15
         current: 1
+--- !u!114 &-5252816479587681558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca7f19afa1a4c79a0f3ba51a5a615be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.FoodTag
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+--- !u!114 &-5195146423728848175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64cfb1c11cc840a588d89118ffe16498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorId

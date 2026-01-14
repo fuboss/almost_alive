@@ -6,12 +6,6 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent.Memory.Descriptors {
   [Serializable]
-  public class PerTickStatChange {
-    public StatType statType;
-    public float delta;
-  }
-
-  [Serializable]
   [HideReferenceObjectPicker]
   public class DescriptionData {
     [ValueDropdown("GetNames")] public string[] tags;
