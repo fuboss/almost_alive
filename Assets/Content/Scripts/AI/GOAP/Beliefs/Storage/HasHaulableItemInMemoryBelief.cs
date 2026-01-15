@@ -1,20 +1,23 @@
 using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Beliefs.Memory;
+using Content.Scripts.Game;
+using Content.Scripts.Game.Decay;
+using Content.Scripts.Game.Storage;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
+namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
   [Serializable]
-  public class HasInMemoryBelief : AgentBelief {
-    [ValueDropdown("GetTags")] public string[] tags;
-    public bool checkDistance;
-    [EnableIf("checkDistance")] public float maxDistance = 20;
-
+  public class HasHaulableItemInMemoryBelief : HasInMemoryBelief {
     public override bool Evaluate(IGoapAgent agent) {
       condition = () => {
         var memory = agent.memory;
-        var withTags = memory.GetWithAllTags(tags);
+        var withTags = memory.GetWithAllTags(tags)
+          .Where(s => s.target.GetComponent<ActorDescription>().canPickup)
+          .ToArray();
+        
         if (withTags.Length == 0) {
           Debug.LogWarning($"HasInMemoryBelief: No items found with tags: '{string.Join(", ", tags)}'");
         }
@@ -30,14 +33,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasInMemoryBelief {
+      return new HasHaulableItemInMemoryBelief() {
         tags = tags,
-        checkDistance = checkDistance,
         maxDistance = maxDistance,
-        name = name,
-        condition = condition
+        name = name
       };
-      return copy;
     }
   }
 }

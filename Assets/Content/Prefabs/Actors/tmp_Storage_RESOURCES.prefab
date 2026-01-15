@@ -125,6 +125,8 @@ GameObject:
   - component: {fileID: 6803833349922810512}
   - component: {fileID: -8591379613606435956}
   - component: {fileID: 4293530418156208146}
+  - component: {fileID: -2003118971922923780}
+  - component: {fileID: -3581208947030001610}
   m_Layer: 6
   m_Name: tmp_Storage_RESOURCES
   m_TagString: Untagged
@@ -279,3 +281,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64cfb1c11cc840a588d89118ffe16498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorId
+--- !u!114 &-2003118971922923780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab971fbc59c98422690ea9c0d31ceeb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorPriority
+  _priority: 5
+--- !u!114 &-3581208947030001610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4adbf0b040bbf41e2b107612ca5c31e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.Storage.StorageActor

@@ -23,10 +23,10 @@ namespace Content.Scripts.AI.Utility {
     IEnumerable<IUtilityEvaluatorProvider> Get();
   }
 
-  public abstract class CompositeUtilitySO : SerializedScriptableObject{
+  public abstract class CompositeUtilitySO : SerializedScriptableObject {
   }
 
-public abstract class CompositeUtilitySO<TEval> : CompositeUtilitySO, IUtilityCompositeEvaluatorProvider
+  public abstract class CompositeUtilitySO<TEval> : CompositeUtilitySO, IUtilityCompositeEvaluatorProvider
     where TEval : IUtilityEvaluator, new() {
     [SerializeReference] protected List<UtilitySO<TEval>> evaluators = new();
 

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3322c70943d24039abcc1a67ccb793e8, type: 3}
-  m_Name: goal_StorageFood_IsFull
+  m_Name: goal_FillStorage
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Goals.GoalSO
   serializationData:
     SerializedFormat: 2
@@ -20,20 +20,19 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: utilityEvaluators
-      Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[Content.Scripts.AI.Utility.IUtilityEvaluator,
-        Assembly-CSharp]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-  desiredEffects:
-  - Remembers_StorageFood
-  utilityBias: 1
+    SerializationNodes: []
+  template:
+    name: goal_FillStorage
+    desiredEffects: []
+    utilityEvaluators:
+    - utility: {fileID: 11400000, guid: 00dd4007e6cf844a1a2a1152fadddb81, type: 2}
+      evaluator:
+        rid: 365112976116547840
+    utilityBias: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547840
+      type: {class: StorageFillNeedUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        basePriority: 0.3

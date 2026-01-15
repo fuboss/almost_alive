@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Content.Scripts.Game {
   public static class Registry<T>
     where T : class, new() {
-    public static event Action<T> OmAdded = delegate { };
+    public static event Action<T> OnAdded = delegate { };
     public static event Action<T> OnRemoved = delegate { };
 
     private static readonly Dictionary<int, T> items = new();
@@ -39,7 +39,6 @@ namespace Content.Scripts.Game {
 
     public static int count => items.Count;
 
-    [RuntimeInitializeOnLoadMethod]
     public static void Clear() {
       items.Clear();
       itemsIds.Clear();

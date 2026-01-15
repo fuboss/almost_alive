@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Decay;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -116,6 +117,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public bool Put(ActorDescription actorDescription) {
       if (isOccupied) return false;
+      
+      // Remove decay component when picking up
+      DecayableActor.RemoveFrom(actorDescription.gameObject);
+      
       actorDescription.transform.SetParent(_root, false);
       actorDescription.gameObject.SetActive(false);
       item = actorDescription;
@@ -126,16 +131,30 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public bool Release(out ActorDescription actorDescription) {
+      return Release(out actorDescription, null);
+    }
+
+    public bool Release(out ActorDescription actorDescription, Vector3? dropPosition) {
       actorDescription = item;
       if (!isOccupied) return false;
+      
       if (item != null) {
         item.transform.SetParent(null, true);
+        item.gameObject.SetActive(true);
+        
+        if (dropPosition.HasValue) {
+          item.transform.position = dropPosition.Value;
+        }
+        
+        // Add decay component when dropping
+        DecayableActor.AttachTo(item.gameObject);
       }
 
+      var releasedName = item?.name ?? "null";
       item = null;
       stackData = null;
 
-      Debug.Log($"[Inventory]slot {index} released", _root);
+      Debug.Log($"[Inventory]slot {index} released: {releasedName}", _root);
       return true;
     }
 

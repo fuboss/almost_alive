@@ -3,7 +3,9 @@ using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Interaction;
+using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -24,6 +26,10 @@ namespace Content.Scripts {
       // Simulation
       builder.Register<SimulationTimeController>(Lifetime.Singleton).AsSelf();
       builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
+      
+      // Decay & Work
+      builder.RegisterEntryPoint<DecayModule>().AsSelf();
+      builder.RegisterEntryPoint<WorkAssignmentModule>().AsSelf();
 
       builder.Register<GoapPlanFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
