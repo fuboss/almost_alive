@@ -27,10 +27,10 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371072
     preconditions:
-    - Inventory_HasFood
+    - Inventory_Has/FOOD
     effects:
     - IsNotHungry
-    - Inventory_HasNOFood
+    - Inventory_HasNo/FOOD
   references:
     version: 2
     RefIds:

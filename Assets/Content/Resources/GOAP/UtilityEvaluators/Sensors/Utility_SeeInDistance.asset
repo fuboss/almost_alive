@@ -1,0 +1,626 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7758213194569539776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/TOILET
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547755
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547755
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - TOILET
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-6365492287503715854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/SOCIAL
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547756
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547756
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - SOCIAL
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-5315364576799758999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/STONE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547757
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547757
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - STONE
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-4338192819900593837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/FOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547758
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547758
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - FOOD
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-454885733859270784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/REST
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547759
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547759
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - REST
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18ed9914bdb841369d3c16b8bf8ea003, type: 3}
+  m_Name: Utility_SeeInDistance
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.CompositeUtilitySeeInDistanceSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluators:
+  - {fileID: -4338192819900593837}
+  - {fileID: -454885733859270784}
+  - {fileID: -7758213194569539776}
+  - {fileID: -6365492287503715854}
+  - {fileID: 494012264298532434}
+  - {fileID: 159211854431110170}
+  - {fileID: 1314652024496965423}
+  - {fileID: 5558737878658804250}
+  - {fileID: 3654387374172292337}
+  - {fileID: -5315364576799758999}
+  desiredTags:
+  - FOOD
+  - REST
+  - TOILET
+  - SOCIAL
+  - AGENT
+  - STORAGE
+  - TREE
+  - RESOURCE
+  - WOOD
+  - STONE
+  distance: 30
+--- !u!114 &159211854431110170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/STORAGE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547760
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547760
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - STORAGE
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &494012264298532434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/AGENT
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547761
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547761
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - AGENT
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &1314652024496965423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/TREE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547762
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547762
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - TREE
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &3654387374172292337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/WOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547763
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547763
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - WOOD
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &5558737878658804250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999c92ad73e53467eadf41e150149bf3, type: 3}
+  m_Name: Utility_SeeInDistance/RESOURCE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.VisionTagUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547764
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547764
+      type: {class: VisionTagUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        mode: 0
+        tags:
+        - RESOURCE
+        maxCount: 5
+        maxDistance: 30
+        responseCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

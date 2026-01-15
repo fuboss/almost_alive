@@ -27,9 +27,9 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371073
     preconditions:
-    - RemembersFoodNearby
+    - Remembers_Nearby/FOOD
     effects:
-    - Transient_IsFood
+    - Transient_Is/FOOD
   references:
     version: 2
     RefIds:

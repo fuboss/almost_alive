@@ -27,9 +27,9 @@ MonoBehaviour:
     strategy:
       rid: 365112711794393088
     preconditions:
-    - Transient_IsWood
+    - Transient_Is/WOOD
     effects:
-    - Inventory_HasWood
+    - Inventory_Has/WOOD
   references:
     version: 2
     RefIds:

@@ -1,0 +1,257 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1683030b2524baab17dbace0ff02d05, type: 3}
+  m_Name: Utility_InventoryCount
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.CompositeUtilityInventoryItemCountSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluators:
+  - {fileID: 4166633059253426986}
+  - {fileID: 369193899410099255}
+  - {fileID: 862580780641518451}
+  - {fileID: 2785864080751541028}
+  desiredTags:
+  - FOOD
+  - RESOURCE
+  - WOOD
+  - STONE
+--- !u!114 &369193899410099255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336ba26d276460f8ce8fb56cdd2a0ca, type: 3}
+  m_Name: Utility_InventoryCount/RESOURCE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.InventoryItemCountUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547716
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547716
+      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - RESOURCE
+        desiredCount: 1
+        countCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &862580780641518451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336ba26d276460f8ce8fb56cdd2a0ca, type: 3}
+  m_Name: Utility_InventoryCount/WOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.InventoryItemCountUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547717
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547717
+      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - WOOD
+        desiredCount: 1
+        countCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &2785864080751541028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336ba26d276460f8ce8fb56cdd2a0ca, type: 3}
+  m_Name: Utility_InventoryCount/STONE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.InventoryItemCountUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547718
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547718
+      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - STONE
+        desiredCount: 1
+        countCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &4166633059253426986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4336ba26d276460f8ce8fb56cdd2a0ca, type: 3}
+  m_Name: Utility_InventoryCount/FOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.InventoryItemCountUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547719
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547719
+      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - FOOD
+        desiredCount: 1
+        countCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

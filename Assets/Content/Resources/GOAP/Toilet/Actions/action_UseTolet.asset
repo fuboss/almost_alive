@@ -27,7 +27,7 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371076
     preconditions:
-    - Transient_IsToilet
+    - Transient_Is/TOILET
     - Toilet_Needed
     effects:
     - Toilet_IsOK

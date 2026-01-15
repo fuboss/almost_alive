@@ -26,27 +26,27 @@ MonoBehaviour:
     desiredEffects:
     - IsNotHungry
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: fafff8a05a04746e1a3f1db47a1ea73b, type: 2}
+    - utility: {fileID: -6561440129456078747, guid: 0bf15752c29ae49fa95f6c43b1ec4fef, type: 2}
       evaluator:
-        rid: 365112958778343565
-    - utility: {fileID: 11400000, guid: 5a73349b2a7494123b635d457dc43c74, type: 2}
+        rid: 365112976116547815
+    - utility: {fileID: 8031518980340456095, guid: dcd88dffa8ee9426381903f133b87b52, type: 2}
       evaluator:
-        rid: 365112958778343566
+        rid: 365112976116547816
     utilityBias: 2
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343565
+    - rid: 365112976116547815
       type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         statType: 1
-        range: {x: 0.4, y: 1}
+        range: {x: 0, y: 1}
         responseCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
-            time: 0
-            value: 0
+            time: -0.001266479
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -54,8 +54,8 @@ MonoBehaviour:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 1
-            value: 1
+            time: 1.002502
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -65,18 +65,18 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 365112958778343566
-      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365112976116547816
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         tags:
         - FOOD
-        desiredCount: 1
-        countCurve:
+        maxDistance: 50
+        distanceCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
             time: 0
-            value: 0
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -85,7 +85,7 @@ MonoBehaviour:
             outWeight: 0
           - serializedVersion: 3
             time: 1
-            value: 1
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0

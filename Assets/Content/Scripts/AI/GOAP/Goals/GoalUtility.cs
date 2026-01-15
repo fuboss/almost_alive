@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Content.Scripts.AI.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
   [InlineEditor]
   public class GoalUtility {
     [OnValueChanged("ResetEvaluator")] [SerializeField]
-    //todo: ValueDropdown
+    [ValueDropdown("GetUtilities")]
     public UtilitySO utility;
 
     [HideLabel] [ShowIf("@utility != null")] [VerticalGroup("Eval")] [SerializeReference]
@@ -30,6 +31,10 @@ namespace Content.Scripts.AI.GOAP.Goals {
       }
 
       evaluator = utility.CopyEvaluator();
+    }
+
+    private IEnumerable<UtilitySO> GetUtilities() {
+      return UtilityDB.Load().GetAllUtilities();
     }
   }
 }

@@ -1,0 +1,548 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9076682925415465722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/REST
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547730
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547730
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - REST
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-8863310261419439991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/WOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547731
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547731
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - WOOD
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-8345015221553584977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/RESOURCE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547732
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547732
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - RESOURCE
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-5708753156778525154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/STORAGE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547733
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547733
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - STORAGE
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-4835096966094547342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/STONE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547734
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547734
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - STONE
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &-1384338215707823503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/TOILET
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547735
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547735
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - TOILET
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157e329792b540a2b9da5dd708481255, type: 3}
+  m_Name: Utility_MemoryInArea
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.CompositeUtilityMemoryInAreaSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluators:
+  - {fileID: 8031518980340456095}
+  - {fileID: -9076682925415465722}
+  - {fileID: -1384338215707823503}
+  - {fileID: 3349384975313077981}
+  - {fileID: -5708753156778525154}
+  - {fileID: 9195246385877577696}
+  - {fileID: -8345015221553584977}
+  - {fileID: -8863310261419439991}
+  - {fileID: -4835096966094547342}
+  desiredTags:
+  - FOOD
+  - REST
+  - TOILET
+  - AGENT
+  - STORAGE
+  - TREE
+  - RESOURCE
+  - WOOD
+  - STONE
+  distance: 50
+--- !u!114 &3349384975313077981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/AGENT
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547736
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547736
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - AGENT
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &8031518980340456095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/FOOD
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547737
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547737
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - FOOD
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+--- !u!114 &9195246385877577696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305adacd55f24f8680118926edd03344, type: 3}
+  m_Name: Utility_MemoryInArea/TREE
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Utility.AgentMemoryUtilitySO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  evaluator:
+    rid: 365112976116547738
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547738
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - TREE
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

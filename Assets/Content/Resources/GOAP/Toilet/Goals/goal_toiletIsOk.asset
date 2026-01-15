@@ -26,18 +26,21 @@ MonoBehaviour:
     desiredEffects:
     - Toilet_IsOK
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 4f76176b9ab9e47c9864526bb7cb3511, type: 2}
+    - utility: {fileID: 1940467508627240324, guid: 0bf15752c29ae49fa95f6c43b1ec4fef, type: 2}
       evaluator:
-        rid: 365112958778343560
+        rid: 365112976116547819
+    - utility: {fileID: -1384338215707823503, guid: dcd88dffa8ee9426381903f133b87b52, type: 2}
+      evaluator:
+        rid: 365112976116547820
     utilityBias: 2
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343560
+    - rid: 365112976116547819
       type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         statType: 4
-        range: {x: 0.6, y: 1}
+        range: {x: 0, y: 1}
         responseCurve:
           serializedVersion: 2
           m_Curve:
@@ -53,6 +56,36 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 1
             value: 1
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+    - rid: 365112976116547820
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        tags:
+        - TOILET
+        maxDistance: 50
+        distanceCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0

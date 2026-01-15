@@ -26,21 +26,21 @@ MonoBehaviour:
     desiredEffects:
     - IsRested
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 99f6d7ef7bc334c109de8d2351462af7, type: 2}
+    - utility: {fileID: -2277393805237348692, guid: 0bf15752c29ae49fa95f6c43b1ec4fef, type: 2}
       evaluator:
-        rid: 365112958778343570
-    - utility: {fileID: 11400000, guid: fafff8a05a04746e1a3f1db47a1ea73b, type: 2}
+        rid: 365112976116547808
+    - utility: {fileID: -9076682925415465722, guid: dcd88dffa8ee9426381903f133b87b52, type: 2}
       evaluator:
-        rid: 365112958778343571
+        rid: 365112976116547809
     utilityBias: 1
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343570
+    - rid: 365112976116547808
       type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         statType: 2
-        range: {x: 0.4, y: 1}
+        range: {x: 0, y: 1}
         responseCurve:
           serializedVersion: 2
           m_Curve:
@@ -65,17 +65,18 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 365112958778343571
-      type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365112976116547809
+      type: {class: MemoryUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
-        statType: 1
-        range: {x: 0, y: 0.74206346}
-        responseCurve:
+        tags:
+        - REST
+        maxDistance: 50
+        distanceCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
-            time: 0.018985748
-            value: 0.78570557
+            time: 0
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -83,8 +84,8 @@ MonoBehaviour:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 1.0050659
-            value: 0.054763794
+            time: 1
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0

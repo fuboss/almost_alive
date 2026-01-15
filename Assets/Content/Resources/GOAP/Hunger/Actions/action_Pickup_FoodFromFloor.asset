@@ -27,9 +27,9 @@ MonoBehaviour:
     strategy:
       rid: 365112711794393088
     preconditions:
-    - Transient_IsFood
+    - Transient_Is/FOOD
     effects:
-    - Inventory_HasFood
+    - Inventory_HasNo/FOOD
   references:
     version: 2
     RefIds:

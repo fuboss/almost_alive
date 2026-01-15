@@ -27,10 +27,10 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371074
     preconditions:
-    - NotRemembers_Wood
+    - NotRemembers/WOOD
     effects:
     - IsMoving
-    - Remembers_WoodNearby
+    - Remembers_Nearby/FOOD
   references:
     version: 2
     RefIds:

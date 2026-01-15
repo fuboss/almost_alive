@@ -26,21 +26,18 @@ MonoBehaviour:
     desiredEffects:
     - Inventory_Has/FOOD
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 1e4fca547b7d74edfba630c93bedd545, type: 2}
+    - utility: {fileID: -8730654034019302617, guid: 5220bc51c590c4beb842bff6492c3773, type: 2}
       evaluator:
-        rid: 365112958778343562
-    - utility: {fileID: 11400000, guid: fafff8a05a04746e1a3f1db47a1ea73b, type: 2}
-      evaluator:
-        rid: 365112958778343563
+        rid: 365112976116547810
     utilityBias: 1.2
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343562
-      type: {class: InventoryMissingItemUUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365112976116547810
+      type: {class: InventoryMissingItemUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         tags:
-        - FOOD
+        - WOOD
         requiredCount: 1
         missingCurve:
           serializedVersion: 2
@@ -57,35 +54,6 @@ MonoBehaviour:
           - serializedVersion: 3
             time: 1
             value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-    - rid: 365112958778343563
-      type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
-      data:
-        statType: 1
-        range: {x: 0.21825397, y: 1}
-        responseCurve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0

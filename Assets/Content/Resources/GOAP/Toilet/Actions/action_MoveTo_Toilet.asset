@@ -27,9 +27,9 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371075
     preconditions:
-    - Remembers_Toilet
+    - Remembers_Nearby/TOILET
     effects:
-    - Transient_IsToilet
+    - Transient_Is/TOILET
   references:
     version: 2
     RefIds:

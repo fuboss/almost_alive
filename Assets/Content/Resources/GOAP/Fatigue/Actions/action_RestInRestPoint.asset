@@ -27,7 +27,7 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371071
     preconditions:
-    - Transient_IsRest
+    - Transient_Is/REST
     - IsTired
     effects:
     - IsRested

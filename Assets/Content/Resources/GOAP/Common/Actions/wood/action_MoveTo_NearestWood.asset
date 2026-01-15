@@ -27,9 +27,9 @@ MonoBehaviour:
     strategy:
       rid: 365112727136371073
     preconditions:
-    - Remembers_WoodNearby
+    - Remembers_Nearby/WOOD
     effects:
-    - Transient_IsWood
+    - Transient_Is/WOOD
   references:
     version: 2
     RefIds:

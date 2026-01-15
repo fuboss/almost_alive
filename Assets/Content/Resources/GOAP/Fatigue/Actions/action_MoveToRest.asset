@@ -28,7 +28,7 @@ MonoBehaviour:
       rid: 365112727136371070
     preconditions: []
     effects:
-    - Transient_IsRest
+    - Transient_Is/REST
   references:
     version: 2
     RefIds:

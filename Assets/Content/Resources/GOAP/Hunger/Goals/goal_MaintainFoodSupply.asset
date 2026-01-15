@@ -25,27 +25,27 @@ MonoBehaviour:
     name: goal_MaintainFoodSupply
     desiredEffects:
     - Inventory_HasEnoughFood
-    - Inventory_HasFood
+    - Inventory_Has/FOOD
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 1e4fca547b7d74edfba630c93bedd545, type: 2}
+    - utility: {fileID: 4166633059253426986, guid: e21d6c790dbf64d88adf06a85a1d55e8, type: 2}
       evaluator:
-        rid: 365112958778343564
+        rid: 365112976116547814
     utilityBias: 1
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343564
-      type: {class: InventoryMissingItemUUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365112976116547814
+      type: {class: InventoryItemCountUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         tags:
         - FOOD
-        requiredCount: 1
-        missingCurve:
+        desiredCount: 2
+        countCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
-            time: 0.0037956238
-            value: 0.4928589
+            time: 0
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
             outWeight: 0
           - serializedVersion: 3
             time: 1
-            value: 0
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0

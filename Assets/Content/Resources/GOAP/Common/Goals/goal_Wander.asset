@@ -26,24 +26,24 @@ MonoBehaviour:
     desiredEffects:
     - IsMoving
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 99f6d7ef7bc334c109de8d2351462af7, type: 2}
+    - utility: {fileID: -2277393805237348692, guid: 0bf15752c29ae49fa95f6c43b1ec4fef, type: 2}
       evaluator:
-        rid: 365112958778343572
+        rid: 365112976116547807
     utilityBias: 1
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343572
+    - rid: 365112976116547807
       type: {class: StatRangeUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
         statType: 2
-        range: {x: 0.7105263, y: 1}
+        range: {x: 0, y: 1}
         responseCurve:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
-            time: -0.016456604
-            value: 1.0762024
+            time: -0.0012664795
+            value: 1
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -51,8 +51,8 @@ MonoBehaviour:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
-            time: 0.9696045
-            value: 0.02381134
+            time: 1.0025024
+            value: 0
             inSlope: 0
             outSlope: 0
             tangentMode: 0

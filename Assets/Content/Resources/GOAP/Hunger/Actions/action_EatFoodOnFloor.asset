@@ -27,7 +27,7 @@ MonoBehaviour:
     strategy:
       rid: 7960999237110989242
     preconditions:
-    - HasTransientTarget
+    - Transient_Is/FOOD
     effects:
     - IsNotHungry
     - NoTransientTarget
