@@ -15,12 +15,10 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
     private float _checkInterval = 0.2f;
 
     private readonly HashSet<ActorDescription> _candidates = new();
-    [ShowInInspector] private readonly HashSet<ActorDescription> _visible = new();
+    [ShowInInspector] private readonly HashSet<ActorDescription> _inZone = new();
     private float _timer;
     private SphereCollider _trigger;
-
-    // Public read-only access to currently visible actors
-    public IReadOnlyCollection<ActorDescription> ActorsInZone => _visible;
+    public IReadOnlyCollection<ActorDescription> ActorsInZone => _inZone;
 
     private void Awake() {
       _trigger = GetComponent<SphereCollider>();
@@ -28,7 +26,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
       _trigger.radius = _detectionRadius;
     }
 
-    private void Update() {
+    public void OnUpdate() {
       _timer += Time.deltaTime;
       if (_timer < _checkInterval) return;
       _timer = 0f;
@@ -39,14 +37,14 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
       var actor = other.GetComponentInParent<ActorDescription>();
       if (actor == null) return;
       if (!_candidates.Add(actor)) return;
-      if (_visible.Add(actor)) OnActorEntered.Invoke(actor);
+      if (_inZone.Add(actor)) OnActorEntered.Invoke(actor);
     }
 
     private void OnTriggerExit(Collider other) {
       var actor = other.GetComponentInParent<ActorDescription>();
       if (actor == null) return;
       _candidates.Remove(actor);
-      if (_visible.Remove(actor)) OnActorExited.Invoke(actor);
+      if (_inZone.Remove(actor)) OnActorExited.Invoke(actor);
     }
 
     private void OnValidate() {
@@ -70,16 +68,16 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
         if (actor == null) {
           // cleanup destroyed objects
           _candidates.Remove(actor);
-          if (_visible.Remove(actor)) OnActorExited.Invoke(actor);
+          if (_inZone.Remove(actor)) OnActorExited.Invoke(actor);
           continue;
         }
 
 
-        if (_visible.Add(actor)) {
+        if (_inZone.Add(actor)) {
           OnActorEntered.Invoke(actor);
         }
         else {
-          _visible.Remove(actor);
+          _inZone.Remove(actor);
           OnActorExited.Invoke(actor);
         }
       }
@@ -91,7 +89,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
     }
 
     public IEnumerable<ActorDescription> ObjectsWithTagsInArea(string[] tags) {
-      foreach (var actor in _visible) {
+      foreach (var actor in _inZone) {
         if (actor == null || actor.descriptionData == null) continue;
         if (!tags.All(t => actor.descriptionData.tags.Contains(t))) continue;
 

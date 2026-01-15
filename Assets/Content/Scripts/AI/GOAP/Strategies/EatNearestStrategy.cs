@@ -38,7 +38,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override bool canPerform => !complete;
     public override bool complete { get; internal set; }
 
-    public GameObject target { get; private set; }
+    public ActorDescription target { get; private set; }
 
     public override void OnStart() {
       IniTimer();
@@ -62,7 +62,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     private void ApplyPerStatTick(float multiplier = 1f) {
-      var descriptor = target.GetComponent<ActorDescription>();
+      var descriptor = target;
       if (descriptor == null) return;
       _agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
@@ -76,16 +76,16 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnStop() {
+      _timer?.Dispose();
+    }
+
+    public override void OnComplete() {
       //discard per-tick stat changes
       ApplyPerStatTick(-1);
 
-      if (_timer != null && _timer.IsFinished) {
-        if (target != null) {
-          Object.Destroy(target);
-        }
+      if (target != null) {
+        Object.Destroy(target);
       }
-
-      _timer?.Dispose();
     }
 
     public override void OnUpdate(float deltaTime) {

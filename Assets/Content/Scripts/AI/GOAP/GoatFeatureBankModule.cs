@@ -32,7 +32,7 @@ namespace Content.Scripts.AI.GOAP {
         goals.AddRange(featureSet.goals.Select(g=>g.template));
       }
 
-      Debug.Log($"GoatFeatureBankModule:GetGoals:{goals.Count}");
+      // Debug.Log($"GoatFeatureBankModule:GetGoals:{goals.Count}");
       return goals;
     }
 
@@ -49,7 +49,7 @@ namespace Content.Scripts.AI.GOAP {
         beliefs.AddRange(featureSet.compositeBeliefs.SelectMany(beliefSo => beliefSo.Get()).ToList());
       }
 
-      Debug.Log($"GoatFeatureBankModule:GetBeliefs:{beliefs.Count}");
+      // Debug.Log($"GoatFeatureBankModule:GetBeliefs:{beliefs.Count}");
       return beliefs;
     }
 
@@ -65,7 +65,7 @@ namespace Content.Scripts.AI.GOAP {
         actions.AddRange(featureSet.actionDatas.Select(actionDataSo => actionDataSo.GetAction(agent)).ToList());
       }
 
-      Debug.Log($"GoatFeatureBankModule:GetActions:{actions.Count}");
+      // Debug.Log($"GoatFeatureBankModule:GetActions:{actions.Count}");
       return actions;
     }
   }

@@ -28,6 +28,7 @@ MonoBehaviour:
       rid: 7960999237110989242
     preconditions:
     - Transient_Is/FOOD
+    - IsHungry
     effects:
     - IsNotHungry
     - NoTransientTarget

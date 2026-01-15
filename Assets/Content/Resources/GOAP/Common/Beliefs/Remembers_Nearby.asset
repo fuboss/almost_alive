@@ -22,98 +22,107 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112958778343842
-  - rid: 365112958778343843
-  - rid: 365112958778343844
-  - rid: 365112958778343845
-  - rid: 365112958778343846
-  - rid: 365112958778343847
-  - rid: 365112958778343848
-  - rid: 365112958778343849
-  - rid: 365112958778343850
-  - rid: 365112958778343851
+  - rid: 365112976116548039
+  - rid: 365112976116548040
+  - rid: 365112976116548041
+  - rid: 365112976116548042
+  - rid: 365112976116548043
+  - rid: 365112976116548044
+  - rid: 365112976116548045
+  - rid: 365112976116548046
+  - rid: 365112976116548047
+  - rid: 365112976116548048
+  - rid: 365112976116548049
   checkDistance: 1
-  maxDistance: 50
+  maxDistance: 100
   references:
     version: 2
     RefIds:
-    - rid: 365112958778343842
+    - rid: 365112976116548039
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/FOOD
         tags:
         - FOOD
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343843
+        maxDistance: 100
+    - rid: 365112976116548040
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/REST
         tags:
         - REST
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343844
+        maxDistance: 100
+    - rid: 365112976116548041
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/TOILET
         tags:
         - TOILET
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343845
+        maxDistance: 100
+    - rid: 365112976116548042
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/SOCIAL
         tags:
         - SOCIAL
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343846
+        maxDistance: 100
+    - rid: 365112976116548043
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/AGENT
         tags:
         - AGENT
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343847
+        maxDistance: 100
+    - rid: 365112976116548044
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/STORAGE
         tags:
         - STORAGE
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343848
+        maxDistance: 100
+    - rid: 365112976116548045
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/TREE
         tags:
         - TREE
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343849
+        maxDistance: 100
+    - rid: 365112976116548046
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/RESOURCE
         tags:
         - RESOURCE
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343850
+        maxDistance: 100
+    - rid: 365112976116548047
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/WOOD
         tags:
         - WOOD
         checkDistance: 1
-        maxDistance: 50
-    - rid: 365112958778343851
+        maxDistance: 100
+    - rid: 365112976116548048
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/STONE
         tags:
         - STONE
         checkDistance: 1
-        maxDistance: 50
+        maxDistance: 100
+    - rid: 365112976116548049
+      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: Remembers_Nearby/ITEM
+        tags:
+        - ITEM
+        checkDistance: 1
+        maxDistance: 100

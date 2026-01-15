@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
-  m_Name: NotRemembers_Haulable
+  m_Name: Inventory_HasFreeSlots
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
@@ -22,14 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365112976116547848
+    rid: 365112976116548075
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547848
-      type: {class: HasHaulableItemInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Storage, asm: Assembly-CSharp}
+    - rid: 365112976116548075
+      type: {class: HasFreeSlotsInInventoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Inventory, asm: Assembly-CSharp}
       data:
-        name: Remembers_NearbyHaulable
-        tags: []
-        checkDistance: 0
-        maxDistance: 20
+        name: Inventory_HasNoFreeSlots
+        requiredItemCount: 1

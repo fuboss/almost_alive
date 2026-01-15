@@ -44,7 +44,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void AdjustStatPerTickDelta(StatType statName, float delta) {
-      Debug.LogWarning($"try AdjustStatPerTick {statName} {delta}", this);
+      // Debug.LogWarning($"try AdjustStatPerTick {statName} {delta}", this);
       if (!_perTickDelta.TryAdd(statName, delta)) {
         _perTickDelta[statName] += delta;
       }

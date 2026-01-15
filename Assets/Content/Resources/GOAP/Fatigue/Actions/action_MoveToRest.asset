@@ -26,7 +26,9 @@ MonoBehaviour:
     cost: 2
     strategy:
       rid: 365112727136371070
-    preconditions: []
+    preconditions:
+    - IsTired
+    - Remembers_Nearby/REST
     effects:
     - Transient_Is/REST
   references:
@@ -40,6 +42,4 @@ MonoBehaviour:
           requiredTags:
           - REST
         updateDestinationContinuously: 0
-        statPerTick:
-        - statType: 1
-          delta: -0.1
+        statPerTick: []

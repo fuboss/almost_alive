@@ -8,10 +8,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
     [ValueDropdown("GetTags")] public string[] tags;
     public int requiredItemCount = 1;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => !agent.inventory.TryGetItemWithTags(tags, out var slot) || slot.count < requiredItemCount;
-
-      return base.Evaluate(agent);
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => !agent.inventory.TryGetSlotWithItemTags(tags, out var slot) || slot.count < requiredItemCount;
     }
 
     public override AgentBelief Copy() {

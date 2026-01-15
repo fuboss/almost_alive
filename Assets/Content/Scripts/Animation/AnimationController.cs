@@ -59,5 +59,9 @@ namespace Content.Scripts.Animation {
     public void PickUp() {
       Debug.LogWarning("PickUp animation not implemented", this);
     }
+    
+    public void DepositItem() {
+      Debug.LogWarning("DepositItem animation not implemented", this);
+    }
   }
 }

@@ -33,8 +33,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
         var newPlan = new ActionPlan(goal, actionStack, goalNode.Cost);
         Debug.Log(
-          $"ActionPlan for goal: {goal.Name}, totalCost: {newPlan.totalCost}. {string.Join(",", actionStack.Select(a=>a.name))} actions in plan.\n" +
-          $"[Goals: {string.Join(",", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}]");
+          $"ActionPlan for goal: <b>{goal.Name}</b>, totalCost: {newPlan.totalCost}. {string.Join(", ", actionStack.Select(a=>$"[{a.name}]"))} actions in plan.\n" +
+          $"\n[Goals: {string.Join(", ", orderedGoals.Select(g => $"{g.Name}:{g.Priority}"))}]");
         return newPlan;
       }
 
@@ -59,7 +59,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
           return false;
         }))
-        .OrderByDescending(g => g == mostRecentGoal ? g.Priority - 1.5 : g.Priority)
+        .OrderByDescending(g => g.Name == mostRecentGoal?.Name ? g.Priority - 2 : g.Priority)
         .ToList();
       return orderedGoals;
     }

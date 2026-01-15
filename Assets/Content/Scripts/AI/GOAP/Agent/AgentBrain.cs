@@ -107,6 +107,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (!_initialized) return;
       ExecutePlanning();
       ExecuteMemory(deltaTime);
+      ExecuteSensors(deltaTime);
+    }
+
+    private void ExecuteSensors(float deltaTime) {
+      _visionSensor.OnUpdate();
+      _interactSensor.OnUpdate();
     }
 
     private void ExecuteMemory(float deltaTime) {

@@ -15,10 +15,15 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     public bool lastEvaluation => _lastEvaluation;
 
     public virtual bool Evaluate(IGoapAgent agent) {
+      condition = GetCondition(agent);
       var evaluate = condition != null && condition();
       _lastEvaluation = evaluate;
       // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
       return evaluate;
+    }
+
+    protected virtual Func<bool> GetCondition(IGoapAgent agent) {
+      return condition ?? (() => false);
     }
 
     public override string ToString() {

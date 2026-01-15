@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.Utility {
       AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     public override float Evaluate(IGoapAgent agent) {
-      var free = agent.inventory.freelots.Count();
+      var free = agent.inventory.freeSlots.Count();
       if (free <= 0) {
         return slotsCurve.Evaluate(0);
       }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
+using Content.Scripts.Game;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent.Memory {
@@ -72,21 +73,10 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 
     public MemorySnapshotBuilder WithOptionalTarget(GameObject target) {
-      _snap.target = target;
+      _snap.target = target.GetComponent<ActorDescription>();
       _snap.lastUpdateTime = DateTime.UtcNow;
       return this;
     }
-
-    public MemorySnapshotBuilder WithOptionalTargets(IEnumerable<GameObject> targets) {
-      if (targets == null)
-        _snap.optionalTargets = null;
-      else
-        _snap.optionalTargets = new List<GameObject>(targets);
-
-      _snap.lastUpdateTime = DateTime.UtcNow;
-      return this;
-    }
-
     public MemorySnapshotBuilder WithLifetime(float seconds) {
       _snap.lifetimeSeconds = seconds;
       _snap.lastUpdateTime = DateTime.UtcNow;

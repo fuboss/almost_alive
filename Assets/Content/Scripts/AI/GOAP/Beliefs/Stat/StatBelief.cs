@@ -7,13 +7,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
   public class StatBelief : AgentBelief {
     public FloatAgentStat.Data statData = new();
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var stat = agent.body.GetStat(statData.statType) as FloatAgentStat;
         return stat != null && stat.Normalized >= statData.minValue && stat.Normalized <= statData.maxValue;
       };
-
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

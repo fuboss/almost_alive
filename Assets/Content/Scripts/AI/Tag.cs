@@ -10,6 +10,7 @@ namespace Content.Scripts.AI {
     public const string RESOURCE = "RESOURCE";
     public const string WOOD = "WOOD";
     public const string STONE = "STONE";
+    public const string ITEM = "ITEM";
     
     public static string[] ALL_TAGS = {
       FOOD,
@@ -21,7 +22,8 @@ namespace Content.Scripts.AI {
       TREE,
       RESOURCE,
       WOOD,
-      STONE
+      STONE,
+      ITEM
     };
     
   }

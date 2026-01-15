@@ -15,7 +15,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       get { return _slots.Where(slot => slot.isOccupied); }
     }
 
-    public IEnumerable<InventorySlot> freelots {
+    public IEnumerable<InventorySlot> freeSlots {
       get { return _slots.Where(slot => !slot.isOccupied); }
     }
 
@@ -41,9 +41,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var slot = GetSlot(slotIndex);
       if (slot == null) return false;
       if (slot.isOccupied) {
-        if (slot.item != item || !slot.isStackable) return false;
+        if (slot.item != item || !slot.isStackable) return AddItemToSlot(item, slotIndex + 1, count);
         slot.stackData.current += count;
-        if (slot.stackData.current <= slot.stackData.max) return false;
+        if (slot.stackData.current <= slot.stackData.max) return true;
 
         var delta = slot.stackData.current - slot.stackData.max;
         slot.stackData.current = slot.stackData.max;
@@ -63,7 +63,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
 
     //todo: create indexer
-    public bool TryGetItemWithTags(string[] tags, out InventorySlot foundSlot) {
+    public bool TryGetSlotWithItemTags(string[] tags, out InventorySlot foundSlot) {
       foundSlot = null;
       if (tags == null || tags.Length == 0) {
         return false;
@@ -117,10 +117,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public bool Put(ActorDescription actorDescription) {
       if (isOccupied) return false;
-      
+
       // Remove decay component when picking up
       DecayableActor.RemoveFrom(actorDescription.gameObject);
-      
+
       actorDescription.transform.SetParent(_root, false);
       actorDescription.gameObject.SetActive(false);
       item = actorDescription;
@@ -137,15 +137,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public bool Release(out ActorDescription actorDescription, Vector3? dropPosition) {
       actorDescription = item;
       if (!isOccupied) return false;
-      
+
       if (item != null) {
         item.transform.SetParent(null, true);
         item.gameObject.SetActive(true);
-        
+
         if (dropPosition.HasValue) {
           item.transform.position = dropPosition.Value;
         }
-        
+
         // Add decay component when dropping
         DecayableActor.AttachTo(item.gameObject);
       }

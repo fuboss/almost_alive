@@ -23,12 +23,13 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_WanderAround
-    cost: 2
+    cost: 1
     strategy:
       rid: 365112727136371069
     preconditions: []
     effects:
     - IsMoving
+    - Nothing
   references:
     version: 2
     RefIds:

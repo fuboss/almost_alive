@@ -11,12 +11,12 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
     public bool checkDistance;
     [EnableIf("checkDistance")] public float maxDistance = 20;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var memory = agent.memory;
         var withTags = memory.GetWithAllTags(tags);
         if (withTags.Length == 0) {
-          Debug.LogWarning($"HasInMemoryBelief: No items found with tags: '{string.Join(", ", tags)}'");
+          return false;
         }
 
         if (!checkDistance) {
@@ -25,8 +25,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
 
         return withTags.Any(m => Vector3.Distance(agent.position, m.location) < maxDistance);
       };
-
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

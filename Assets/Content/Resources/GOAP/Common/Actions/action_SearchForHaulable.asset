@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
+  m_Name: action_SearchForHaulable
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  data:
+    name: action_SearchForHaulable
+    cost: 1
+    strategy:
+      rid: 365112976116547852
+    preconditions:
+    - Storage_NeedsFilling
+    - NotRemembers/ITEM
+    - Inventory_HasNoHaulable
+    effects:
+    - Remembers_Nearby/ITEM
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547852
+      type: {class: WanderUntilStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Move, asm: Assembly-CSharp}
+      data:
+        visitPointsMinMax: {x: 2, y: 5}
+        navMeshSamples: 5
+        defaultWanderRadius: 10
+        debugWanderAroundCenter: 1
+        targetFromMemory:
+          searchMode: 0
+          requiredTags:
+          - ITEM
+        lookupForCountInMemory: 1

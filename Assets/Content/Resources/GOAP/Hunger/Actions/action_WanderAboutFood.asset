@@ -28,6 +28,7 @@ MonoBehaviour:
       rid: 365112727136371074
     preconditions:
     - NotRemembers/FOOD
+    - Inventory_HasNo/FOOD
     effects:
     - IsMoving
     - Remembers_Nearby/FOOD

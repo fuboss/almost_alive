@@ -7,12 +7,10 @@ using Content.Scripts.Game.Storage;
 namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
   [Serializable]
   public class HasNoHaulableItemInInventoryBelief : HasNoInInventoryBelief {
-
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         return !agent.inventory.occupiedSlots.Any(slot => StorageQuery.AnyStorageNeeds(slot.item));
       };
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

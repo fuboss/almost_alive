@@ -9,13 +9,10 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory.Descriptors {
   [HideReferenceObjectPicker]
   public class DescriptionData {
     [ValueDropdown("GetNames")] public string[] tags;
-    public bool isInventoryItem = true;
     public float rememberDuration = 300f;
 
     public List<FloatAgentStat.Data> onUseAddStats = new();
     public List<PerTickStatChange> onUseAddStatPerTick = new();
-
-    [SerializeReference] public StackData stackData;
     
 #if UNITY_EDITOR
     public List<string> GetNames() {

@@ -28,6 +28,7 @@ MonoBehaviour:
       rid: 365112727136371074
     preconditions:
     - NotRemembers/TOILET
+    - Toilet_Needed
     effects:
     - IsMoving
     - Remembers_Nearby/TOILET

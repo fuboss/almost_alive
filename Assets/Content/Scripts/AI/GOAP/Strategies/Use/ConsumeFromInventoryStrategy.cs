@@ -46,7 +46,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public override void OnStart() {
       _slot = null;
 
-      if (!_agent.inventory.TryGetItemWithTags(tags, out var slot)) {
+      if (!_agent.inventory.TryGetSlotWithItemTags(tags, out var slot)) {
         Debug.LogError("No matching item in inventory, Aborting ConsumeFromInventoryStrategy");
         _timer?.Stop();
         complete = true;
@@ -104,7 +104,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
       target = null;
     }
 
-    private void OnComplete() {
+    public override void OnComplete() {
       if (target == null) return;
 
       //consume!
@@ -119,7 +119,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
       }
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer.Tick();
     }
   }

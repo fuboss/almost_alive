@@ -24,7 +24,7 @@ MonoBehaviour:
   template:
     name: goal_AcquireWood
     desiredEffects:
-    - Inventory_Has/FOOD
+    - Inventory_Has/WOOD
     utilityEvaluators:
     - utility: {fileID: -8730654034019302617, guid: 5220bc51c590c4beb842bff6492c3773, type: 2}
       evaluator:

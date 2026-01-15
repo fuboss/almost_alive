@@ -21,7 +21,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public virtual void OnStop() {
       // noop
     }
-    
+
+    public virtual void OnComplete() {
+      
+    }
+
 #if UNITY_EDITOR
     public List<string> GetTags() {
       return GOAPEditorHelper.GetTags();

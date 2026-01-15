@@ -9,39 +9,40 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
   public class MemorySearcher {
     public SearchMode searchMode = SearchMode.NEAREST;
     [ValueDropdown("GetTags")] public string[] requiredTags;
+
 #if UNITY_EDITOR
     public List<string> GetTags() {
       return GOAPEditorHelper.GetTags();
     }
 #endif
 
-    public Func<Vector3> Search(IGoapAgent agent) {
-      return SearchImp;
+    public MemorySnapshot Search(IGoapAgent agent, Func<MemorySnapshot, bool> predicate = null) {
+      var targetMem = searchMode switch {
+        SearchMode.NEAREST => GetNearest(agent, predicate),
+        SearchMode.ANY => agent.memory.GetWithAllTags(requiredTags).Random(),
+        _ => GetNearest(agent, predicate) //null
+      };
 
-      Vector3 SearchImp() {
-        var targetMem = searchMode switch {
-          SearchMode.NEAREST => GetNearest(agent),
-          SearchMode.ANY => agent.memory.GetWithAllTags(requiredTags).Random(),
-          _ => GetNearest(agent) //null
-        };
+      if (targetMem != null) {
+        Debug.Log($"SearchResult: {targetMem.target.name} {targetMem.location}", targetMem.target);
+        return targetMem;
+      }
 
-        if (targetMem != null) {
-          Debug.Log($"SearchResult: {targetMem.target.name} {targetMem.location}", targetMem.target);
-          return targetMem.location;
+      Debug.LogError("MoveStrategy Create: No target found in memory!");
+      return null;
+    }
+
+    public MemorySnapshot GetNearest(IGoapAgent agent, Func<MemorySnapshot, bool> predicate = null) {
+      return GetNearest(agent.memory, agent.position, requiredTags, ms => {
+        var valid = ms.target != null;
+        if (predicate != null) {
+          valid = valid && predicate.Invoke(ms);
         }
 
-        Debug.LogError("MoveStrategy Create: No target found in memory!");
-        return agent.position;
-      }
+        return valid;
+      });
     }
 
-    public MemorySnapshot GetNearest(IGoapAgent agent) {
-      return GetNearest(agent.memory, agent.position, requiredTags, ms => ms.target != null);
-    }
-
-    public MemorySnapshot GetNearest(AgentMemory memory, Vector3 agentPosition) {
-      return GetNearest(memory, agentPosition, requiredTags, ms => ms.target != null);
-    }
 
     public MemorySnapshot GetNearest(AgentMemory memory, Vector3 agentPosition, string[] tags,
       Func<MemorySnapshot, bool> predicate = null) {

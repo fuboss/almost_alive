@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
   }
 
   [Serializable]
-  public class AgentMemory{
+  public class AgentMemory {
     public enum RememberResult {
       NewMemory,
       UpdatedMemory,
@@ -76,8 +77,14 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
     public void Forget(MemorySnapshot snapshot) {
       if (snapshot == null) return;
-      if (_memory.Remove(snapshot)) {
+      if (_memory.RemoveAll(m => m.target == snapshot.target) > 0) {
         RemoveFromIndex(snapshot);
+      }
+    }
+
+    public void Forget(ActorDescription actorToForget) {
+      if (TryFind(snap => snap.target == actorToForget, out MemorySnapshot snapshot)) {
+        Forget(snapshot);
       }
     }
 
@@ -90,7 +97,15 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       var now = DateTime.UtcNow;
       var toRemove = new List<MemorySnapshot>();
       foreach (var snap in _memory) {
-        if (snap != null && snap.IsExpiredAt(now)) toRemove.Add(snap);
+        if (snap == null) continue;
+        if (snap.target == null || snap.IsExpiredAt(now)) {
+          toRemove.Add(snap);
+          continue;
+        }
+
+        // if (snap.target.GetComponentInParent<ActorInventory>() != null) {
+        //   toRemove.Add(snap);
+        // }
       }
 
       foreach (var s in toRemove) Forget(s);
@@ -300,21 +315,22 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
           set = new HashSet<MemorySnapshot>();
           _tagIndex[t] = set;
         }
-
         set.Add(snapshot);
-        _octree.Remove(snapshot);
-        _octree.Add(snapshot, snapshot.location);
       }
+      
+      _octree.Remove(snapshot);
+      _octree.Add(snapshot, snapshot.location);
     }
 
     private void RemoveFromIndex(MemorySnapshot snapshot) {
       if (snapshot?.tags == null) return;
-      foreach (var t in snapshot.tags) {
-        if (!_tagIndex.TryGetValue(t, out var set)) continue;
-        set.Remove(snapshot);
-        _octree.Remove(snapshot);
-        if (set.Count == 0) _tagIndex.Remove(t);
+      foreach (var tag in snapshot.tags) {
+        if (!_tagIndex.TryGetValue(tag, out var set)) continue;
+        set.RemoveWhere(s => s.target == snapshot.target);
+        if (set.Count == 0) _tagIndex.Remove(tag);
       }
+ 
+      _octree.Remove(snapshot);
     }
 
     private void UpdateIndexForSnapshot(MemorySnapshot snapshot) {

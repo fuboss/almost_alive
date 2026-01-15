@@ -7,8 +7,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
   public class ComplexStatBelief : AgentBelief {
     public FloatAgentStat.Data[] statDatas;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition ??= () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var body = agent.body;
         foreach (var statData in statDatas) {
           if (body.GetStat(statData.statType) is not FloatAgentStat stat
@@ -19,8 +19,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
 
         return true;
       };
-
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

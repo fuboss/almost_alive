@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
@@ -18,9 +19,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       new PerTickStatChange() { statType = StatType.HUNGER, delta = -0.1f },
     };
 
-    private IGoapAgent _agent;
-    private Func<Vector3> _destination;
-    private MemorySnapshot _targetSnapshot;
+    protected IGoapAgent _agent;
+    protected Func<Vector3> _destination;
+    protected MemorySnapshot _targetSnapshot;
 
     public MoveStrategy() {
     }
@@ -29,12 +30,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       _agent = agent;
       _destination = destination;
     }
-
-    public MoveStrategy(IGoapAgent agent, Func<MemorySnapshot> snapshot) {
-      _agent = agent;
-      _destination = () => snapshot().location;
-    }
-
 
     public override bool canPerform => !complete;
 
@@ -48,19 +43,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public override void OnStart() {
       _aborted = false;
 
-      if (targetFromMemory != null) {
-        var targetMem = targetFromMemory.GetNearest(_agent);
-        if (targetMem == null) {
-          Debug.LogError("Failed to get nearestTarget from memory");
-          _aborted = true;
-          return;
-        }
-
-        SetDestination(targetMem);
+      var targetMem = GetTargetMemory();
+      if (targetMem == null) {
+        Debug.LogError("Failed to get nearestTarget from memory");
+        _aborted = true;
+        return;
       }
 
+      SetDestination(targetMem);
       UpdateAgentDestination();
       ApplyPerStatTick();
+    }
+
+    protected virtual MemorySnapshot GetTargetMemory() {
+      return targetFromMemory?.GetNearest(_agent);
     }
 
     private void ApplyPerStatTick(float multiplier = 1f) {
@@ -73,6 +69,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       _targetSnapshot = snapshot;
       _destination = () => _targetSnapshot.location;
 
+      Debug.Log($"MoveStrategy SetDestination to {snapshot.target.name} {snapshot.location}", snapshot.target);
       return this;
     }
 
@@ -86,12 +83,16 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       }
     }
 
-    public override void OnStop() {
-      _agent.navMeshAgent.ResetPath();
+    public override void OnComplete() {
       if (_targetSnapshot != null) {
-        _agent.transientTarget = _targetSnapshot.target.GetComponent<ActorDescription>();
+        _agent.gameObject.transform.LookAt(_targetSnapshot.location, Vector3.up);
+        _agent.transientTarget = _targetSnapshot.target;
+        Debug.Log($"MoveStrategy OnComplete. to {_targetSnapshot.target.name} {_targetSnapshot.location}", _targetSnapshot.target);
       }
+      _agent.navMeshAgent.ResetPath();
+    }
 
+    public override void OnStop() {
       ApplyPerStatTick(-1);
 
       _destination = null;
@@ -106,22 +107,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       }
     }
 
-
-    public MoveStrategy SetAgent(IGoapAgent agent) {
-      _agent = agent;
-      return this;
-    }
-
-    public MoveStrategy SetDestination(Func<Vector3> destination) {
-      _destination = destination;
-      return this;
-    }
-
-
     public override IActionStrategy Create(IGoapAgent agent) {
       var dest = _destination;
       if (targetFromMemory != null) {
-        dest = targetFromMemory.Search(agent);
+        dest = () => targetFromMemory.Search(agent).location;
       }
 
       if (dest == null) {

@@ -10,9 +10,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
   public class StorageNeedsFillingBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] acceptedTags;
     public bool inverse;
-
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var result = ActorRegistry<StorageActor>.all
           .Where(storage => storage.priority.isEnabled && !storage.isFull)
           .Any(storage => acceptedTags.Length <= 0 || (storage.AcceptsAnyTag(acceptedTags)));
@@ -20,7 +19,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
           ? result 
           : !result;
       };
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

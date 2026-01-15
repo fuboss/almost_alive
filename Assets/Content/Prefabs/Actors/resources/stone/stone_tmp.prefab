@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2345593225422311620}
   - component: {fileID: 4702617669652647162}
   - component: {fileID: 3143373991361244794}
+  - component: {fileID: -4898366538895701123}
   m_Layer: 6
   m_Name: stone_tmp
   m_TagString: Untagged
@@ -73,25 +74,15 @@ MonoBehaviour:
     tags:
     - RESOURCE
     - STONE
-    isInventoryItem: 1
-    rememberDuration: 300
+    - ITEM
+    rememberDuration: 3000
     onUseAddStats: []
     onUseAddStatPerTick: []
-    stackData:
-      rid: 365112958778343639
   isSelectable: 0
   _tagDefinitions:
   - {fileID: 4702617669652647162}
   - {fileID: 3143373991361244794}
-  references:
-    version: 2
-    RefIds:
-    - rid: 365112958778343639
-      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
-      data:
-        min: 0
-        max: 10
-        current: 0
+  - {fileID: -4898366538895701123}
 --- !u!114 &4702617669652647162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,6 +125,39 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+--- !u!114 &-4898366538895701123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287502450455040918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56842bb29bdf457ca1e5f8b88a04afa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ItemTag
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  weight: 1
+  stackData:
+    rid: 365112976116547986
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547986
+      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
+      data:
+        min: 0
+        max: 5
+        current: 0
 --- !u!1 &8456816581549197633
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,9 +264,9 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.74
+  m_Radius: 0.3
   m_Center: {x: 0, y: 0, z: 0}

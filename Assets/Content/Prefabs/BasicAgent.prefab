@@ -210,19 +210,11 @@ MonoBehaviour:
     SerializationNodes: []
   _descriptionData:
     tags: []
-    isInventoryItem: 0
     rememberDuration: 12000
     onUseAddStats: []
     onUseAddStatPerTick: []
-    stackData:
-      rid: -2
   isSelectable: 1
   _tagDefinitions: []
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!136 &323529392630779770
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -579,7 +571,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3653410898189912783, guid: 505a30fa703ec4ca69bfbb18c657ba51, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3653410898189912783, guid: 505a30fa703ec4ca69bfbb18c657ba51, type: 3}
       propertyPath: m_LocalPosition.z

@@ -4,8 +4,6 @@ using Content.Scripts.AI.GOAP.Agent;
 using ImprovedTimers;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
-  // TODO Migrate Strategies, Beliefs, Actions and Goals to Scriptable Objects and create Node Editor for them
-
   [Serializable]
   public class IdleStrategy : AgentStrategy {
     public float duration;

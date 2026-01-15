@@ -9,15 +9,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
     public float range = 2;
     public bool inverted;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var distance = Vector3.Distance(agent.position, location);
         return !inverted
           ? distance < range
           : distance >= range;
       };
-
-      return base.Evaluate(agent);
     }
 
     public override AgentBelief Copy() {

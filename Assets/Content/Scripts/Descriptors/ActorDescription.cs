@@ -14,22 +14,21 @@ namespace Content.Scripts.Game {
     [SerializeField, HideInInspector] private TagDefinition[] _tagDefinitions;
 
     public DescriptionData descriptionData => _descriptionData;
-    public bool canPickup => descriptionData.isInventoryItem;
+    public bool collectable => GetDefinition<ItemTag>() != null;
 
     public StackData GetStackData() {
-      descriptionData.stackData ??= new StackData { max = 1, current = 1 };
-      return descriptionData.stackData;
+      return GetDefinition<ItemTag>()?.stackData;
     }
 
     public bool HasAllTags(string[] tags) {
       return tags.All(t => _descriptionData.tags.Contains(t));
     }
 
-    public TagDefinition GetDefinition<T>() where T : TagDefinition {
+    public T GetDefinition<T>() where T : TagDefinition {
       return GetComponent<T>();
     }
     
-    public TagDefinition GeDefinition(string tag) {
+    public TagDefinition GetDefinition(string tag) {
       return _tagDefinitions.FirstOrDefault(td => td.Tag == tag);
     }
 

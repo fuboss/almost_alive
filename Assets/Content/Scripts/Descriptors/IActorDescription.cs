@@ -6,14 +6,14 @@ using UnityEngine;
 namespace Content.Scripts.Game {
   public interface IActorDescription {
     DescriptionData descriptionData { get; }
-    bool canPickup { get; }
+    bool collectable { get; }
     StackData GetStackData();
     bool HasAllTags(string[] tags);
     GameObject gameObject { get; }
     Transform transform { get; }
     
-    TagDefinition GetDefinition<T>() where T : TagDefinition;
-    TagDefinition GeDefinition(string tag);
+    T GetDefinition<T>() where T : TagDefinition;
+    TagDefinition GetDefinition(string tag);
   }
 
   public abstract class TagDefinition : SerializedMonoBehaviour {

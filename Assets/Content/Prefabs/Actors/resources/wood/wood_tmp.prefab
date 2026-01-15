@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 185741071083002633}
   - component: {fileID: 7569178020877891940}
   - component: {fileID: 1550545764646020738}
+  - component: {fileID: -2177230349890307538}
   m_Layer: 6
   m_Name: wood_tmp
   m_TagString: Untagged
@@ -74,25 +75,15 @@ MonoBehaviour:
     tags:
     - RESOURCE
     - WOOD
-    isInventoryItem: 1
-    rememberDuration: 300
+    - ITEM
+    rememberDuration: 3000
     onUseAddStats: []
     onUseAddStatPerTick: []
-    stackData:
-      rid: 365112958778343639
   isSelectable: 0
   _tagDefinitions:
   - {fileID: 7569178020877891940}
   - {fileID: 1550545764646020738}
-  references:
-    version: 2
-    RefIds:
-    - rid: 365112958778343639
-      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
-      data:
-        min: 0
-        max: 10
-        current: 0
+  - {fileID: -2177230349890307538}
 --- !u!114 &7569178020877891940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +126,39 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+--- !u!114 &-2177230349890307538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3231741710130008131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56842bb29bdf457ca1e5f8b88a04afa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ItemTag
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  weight: 0.5
+  stackData:
+    rid: 365112976116547987
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547987
+      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
+      data:
+        min: 0
+        max: 20
+        current: 0
 --- !u!1 &6086320318205194790
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,7 +265,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -353,7 +377,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

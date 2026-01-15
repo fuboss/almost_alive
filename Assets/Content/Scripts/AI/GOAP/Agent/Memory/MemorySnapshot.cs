@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Content.Scripts.Game;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Agent.Memory {
@@ -9,7 +10,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     public List<string> tags;
     public Vector3 location;
 
-    public GameObject target;
+    public ActorDescription target;
     public List<GameObject> optionalTargets;
 
     public bool isOutdated;

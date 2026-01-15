@@ -30,6 +30,7 @@ MonoBehaviour:
     - Remembers_Nearby/FOOD
     effects:
     - Transient_Is/FOOD
+    - IsMoving
   references:
     version: 2
     RefIds:

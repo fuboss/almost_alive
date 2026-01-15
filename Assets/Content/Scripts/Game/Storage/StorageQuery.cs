@@ -63,10 +63,13 @@ namespace Content.Scripts.Game.Storage {
       return ActorRegistry<StorageActor>.all
         .Any(s => s.HasSpaceFor(tag) && s.priority.isEnabled);
     }
-    
+
     public static bool AnyStorageNeeds(ActorDescription actor) {
       return ActorRegistry<StorageActor>.all
-        .Any(s => s.HasSpaceFor(actor.descriptionData.tags[0]) && s.priority.isEnabled);
+        .Any(s => {
+          bool canDeposit = s.priority.isEnabled && s.CanDeposit(actor);
+          return canDeposit;
+        });
     }
 
     /// <summary>

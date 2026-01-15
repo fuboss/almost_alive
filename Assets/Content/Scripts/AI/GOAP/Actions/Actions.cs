@@ -28,7 +28,10 @@ namespace Content.Scripts.AI.GOAP.Actions {
     public bool AreAllPreconditionsMet(IGoapAgent agent)
       => preconditions.All(precondition => {
         var result = precondition.Evaluate(agent);
-        if (!result) Debug.LogWarning($"{name} {precondition.name} failed", agent.body);
+        if (!result)
+          Debug.LogWarning(
+            $"<b>{name}</b> precondition: <b>{precondition.name}</b>({precondition.GetType().Name}) failed",
+            agent.agentBrain);
         return result;
       });
 
@@ -37,7 +40,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
     public IGoapAgent agent { get; set; }
 
     public void OnStart() {
-      // Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} starting.");
+//      Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} starting.");
       _data.strategy.OnStart();
     }
 
@@ -52,8 +55,12 @@ namespace Content.Scripts.AI.GOAP.Actions {
     }
 
     private void OnComplete() {
+      _data.strategy.OnComplete();
       // Apply effects
-      foreach (var effect in effects) effect.Evaluate(agent);
+      foreach (var effect in effects) {
+        effect.Evaluate(agent);
+      }
+      Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} completed.");
     }
 
     public void OnStop() {

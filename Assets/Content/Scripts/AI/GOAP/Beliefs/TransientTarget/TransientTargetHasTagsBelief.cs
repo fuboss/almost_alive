@@ -9,16 +9,14 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool inverse = false;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         if (!inverse)
-          return agent.transientTarget != null && agent.transientTarget.GetComponent<ActorDescription>().HasAllTags(tags);
-        return agent.transientTarget == null || !agent.transientTarget.GetComponent<ActorDescription>().HasAllTags(tags);
+          return agent.transientTarget != null && agent.transientTarget.HasAllTags(tags);
+        return agent.transientTarget == null || !agent.transientTarget.HasAllTags(tags);
       };
-
-      return base.Evaluate(agent);
     }
-    
+
     public override AgentBelief Copy() {
       var copy = new TransientTargetHasTagsBelief {
         inverse = inverse,

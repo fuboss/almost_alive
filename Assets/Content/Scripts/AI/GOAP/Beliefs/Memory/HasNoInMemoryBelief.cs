@@ -8,18 +8,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
   public class HasNoInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")]public string[] tags;
 
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => {
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => {
         var withTags = agent.memory.GetWithAllTags(tags);
-        if (withTags.Length == 0) {
-          Debug.LogWarning($"HasNoInMemoryBelief: No items found with tags: '{string.Join(", ", tags)}'");
-        }
         return withTags.Length == 0;
       };
-
-      return base.Evaluate(agent);
     }
-    
+
     public override AgentBelief Copy() {
       var copy = new HasNoInMemoryBelief {
         tags = tags,

@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 684ea37c0c824d47bde025f384c16cf2, type: 3}
+  m_Name: CanInteract
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.CompositeInteractionAvailableWithTagsBeliefsSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  beliefs:
+  - rid: 365112976116547873
+  - rid: 365112976116547874
+  - rid: 365112976116547875
+  - rid: 365112976116547876
+  - rid: 365112976116547877
+  - rid: 365112976116547878
+  - rid: 365112976116547879
+  - rid: 365112976116547880
+  - rid: 365112976116547881
+  - rid: 365112976116547882
+  - rid: 365112976116547883
+  references:
+    version: 2
+    RefIds:
+    - rid: 365112976116547873
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/FOOD
+        tags:
+        - FOOD
+    - rid: 365112976116547874
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/REST
+        tags:
+        - REST
+    - rid: 365112976116547875
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/TOILET
+        tags:
+        - TOILET
+    - rid: 365112976116547876
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/SOCIAL
+        tags:
+        - SOCIAL
+    - rid: 365112976116547877
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/AGENT
+        tags:
+        - AGENT
+    - rid: 365112976116547878
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/STORAGE
+        tags:
+        - STORAGE
+    - rid: 365112976116547879
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/TREE
+        tags:
+        - TREE
+    - rid: 365112976116547880
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/RESOURCE
+        tags:
+        - RESOURCE
+    - rid: 365112976116547881
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/WOOD
+        tags:
+        - WOOD
+    - rid: 365112976116547882
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/STONE
+        tags:
+        - STONE
+    - rid: 365112976116547883
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/ITEM
+        tags:
+        - ITEM

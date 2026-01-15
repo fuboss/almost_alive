@@ -5,15 +5,12 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
   [Serializable]
   public class HasTransientTargetBelief : AgentBelief {
     public bool inverse = false;
-
-    public override bool Evaluate(IGoapAgent agent) {
-      condition = () => !inverse 
+    protected override Func<bool> GetCondition(IGoapAgent agent) {
+      return () => !inverse 
         ? agent.transientTarget != null
         : agent.transientTarget == null;
-
-      return base.Evaluate(agent);
     }
-    
+
     public override AgentBelief Copy() {
       var copy = new HasTransientTargetBelief {
         inverse = inverse,

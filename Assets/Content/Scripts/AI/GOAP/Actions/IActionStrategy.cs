@@ -18,5 +18,8 @@ namespace Content.Scripts.AI.GOAP.Actions {
     }
 
     IActionStrategy Create(IGoapAgent agent);
+
+    void OnComplete() {
+    }
   }
 }

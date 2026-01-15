@@ -19,10 +19,10 @@ namespace Content.Scripts.Game.Storage {
     public FilteredActorInventory inventory => _inventory;
     public ActorPriority priority => _priority;
     public ActorDescription description => _description;
-    
+
     public string[] acceptedTags => _inventory.availableTags;
     public int totalSlots => _inventory.slotCount;
-    public int freeSlots => _inventory.freelots.Count();
+    public int freeSlots => _inventory.freeSlots.Count();
     public int occupiedSlots => _inventory.occupiedSlots.Count();
     public bool isFull => freeSlots == 0;
     public bool isEmpty => occupiedSlots == 0;
@@ -75,6 +75,14 @@ namespace Content.Scripts.Game.Storage {
     /// </summary>
     public bool HasSpaceFor(string[] tags) {
       return AcceptsAnyTag(tags) && freeSlots > 0;
+    }
+
+    public bool CanDeposit(ActorDescription actor) {
+      var actorTags = actor.descriptionData.tags;
+      var stackData = actor.GetStackData();
+      if (stackData == null) return false;
+      //todo: improve
+      return AcceptsAnyTag(actorTags);
     }
 
     /// <summary>
