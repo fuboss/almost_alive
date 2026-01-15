@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Content.Scripts.Game {
   public static class Registry<T>
@@ -38,6 +39,7 @@ namespace Content.Scripts.Game {
 
     public static int count => items.Count;
 
+    [RuntimeInitializeOnLoadMethod]
     public static void Clear() {
       items.Clear();
       itemsIds.Clear();

@@ -1085,6 +1085,7 @@ Transform:
   - {fileID: 7875331982175440871}
   - {fileID: 6380465205606098231}
   - {fileID: 110490133227627617}
+  - {fileID: 1233069655568372539}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6534536079400176096
@@ -1498,6 +1499,80 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7496287382631635431, guid: bbc9b43428faa4345acf0beccad53686, type: 3}
   m_PrefabInstance: {fileID: 3495882810661829840}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5453073589998923835
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2238305091418014283}
+    m_Modifications:
+    - target: {fileID: -8591379613606435956, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -8591379613606435956, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6803833349922810512, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 6803833349922810512, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+    - target: {fileID: 7145274956803166683, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: 7145274956803166683, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+    - target: {fileID: 8041409771114869610, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+      propertyPath: m_Name
+      value: tmp_Storage_RESOURCES
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+--- !u!4 &1233069655568372539 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6535158295370687232, guid: 1904b13808dc44b6f81e2196c9277281, type: 3}
+  m_PrefabInstance: {fileID: 5453073589998923835}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6573287229697001313
 PrefabInstance:

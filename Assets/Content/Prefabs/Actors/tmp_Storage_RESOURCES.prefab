@@ -29,8 +29,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6535158295370687232}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0330733c407d544009c49c60b6d75f88, type: 2}
+  - {fileID: 2100000, guid: 74ce5762058f14fcfaa86ef654410df8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: -8591379613606435956}
   - component: {fileID: 4293530418156208146}
   m_Layer: 6
-  m_Name: tmp_Storage_FOOD
+  m_Name: tmp_Storage_RESOURCES
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,7 +245,7 @@ MonoBehaviour:
       max: 10
       current: 0
   availableTags:
-  - FOOD
+  - RESOURCES
 --- !u!114 &-8591379613606435956
 MonoBehaviour:
   m_ObjectHideFlags: 0
