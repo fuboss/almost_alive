@@ -74,7 +74,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
       }
 
       // Get unlocked camp recipes sorted by priority
-      var campRecipes = _agent.body.recipes.GetUnlockedCampRecipes(_recipeModule);
+      var campRecipes = _agent.recipes.GetUnlockedCampRecipes(_recipeModule);
 
       // Find first recipe we can craft that has an empty spot
       foreach (var recipe in campRecipes) {
@@ -173,7 +173,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
             out var actor,
             _selectedRecipe.recipe.outputCount)) {
         _targetSpot.SetBuiltActor(actor);
-        _agent.body.AddExperience(10); // XP for building
+        _agent.AddExperience(10); // XP for building
         Debug.Log($"[BuildAtCamp] Built {actor.actorKey} at {_targetSpot.name}");
       }
       else {

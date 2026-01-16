@@ -9,18 +9,11 @@ using UnityEngine;
 namespace Content.Scripts.AI.GOAP.Agent {
   public class AgentBody : SerializedMonoBehaviour {
     [SerializeField] private List<AgentStat> _stats = new();
-    
-    [FoldoutGroup("Progression")]
-    [SerializeField] private AgentExperience _experience = new();
-    
-    [FoldoutGroup("Progression")]
-    [SerializeField] private AgentRecipes _recipes = new();
+
 
     [ShowInInspector] private Dictionary<StatType, float> _perTickDelta = new();
     public IReadOnlyDictionary<StatType, float> perTickDelta => _perTickDelta;
 
-    public AgentExperience experience => _experience;
-    public AgentRecipes recipes => _recipes;
 
     private IGoapAgent _agent;
 
@@ -29,10 +22,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _perTickDelta ??= new Dictionary<StatType, float>();
 
       _stats = _agent.defaultStatSet.GetDefaultStats();
-      
-      // Initialize progression
-      _experience.OnLevelUp += _recipes.OnLevelUp;
-      _recipes.Initialize(_experience.level);
     }
 
     public void TickStats(float deltaTime) {
@@ -52,7 +41,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentStat GetStat(StatType statName) {
       return _stats.FirstOrDefault(s => s.type == statName);
     }
-    
+
     public IReadOnlyList<AgentStat> GetStatsInfo() {
       return _stats;
     }
@@ -74,9 +63,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _perTickDelta[statName] = delta;
     }
 
-    public void AddExperience(int amount) {
-      _experience.AddXP(amount);
-    }
 
     public void SetResting(bool isResting) {
       Debug.LogError($"BODY isResting: {isResting}", this);

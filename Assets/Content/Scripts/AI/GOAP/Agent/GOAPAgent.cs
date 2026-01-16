@@ -1,4 +1,5 @@
 using System;
+using Content.Scripts.AI.Craft;
 using Content.Scripts.Animation;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
@@ -20,7 +21,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private ActorInventory _inventory;
     [SerializeField] private WorkPriority _workPriority;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
-
+    
+    [FoldoutGroup("Progression")]
+    [SerializeField] private AgentExperience _experience = new();
+    [FoldoutGroup("Progression")]
+    [SerializeField] private AgentRecipes _recipes = new();
+    
     [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
     [ShowInInspector, ReadOnly] private float _baseNavSpeed;
 
@@ -33,7 +39,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public new Rigidbody rigidbody { get; private set; }
     public AnimationController animationController { get; private set; }
     public ActorInventory inventory => _inventory;
-
+    public AgentExperience experience => _experience;
+    public AgentRecipes recipes => _recipes;
     public ActorDescription transientTarget {
       get => _transientTarget;
       set {
@@ -48,7 +55,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
 
-
+    public void AddExperience(int amount) {
+      _experience.AddXP(amount);
+    }
+    
     private void Awake() {
       RefreshLinks();
       _baseNavSpeed = navMeshAgent.speed;
@@ -107,6 +117,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void OnCreated() {
       agentBrain.Initialize(this);
       _agentBody.Initialize(this);
+      // Initialize progression
+      _experience.OnLevelUp += _recipes.OnLevelUp;
+      _recipes.Initialize(_experience.level);
 
       // Apply initial time scale
       if (_simTime != null) {

@@ -44,7 +44,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
         
         // Check if agent can build any unlocked camp recipe
         if (_recipeModule == null) return false;
-        var campRecipes = agent.body.recipes.GetUnlockedCampRecipes(_recipeModule);
+        var campRecipes = agent.recipes.GetUnlockedCampRecipes(_recipeModule);
         return campRecipes.Any(r => _recipeModule.CanCraft(r, agent.inventory));
       };
     }

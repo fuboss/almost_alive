@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.Utility {
 
       // Check if can actually build something
       if (_recipeModule == null) return 0f;
-      var campRecipes = agent.body.recipes.GetUnlockedCampRecipes(_recipeModule);
+      var campRecipes = agent.recipes.GetUnlockedCampRecipes(_recipeModule);
       if (!campRecipes.Any(r => _recipeModule.CanCraft(r, agent.inventory))) return 0f;
 
       // Calculate priority based on empty spots ratio

@@ -1,3 +1,4 @@
+using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.Animation;
@@ -8,7 +9,7 @@ using UnityEngine.AI;
 using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
-  public interface IGoapAgent: ITickable {
+  public interface IGoapAgent : ITickable {
     AgentStatSetSO defaultStatSet { get; }
     AgentBrain agentBrain { get; }
     AgentMemory memory => agentBrain.memory;
@@ -28,6 +29,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     ActorDescription transientTarget { get; set; }
     int transientTargetId { get; }
     GameObject gameObject { get; }
+
+    public AgentExperience experience { get; }
+    public AgentRecipes recipes { get; }
+
     WorkPriority GetWorkScheduler();
+    void AddExperience(int amount);
   }
 }
