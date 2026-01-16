@@ -9,6 +9,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
   public class HasInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool checkDistance;
+    public int minCount = 1;
     [EnableIf("checkDistance")] public float maxDistance = 20;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
@@ -20,10 +21,10 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
         }
 
         if (!checkDistance) {
-          return withTags.Length > 0;
+          return withTags.Length >= minCount;
         }
 
-        return withTags.Any(m => Vector3.Distance(agent.position, m.location) < maxDistance);
+        return withTags.Count(m => Vector3.Distance(agent.position, m.location) < maxDistance) >= minCount;
       };
     }
 
@@ -33,7 +34,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
         checkDistance = checkDistance,
         maxDistance = maxDistance,
         name = name,
-        condition = condition
+        condition = condition,
+        minCount = minCount
       };
       return copy;
     }

@@ -63,5 +63,9 @@ namespace Content.Scripts.Animation {
     public void DepositItem() {
       Debug.LogWarning("DepositItem animation not implemented", this);
     }
+
+    public void CutTree() {
+      Debug.LogWarning("CutTree animation not implemented", this);
+    }
   }
 }

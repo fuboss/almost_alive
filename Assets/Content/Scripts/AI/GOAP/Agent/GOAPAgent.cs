@@ -2,6 +2,7 @@ using System;
 using Content.Scripts.Animation;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Work;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
     [SerializeField] private ActorInventory _inventory;
-
+    [SerializeField] private WorkPriority _workPriority;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
 
     [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
@@ -42,6 +43,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public int transientTargetId => _transientTarget.GetComponent<ActorId>()?.id ?? -1;
+    public WorkPriority GetWorkScheduler() => _workPriority;
 
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
@@ -99,6 +101,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (rigidbody == null) rigidbody = GetComponent<Rigidbody>();
       if (_agentBrain == null) _agentBrain = GetComponentInChildren<AgentBrain>();
       if (_agentBody == null) _agentBody = GetComponentInChildren<AgentBody>();
+      if (_workPriority == null) _workPriority = GetComponentInChildren<WorkPriority>();
     }
 
     public void OnCreated() {

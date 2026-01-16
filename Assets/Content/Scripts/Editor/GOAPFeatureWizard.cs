@@ -61,7 +61,7 @@ namespace Content.Scripts.Editor {
       AssetDatabase.CreateFolder(basePath, "Goals");
 
       // Create FeatureSet
-      var feature = CreateInstance<GoatFeatureSO>();
+      var feature = CreateInstance<GoapFeatureSO>();
       feature.goals = new();
       feature.beliefs = new();
       feature.compositeBeliefs = new();

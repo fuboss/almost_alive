@@ -1,7 +1,9 @@
+using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using VContainer;
 
 namespace Content.Scripts.AI.GOAP.Actions {
   [CreateAssetMenu(fileName = "ActionData", menuName = "GOAP/ActionData", order = 0)]
@@ -25,14 +27,25 @@ namespace Content.Scripts.AI.GOAP.Actions {
 
     public AgentActionData data;
 
-    public AgentAction GetAction(IGoapAgent agent) {
-      var builder = new AgentAction.Builder(data.name)
-        .WithCost(data.cost)
-        .WithBenefit(data.benefit)
-        .WithStrategy(data.strategy.Create(agent))
-        .AddPreconditions(data.preconditions.ConvertAll(agent.GetBelief))
-        .AddEffects(data.effects.ConvertAll(agent.GetBelief));
+    public AgentAction GetAction(IGoapAgent agent, IObjectResolver objectResolver) {
+      if (data == null) {
+        Debug.LogError($"ERROR {name}", this);
+        return null;
+      }
 
+      var builder = new AgentAction.Builder(data.name);
+      try {
+        IActionStrategy strategy = data.strategy.Create(agent);
+        objectResolver.Inject(strategy);
+        builder.WithCost(data.cost)
+          .WithBenefit(data.benefit)
+          .WithStrategy(strategy)
+          .AddPreconditions(data.preconditions.ConvertAll(agent.GetBelief))
+          .AddEffects(data.effects.ConvertAll(agent.GetBelief));
+      }
+      catch (Exception e) {
+        Debug.LogException(e, this);
+      }
       return builder.Build();
     }
 

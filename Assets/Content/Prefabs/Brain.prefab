@@ -162,6 +162,7 @@ MonoBehaviour:
   - Fatigue_FeatureSet
   - Toilet_FeatureSet
   - Hauling_FeatureSet
+  - WoodCutting_FeatureSet
   _memoryConsolidation:
     confidenceDecayRate: 0.99
     forgetThreshold: 0.1

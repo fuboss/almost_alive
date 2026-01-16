@@ -281,6 +281,7 @@ MonoBehaviour:
   _defaultStatSet: {fileID: 11400000, guid: 1b9f1f4e6a31b49f5b48af9060368ab1, type: 2}
   _agentBrain: {fileID: 9167206683187934627}
   _inventory: {fileID: 7024242706227424484}
+  _workPriority: {fileID: 4637559824958677867}
   _sprintSpeedModifier: 1.1
 --- !u!195 &5134860562953363226
 NavMeshAgent:
@@ -352,6 +353,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  actorKey: agent
   _descriptionData:
     tags: []
     rememberDuration: 12000
@@ -443,7 +445,7 @@ MonoBehaviour:
       Data: 1
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 8
       Data: 
@@ -467,7 +469,7 @@ MonoBehaviour:
       Data: 3
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -479,7 +481,7 @@ MonoBehaviour:
       Data: 4
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -491,7 +493,7 @@ MonoBehaviour:
       Data: 5
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -503,7 +505,7 @@ MonoBehaviour:
       Data: 6
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -515,7 +517,7 @@ MonoBehaviour:
       Data: 7
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 4
     - Name: 
       Entry: 8
       Data: 
@@ -527,7 +529,7 @@ MonoBehaviour:
       Data: 8
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 8
       Data: 
@@ -539,7 +541,7 @@ MonoBehaviour:
       Data: 9
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -551,7 +553,7 @@ MonoBehaviour:
       Data: 10
     - Name: $v
       Entry: 3
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 

@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Actors
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Actors
+  m_GUID: b22f4e30d304c435bbf9067488b9e04a
+  m_SerializeEntries:
+  - m_GUID: 176fbc5f7ece74d51b6ac9980272c51d
+    m_Address: storage_WOOD
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1904b13808dc44b6f81e2196c9277281
+    m_Address: storage_RESOURCE
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e29e3624f3294b128aa453cea1b4216
+    m_Address: storage_FOOD
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a490ce0eb548466d8cbc8ef6daba1ac
+    m_Address: restPoint
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b57a0d2e66784dc9af5af2b8ea34502
+    m_Address: stone_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66fefc09b63d047f0a39e154929bfb2f
+    m_Address: tree_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93895ed40e7094e31bb2e06bc51cacd8
+    m_Address: wood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5d70b734a396431c9e70e1a2d32c1e8
+    m_Address: food_berries
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbc9b43428faa4345acf0beccad53686
+    m_Address: toiletSpot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb09877c1ffca49229229b188da07636
+    m_Address: agent
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0cee14d4729274f54aca95d1b4c12553, type: 2}
+    - {fileID: 11400000, guid: fde788e9361b74890bf4960bbaa3c6c1, type: 2}

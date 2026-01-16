@@ -8,6 +8,8 @@ using UnityEngine;
 namespace Content.Scripts.Game {
   [RequireComponent(typeof(ActorId))]
   public class ActorDescription : SerializedMonoBehaviour, IActorDescription, ISelectableActor {
+    public string actorKey;
+
     [SerializeField] private DescriptionData _descriptionData;
     public bool isSelectable;
     [ShowInInspector, ReadOnly] private bool _isSelected;
@@ -15,6 +17,13 @@ namespace Content.Scripts.Game {
 
     public DescriptionData descriptionData => _descriptionData;
     public bool collectable => GetDefinition<ItemTag>() != null;
+    public int actorId => GetComponent<ActorId>().id;
+    public bool canSelect => isSelectable;
+
+    public bool isSelected {
+      get => _isSelected;
+      set => _isSelected = value;
+    }
 
     public StackData GetStackData() {
       return GetDefinition<ItemTag>()?.stackData;
@@ -27,23 +36,14 @@ namespace Content.Scripts.Game {
     public T GetDefinition<T>() where T : TagDefinition {
       return GetComponent<T>();
     }
-    
+
     public TagDefinition GetDefinition(string tag) {
       return _tagDefinitions.FirstOrDefault(td => td.Tag == tag);
-    }
-
-    public bool canSelect => isSelectable;
-
-    public bool isSelected {
-      get => _isSelected;
-      set => _isSelected = value;
     }
 
     private void OnValidate() {
       _tagDefinitions = GetComponents<TagDefinition>();
       _descriptionData.tags = _tagDefinitions.Select(td => td.Tag).ToArray();
     }
-    
-    
   }
 }

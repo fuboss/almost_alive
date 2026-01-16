@@ -1,12 +1,11 @@
 using System;
-using System.Linq;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Animation;
 using Content.Scripts.Game;
 using ImprovedTimers;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
@@ -17,7 +16,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private CountdownTimer _timer;
 
     public override IActionStrategy Create(IGoapAgent agent) {
-      return new PickupTransientStrategy(agent);
+      return new PickupTransientStrategy(agent) {
+        duration = duration
+      };
     }
 
     public PickupTransientStrategy() {
@@ -59,14 +60,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnComplete() {
       if (target == null) return;
-      if (_agent.inventory.TryPutItemInInventory(target)) {
-        Debug.Log($"{target.name} pickedUp!");
-        _agent.memory.Forget(_agent.transientTarget);
-        _agent.transientTarget = null;
-      }
-      else {
-        Debug.LogError($"failed to pickup {target.name}", target);
-      }
+      _agent.memory.Forget(_agent.transientTarget);
+      _agent.transientTarget = null;
+      
+      //TODO: remove tree and spawn wood items
+      Object.Destroy(target.gameObject);
     }
 
     public override void OnStop() {

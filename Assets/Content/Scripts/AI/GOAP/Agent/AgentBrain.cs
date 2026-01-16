@@ -16,7 +16,7 @@ using Random = UnityEngine.Random;
 namespace Content.Scripts.AI.GOAP.Agent {
   public class AgentBrain : SerializedMonoBehaviour {
     [Inject] private GoapPlanFactory _gPlanFactory;
-    [Inject] private GoatFeatureBankModule _goalsBankModule;
+    [Inject] private GoapFeatureBankModule _goalsBankModule;
 
     public string[] availableFeatures = {
       "Common_FeatureSet",
@@ -63,7 +63,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _agent = agent;
       _gPlanner = _gPlanFactory?.CreatePlanner();
 
-      SetupBeliefs(_goalsBankModule.GetBeliefs(agent, availableFeatures));
+      SetupBeliefs(_goalsBankModule.GetBeliefs(availableFeatures));
       SetupActions(_goalsBankModule.GetActions(agent, availableFeatures));
       SetupGoals(_goalsBankModule.GetGoals(availableFeatures));
       SetupStats();

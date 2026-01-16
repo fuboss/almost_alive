@@ -168,6 +168,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  actorKey: toiletSpot
   _descriptionData:
     tags:
     - TOILET

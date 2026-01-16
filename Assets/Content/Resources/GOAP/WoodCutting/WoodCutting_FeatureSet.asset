@@ -25,5 +25,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d7843e1d111774683aff7ffe52f1e0ce, type: 2}
   beliefs:
   - {fileID: 11400000, guid: b3efd7d637f17432eaf88d4171c52cb9, type: 2}
+  - {fileID: 11400000, guid: 2b830e0bbd75b4018a45266c1c94b18c, type: 2}
   compositeBeliefs: []
-  actionDatas: []
+  actionDatas:
+  - {fileID: 11400000, guid: 2c8ef7cc40d8349e0a0def25765f4f6f, type: 2}
+  - {fileID: 11400000, guid: 0a1dd6392694e493788aa1fe5e3aae0e, type: 2}

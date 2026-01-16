@@ -168,25 +168,18 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  actorKey: restPoint
   _descriptionData:
     tags:
     - REST
-    isInventoryItem: 0
     rememberDuration: 1200
     onUseAddStats: []
     onUseAddStatPerTick:
     - statType: 2
       delta: -15
-    stackData:
-      rid: -2
   isSelectable: 1
   _tagDefinitions:
   - {fileID: 1927102227049245053}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!114 &1927102227049245053
 MonoBehaviour:
   m_ObjectHideFlags: 0

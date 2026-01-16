@@ -171,6 +171,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  actorKey: storage_RESOURCE
   _descriptionData:
     tags:
     - STORAGE

@@ -1,6 +1,7 @@
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.Core.Environment;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Decay;
@@ -17,6 +18,7 @@ namespace Content.Scripts {
     public CinemachineTargetGroup agentsRoot;
     public GOAPAgent agentPrefab;
     public CinemachineCamera cameraPrefab;
+    public EnvironmentSetupSO environmentSetup;
     public UILayer[] uiLayers;
     private Transform _uiRoot;
     
@@ -27,6 +29,11 @@ namespace Content.Scripts {
       builder.Register<SimulationTimeController>(Lifetime.Singleton).AsSelf();
       builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
       
+      // Environment
+      builder.RegisterInstance(environmentSetup).AsSelf();
+      builder.Register<WorldEnvironment>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
+      
       // Decay & Work
       builder.RegisterEntryPoint<DecayModule>().AsSelf();
       builder.RegisterEntryPoint<WorkAssignmentModule>().AsSelf();
@@ -36,9 +43,11 @@ namespace Content.Scripts {
       
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       builder.RegisterComponent(agentPrefab).AsSelf();
-      builder.RegisterInstance(GoatFeatureBankModule.GetFromResources()).AsImplementedInterfaces().AsSelf();
+      builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       

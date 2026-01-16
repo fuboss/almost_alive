@@ -39,7 +39,6 @@ namespace Content.Scripts.Ui {
     }
 
     public virtual void Initialize() {
-      Debug.LogError($"[UI][{GetType().Name}] Initialize()", this);
       isVisible = gameObject.activeSelf;
       Hide();
     }

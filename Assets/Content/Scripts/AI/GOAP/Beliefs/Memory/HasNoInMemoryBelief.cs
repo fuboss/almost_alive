@@ -6,12 +6,13 @@ using UnityEngine;
 namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
   [Serializable]
   public class HasNoInMemoryBelief : AgentBelief {
-    [ValueDropdown("GetTags")]public string[] tags;
+    [ValueDropdown("GetTags")] public string[] tags;
+    public int minCount = 1;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
         var withTags = agent.memory.GetWithAllTags(tags);
-        return withTags.Length == 0;
+        return withTags.Length < minCount;
       };
     }
 
@@ -19,7 +20,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
       var copy = new HasNoInMemoryBelief {
         tags = tags,
         name = name,
-        condition = condition
+        condition = condition,
+        minCount = minCount
       };
       return copy;
     }

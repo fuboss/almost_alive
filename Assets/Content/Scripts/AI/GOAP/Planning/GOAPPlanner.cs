@@ -39,8 +39,9 @@ namespace Content.Scripts.AI.GOAP.Planning {
       var visitedEffects = new HashSet<string>();
 
       // Backward chaining: find actions that satisfy required effects
+      var b = new StringBuilder();
       while (requiredEffects.Count > 0) {
-        var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects);
+        var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b);
 
         if (bestAction == null) {
           // No action can satisfy remaining effects
@@ -78,7 +79,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
       Debug.Log(
         $"ActionPlan for goal: <b>{goal.Name}</b>, cost: {totalCost:F1}, benefit: {totalBenefit:F1}, score: {newPlan.Score:F2}. " +
-        $"{string.Join(" → ", plan.Select(a => $"[{a.name}]"))}");
+        $" QueryResult: {b}" +
+        $"\n{string.Join(" → ", plan.Select(a => $"[{a.name}]"))}");
 
       return newPlan;
     }
@@ -90,11 +92,12 @@ namespace Content.Scripts.AI.GOAP.Planning {
     private AgentAction FindBestAction(
       HashSet<AgentBelief> requiredEffects,
       HashSet<AgentAction> availableActions,
-      HashSet<string> visitedEffects) {
+      HashSet<string> visitedEffects,
+      StringBuilder b) {
       AgentAction best = null;
       var bestScore = float.MinValue;
 
-      var b = new StringBuilder($"[{string.Join(", ", requiredEffects.Select(e => e.name))}]  Checking actions:\n");
+      b.AppendLine($"{string.Join(", ", requiredEffects.Select(e => e.name))}]  Checking actions:\n");
       foreach (var action in availableActions) {
         // Check if action provides any required effect
         var providesRequired = action.effects.Where(e =>
@@ -116,7 +119,6 @@ namespace Content.Scripts.AI.GOAP.Planning {
           $" - Action: <b>{action.name}</b>, provides: {count}, score: {score:F2} (best: {best?.name}{bestScore:F2})");
       }
 
-      Debug.Log($"FindBestAction:{b}");
       return best;
     }
 

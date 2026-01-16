@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Content.Scripts.Game {
+  
   public static class Registry<T>
     where T : class, new() {
     public static event Action<T> OnAdded = delegate { };
@@ -11,6 +13,10 @@ namespace Content.Scripts.Game {
     private static readonly Dictionary<int, T> items = new();
     private static readonly Dictionary<T, int> itemsIds = new();
     private static int _id = 0;
+
+    static Registry() {
+      Clear();
+    }
 
     public static int Register(T item) {
       if (item == null || !items.TryAdd(++_id, item)) return -1;
