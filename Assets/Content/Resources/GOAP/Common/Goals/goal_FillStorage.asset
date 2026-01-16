@@ -29,7 +29,7 @@ MonoBehaviour:
     - utility: {fileID: 11400000, guid: 00dd4007e6cf844a1a2a1152fadddb81, type: 2}
       evaluator:
         rid: 365112976116547840
-    utilityBias: 3
+    utilityBias: 2
   references:
     version: 2
     RefIds:

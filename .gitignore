@@ -146,3 +146,5 @@ headless_builder_backup/
 
 #Obfuscator plugin
 !**/[Aa]ssets/OPS/**
+Assets/Content/Scripts/AI_NOTES.md
+Assets/Content/Scripts/AI_NOTES.md.meta

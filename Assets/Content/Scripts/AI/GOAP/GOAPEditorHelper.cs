@@ -8,23 +8,48 @@ using UnityEditor;
 
 namespace Content.Scripts.AI.GOAP {
   public static class GOAPEditorHelper {
+    private static List<string> _cachedBeliefNames;
+    private static bool _beliefsCacheValid;
+
+    public static void InvalidateCache() {
+      _beliefsCacheValid = false;
+      _cachedBeliefNames = null;
+    }
+
     public static List<string> GetBeliefsNames() {
-      var l = new List<string>();
 #if UNITY_EDITOR
+      if (_beliefsCacheValid && _cachedBeliefNames != null) {
+        return _cachedBeliefNames;
+      }
+
+      var names = new List<string>();
+
       AssetDatabase.FindAssets("t:BeliefSO", new[] { "Assets/Content/Resources/GOAP" })
         .Select(AssetDatabase.GUIDToAssetPath)
         .Select(AssetDatabase.LoadAssetAtPath<BeliefSO>)
+        .Where(so => so != null)
         .ToList()
-        .ForEach(so => l.Add(so.name));
-      
+        .ForEach(so => names.Add(so.name));
+
       AssetDatabase.FindAssets("t:CompositeBeliefSO", new[] { "Assets/Content/Resources/GOAP" })
         .Select(AssetDatabase.GUIDToAssetPath)
         .Select(AssetDatabase.LoadAssetAtPath<CompositeBeliefSO>)
-        .SelectMany(comp=>comp.Get())
+        .Where(comp => comp != null)
+        .SelectMany(comp => comp.Get())
+        .Where(b => b != null)
         .ToList()
-        .ForEach(so => l.Add(so.name));
+        .ForEach(b => names.Add(b.name));
+
+      _cachedBeliefNames = names.Distinct().OrderBy(n => n).ToList();
+      _beliefsCacheValid = true;
+      return _cachedBeliefNames;
+#else
+      return new List<string>();
 #endif
-      return l;
+    }
+
+    public static HashSet<string> GetBeliefsNamesSet() {
+      return new HashSet<string>(GetBeliefsNames());
     }
 
     public static List<string> GetGoalsNames() {
@@ -33,6 +58,7 @@ namespace Content.Scripts.AI.GOAP {
       AssetDatabase.FindAssets("t:GoalSO", new[] { "Assets/Content/Resources/GOAP" })
         .Select(AssetDatabase.GUIDToAssetPath)
         .Select(AssetDatabase.LoadAssetAtPath<GoalSO>)
+        .Where(so => so != null)
         .ToList()
         .ForEach(so => l.Add(so.name));
 #endif
@@ -40,72 +66,17 @@ namespace Content.Scripts.AI.GOAP {
     }
 
     public static List<string> GetTags() {
-      return Tag.ALL_TAGS.ToList();
+      return TagRegistry.AllTags.ToList();
+    }
+
+    /// <summary>
+    /// Validate belief references exist.
+    /// </summary>
+    public static List<string> ValidateBeliefReferences(IEnumerable<string> references) {
+      var allBeliefs = GetBeliefsNamesSet();
+      return references
+        .Where(r => !string.IsNullOrEmpty(r) && !allBeliefs.Contains(r))
+        .ToList();
     }
   }
 }
-
-// using Content.Scripts.AI.GOAP.Agent;
-// using UnityEditor;
-// using UnityEngine;
-//
-// namespace Content.Scripts.AI.GOAP.Editor {
-//   [CustomEditor(typeof(GOAPAgent))]
-//   public class GOAPAgentInspector : UnityEditor.Editor {
-//     public override void OnInspectorGUI() {
-//       var agent = (GOAPAgent)target;
-//
-//       EditorGUILayout.Space();
-//       DrawDefaultInspector();
-//
-//       EditorGUILayout.Space();
-//
-//       if (agent.currentGoal != null) {
-//         EditorGUILayout.LabelField("Current Goal:", EditorStyles.boldLabel);
-//         EditorGUILayout.BeginHorizontal();
-//         GUILayout.Space(10);
-//         EditorGUILayout.LabelField(agent.currentGoal.Name);
-//         EditorGUILayout.EndHorizontal();
-//       }
-//
-//       EditorGUILayout.Space();
-//
-//       // Show current action
-//       if (agent.currentAction != null) {
-//         EditorGUILayout.LabelField("Current Action:", EditorStyles.boldLabel);
-//         EditorGUILayout.BeginHorizontal();
-//         GUILayout.Space(10);
-//         EditorGUILayout.LabelField(agent.currentAction.Name);
-//         EditorGUILayout.EndHorizontal();
-//       }
-//
-//       EditorGUILayout.Space();
-//
-//       // Show current plan
-//       if (agent.actionPlan != null) {
-//         EditorGUILayout.LabelField("Plan Stack:", EditorStyles.boldLabel);
-//         foreach (var a in agent.actionPlan.Actions) {
-//           EditorGUILayout.BeginHorizontal();
-//           GUILayout.Space(10);
-//           EditorGUILayout.LabelField(a.Name);
-//           EditorGUILayout.EndHorizontal();
-//         }
-//       }
-//
-//       EditorGUILayout.Space();
-//
-//       // Show beliefs
-//       EditorGUILayout.LabelField("Beliefs:", EditorStyles.boldLabel);
-//       if (agent.beliefs != null)
-//         foreach (var belief in agent.beliefs) {
-//           if (belief.Key is "Nothing" or "Something") continue;
-//           EditorGUILayout.BeginHorizontal();
-//           GUILayout.Space(10);
-//           EditorGUILayout.LabelField(belief.Key + ": " + belief.Value.Evaluate());
-//           EditorGUILayout.EndHorizontal();
-//         }
-//
-//       EditorGUILayout.Space();
-//     }
-//   }
-// }

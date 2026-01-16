@@ -29,6 +29,7 @@ MonoBehaviour:
   beliefs:
   - {fileID: 11400000, guid: 39a97615b6dc04e1aa42ba3afd80f5d8, type: 2}
   - {fileID: 11400000, guid: 7b20efe77c1644a78aaa062b7f6ce265, type: 2}
+  - {fileID: 11400000, guid: 26b9712ed005e4f54888151482e037bd, type: 2}
   - {fileID: 11400000, guid: 3e3c9c30679e040d0ae6cc171bf2c8b0, type: 2}
   - {fileID: 11400000, guid: 087cbdbd313dc4533a770dea49283ea3, type: 2}
   - {fileID: 11400000, guid: 49fb57e4ac47346e78fa009fa8dc1de8, type: 2}
