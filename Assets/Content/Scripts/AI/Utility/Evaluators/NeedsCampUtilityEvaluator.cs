@@ -13,7 +13,7 @@ namespace Content.Scripts.AI.Utility {
     public float noCampValue = 0.8f;
 
     public override float Evaluate(IGoapAgent agent) {
-      var camp = agent.memory.memoryK.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       if (camp == null || !camp.hasSetup) return noCampValue;
       return 0f;
     }

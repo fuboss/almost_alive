@@ -79,6 +79,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
         .Where(slot => slot.item.HasAllTags(tags))
         .Sum(slot => slot.count);
     }
+
+    /// <summary>Get total count of items with specific tag.</summary>
+    public int GetItemCount(string tag) {
+      return GetTotalCountWithTags(new[] { tag });
+    }
   }
 
   [Serializable]

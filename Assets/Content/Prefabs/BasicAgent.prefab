@@ -717,6 +717,10 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  _experience:
+    levelXPMultiplier: 1.5
+  _recipes:
+    _progression: {fileID: 11400000, guid: efb9af04a19eb460bbaacbd99990eae3, type: 2}
 --- !u!1001 &226242912564321317
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -134,6 +134,32 @@ namespace Content.Scripts.AI.GOAP.Agent {
       return false;
     }
 
+    /// <summary>
+    /// Remove count from stack. Clears slot if count reaches zero.
+    /// </summary>
+    public void RemoveCount(int amount) {
+      if (!isOccupied || amount <= 0) return;
+
+      if (stackData != null) {
+        stackData.current -= amount;
+        if (stackData.current <= 0) {
+          ClearSlot();
+        }
+      }
+      else {
+        ClearSlot();
+      }
+    }
+
+    internal void ClearSlot() {
+      if (item != null) {
+        DecayableActor.RemoveFrom(item.gameObject);
+        UnityEngine.Object.Destroy(item.gameObject);
+      }
+      item = null;
+      stackData = null;
+    }
+
     public void SetReferences(ActorInventory actorInventory, Transform slot) {
       _inventory = actorInventory;
       _root = slot;

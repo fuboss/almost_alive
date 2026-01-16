@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3322c70943d24039abcc1a67ccb793e8, type: 3}
-  m_Name: goal_EsteblishCamp
+  m_Name: goal_CampBuilt
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Goals.GoalSO
   serializationData:
     SerializedFormat: 2
@@ -22,18 +22,19 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   template:
-    name: goal_EsteblishCamp
+    name: goal_CampBuilt
     desiredEffects:
+    - Camp_BuildingComplete
     - Camp_Established
     utilityEvaluators:
-    - utility: {fileID: 11400000, guid: 6d4531f5c565946b0894e51f73786193, type: 2}
+    - utility: {fileID: 11400000, guid: 2b36c3841c0aa4a1c8efc3205e652630, type: 2}
       evaluator:
-        rid: 365113007176679526
+        rid: 365113007176679551
     utilityBias: 5
   references:
     version: 2
     RefIds:
-    - rid: 365113007176679526
-      type: {class: NeedsCampUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+    - rid: 365113007176679551
+      type: {class: CampBuildingUtilityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
       data:
-        noCampValue: 1
+        baseValue: 0.8

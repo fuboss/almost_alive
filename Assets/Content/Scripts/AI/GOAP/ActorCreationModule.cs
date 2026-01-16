@@ -35,7 +35,7 @@ namespace Content.Scripts.AI.GOAP {
       return true;
     }
 
-    private ActorDescription GetPrefab(string actorKey) {
+    public ActorDescription GetPrefab(string actorKey) {
       return _allPrefabs.FirstOrDefault(prefab => prefab.actorKey == actorKey);
       // return Resources
       //   .LoadAll<ActorDescription>($"PrefabsActors/")
