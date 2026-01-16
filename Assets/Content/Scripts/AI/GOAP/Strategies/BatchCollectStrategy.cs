@@ -50,6 +50,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override void OnStart() {
       _collectedCount = 0;
       _state = BatchState.SearchingTarget;
+      complete = false;
       InitTimer();
       FindNextTarget();
     }
@@ -78,6 +79,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
           complete = true;
           break;
       }
+      Debug.Log($"[BatchCollect] Update [{_state}]");
     }
 
     private void FindNextTarget() {
@@ -163,10 +165,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override void OnStop() {
       _pickupTimer?.Dispose();
       _agent.navMeshAgent.ResetPath();
+      _agent.transientTarget = null;
+      _currentTarget = null;
     }
 
     public override void OnComplete() {
-      Debug.Log($"[BatchCollect] Complete. Collected {_collectedCount} items.");
+      Debug.Log($"[BatchCollect] Complete. Collected {_collectedCount} items. [{_state}]");
     }
 
     private enum BatchState {

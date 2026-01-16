@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_WanderAboutFood
     cost: 2
+    benefit: 2
     strategy:
       rid: 365112727136371074
     preconditions:

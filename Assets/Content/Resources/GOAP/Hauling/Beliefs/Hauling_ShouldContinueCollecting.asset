@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
-  m_Name: action_UseTolet
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
+  m_Script: {fileID: 11500000, guid: 82e6713a806c4ba6abf49f696c527c97, type: 3}
+  m_Name: Hauling_ShouldContinueCollecting
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Beliefs.BeliefSO
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -21,21 +21,16 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  data:
-    name: action_UseTolet
-    cost: 1
-    benefit: 3
-    strategy:
-      rid: 365112727136371076
-    preconditions:
-    - Transient_Is/TOILET
-    - Toilet_Needed
-    effects:
-    - Toilet_IsOK
+  belief:
+    rid: 365112988616884528
   references:
     version: 2
     RefIds:
-    - rid: 365112727136371076
-      type: {class: UseToiletStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Use, asm: Assembly-CSharp}
+    - rid: 365112988616884528
+      type: {class: ShouldContinueCollectingBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Storage, asm: Assembly-CSharp}
       data:
-        useDuration: 10
+        name: Hauling_ShouldContinueCollecting
+        minItemCount: 2
+        searchRadius: 30
+        itemTags:
+        - ITEM

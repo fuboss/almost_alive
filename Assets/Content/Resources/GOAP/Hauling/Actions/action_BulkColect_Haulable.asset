@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
-  m_Name: action_UseTolet
+  m_Name: action_BulkColect_Haulable
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
   serializationData:
     SerializedFormat: 2
@@ -22,20 +22,27 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   data:
-    name: action_UseTolet
-    cost: 1
-    benefit: 3
+    name: action_BulkColect_Haulable
+    cost: 4
+    benefit: 6
     strategy:
-      rid: 365112727136371076
+      rid: 365112988616884516
     preconditions:
-    - Transient_Is/TOILET
-    - Toilet_Needed
+    - Storage_NeedsFilling
+    - Remembers_Nearby/ITEM
+    - Inventory_HasNoHaulable
     effects:
-    - Toilet_IsOK
+    - Inventory_Has/ITEM
+    - Inventory_HasHaulable
+    - Inventory_ReadyForDeposit
   references:
     version: 2
     RefIds:
-    - rid: 365112727136371076
-      type: {class: UseToiletStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Use, asm: Assembly-CSharp}
+    - rid: 365112988616884516
+      type: {class: BatchCollectStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
       data:
-        useDuration: 10
+        targetCount: 5
+        searchRadius: 30
+        pickupDuration: 1
+        itemTags:
+        - ITEM

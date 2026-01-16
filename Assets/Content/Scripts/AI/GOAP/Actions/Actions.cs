@@ -12,6 +12,12 @@ namespace Content.Scripts.AI.GOAP.Actions {
   public class AgentAction {
     [ShowInInspector] private AgentActionData _data;
     public float cost = 1f;
+    public float benefit = 1f;
+
+    /// <summary>
+    /// Score for planning comparison. Higher = better action.
+    /// </summary>
+    public float score => benefit / Mathf.Max(cost, 0.1f);
 
     private AgentAction(string name) {
       this.name = name;
@@ -29,7 +35,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
       => preconditions.All(precondition => {
         var result = precondition.Evaluate(agent);
         if (!result)
-          Debug.LogWarning(
+          Debug.LogError(
             $"<b>{name}</b> precondition: <b>{precondition.name}</b>({precondition.GetType().Name}) failed",
             agent.agentBrain);
         return result;
@@ -40,23 +46,17 @@ namespace Content.Scripts.AI.GOAP.Actions {
     public IGoapAgent agent { get; set; }
 
     public void OnStart() {
-//      Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} starting.");
       _data.strategy.OnStart();
     }
 
     public void OnUpdate(float deltaTime) {
-      // Check if the action can be performed and update the strategy
       if (_data.strategy.canPerform) _data.strategy.OnUpdate(deltaTime);
-
-      // Bail out if the strategy is still executing
       if (!_data.strategy.complete) return;
-
       OnComplete();
     }
 
     private void OnComplete() {
       _data.strategy.OnComplete();
-      // Apply effects
       foreach (var effect in effects) {
         effect.Evaluate(agent);
       }
@@ -64,7 +64,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
     }
 
     public void OnStop() {
-      // Debug.Log($"{name} with strategy {_data.strategy.GetType().Name} stopped.");
       _data.strategy.OnStop();
     }
 
@@ -74,6 +73,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
       public Builder(string name) {
         _action = new AgentAction(name) {
           cost = 1,
+          benefit = 1,
           effects = new HashSet<AgentBelief>(),
           preconditions = new HashSet<AgentBelief>()
         };
@@ -82,6 +82,12 @@ namespace Content.Scripts.AI.GOAP.Actions {
       public Builder WithCost(int cost) {
         _action.cost = cost;
         _action._data.cost = cost;
+        return this;
+      }
+
+      public Builder WithBenefit(float benefit) {
+        _action.benefit = benefit;
+        _action._data.benefit = benefit;
         return this;
       }
 
@@ -95,7 +101,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
           _action.preconditions.Add(precondition);
           _action._data.preconditions.Add(precondition.name);
         }
-
         return this;
       }
 
@@ -103,7 +108,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
         foreach (var precondition in preconditions) {
           AddPrecondition(precondition);
         }
-
         return this;
       }
 
@@ -112,7 +116,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
           _action.effects.Add(effect);
           _action._data.effects.Add(effect.name);
         }
-
         return this;
       }
 
@@ -120,7 +123,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
         foreach (var effect in effects) {
           AddEffect(effect);
         }
-
         return this;
       }
 

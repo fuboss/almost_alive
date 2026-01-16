@@ -28,6 +28,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
     public AgentAction GetAction(IGoapAgent agent) {
       var builder = new AgentAction.Builder(data.name)
         .WithCost(data.cost)
+        .WithBenefit(data.benefit)
         .WithStrategy(data.strategy.Create(agent))
         .AddPreconditions(data.preconditions.ConvertAll(agent.GetBelief))
         .AddEffects(data.effects.ConvertAll(agent.GetBelief));

@@ -133,7 +133,7 @@ MonoBehaviour:
     - Name: actions
       Entry: 6
       Data: 
-    - Name: goals
+    - Name: goalTemplates
       Entry: 6
       Data: 
     - Name: beliefs
@@ -161,6 +161,14 @@ MonoBehaviour:
   - Hunger_FeatureSet
   - Fatigue_FeatureSet
   - Toilet_FeatureSet
+  - Hauling_FeatureSet
+  _memoryConsolidation:
+    confidenceDecayRate: 0.99
+    forgetThreshold: 0.1
+    reinforcementInterval: 5
+    reinforcementBoost: 0.2
+    enableSpatialReinforcement: 1
+    reinforcementRadius: 5
   _interactSensor: {fileID: 8430148722207983948}
   _visionSensor: {fileID: 5127145853041075914}
 --- !u!1 &8214782044528235277

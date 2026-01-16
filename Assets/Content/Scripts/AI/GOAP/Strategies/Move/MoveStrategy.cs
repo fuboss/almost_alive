@@ -69,7 +69,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       _targetSnapshot = snapshot;
       _destination = () => _targetSnapshot.location;
 
-      Debug.Log($"MoveStrategy SetDestination to {snapshot.target.name} {snapshot.location}", snapshot.target);
+      // Debug.Log($"MoveStrategy SetDestination to {snapshot.target.name} {snapshot.location}", snapshot.target);
       return this;
     }
 

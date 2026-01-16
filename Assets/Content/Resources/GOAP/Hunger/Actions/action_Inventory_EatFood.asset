@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_Inventory_EatFood
     cost: 1
+    benefit: 3
     strategy:
       rid: 365112727136371072
     preconditions:

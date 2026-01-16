@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_MoveToRest
     cost: 2
+    benefit: 1
     strategy:
       rid: 365112727136371070
     preconditions:

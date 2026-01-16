@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_Pickup_FoodFromFloor
     cost: 1
+    benefit: 1
     strategy:
       rid: 365112711794393088
     preconditions:

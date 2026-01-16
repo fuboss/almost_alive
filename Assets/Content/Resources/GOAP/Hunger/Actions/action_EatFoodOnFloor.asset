@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_EatFoodOnFloor
     cost: 2
+    benefit: 0.5
     strategy:
       rid: 7960999237110989242
     preconditions:

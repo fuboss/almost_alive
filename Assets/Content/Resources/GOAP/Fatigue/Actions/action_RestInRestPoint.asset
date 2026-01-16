@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_RestInRestPoint
     cost: 1
+    benefit: 3
     strategy:
       rid: 365112727136371071
     preconditions:
