@@ -22,6 +22,9 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
     [ShowInInspector] private List<MemorySnapshot> _memory = new();
     [ShowInInspector] private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
+    
+    /// <summary>Key-value store for persistent agent data (camp, ownership, etc).</summary>
+    public AgentMemoryK memoryK { get; } = new();
 
     private readonly Stack<List<MemorySnapshot>> _listPool = new();
     private Octree<MemorySnapshot> _octree;

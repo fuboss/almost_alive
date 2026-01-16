@@ -1,3 +1,4 @@
+using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Planning;
@@ -45,6 +46,7 @@ namespace Content.Scripts {
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       builder.RegisterComponent(agentPrefab).AsSelf();
       builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

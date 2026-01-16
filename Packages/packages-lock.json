@@ -28,6 +28,12 @@
       "dependencies": {},
       "hash": "af213d3b9e6ff3cb7e862c519f666b686f66a8ea"
     },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.addressables": {
       "version": "2.7.6",
       "depth": 0,

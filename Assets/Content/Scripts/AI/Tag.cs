@@ -12,6 +12,11 @@ namespace Content.Scripts.AI {
     public const string STONE = "STONE";
     public const string ITEM = "ITEM";
     
+    // Buildable actors
+    public const string BED = "BED";
+    public const string FIREPLACE = "FIREPLACE";
+    public const string WORKBENCH = "WORKBENCH";
+    
     public static string[] ALL_TAGS = {
       FOOD,
       REST,
@@ -23,8 +28,10 @@ namespace Content.Scripts.AI {
       RESOURCE,
       WOOD,
       STONE,
-      ITEM
+      ITEM,
+      BED,
+      FIREPLACE,
+      WORKBENCH,
     };
-    
   }
 }

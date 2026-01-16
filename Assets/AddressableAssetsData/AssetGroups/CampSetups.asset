@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CampSetups
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: CampSetups
+  m_GUID: aea1c583755d545b3946150dfe24eca4
+  m_SerializeEntries:
+  - m_GUID: 0a003b838db0643febbdb303c198c821
+    m_Address: campSetup 1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CampSetups
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df43fbf8740c14dfeaca0ce3b61af538
+    m_Address: campSetup 0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CampSetups
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3d599a1e1a1344453a9ee9abc647c1e6, type: 2}
+    - {fileID: 11400000, guid: 1f50a3ba18ca546e9989ef8f14022778, type: 2}

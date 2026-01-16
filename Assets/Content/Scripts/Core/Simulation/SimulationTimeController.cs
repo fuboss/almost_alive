@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using Content.Scripts.Core;
 
 namespace Content.Scripts.Core.Simulation {
   public enum SimSpeed {
@@ -20,6 +21,10 @@ namespace Content.Scripts.Core.Simulation {
     [ShowInInspector, ReadOnly] private float _totalSimTime;
 
     public event Action<SimSpeed> OnSpeedChanged;
+
+    static SimulationTimeController() {
+      StaticResetRegistry.RegisterReset(() => instance = null);
+    }
 
     public SimulationTimeController() {
       instance = this;
@@ -48,7 +53,7 @@ namespace Content.Scripts.Core.Simulation {
 
     public void CycleSpeed() {
       var next = ((int)_currentSpeed + 1) % SPEED_MULTIPLIERS.Length;
-      if (next == 0) next = 1; // skip pause in cycle
+      if (next == 0) next = 1;
       SetSpeed((SimSpeed)next);
     }
 

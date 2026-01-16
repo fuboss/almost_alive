@@ -23,6 +23,10 @@ namespace Content.Scripts.Core.Environment {
     public DayCycle dayCycle => _dayCycle;
     public int tickPriority => -100;
 
+    static WorldEnvironment() {
+      StaticResetRegistry.RegisterReset(() => instance = null);
+    }
+
     public WorldEnvironment() {
       instance = this;
     }

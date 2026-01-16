@@ -163,6 +163,7 @@ MonoBehaviour:
   - Toilet_FeatureSet
   - Hauling_FeatureSet
   - WoodCutting_FeatureSet
+  - Camp_FeatureSet
   _memoryConsolidation:
     confidenceDecayRate: 0.99
     forgetThreshold: 0.1

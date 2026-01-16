@@ -1,54 +1,45 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Object = System.Object;
+using Content.Scripts.Core;
 
 namespace Content.Scripts.Game {
-  
-  public static class Registry<T>
-    where T : class, new() {
+  public static class Registry<T> where T : class, new() {
     public static event Action<T> OnAdded = delegate { };
     public static event Action<T> OnRemoved = delegate { };
 
-    private static readonly Dictionary<int, T> items = new();
-    private static readonly Dictionary<T, int> itemsIds = new();
-    private static int _id = 0;
+    private static readonly Dictionary<int, T> _items = new();
+    private static readonly Dictionary<T, int> _itemsIds = new();
+    private static int _idCounter;
 
     static Registry() {
-      Clear();
+      StaticResetRegistry.RegisterReset(Clear);
     }
 
     public static int Register(T item) {
-      if (item == null || !items.TryAdd(++_id, item)) return -1;
-      itemsIds[item] = _id;
-      return _id;
+      if (item == null || !_items.TryAdd(++_idCounter, item)) return -1;
+      _itemsIds[item] = _idCounter;
+      OnAdded.Invoke(item);
+      return _idCounter;
     }
 
     public static void Unregister(T item) {
-      if (!itemsIds.TryGetValue(item, out var id)) return;
-      items.Remove(id);
-      itemsIds.Remove(item);
+      if (!_itemsIds.TryGetValue(item, out var id)) return;
+      _items.Remove(id);
+      _itemsIds.Remove(item);
+      OnRemoved.Invoke(item);
     }
 
-    public static bool TryGet(int id, out T item) {
-      return items.TryGetValue(id, out item);
-    }
-
-    public static T GetById(int id) {
-      items.TryGetValue(id, out var item);
-      return item;
-    }
-
-    public static IReadOnlyCollection<T> GetAll() {
-      return items.Values;
-    }
-
-    public static int count => items.Count;
+    public static bool TryGet(int id, out T item) => _items.TryGetValue(id, out item);
+    public static T GetById(int id) => _items.GetValueOrDefault(id);
+    public static IReadOnlyCollection<T> GetAll() => _items.Values;
+    public static int count => _items.Count;
 
     public static void Clear() {
-      items.Clear();
-      itemsIds.Clear();
-      _id = 0;
+      _items.Clear();
+      _itemsIds.Clear();
+      _idCounter = 0;
+      OnAdded = delegate { };
+      OnRemoved = delegate { };
     }
   }
 }

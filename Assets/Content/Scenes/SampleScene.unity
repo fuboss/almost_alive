@@ -2299,6 +2299,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6535158295370687232, guid: b5d70b734a396431c9e70e1a2d32c1e8, type: 3}
   m_PrefabInstance: {fileID: 334083187}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &334949365
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 334949366}
+  - component: {fileID: 334949367}
+  m_Layer: 0
+  m_Name: CampLocation 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &334949366
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334949365}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -22.41, y: -1.00001, z: 8.55}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1610628657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &334949367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334949365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e551ae474c4c06863cd9bd354c6814, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Camp.CampLocation
 --- !u!1001 &336191251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4806,6 +4850,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6535158295370687232, guid: b5d70b734a396431c9e70e1a2d32c1e8, type: 3}
   m_PrefabInstance: {fileID: 757068993}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &792304869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 792304870}
+  - component: {fileID: 792304871}
+  m_Layer: 0
+  m_Name: CampLocation 0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &792304870
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792304869}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 11.75, y: -1.00001, z: 10.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1610628657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &792304871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792304869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e551ae474c4c06863cd9bd354c6814, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Camp.CampLocation
 --- !u!1001 &800888263
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5459,6 +5547,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1256205020498691207, guid: 66fefc09b63d047f0a39e154929bfb2f, type: 3}
   m_PrefabInstance: {fileID: 931305566}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &964265518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964265519}
+  - component: {fileID: 964265520}
+  m_Layer: 0
+  m_Name: CampLocation 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &964265519
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964265518}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -9.38, y: -1.00001, z: -10.98}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1610628657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &964265520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964265518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e551ae474c4c06863cd9bd354c6814, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.Camp.CampLocation
 --- !u!1001 &964457641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8185,6 +8317,9 @@ Transform:
   - {fileID: 394582028}
   - {fileID: 1194339530}
   - {fileID: 440107457}
+  - {fileID: 792304870}
+  - {fileID: 334949366}
+  - {fileID: 964265519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1616586903
@@ -11227,6 +11362,10 @@ PrefabInstance:
     - target: {fileID: 7625295154397277473, guid: db97d68873f554926811e5ac603c09df, type: 3}
       propertyPath: m_Name
       value: tmp_Home
+      objectReference: {fileID: 0}
+    - target: {fileID: 7625295154397277473, guid: db97d68873f554926811e5ac603c09df, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8760540783350295214, guid: db97d68873f554926811e5ac603c09df, type: 3}
       propertyPath: serializationData.Prefab

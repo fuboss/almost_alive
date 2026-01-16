@@ -79,8 +79,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
 
       Debug.Log(
         $"ActionPlan for goal: <b>{goal.Name}</b>, cost: {totalCost:F1}, benefit: {totalBenefit:F1}, score: {newPlan.Score:F2}. " +
-        $" QueryResult: {b}" +
-        $"\n{string.Join(" → ", plan.Select(a => $"[{a.name}]"))}");
+        $"\n{string.Join(" → ", plan.Select(a => $"[{a.name}]"))}"
+        + $"\nQueryResult: {b}");
 
       return newPlan;
     }
