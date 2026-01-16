@@ -22,6 +22,9 @@ namespace Content.Scripts.AI.Craft {
     [Tooltip("How many items produced per craft")] [MinValue(1)]
     public ushort outputCount = 1;
 
+    [Tooltip("Work units required (0 = instant)")] [MinValue(0f)]
+    public float workRequired = 0f;
+
     public List<RecipeRequiredResource> requiredResources => _requiredResources;
 
 #if UNITY_EDITOR

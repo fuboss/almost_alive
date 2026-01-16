@@ -27,7 +27,7 @@ namespace Content.Scripts.AI.GOAP {
       var parts = actor.GetComponent<ActorPartsDescription>();
       if (parts == null || parts.parts.Count == 0) return;
 
-      var shift = NextShift();
+      var shift = Vector3.zero;
       foreach (var part in parts.parts) {
         if (!_creationModule.TrySpawnActor(part.Key, actor.transform.position + shift, out var partActor,
               part.Value)) continue;
@@ -39,7 +39,7 @@ namespace Content.Scripts.AI.GOAP {
     private static Vector3 NextShift() {
       var shift = Random.onUnitSphere;
       shift.y = Mathf.Abs(shift.y);
-      shift += Vector3.up * 1.1f;
+      shift += Vector3.up * 0.66f;
       return shift;
     }
   }

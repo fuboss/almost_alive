@@ -9,8 +9,6 @@ using VContainer;
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class IdleStrategy : AgentStrategy {
-    [Inject] private AgentUIModule _uiModule;
-    
     public float duration;
     private CountdownTimer _timer;
 
@@ -36,8 +34,6 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override bool complete { get; internal set; }
 
     public override void OnStart() {
-
-      Debug.LogError($"Injection: {_uiModule != null}");
       if (_timer == null) {
         InitTimer(duration);
       }

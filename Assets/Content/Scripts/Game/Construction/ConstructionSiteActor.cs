@@ -1,0 +1,130 @@
+using System;
+using System.Linq;
+using Content.Scripts.AI.Camp;
+using Content.Scripts.AI.Craft;
+using Content.Scripts.AI.GOAP;
+using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
+using UnityEngine;
+using VContainer;
+
+namespace Content.Scripts.Game.Construction {
+  /// <summary>
+  /// Construction site - intermediate actor for building process.
+  /// Stores recipe reference, required resources inventory, and work progress.
+  /// </summary>
+  [RequireComponent(typeof(ActorDescription))]
+  [RequireComponent(typeof(ActorInventory))]
+  public class ConstructionSiteActor : MonoBehaviour {
+    [ShowInInspector, ReadOnly] private RecipeSO _recipe;
+    [ShowInInspector, ReadOnly] private float _workProgress;
+    [ShowInInspector, ReadOnly] private CampSpot _assignedSpot;
+    
+    [Inject] private ActorCreationModule _actorCreation;
+
+    private ActorDescription _description;
+    private ActorInventory _inventory;
+
+    public RecipeSO recipe => _recipe;
+    public ActorDescription description => _description;
+    public ActorInventory inventory => _inventory;
+    public CampSpot assignedSpot => _assignedSpot;
+    
+    public float workProgress => _workProgress;
+    public float workRequired => _recipe?.recipe.workRequired ?? 0f;
+    public float workRatio => workRequired > 0f ? Mathf.Clamp01(_workProgress / workRequired) : 1f;
+    public bool workComplete => _workProgress >= workRequired;
+    
+    public bool hasAllResources => CheckAllResourcesDelivered();
+    public bool isReadyToComplete => hasAllResources && workComplete;
+
+    private void Awake() {
+      _description = GetComponent<ActorDescription>();
+      _inventory = GetComponent<ActorInventory>();
+    }
+
+    private void OnEnable() {
+      ActorRegistry<ConstructionSiteActor>.Register(this);
+    }
+
+    private void OnDisable() {
+      ActorRegistry<ConstructionSiteActor>.Unregister(this);
+    }
+
+    /// <summary>Initialize construction site with recipe.</summary>
+    public void Initialize(RecipeSO recipe, CampSpot spot) {
+      _recipe = recipe;
+      _assignedSpot = spot;
+      _workProgress = 0f;
+      Debug.Log($"[ConstructionSite] Initialized for {recipe.recipeId} at {spot.name}");
+    }
+
+    /// <summary>Add work progress. Returns true if work is complete after adding.</summary>
+    public bool AddWork(float amount) {
+      if (amount <= 0f) return workComplete;
+      _workProgress = Mathf.Min(_workProgress + amount, workRequired);
+      Debug.Log($"[ConstructionSite] Work progress: {_workProgress:F1}/{workRequired:F1}");
+      return workComplete;
+    }
+
+    /// <summary>Get remaining resource requirement for specific tag.</summary>
+    public int GetRemainingResourceCount(string tag) {
+      var required = _recipe.recipe.requiredResources
+        .Where(r => r.tag == tag)
+        .Sum(r => r.count);
+      var have = _inventory.GetItemCount(tag);
+      return Mathf.Max(0, required - have);
+    }
+
+    /// <summary>Get all remaining resource requirements.</summary>
+    public (string tag, int remaining)[] GetRemainingResources() {
+      return _recipe.recipe.requiredResources
+        .Select(r => (r.tag, GetRemainingResourceCount(r.tag)))
+        .Where(x => x.Item2 > 0)
+        .ToArray();
+    }
+
+    /// <summary>Check if all required resources have been delivered.</summary>
+    public bool CheckAllResourcesDelivered() {
+      if (_recipe == null) return false;
+      foreach (var req in _recipe.recipe.requiredResources) {
+        if (GetRemainingResourceCount(req.tag) > 0) return false;
+      }
+      return true;
+    }
+
+    /// <summary>
+    /// Try to complete construction. Spawns result actor and destroys site.
+    /// Returns spawned actor or null on failure.
+    /// </summary>
+    public ActorDescription TryComplete() {
+      if (!isReadyToComplete) {
+        Debug.LogWarning($"[ConstructionSite] Cannot complete - resources: {hasAllResources}, work: {workComplete}");
+        return null;
+      }
+
+      if (_actorCreation == null) {
+        Debug.LogError("[ConstructionSite] ActorCreationModule not injected!");
+        return null;
+      }
+
+      var pos = _assignedSpot != null ? _assignedSpot.position : transform.position;
+      
+      if (!_actorCreation.TrySpawnActor(_recipe.recipe.resultActorKey, pos, out var result, _recipe.recipe.outputCount)) {
+        Debug.LogError($"[ConstructionSite] Failed to spawn {_recipe.recipe.resultActorKey}");
+        return null;
+      }
+
+      if (_assignedSpot != null) {
+        _assignedSpot.SetBuiltActor(result);
+      }
+
+      Debug.Log($"[ConstructionSite] Completed! Spawned {result.actorKey}");
+      
+      // Destroy construction site
+      Destroy(gameObject);
+      
+      return result;
+    }
+  }
+}
