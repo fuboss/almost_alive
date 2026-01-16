@@ -42,6 +42,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
     private Material _runtimeMaterial;
     private float _timer;
     private SphereCollider _trigger;
+    private IGoapAgent _agent;
 
     // Public read-only access to currently visible actors
     public IReadOnlyCollection<ActorDescription> VisibleActors => _visible;
@@ -50,13 +51,17 @@ namespace Content.Scripts.AI.GOAP.Agent.Sensors {
       _trigger = GetComponent<SphereCollider>();
       _trigger.isTrigger = true;
       _trigger.radius = _detectionRadius;
+      _agent = GetComponent<IGoapAgent>();
       CreateRuntimeMaterial();
       RebuildFovMesh();
     }
 
-    public void OnUpdate() {
+    private void LateUpdate() {
+      //todo  if actor is selected only
       OnRenderObject();
+    }
 
+    public void OnUpdate() {
       _timer += Time.deltaTime;
       if (_timer < _checkInterval) return;
       _timer = 0f;

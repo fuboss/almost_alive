@@ -66,7 +66,7 @@ namespace Content.Scripts.AI.GOAP {
     }
 
     public static List<string> GetTags() {
-      return TagRegistry.AllTags.ToList();
+      return Tag.ALL_TAGS.ToList();
     }
 
     /// <summary>

@@ -79,7 +79,6 @@ namespace Content.Scripts.AI.GOAP.Strategies {
           complete = true;
           break;
       }
-      Debug.Log($"[BatchCollect] Update [{_state}]");
     }
 
     private void FindNextTarget() {

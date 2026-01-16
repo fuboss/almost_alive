@@ -30,7 +30,6 @@ MonoBehaviour:
     preconditions:
     - Transient_Is/STORAGE
     - Inventory_HasHaulable
-    - Inventory_ReadyForDeposit
     effects:
     - Storage_NoNeedsFilling
     - Inventory_HasNoHaulable
