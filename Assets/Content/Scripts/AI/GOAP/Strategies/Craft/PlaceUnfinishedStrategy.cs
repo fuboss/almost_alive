@@ -5,18 +5,18 @@ using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
-using Content.Scripts.Game.Construction;
+using Content.Scripts.Game.Craft;
 using UnityEngine;
 using VContainer;
 
-namespace Content.Scripts.AI.GOAP.Strategies.Construction {
+namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   /// <summary>
-  /// Places a new construction site at an empty camp spot.
+  /// Places a new unfinished actor at an empty camp spot.
   /// Selects highest-priority recipe that has an available spot.
-  /// Does NOT require resources in inventory - just creates the blueprint.
+  /// Does NOT require resources - just creates the blueprint.
   /// </summary>
   [Serializable]
-  public class PlaceConstructionSiteStrategy : AgentStrategy {
+  public class PlaceUnfinishedStrategy : AgentStrategy {
     [Inject] private RecipeModule _recipeModule;
     [Inject] private ActorCreationModule _actorCreation;
     [Inject] private IObjectResolver _resolver;
@@ -27,11 +27,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
     private RecipeSO _selectedRecipe;
     private PlaceState _state;
 
-    private const string CONSTRUCTION_SITE_KEY = "construction_site";
+    private const string UNFINISHED_KEY = "unfinished";
 
-    public PlaceConstructionSiteStrategy() { }
+    public PlaceUnfinishedStrategy() { }
 
-    private PlaceConstructionSiteStrategy(IGoapAgent agent, PlaceConstructionSiteStrategy template) {
+    private PlaceUnfinishedStrategy(IGoapAgent agent, PlaceUnfinishedStrategy template) {
       _agent = agent;
       _recipeModule = template._recipeModule;
       _actorCreation = template._actorCreation;
@@ -42,7 +42,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
     public override bool complete { get; internal set; }
 
     public override IActionStrategy Create(IGoapAgent agent) {
-      return new PlaceConstructionSiteStrategy(agent, this);
+      return new PlaceUnfinishedStrategy(agent, this);
     }
 
     public override void OnStart() {
@@ -59,7 +59,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
           UpdateMoving();
           break;
         case PlaceState.Placing:
-          PlaceConstructionSite();
+          PlaceUnfinished();
           break;
         case PlaceState.Done:
           complete = true;
@@ -70,14 +70,14 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
     private void SelectRecipeAndSpot() {
       _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       if (_camp?.setup == null) {
-        Debug.LogWarning("[PlaceConstruction] No camp or setup");
+        Debug.LogWarning("[PlaceUnfinished] No camp or setup");
         _state = PlaceState.Done;
         return;
       }
 
-      // Skip if there's already an active construction
-      if (ConstructionQuery.HasActiveConstruction(_camp)) {
-        Debug.Log("[PlaceConstruction] Already has active construction");
+      // Skip if there's already an active unfinished
+      if (UnfinishedQuery.HasActiveUnfinished(_camp)) {
+        Debug.Log("[PlaceUnfinished] Already has active unfinished");
         _state = PlaceState.Done;
         return;
       }
@@ -95,12 +95,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
       }
 
       if (_selectedRecipe == null || _targetSpot == null) {
-        Debug.Log("[PlaceConstruction] No available recipe or spot");
+        Debug.Log("[PlaceUnfinished] No available recipe or spot");
         _state = PlaceState.Done;
         return;
       }
 
-      Debug.Log($"[PlaceConstruction] Selected {_selectedRecipe.recipeId} at {_targetSpot.name}");
+      Debug.Log($"[PlaceUnfinished] Selected {_selectedRecipe.recipeId} at {_targetSpot.name}");
       _state = PlaceState.Moving;
       _agent.navMeshAgent.SetDestination(_targetSpot.position);
     }
@@ -131,32 +131,32 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
       }
     }
 
-    private void PlaceConstructionSite() {
+    private void PlaceUnfinished() {
       _agent.navMeshAgent.ResetPath();
 
-      // Spawn construction site prefab
-      if (!_actorCreation.TrySpawnActor(CONSTRUCTION_SITE_KEY, _targetSpot.position, out var siteActor)) {
-        Debug.LogError("[PlaceConstruction] Failed to spawn construction_site");
+      // Spawn unfinished prefab
+      if (!_actorCreation.TrySpawnActor(UNFINISHED_KEY, _targetSpot.position, out var actor)) {
+        Debug.LogError("[PlaceUnfinished] Failed to spawn unfinished prefab");
         _state = PlaceState.Done;
         return;
       }
 
-      var site = siteActor.GetComponent<ConstructionSiteActor>();
-      if (site == null) {
-        Debug.LogError("[PlaceConstruction] construction_site prefab missing ConstructionSiteActor!");
-        UnityEngine.Object.Destroy(siteActor.gameObject);
+      var unfinished = actor.GetComponent<UnfinishedActor>();
+      if (unfinished == null) {
+        Debug.LogError("[PlaceUnfinished] Prefab missing UnfinishedActor component!");
+        UnityEngine.Object.Destroy(actor.gameObject);
         _state = PlaceState.Done;
         return;
       }
 
-      _resolver?.Inject(site);
-      site.Initialize(_selectedRecipe, _targetSpot);
+      _resolver?.Inject(unfinished);
+      unfinished.Initialize(_selectedRecipe, _targetSpot);
 
-      // Parent to spot but don't call SetBuiltActor - it's not finished yet
-      siteActor.transform.SetParent(_targetSpot.transform);
-      siteActor.transform.localPosition = Vector3.zero;
+      // Parent to spot
+      actor.transform.SetParent(_targetSpot.transform);
+      actor.transform.localPosition = Vector3.zero;
 
-      Debug.Log($"[PlaceConstruction] Placed construction site for {_selectedRecipe.recipeId}");
+      Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
       _state = PlaceState.Done;
     }
 

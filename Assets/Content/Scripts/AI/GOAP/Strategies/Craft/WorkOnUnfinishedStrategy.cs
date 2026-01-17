@@ -2,27 +2,27 @@ using System;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.Game.Construction;
+using Content.Scripts.Game.Craft;
 using UnityEngine;
 
-namespace Content.Scripts.AI.GOAP.Strategies.Construction {
+namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   /// <summary>
-  /// Works on construction site, adding progress.
+  /// Works on unfinished actor, adding progress.
   /// Completes when work is done and spawns the final actor.
   /// </summary>
   [Serializable]
-  public class WorkOnConstructionStrategy : AgentStrategy {
+  public class WorkOnUnfinishedStrategy : AgentStrategy {
     [Tooltip("Work units added per second")]
     public float workRate = 1f;
 
     private IGoapAgent _agent;
     private CampLocation _camp;
-    private ConstructionSiteActor _site;
+    private UnfinishedActor _target;
     private WorkState _state;
 
-    public WorkOnConstructionStrategy() { }
+    public WorkOnUnfinishedStrategy() { }
 
-    private WorkOnConstructionStrategy(IGoapAgent agent, WorkOnConstructionStrategy template) {
+    private WorkOnUnfinishedStrategy(IGoapAgent agent, WorkOnUnfinishedStrategy template) {
       _agent = agent;
       workRate = template.workRate;
     }
@@ -31,20 +31,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
     public override bool complete { get; internal set; }
 
     public override IActionStrategy Create(IGoapAgent agent) {
-      return new WorkOnConstructionStrategy(agent, this);
+      return new WorkOnUnfinishedStrategy(agent, this);
     }
 
     public override void OnStart() {
       complete = false;
-      _state = WorkState.FindSite;
+      _state = WorkState.FindTarget;
     }
 
     public override void OnUpdate(float deltaTime) {
       switch (_state) {
-        case WorkState.FindSite:
-          FindSite();
+        case WorkState.FindTarget:
+          FindTarget();
           break;
-        case WorkState.MovingToSite:
+        case WorkState.MovingToTarget:
           UpdateMoving();
           break;
         case WorkState.Working:
@@ -56,33 +56,30 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
       }
     }
 
-    private void FindSite() {
+    private void FindTarget() {
       _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       
-      // Find site that has all resources and needs work
-      _site = ConstructionQuery.GetNeedingWork(_camp);
+      // Find that has all resources and needs work
+      _target = UnfinishedQuery.GetNeedingWork(_camp);
 
-      if (_site == null) {
-        // Maybe it's ready to complete?
-        _site = ConstructionQuery.GetReadyToComplete(_camp);
-        if (_site != null) {
-          Debug.Log("[WorkConstruction] Found site ready to complete");
-        }
+      if (_target == null) {
+        // Maybe ready to complete?
+        _target = UnfinishedQuery.GetReadyToComplete(_camp);
       }
 
-      if (_site == null) {
-        Debug.Log("[WorkConstruction] No site ready for work");
+      if (_target == null) {
+        Debug.Log("[WorkUnfinished] No target ready for work");
         _state = WorkState.Done;
         return;
       }
 
-      Debug.Log($"[WorkConstruction] Found site for {_site.recipe.recipeId}");
-      _state = WorkState.MovingToSite;
-      _agent.navMeshAgent.SetDestination(_site.transform.position);
+      Debug.Log($"[WorkUnfinished] Found {_target.recipe.recipeId}");
+      _state = WorkState.MovingToTarget;
+      _agent.navMeshAgent.SetDestination(_target.transform.position);
     }
 
     private void UpdateMoving() {
-      if (_site == null) {
+      if (_target == null) {
         _state = WorkState.Done;
         return;
       }
@@ -93,51 +90,49 @@ namespace Content.Scripts.AI.GOAP.Strategies.Construction {
       if (nav.remainingDistance <= 2f) {
         nav.ResetPath();
         _state = WorkState.Working;
-        Debug.Log("[WorkConstruction] Started working");
+        Debug.Log("[WorkUnfinished] Started working");
       }
     }
 
     private void UpdateWorking(float deltaTime) {
-      if (_site == null) {
+      if (_target == null) {
         _state = WorkState.Done;
         return;
       }
 
-      // Check if resources were removed
-      if (!_site.hasAllResources) {
-        Debug.LogWarning("[WorkConstruction] Resources missing, stopping");
+      if (!_target.hasAllResources) {
+        Debug.LogWarning("[WorkUnfinished] Resources missing, stopping");
         _state = WorkState.Done;
         return;
       }
 
-      // Add work
-      var workDone = _site.AddWork(workRate * deltaTime);
+      var workDone = _target.AddWork(workRate * deltaTime);
 
       if (workDone) {
-        TryCompleteSite();
+        TryComplete();
       }
     }
 
-    private void TryCompleteSite() {
-      var result = _site.TryComplete();
+    private void TryComplete() {
+      var result = _target.TryComplete();
       if (result != null) {
         _agent.AddExperience(10);
-        Debug.Log($"[WorkConstruction] Completed {result.actorKey}!");
+        Debug.Log($"[WorkUnfinished] Completed {result.actorKey}!");
       }
       
-      _site = null;
+      _target = null;
       _state = WorkState.Done;
     }
 
     public override void OnStop() {
       _agent?.navMeshAgent?.ResetPath();
-      _site = null;
+      _target = null;
       _camp = null;
     }
 
     private enum WorkState {
-      FindSite,
-      MovingToSite,
+      FindTarget,
+      MovingToTarget,
       Working,
       Done
     }

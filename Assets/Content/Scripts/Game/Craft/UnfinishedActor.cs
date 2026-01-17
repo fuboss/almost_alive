@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
@@ -8,14 +7,14 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using VContainer;
 
-namespace Content.Scripts.Game.Construction {
+namespace Content.Scripts.Game.Craft {
   /// <summary>
-  /// Construction site - intermediate actor for building process.
+  /// Unfinished actor - intermediate state during crafting/building.
   /// Stores recipe reference, required resources inventory, and work progress.
   /// </summary>
   [RequireComponent(typeof(ActorDescription))]
   [RequireComponent(typeof(ActorInventory))]
-  public class ConstructionSiteActor : MonoBehaviour {
+  public class UnfinishedActor : MonoBehaviour {
     [ShowInInspector, ReadOnly] private RecipeSO _recipe;
     [ShowInInspector, ReadOnly] private float _workProgress;
     [ShowInInspector, ReadOnly] private CampSpot _assignedSpot;
@@ -44,30 +43,29 @@ namespace Content.Scripts.Game.Construction {
     }
 
     private void OnEnable() {
-      ActorRegistry<ConstructionSiteActor>.Register(this);
+      ActorRegistry<UnfinishedActor>.Register(this);
     }
 
     private void OnDisable() {
-      ActorRegistry<ConstructionSiteActor>.Unregister(this);
+      ActorRegistry<UnfinishedActor>.Unregister(this);
     }
 
-    /// <summary>Initialize construction site with recipe.</summary>
-    public void Initialize(RecipeSO recipe, CampSpot spot) {
+    /// <summary>Initialize with recipe.</summary>
+    public void Initialize(RecipeSO recipe, CampSpot spot = null) {
       _recipe = recipe;
       _assignedSpot = spot;
       _workProgress = 0f;
-      Debug.Log($"[ConstructionSite] Initialized for {recipe.recipeId} at {spot.name}");
+      Debug.Log($"[Unfinished] Initialized for {recipe.recipeId}" + (spot != null ? $" at {spot.name}" : ""));
     }
 
-    /// <summary>Add work progress. Returns true if work is complete after adding.</summary>
+    /// <summary>Add work progress. Returns true if work is complete.</summary>
     public bool AddWork(float amount) {
       if (amount <= 0f) return workComplete;
       _workProgress = Mathf.Min(_workProgress + amount, workRequired);
-      Debug.Log($"[ConstructionSite] Work progress: {_workProgress:F1}/{workRequired:F1}");
       return workComplete;
     }
 
-    /// <summary>Get remaining resource requirement for specific tag.</summary>
+    /// <summary>Get remaining resource count for specific tag.</summary>
     public int GetRemainingResourceCount(string tag) {
       var required = _recipe.recipe.requiredResources
         .Where(r => r.tag == tag)
@@ -94,24 +92,24 @@ namespace Content.Scripts.Game.Construction {
     }
 
     /// <summary>
-    /// Try to complete construction. Spawns result actor and destroys site.
+    /// Try to complete. Spawns result actor and destroys this.
     /// Returns spawned actor or null on failure.
     /// </summary>
     public ActorDescription TryComplete() {
       if (!isReadyToComplete) {
-        Debug.LogWarning($"[ConstructionSite] Cannot complete - resources: {hasAllResources}, work: {workComplete}");
+        Debug.LogWarning($"[Unfinished] Cannot complete - resources: {hasAllResources}, work: {workComplete}");
         return null;
       }
 
       if (_actorCreation == null) {
-        Debug.LogError("[ConstructionSite] ActorCreationModule not injected!");
+        Debug.LogError("[Unfinished] ActorCreationModule not injected!");
         return null;
       }
 
       var pos = _assignedSpot != null ? _assignedSpot.position : transform.position;
       
       if (!_actorCreation.TrySpawnActor(_recipe.recipe.resultActorKey, pos, out var result, _recipe.recipe.outputCount)) {
-        Debug.LogError($"[ConstructionSite] Failed to spawn {_recipe.recipe.resultActorKey}");
+        Debug.LogError($"[Unfinished] Failed to spawn {_recipe.recipe.resultActorKey}");
         return null;
       }
 
@@ -119,9 +117,7 @@ namespace Content.Scripts.Game.Construction {
         _assignedSpot.SetBuiltActor(result);
       }
 
-      Debug.Log($"[ConstructionSite] Completed! Spawned {result.actorKey}");
-      
-      // Destroy construction site
+      Debug.Log($"[Unfinished] Completed! Spawned {result.actorKey}");
       Destroy(gameObject);
       
       return result;

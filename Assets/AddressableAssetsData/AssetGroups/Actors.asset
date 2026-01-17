@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b285481eeb0e48f79d80520d51c0b43
+    m_Address: unfinished
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1e29e3624f3294b128aa453cea1b4216
     m_Address: storage_FOOD
     m_ReadOnly: 0

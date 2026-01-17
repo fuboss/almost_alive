@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6535158295370687232}
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 01387612c648e4c268136eeda1890321, type: 2}
+  - {fileID: 2100000, guid: c41770a1b930b432ea97f44bb9d89fb4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -121,12 +121,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6535158295370687232}
+  - component: {fileID: 4032475038845141481}
   - component: {fileID: 7145274956803166683}
-  - component: {fileID: -5252816479587681558}
   - component: {fileID: -5195146423728848175}
   - component: {fileID: 6715743217193776656}
+  - component: {fileID: 9076695933428497412}
+  - component: {fileID: 8957464732797230323}
   m_Layer: 6
-  m_Name: tmp_FoodBerries
+  m_Name: unfinished
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148,6 +150,18 @@ Transform:
   - {fileID: 5916725854092778689}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4032475038845141481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2b601e754b224fdab7f73a2427e9699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.Craft.UnfinishedActor
 --- !u!114 &7145274956803166683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,7 +173,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 932280e9b8694fa7a79e28802909c547, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.Descriptors.ActorDescription
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorDescription
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -169,42 +183,18 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  actorKey: food_berries
+  actorKey: unfinished
   _descriptionData:
     tags:
-    - FOOD
     - ITEM
-    rememberDuration: 3000
+    - UNFINISHED
+    rememberDuration: 30000
     onUseAddStats: []
-    onUseAddStatPerTick:
-    - statType: 1
-      delta: 15
+    onUseAddStatPerTick: []
   isSelectable: 1
   _tagDefinitions:
-  - {fileID: -5252816479587681558}
   - {fileID: 6715743217193776656}
---- !u!114 &-5252816479587681558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8041409771114869610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ca7f19afa1a4c79a0f3ba51a5a615be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.FoodTag
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
-  nutrition: 20
+  - {fileID: 8957464732797230323}
 --- !u!114 &-5195146423728848175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,13 +230,52 @@ MonoBehaviour:
     SerializationNodes: []
   weight: 0.1
   stackData:
-    rid: 365112976116547985
+    rid: -2
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547985
-      type: {class: StackData, ns: Content.Scripts.AI.GOAP.Agent, asm: Assembly-CSharp}
-      data:
-        min: 0
-        max: 20
-        current: 0
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &9076695933428497412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84e5f4e130ea452fb8d679efde6c6898, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.ActorInventory
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _slots: []
+--- !u!114 &8957464732797230323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 335dfabf3c3d34abc9ff63aff8e16a4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.UnfinishedTag
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []

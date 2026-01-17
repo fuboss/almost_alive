@@ -1,0 +1,310 @@
+#if UNITY_EDITOR
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEngine;
+
+namespace Content.Scripts.Editor {
+  public class TagWizard : EditorWindow {
+    private const string TAG_FILE = "Assets/Content/Scripts/AI/Tag.cs";
+    private const string TAG_DEFINITIONS_FOLDER = "Assets/Content/Scripts/Descriptors/Tags";
+    
+    private Vector2 _scrollPos;
+    private string _newTagName = "";
+    private List<TagEntry> _tags = new();
+    private string _searchFilter = "";
+
+    [MenuItem("GOAP/Tag Wizard", priority = 2)]
+    public static void Open() {
+      var window = GetWindow<TagWizard>("Tag Wizard");
+      window.minSize = new Vector2(400, 500);
+    }
+
+    private void OnEnable() {
+      RefreshTags();
+    }
+
+    private void OnGUI() {
+      EditorGUILayout.Space(10);
+      
+      // Header
+      EditorGUILayout.BeginHorizontal();
+      EditorGUILayout.LabelField("Tag Management", EditorStyles.boldLabel);
+      if (GUILayout.Button("Refresh", GUILayout.Width(60))) RefreshTags();
+      EditorGUILayout.EndHorizontal();
+      
+      EditorGUILayout.Space(5);
+      
+      // Search
+      _searchFilter = EditorGUILayout.TextField("Search", _searchFilter);
+      
+      EditorGUILayout.Space(10);
+      
+      // Tag list
+      DrawTagList();
+      
+      EditorGUILayout.Space(10);
+      
+      // Add new tag
+      DrawAddSection();
+    }
+
+    private void DrawTagList() {
+      EditorGUILayout.LabelField($"Tags ({_tags.Count})", EditorStyles.boldLabel);
+      
+      _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos, GUILayout.ExpandHeight(true));
+      
+      var filtered = string.IsNullOrEmpty(_searchFilter) 
+        ? _tags 
+        : _tags.Where(t => t.name.IndexOf(_searchFilter, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+
+      foreach (var tag in filtered) {
+        EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+        
+        // Status icon
+        var statusIcon = tag.hasConstant && tag.hasDefinition ? "✓" : "⚠";
+        var statusColor = tag.hasConstant && tag.hasDefinition ? Color.green : Color.yellow;
+        var oldColor = GUI.color;
+        GUI.color = statusColor;
+        EditorGUILayout.LabelField(statusIcon, GUILayout.Width(20));
+        GUI.color = oldColor;
+        
+        // Name
+        EditorGUILayout.LabelField(tag.name, EditorStyles.boldLabel, GUILayout.Width(150));
+        
+        // Status labels
+        EditorGUILayout.LabelField(tag.hasConstant ? "const" : "no const", GUILayout.Width(60));
+        EditorGUILayout.LabelField(tag.hasDefinition ? "class" : "no class", GUILayout.Width(60));
+        
+        GUILayout.FlexibleSpace();
+        
+        // Fix button if incomplete
+        if (!tag.hasConstant || !tag.hasDefinition) {
+          if (GUILayout.Button("Fix", GUILayout.Width(40))) {
+            FixTag(tag);
+          }
+        }
+        
+        // Delete button
+        if (GUILayout.Button("×", GUILayout.Width(25))) {
+          if (EditorUtility.DisplayDialog("Delete Tag", 
+            $"Delete tag '{tag.name}'?\n\nThis will remove:\n- Constant from Tag.cs\n- {tag.name}Tag.cs class file\n\nExisting prefabs using this tag may break!", 
+            "Delete", "Cancel")) {
+            DeleteTag(tag);
+          }
+        }
+        
+        EditorGUILayout.EndHorizontal();
+      }
+      
+      EditorGUILayout.EndScrollView();
+    }
+
+    private void DrawAddSection() {
+      EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+      EditorGUILayout.LabelField("Add New Tag", EditorStyles.boldLabel);
+      
+      EditorGUILayout.BeginHorizontal();
+      _newTagName = EditorGUILayout.TextField("Name", _newTagName);
+      _newTagName = _newTagName.ToUpperInvariant().Replace(" ", "_");
+      
+      var canAdd = !string.IsNullOrWhiteSpace(_newTagName) && 
+                   IsValidTagName(_newTagName) && 
+                   !_tags.Any(t => t.name == _newTagName);
+      
+      GUI.enabled = canAdd;
+      if (GUILayout.Button("Add", GUILayout.Width(60))) {
+        AddTag(_newTagName);
+        _newTagName = "";
+      }
+      GUI.enabled = true;
+      EditorGUILayout.EndHorizontal();
+      
+      if (!string.IsNullOrWhiteSpace(_newTagName) && !canAdd) {
+        var reason = !IsValidTagName(_newTagName) ? "Invalid name" : "Tag already exists";
+        EditorGUILayout.HelpBox(reason, MessageType.Warning);
+      }
+      
+      EditorGUILayout.EndVertical();
+    }
+
+    private void RefreshTags() {
+      _tags.Clear();
+      
+      var constants = ParseTagConstants();
+      var definitions = ScanTagDefinitions();
+      
+      // Merge
+      var allNames = constants.Keys.Union(definitions.Keys).Distinct();
+      foreach (var name in allNames) {
+        _tags.Add(new TagEntry {
+          name = name,
+          hasConstant = constants.ContainsKey(name),
+          hasDefinition = definitions.ContainsKey(name),
+          definitionPath = definitions.GetValueOrDefault(name)
+        });
+      }
+      
+      _tags = _tags.OrderBy(t => t.name).ToList();
+    }
+
+    private Dictionary<string, bool> ParseTagConstants() {
+      var result = new Dictionary<string, bool>();
+      if (!File.Exists(TAG_FILE)) return result;
+      
+      var content = File.ReadAllText(TAG_FILE);
+      var matches = Regex.Matches(content, @"public\s+const\s+string\s+(\w+)\s*=");
+      
+      foreach (Match m in matches) {
+        result[m.Groups[1].Value] = true;
+      }
+      
+      return result;
+    }
+
+    private Dictionary<string, string> ScanTagDefinitions() {
+      var result = new Dictionary<string, string>();
+      if (!Directory.Exists(TAG_DEFINITIONS_FOLDER)) return result;
+      
+      var files = Directory.GetFiles(TAG_DEFINITIONS_FOLDER, "*Tag.cs");
+      foreach (var file in files) {
+        var fileName = Path.GetFileNameWithoutExtension(file);
+        if (fileName.EndsWith("Tag")) {
+          var tagName = fileName.Substring(0, fileName.Length - 3).ToUpperInvariant();
+          // Convert PascalCase to UPPER_SNAKE_CASE
+          tagName = Regex.Replace(tagName, "([a-z])([A-Z])", "$1_$2").ToUpperInvariant();
+          result[tagName] = file;
+        }
+      }
+      
+      return result;
+    }
+
+    private void AddTag(string tagName) {
+      AddConstant(tagName);
+      CreateDefinitionClass(tagName);
+      AssetDatabase.Refresh();
+      RefreshTags();
+      Debug.Log($"[TagWizard] Added tag: {tagName}");
+    }
+
+    private void FixTag(TagEntry tag) {
+      if (!tag.hasConstant) AddConstant(tag.name);
+      if (!tag.hasDefinition) CreateDefinitionClass(tag.name);
+      AssetDatabase.Refresh();
+      RefreshTags();
+      Debug.Log($"[TagWizard] Fixed tag: {tag.name}");
+    }
+
+    private void DeleteTag(TagEntry tag) {
+      if (tag.hasConstant) RemoveConstant(tag.name);
+      if (tag.hasDefinition && !string.IsNullOrEmpty(tag.definitionPath)) {
+        File.Delete(tag.definitionPath);
+        var metaPath = tag.definitionPath + ".meta";
+        if (File.Exists(metaPath)) File.Delete(metaPath);
+      }
+      AssetDatabase.Refresh();
+      RefreshTags();
+      Debug.Log($"[TagWizard] Deleted tag: {tag.name}");
+    }
+
+    private void AddConstant(string tagName) {
+      if (!File.Exists(TAG_FILE)) return;
+      
+      var lines = File.ReadAllLines(TAG_FILE).ToList();
+      
+      // Find last constant line before ALL_TAGS
+      var insertIndex = -1;
+      for (var i = 0; i < lines.Count; i++) {
+        if (lines[i].Contains("public const string")) insertIndex = i + 1;
+        if (lines[i].Contains("ALL_TAGS")) break;
+      }
+      
+      if (insertIndex > 0) {
+        lines.Insert(insertIndex, $"    public const string {tagName} = \"{tagName}\";");
+      }
+      
+      // Update ALL_TAGS array
+      UpdateAllTagsArray(lines, tagName, true);
+      
+      File.WriteAllLines(TAG_FILE, lines);
+    }
+
+    private void RemoveConstant(string tagName) {
+      if (!File.Exists(TAG_FILE)) return;
+      
+      var lines = File.ReadAllLines(TAG_FILE).ToList();
+      
+      // Remove constant line
+      lines.RemoveAll(l => Regex.IsMatch(l, $@"public\s+const\s+string\s+{tagName}\s*="));
+      
+      // Update ALL_TAGS array
+      UpdateAllTagsArray(lines, tagName, false);
+      
+      File.WriteAllLines(TAG_FILE, lines);
+    }
+
+    private void UpdateAllTagsArray(List<string> lines, string tagName, bool add) {
+      // Find ALL_TAGS block
+      var startIndex = lines.FindIndex(l => l.Contains("ALL_TAGS"));
+      if (startIndex < 0) return;
+      
+      var endIndex = lines.FindIndex(startIndex, l => l.Contains("};"));
+      if (endIndex < 0) return;
+
+      if (add) {
+        // Insert before closing brace
+        lines.Insert(endIndex, $"      {tagName},");
+      } else {
+        // Remove tag from array
+        for (var i = startIndex; i <= endIndex; i++) {
+          if (Regex.IsMatch(lines[i], $@"\b{tagName}\b,?")) {
+            lines.RemoveAt(i);
+            break;
+          }
+        }
+      }
+    }
+
+    private void CreateDefinitionClass(string tagName) {
+      var className = ToPascalCase(tagName) + "Tag";
+      var filePath = Path.Combine(TAG_DEFINITIONS_FOLDER, $"{className}.cs");
+      
+      if (File.Exists(filePath)) return;
+      
+      var content = $@"namespace Content.Scripts.Game {{
+  public class {className} : TagDefinition {{
+    public override string Tag => AI.Tag.{tagName};
+  }}
+}}
+";
+      
+      Directory.CreateDirectory(TAG_DEFINITIONS_FOLDER);
+      File.WriteAllText(filePath, content);
+    }
+
+    private static string ToPascalCase(string input) {
+      // UPPER_SNAKE_CASE -> PascalCase
+      return string.Join("", input.Split('_')
+        .Select(s => s.Length > 0 
+          ? char.ToUpper(s[0]) + s.Substring(1).ToLower() 
+          : ""));
+    }
+
+    private static bool IsValidTagName(string name) {
+      return Regex.IsMatch(name, @"^[A-Z][A-Z0-9_]*$");
+    }
+
+    private class TagEntry {
+      public string name;
+      public bool hasConstant;
+      public bool hasDefinition;
+      public string definitionPath;
+    }
+  }
+}
+#endif

@@ -16,7 +16,7 @@ namespace Content.Scripts.AI {
     public const string BED = "BED";
     public const string FIREPLACE = "FIREPLACE";
     public const string WORKBENCH = "WORKBENCH";
-    public const string CONSTRUCTION_SITE = "CONSTRUCTION_SITE";
+    public const string UNFINISHED = "UNFINISHED";
     
     public static string[] ALL_TAGS = {
       FOOD,
@@ -33,7 +33,7 @@ namespace Content.Scripts.AI {
       BED,
       FIREPLACE,
       WORKBENCH,
-      CONSTRUCTION_SITE,
+      UNFINISHED,
     };
   }
 }
