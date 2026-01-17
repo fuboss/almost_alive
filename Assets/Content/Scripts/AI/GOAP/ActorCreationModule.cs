@@ -13,9 +13,9 @@ namespace Content.Scripts.AI.GOAP {
 
     private readonly List<ActorDescription> _allPrefabs = new();
     
-    private const float RAYCAST_HEIGHT = 100f;
-    private const float RAYCAST_DISTANCE = 200f;
-    private static readonly int GROUND_MASK = LayerMask.GetMask("Default", "Ground", "Terrain");
+    private const float RAYCAST_HEIGHT = 50f;
+    private const float RAYCAST_DISTANCE = 300f;
+    private static readonly int GROUND_MASK = LayerMask.GetMask("Default");
 
     void IInitializable.Initialize() {
       Debug.Log("ActorCreationModule:Initialize");
@@ -62,6 +62,7 @@ namespace Content.Scripts.AI.GOAP {
 
       var groundY = hit.point.y;
       var boundsOffset = GetBoundsOffsetY(prefab);
+      Debug.Log($"spawn with bounds offset {boundsOffset} at groundY {groundY} ({hit.transform.name})", hit.transform);
       
       return new Vector3(targetPos.x, groundY + boundsOffset, targetPos.z);
     }

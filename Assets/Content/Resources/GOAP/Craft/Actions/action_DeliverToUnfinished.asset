@@ -22,15 +22,21 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   data:
-    name: 
-    cost: 1
-    benefit: 1
+    name: action_DeliverToUnfinished
+    cost: 2
+    benefit: 4
     strategy:
-      rid: -2
-    preconditions: []
-    effects: []
+      rid: 365113007176679575
+    preconditions:
+    - Craft_Unfinished_Has
+    - Craft_Unfinished_Can_Deliver
+    - Craft_Unfinished_Needs_Resources
+    effects:
+    - Craft_Unfinished_NoNeeds_Resources
+    - Craft_Unfinished_Needs_Work
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 365113007176679575
+      type: {class: DeliverToUnfinishedStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Craft, asm: Assembly-CSharp}
+      data: 

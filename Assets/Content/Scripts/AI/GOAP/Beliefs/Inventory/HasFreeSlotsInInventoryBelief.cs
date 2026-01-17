@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent has free slots in inventory.")]
   public class HasFreeSlotsInInventoryBelief : AgentBelief {
     public int requiredItemCount = 1;
 
@@ -12,12 +13,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasFreeSlotsInInventoryBelief {
+      return new HasFreeSlotsInInventoryBelief {
         name = name,
         requiredItemCount = requiredItemCount,
         condition = condition
       };
-      return copy;
     }
   }
 }

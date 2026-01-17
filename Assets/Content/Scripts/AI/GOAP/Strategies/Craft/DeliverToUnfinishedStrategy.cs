@@ -6,7 +6,10 @@ using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Content.Scripts.Game.Storage;
+using ImprovedTimers;
 using UnityEngine;
+using VContainer;
+using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   /// <summary>
@@ -25,8 +28,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private int _targetCount;
     private StorageActor _sourceStorage;
     private bool _useAgentInventory;
+    private CountdownTimer _timer;
+    [Inject] private ActorCreationModule _creationModule;
 
-    public DeliverToUnfinishedStrategy() { }
+    public DeliverToUnfinishedStrategy() {
+    }
 
     private DeliverToUnfinishedStrategy(IGoapAgent agent, DeliverToUnfinishedStrategy template) {
       _agent = agent;
@@ -45,6 +51,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     public override void OnUpdate(float deltaTime) {
+      _timer?.Tick();
       switch (_state) {
         case DeliverState.FindTarget:
           FindTarget();
@@ -65,7 +72,17 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
           DeliverToTarget();
           break;
         case DeliverState.Done:
-          complete = true;
+
+          if (_timer == null) {
+            _timer = new CountdownTimer(1f);
+            _timer.OnTimerStop += () => {
+              complete = true;
+              _timer.Dispose();
+              _timer = null;
+            };
+            _timer.Start();
+          }
+
           break;
       }
     }
@@ -148,14 +165,15 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       var taken = 0;
       var inv = _sourceStorage.inventory;
-      
+
       while (taken < _targetCount && !_agent.inventory.isFull) {
         if (!inv.TryGetSlotWithItemTags(new[] { _targetTag }, out var slot)) break;
-        
+
         if (slot.ReleaseSingle(out var item, _agent.position)) {
           _agent.inventory.TryPutItemInInventory(item);
           taken++;
-        } else {
+        }
+        else {
           slot.RemoveCount(1);
           taken++;
         }
@@ -163,11 +181,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       Debug.Log($"[DeliverUnfinished] Picked up {taken}x {_targetTag}");
       _targetCount = taken;
-      
+
       if (taken > 0) {
         _state = DeliverState.MoveToTarget;
         _agent.navMeshAgent.SetDestination(_target.transform.position);
-      } else {
+      }
+      else {
         _state = DeliverState.FindResource;
       }
     }
@@ -192,17 +211,32 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       var delivered = 0;
       while (delivered < _targetCount) {
         if (!_agent.inventory.TryGetSlotWithItemTags(new[] { _targetTag }, out var slot)) break;
-        
+
         if (slot.ReleaseSingle(out var item, _target.transform.position)) {
           if (_target.inventory.TryPutItemInInventory(item)) {
             delivered++;
-          } else {
+          }
+          else {
+            Debug.LogError("failed to deliver item to target, returning to agent inventory");
             _agent.inventory.TryPutItemInInventory(item);
             break;
           }
-        } else {
-          slot.RemoveCount(1);
-          delivered++;
+        }
+        else {
+          if (_creationModule.TrySpawnActor(slot.item.actorKey, _target.transform.position, out var newItem)) {
+            if (!_target.inventory.TryPutItemInInventory(newItem)) {
+              Debug.LogError("failed to deliver spawned item to target, destroying it");
+              Object.Destroy(newItem.gameObject);
+            }
+
+            slot.RemoveCount(1);
+            delivered++;
+            break;
+          }
+          else {
+            Debug.LogError("failed to spawn item for delivery");
+            break;
+          }
         }
       }
 

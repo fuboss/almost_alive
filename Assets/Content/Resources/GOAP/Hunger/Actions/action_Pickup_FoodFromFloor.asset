@@ -30,7 +30,7 @@ MonoBehaviour:
     preconditions:
     - Transient_Is/FOOD
     effects:
-    - Inventory_HasNo/FOOD
+    - Inventory_Has/FOOD
   references:
     version: 2
     RefIds:

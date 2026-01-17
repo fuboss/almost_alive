@@ -28,11 +28,9 @@ MonoBehaviour:
     strategy:
       rid: 365112976116547855
     preconditions:
-    - Storage_NeedsFilling
     - Remembers_Nearby/ITEM
     effects:
     - Transient_Is/ITEM
-    - HasTransientTarget
   references:
     version: 2
     RefIds:

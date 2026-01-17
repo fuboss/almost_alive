@@ -1,26 +1,21 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when objects with specified tags are in agent's interaction zone.")]
   public class InteractionBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
         var sensor = agent.agentBrain.interactSensor;
-        var valid = sensor.HasObjectsWithTagsArea(tags);
-        // if (!valid) {
-        //   Debug.LogWarning($"Sensor has no objects with tags [{string.Join(", ", tags)}] in interaction zone");
-        // }
-        return valid;
+        return sensor.HasObjectsWithTagsArea(tags);
       };
     }
 
     public override AgentBelief Copy() {
-      return new InteractionBelief() { condition = condition, name = name, tags = tags };
+      return new InteractionBelief { condition = condition, name = name, tags = tags };
     }
   }
 }

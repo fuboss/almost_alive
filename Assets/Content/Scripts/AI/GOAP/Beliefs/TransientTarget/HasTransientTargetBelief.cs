@@ -1,10 +1,12 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent has transient target set (or inverse: no target).")]
   public class HasTransientTargetBelief : AgentBelief {
-    public bool inverse = false;
+    public bool inverse;
+    
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => !inverse 
         ? agent.transientTarget != null
@@ -12,12 +14,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasTransientTargetBelief {
+      return new HasTransientTargetBelief {
         inverse = inverse,
         name = name,
         condition = condition
       };
-      return copy;
     }
   }
 }

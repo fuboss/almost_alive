@@ -34,7 +34,6 @@ MonoBehaviour:
     - Inventory_ReadyForDeposit
     effects:
     - Transient_Is/STORAGE
-    - HasTransientTarget
   references:
     version: 2
     RefIds:

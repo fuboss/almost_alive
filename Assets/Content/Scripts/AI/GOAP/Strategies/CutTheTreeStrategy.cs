@@ -61,15 +61,10 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnComplete() {
       if (target == null) return;
-      if (_agent.inventory.TryPutItemInInventory(target)) {
-        Debug.Log($"{target.name} cut complete!");
-        _agent.memory.Forget(_agent.transientTarget);
-        _agent.transientTarget = null;
-        _destructionModule?.DestroyActor(target);
-      }
-      else {
-        Debug.LogError($"failed to cut  {target.name}", target);
-      }
+      Debug.Log($"{target.name} cut complete!");
+      _agent.memory.Forget(_agent.transientTarget);
+      _agent.transientTarget = null;
+      _destructionModule?.DestroyActor(target, _agent);
     }
 
     public override void OnStop() {

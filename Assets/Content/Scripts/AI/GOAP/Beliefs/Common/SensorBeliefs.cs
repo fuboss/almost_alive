@@ -3,7 +3,7 @@ using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when objects with specified tags are in agent's vision.")]
   public class VisionBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
 
@@ -15,7 +15,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     }
 
     public override AgentBelief Copy() {
-      return new VisionBelief() { condition = condition, name = name, tags = tags };
+      return new VisionBelief { condition = condition, name = name, tags = tags };
     }
   }
 }

@@ -164,6 +164,7 @@ MonoBehaviour:
   - Hauling_FeatureSet
   - WoodCutting_FeatureSet
   - Camp_FeatureSet
+  - Craft_FeatureSet
   _memoryConsolidation:
     confidenceDecayRate: 0.99
     forgetThreshold: 0.1

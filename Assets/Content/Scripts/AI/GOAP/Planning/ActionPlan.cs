@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Goals;
 using UnityEngine;
@@ -31,6 +32,8 @@ namespace Content.Scripts.AI.GOAP.Planning {
     public float commitment => totalActions > 0
       ? (float)completedActions / totalActions
       : 0f;
+
+    public string actionNames => string.Join(" → ", actions.Select(a => $"[{a.name}]"));
 
     public void MarkActionComplete() {
       completedActions++;

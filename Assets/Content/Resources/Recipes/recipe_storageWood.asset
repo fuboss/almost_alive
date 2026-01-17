@@ -73,6 +73,11 @@ MonoBehaviour:
     - Name: outputCount
       Entry: 3
       Data: 1
+    - Name: workRequired
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
+  isCampRecipe: 1
+  campBuildPriority: 0

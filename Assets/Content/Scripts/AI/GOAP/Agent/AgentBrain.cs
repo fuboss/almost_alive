@@ -39,7 +39,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private ActionPlan _actionPlan;
 
     [FoldoutGroup("Debug")] [ReadOnly] private AgentAction _currentAction;
-    [FoldoutGroup("Debug")] [SerializeField] private ActionHistoryTracker _actionHistory = new();
+
+    [FoldoutGroup("Debug")] [SerializeField]
+    private ActionHistoryTracker _actionHistory = new();
+
     [FoldoutGroup("Debug")] [ReadOnly] private AgentGoal _currentGoal;
     public Dictionary<string, AgentBelief> beliefs;
     private IGoapAgent _agent;
@@ -124,6 +127,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void HandleVisibilityStart(ActorDescription visibleActor) {
+      TryRemember(visibleActor);
+    }
+
+    public void TryRemember(ActorDescription visibleActor) {
       var snapshot = MemorySnapshotBuilder.Create()
         .WithCreationTime(DateTime.Now)
         .With(visibleActor.descriptionData)
@@ -146,6 +153,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       if ((actionPlan == null || actionPlan.actions.Count == 0) && _currentAction == null) {
         actionPlan = CalculatePlan();
+        if (actionPlan != null) {
+          // Debug.Log(
+          //   $"[Brain] New plan: {actionPlan.agentGoal.Name} score:{actionPlan.Score}\n{string.Join(", ", actionPlan.actions.Select(a => $"{a.name}:{a.score}"))}",
+          //   this);
+        }
       }
     }
 

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
+  m_Name: action_WorkOnUnfinished
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  data:
+    name: action_WorkOnUnfinished
+    cost: 3
+    benefit: 4
+    strategy:
+      rid: 365113007176679575
+    preconditions:
+    - Craft_Unfinished_Needs_Work
+    - Craft_Unfinished_NoNeeds_Resources
+    - Craft_Unfinished_Has
+    effects:
+    - Craft_Unfinished_Ready
+  references:
+    version: 2
+    RefIds:
+    - rid: 365113007176679575
+      type: {class: DeliverToUnfinishedStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Craft, asm: Assembly-CSharp}
+      data: 

@@ -1,8 +1,9 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Common {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent's movement state matches (moving or stopped).")]
   public class NavAgentMovementBelief : AgentBelief {
     public bool isMoving;
 
@@ -11,12 +12,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
     }
 
     public override AgentBelief Copy() {
-      var copy = new NavAgentMovementBelief() {
+      return new NavAgentMovementBelief {
         condition = condition,
         name = name,
         isMoving = isMoving
       };
-      return copy;
     }
   }
 }

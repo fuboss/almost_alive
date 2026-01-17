@@ -22,11 +22,11 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365113007176679546
+    rid: 365113007176679574
   references:
     version: 2
     RefIds:
-    - rid: 365113007176679546
-      type: {class: CampNeedsBuildingBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Camp, asm: Assembly-CSharp}
+    - rid: 365113007176679574
+      type: {class: CampNeedsNewUnfinishedBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Craft, asm: Assembly-CSharp}
       data:
-        name: NeedBuild_Camp
+        name: Camp_Unfinished_NeedsNew

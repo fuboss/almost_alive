@@ -26,9 +26,14 @@ namespace Content.Scripts.AI.Camp {
       return _campSpots?.Where(s => s.isEmpty) ?? Enumerable.Empty<CampSpot>();
     }
 
+    /// <summary>Returns all occupied spots.</summary>
+    public IEnumerable<CampSpot> GetOccupiedSpots() {
+      return _campSpots?.Where(s => !s.isEmpty) ?? Enumerable.Empty<CampSpot>();
+    }
+
     /// <summary>Returns all spots that need a specific tag built.</summary>
     public IEnumerable<CampSpot> GetSpotsNeedingTag(string tag) {
-      return _campSpots?.Where(s => s.isEmpty && s.preferredTags.Contains(tag)) 
+      return GetEmptySpots()?.Where(s => s.preferredTags.Length == 0 || s.preferredTags.Contains(tag))
              ?? Enumerable.Empty<CampSpot>();
     }
 

@@ -1,20 +1,20 @@
 using System;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent's inventory is full (no free slots).")]
   public class InventoryIsFullBelief : AgentBelief {
     protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return ()=>!agent.inventory.freeSlots.Any();
+      return () => !agent.inventory.freeSlots.Any();
     }
 
     public override AgentBelief Copy() {
-      var copy = new InventoryIsFullBelief {
+      return new InventoryIsFullBelief {
         name = name,
         condition = condition
       };
-      return copy;
     }
   }
 }

@@ -22,10 +22,42 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   template:
-    name: 
-    desiredEffects: []
-    utilityEvaluators: []
-    utilityBias: 1
+    name: goal_Craft
+    desiredEffects:
+    - Craft_Unfinished_Ready
+    utilityEvaluators:
+    - utility: {fileID: 11400000, guid: 14d1c99d4914649578aec8d40f06c3f1, type: 2}
+      evaluator:
+        rid: 365113007176679635
+    utilityBias: 3
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 365113007176679635
+      type: {class: JobPriorityEvaluator, ns: Content.Scripts.AI.Utility, asm: Assembly-CSharp}
+      data:
+        workType: 5
+        evaluationCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4

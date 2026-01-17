@@ -45,7 +45,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
 
       var targetMem = GetTargetMemory();
       if (targetMem == null) {
-        Debug.LogError("Failed to get nearestTarget from memory");
+        Debug.LogError($"{this.GetType().Name} Failed to get nearestTarget from memory");
         _aborted = true;
         return;
       }
@@ -90,6 +90,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
         Debug.Log($"MoveStrategy OnComplete. to {_targetSnapshot.target.name} {_targetSnapshot.location}", _targetSnapshot.target);
       }
       _agent.navMeshAgent.ResetPath();
+      _agent.navMeshAgent.isStopped = true;
     }
 
     public override void OnStop() {

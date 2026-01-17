@@ -23,7 +23,6 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
 
     public override void Show() {
       base.Show();
-      Debug.LogError("MainInfoPanel Show");
     }
 
     private void Init() {
@@ -32,7 +31,6 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
 
     public override void Hide() {
       base.Hide();
-      Debug.LogError("MainInfoPanel Hide");
     }
 
     public override void OnUpdate() {

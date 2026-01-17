@@ -15,6 +15,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
   public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable {
     [Inject] private SimulationLoop _simLoop;
     [Inject] private SimulationTimeController _simTime;
+    [Inject] private RecipeModule _recipeModule;
 
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
@@ -54,6 +55,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
+
+    public RecipeModule recipeModule => _recipeModule;
 
     public void AddExperience(int amount) {
       _experience.AddXP(amount);

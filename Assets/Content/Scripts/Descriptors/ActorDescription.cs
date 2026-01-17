@@ -30,7 +30,11 @@ namespace Content.Scripts.Game {
     }
 
     public bool HasAllTags(string[] tags) {
-      return tags.All(t => _descriptionData.tags.Contains(t));
+      if (_descriptionData?.tags == null) {
+        Debug.LogError("DescriptionData is null", this);
+        return false;
+      }
+      return _descriptionData.tags.Length == 0 || tags.All(t => _descriptionData.tags.Contains(t));
     }
 
     public T GetDefinition<T>() where T : TagDefinition {

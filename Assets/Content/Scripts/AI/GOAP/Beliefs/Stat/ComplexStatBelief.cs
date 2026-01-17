@@ -1,9 +1,10 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Stats;
+using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when all agent's stats are within their specified ranges.")]
   public class ComplexStatBelief : AgentBelief {
     public FloatAgentStat.Data[] statDatas;
 

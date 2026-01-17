@@ -22,10 +22,15 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   goals:
+  - {fileID: 11400000, guid: 4b12bba1df7b84855895b338b8e82d3e, type: 2}
   - {fileID: 11400000, guid: 5a82d97f366274936860f1c2b1c15333, type: 2}
   beliefs:
+  - {fileID: 11400000, guid: 27719544192164fea9f735d1580074ea, type: 2}
   - {fileID: 11400000, guid: fde02336150ec406389cf5c32ad2d91a, type: 2}
+  - {fileID: 11400000, guid: adedf99d597a34899a76781261c13fb4, type: 2}
   - {fileID: 11400000, guid: 0ca569cfd42fe4902aff60ece5bc1586, type: 2}
-  compositeBeliefs: []
+  - {fileID: 11400000, guid: 28652952d54f3434a9e3f4d47d230280, type: 2}
+  compositeBeliefs:
+  - {fileID: 11400000, guid: 0ef45d5caa22940ec8b58ffb694971f7, type: 2}
   actionDatas:
   - {fileID: 11400000, guid: 44f1e2ab69dd2435a9f18c9b56c9ace0, type: 2}

@@ -13,19 +13,41 @@ namespace Content.Scripts.AI.GOAP.Planning {
   public class GOAPPlanner : IGoapPlanner {
     public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       var orderedGoals = GetOrderedGoals(agent, goals, mostRecentGoal);
+      var goalsStr = string.Join(",", orderedGoals.Select(g => $"[{g.Name}:{g.Priority}]"));
+     
 
+      var maxScore = float.MinValue;
+      ActionPlan plan = null;
+      var goalB = new StringBuilder();
       foreach (var goal in orderedGoals) {
-        var plan = BuildPlan(agent, goal);
-        if (plan != null) {
-          return plan;
+        var b = new StringBuilder();
+        var potentialPlan = BuildPlan(agent, goal, b);
+        if (potentialPlan == null) {
+          goalB.AppendLine($"Plan for {goal.Name} failed to build:\n{b}");
+          continue;
         }
+
+        if (potentialPlan.Score > maxScore) {
+          plan = potentialPlan;
+          maxScore = potentialPlan.Score;
+        }
+
+        goalB.AppendLine($"plan for {goal.Name} has score {potentialPlan.Score:F2}" +
+                         $" {string.Join(" → ", potentialPlan.actions.Select(a => $"[{a.name}]"))}");
+      }
+
+      if (plan != null) {
+        Debug.Log(
+          $"[GOAPPlanner] Selected plan '<b>{plan.agentGoal.Name}</b>' {plan.actionNames}\n for" +
+          $"{goalsStr}\n\n {goalB}");
+        return plan;
       }
 
       Debug.LogWarning("No plan found");
       return null;
     }
 
-    private ActionPlan BuildPlan(IGoapAgent agent, AgentGoal goal) {
+    private ActionPlan BuildPlan(IGoapAgent agent, AgentGoal goal, StringBuilder b) {
       var requiredEffects = new HashSet<AgentBelief>(goal.desiredEffects);
 
       // Remove already satisfied effects
@@ -39,15 +61,16 @@ namespace Content.Scripts.AI.GOAP.Planning {
       var visitedEffects = new HashSet<string>();
 
       // Backward chaining: find actions that satisfy required effects
-      var b = new StringBuilder();
       while (requiredEffects.Count > 0) {
         var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b);
 
-        if (bestAction == null) {
+        if (bestAction == null) { b.AppendLine(
+            $" - Failed to find action to resolve effects: {string.Join(",", requiredEffects.Select(e => e.name))}; ");
           // No action can satisfy remaining effects
           return null;
         }
-
+        
+        b.AppendLine($" - <b>{bestAction.name}</b>");
         plan.Add(bestAction);
         totalCost += bestAction.cost;
         totalBenefit += bestAction.benefit;
@@ -69,19 +92,16 @@ namespace Content.Scripts.AI.GOAP.Planning {
         }
       }
 
-      if (plan.Count == 0) return null;
+      if (plan.Count == 0) {
+        b.AppendLine(
+          $" - Failed to build Plan. notCovered effects: {string.Join("", $"[{requiredEffects.Select(e => e.name)}]")}; ");
+        return null;
+      }
 
       // Reverse to get execution order (we built it backwards)
       plan.Reverse();
       var actionStack = new Stack<AgentAction>(plan.AsEnumerable().Reverse());
-
       var newPlan = new ActionPlan(goal, actionStack, totalCost, totalBenefit);
-
-      Debug.Log(
-        $"ActionPlan for goal: <b>{goal.Name}</b>, cost: {totalCost:F1}, benefit: {totalBenefit:F1}, score: {newPlan.Score:F2}. " +
-        $"\n{string.Join(" → ", plan.Select(a => $"[{a.name}]"))}"
-        + $"\nQueryResult: {b}");
-
       return newPlan;
     }
 
@@ -97,7 +117,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       AgentAction best = null;
       var bestScore = float.MinValue;
 
-      b.AppendLine($"{string.Join(", ", requiredEffects.Select(e => e.name))}]  Checking actions:\n");
+      //b.AppendLine($"{string.Join(", ", requiredEffects.Select(e => e.name))}]  Checking actions:\n");
       foreach (var action in availableActions) {
         // Check if action provides any required effect
         var providesRequired = action.effects.Where(e =>
@@ -114,35 +134,36 @@ namespace Content.Scripts.AI.GOAP.Planning {
           bestScore = score;
           best = action;
         }
-
-        b.AppendLine(
-          $" - Action: <b>{action.name}</b>, provides: {count}, score: {score:F2} (best: {best?.name}{bestScore:F2})");
       }
-
+      
       return best;
     }
 
-    private static List<AgentGoal>
-      GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal) {
-      return goals
-        .Where(g => g != null && g.desiredEffects.Any(b => {
-          if (b == null) {
-            Debug.LogError($"goal '{g.Name}' has a null desired effect!");
-            return false;
-          }
+    private static List<AgentGoal> GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal recentGoal) {
+      var desires = goals.Select(g => new GoalDesires(g)).ToList();
+      foreach (var desire in desires) {
+        foreach (var belief in desire.checks.Keys.ToList()) {
+          desire.checks[belief] = !belief.Evaluate(agent);
+        }
+      }
 
-          try {
-            return !b.Evaluate(agent);
-          }
-          catch (Exception e) {
-            Debug.LogException(e, agent.agentBrain);
-          }
-
-          return false;
-        }))
-        .OrderByDescending(g => g.Name == mostRecentGoal?.Name ? g.Priority - 2 : g.Priority)
+      return desires.Where(d => d.checks.Any(kvp => kvp.Value)).Select(d => d.goal)
+        .OrderByDescending(g => g.Name == recentGoal?.Name ? g.Priority - 0.5f : g.Priority)
         .ToList();
     }
+
+    private class GoalDesires {
+      public AgentGoal goal;
+      public Dictionary<AgentBelief, bool> checks = new();
+
+      public GoalDesires(AgentGoal g) {
+        goal = g;
+        foreach (var belief in g.desiredEffects) {
+          checks[belief] = false;
+        }
+      }
+    }
+
 
     public async UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals,
       AgentGoal mostRecentGoal = null) {

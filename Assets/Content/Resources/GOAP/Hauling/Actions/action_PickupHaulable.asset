@@ -24,12 +24,11 @@ MonoBehaviour:
   data:
     name: action_PickupHaulable
     cost: 1
-    benefit: 1
+    benefit: 1.5
     strategy:
       rid: 365112976116547941
     preconditions:
     - Transient_Is/ITEM
-    - HasTransientTarget
     effects:
     - Inventory_Has/ITEM
     - Inventory_HasHaulable

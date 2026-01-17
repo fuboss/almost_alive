@@ -28,7 +28,6 @@ MonoBehaviour:
     strategy:
       rid: 365112976116547852
     preconditions:
-    - Storage_NeedsFilling
     - NotRemembers/ITEM
     - Inventory_HasNoHaulable
     effects:

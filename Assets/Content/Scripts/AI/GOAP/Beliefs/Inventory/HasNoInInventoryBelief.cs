@@ -3,7 +3,7 @@ using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent has no item with specified tags in inventory (or count below required).")]
   public class HasNoInInventoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public int requiredItemCount = 1;
@@ -13,13 +13,12 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasNoInInventoryBelief {
+      return new HasNoInInventoryBelief {
         tags = tags,
         name = name,
         requiredItemCount = requiredItemCount,
         condition = condition
       };
-      return copy;
     }
   }
 }

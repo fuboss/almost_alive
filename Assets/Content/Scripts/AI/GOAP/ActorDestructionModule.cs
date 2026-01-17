@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
 using UnityEngine;
 using VContainer;
@@ -9,31 +11,37 @@ namespace Content.Scripts.AI.GOAP {
     [Inject] private ActorCreationModule _creationModule;
 
     void IInitializable.Initialize() {
-      Debug.Log("ActorDestructionModule:Initialize");
     }
 
-    public void DestroyActor(ActorDescription actor) {
+    public void DestroyActor(ActorDescription actor, IGoapAgent byAgent = null) {
       if (actor == null) {
         Debug.LogError("ActorDestructionModule: DestroyActor: actor is null");
         return;
       }
 
-      SpawnPartsIfNeeded(actor);
+      foreach (var partActor in SpawnPartsIfNeeded(actor)) {
+        Debug.Log($"{actor.name} Spawned a: {partActor.name}");
+        byAgent?.agentBrain.TryRemember(partActor);
+      }
 
       Object.Destroy(actor.gameObject);
     }
 
-    private void SpawnPartsIfNeeded(ActorDescription actor) {
+    private List<ActorDescription> SpawnPartsIfNeeded(ActorDescription actor) {
+      var spawnedParts = new List<ActorDescription>();
       var parts = actor.GetComponent<ActorPartsDescription>();
-      if (parts == null || parts.parts.Count == 0) return;
+      if (parts == null || parts.parts.Count == 0) return spawnedParts;
 
       var shift = Vector3.zero;
-      foreach (var part in parts.parts) {
-        if (!_creationModule.TrySpawnActor(part.Key, actor.transform.position + shift, out var partActor,
-              part.Value)) continue;
+      foreach (var (actorKey, count) in parts.parts) {
+        if (!_creationModule.TrySpawnActor(actorKey, actor.transform.position + shift, out var partActor,
+              count)) continue;
 
+        spawnedParts.Add(partActor);
         shift = NextShift();
       }
+
+      return spawnedParts;
     }
 
     private static Vector3 NextShift() {

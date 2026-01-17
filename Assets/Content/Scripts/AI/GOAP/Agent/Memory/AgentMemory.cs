@@ -54,8 +54,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
       return RememberResult.NewMemory;
     }
-
-
+    
     public bool TryFind<T>(Func<MemorySnapshot, bool> predicate, out T result) {
       result = default;
       if (predicate == null) return false;
@@ -345,5 +344,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       if (snapshot.tags == null || tags == null) return false;
       return tags.All(tag => snapshot.tags.Contains(tag));
     }
+
+    
   }
 }

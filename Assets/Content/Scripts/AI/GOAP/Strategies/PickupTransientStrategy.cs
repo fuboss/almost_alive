@@ -48,6 +48,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       IniTimer();
       _timer.Start();
       _animations.PickUp();
+      complete = false;
     }
 
     private void IniTimer() {
@@ -60,11 +61,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnComplete() {
       if (target == null) return;
-      _agent.memory.Forget(_agent.transientTarget);
+      if (_agent.inventory.TryPutItemInInventory(target)) {
+        _agent.memory.Forget(_agent.transientTarget);
+      }
+
       _agent.transientTarget = null;
-      
-      //TODO: remove tree and spawn wood items
-      Object.Destroy(target.gameObject);
     }
 
     public override void OnStop() {

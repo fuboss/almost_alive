@@ -1,10 +1,9 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent does not remember enough objects with specified tags.")]
   public class HasNoInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public int minCount = 1;
@@ -17,13 +16,12 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasNoInMemoryBelief {
+      return new HasNoInMemoryBelief {
         tags = tags,
         name = name,
         condition = condition,
         minCount = minCount
       };
-      return copy;
     }
   }
 }

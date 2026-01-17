@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
-  [Serializable]
+  [Serializable, TypeInfoBox("True when agent remembers object with specified tags (optionally within distance).")]
   public class HasInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool checkDistance;
@@ -16,20 +16,16 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
       return () => {
         var memory = agent.memory;
         var withTags = memory.GetWithAllTags(tags);
-        if (withTags.Length == 0) {
-          return false;
-        }
+        if (withTags.Length == 0) return false;
 
-        if (!checkDistance) {
-          return withTags.Length >= minCount;
-        }
+        if (!checkDistance) return withTags.Length >= minCount;
 
         return withTags.Count(m => Vector3.Distance(agent.position, m.location) < maxDistance) >= minCount;
       };
     }
 
     public override AgentBelief Copy() {
-      var copy = new HasInMemoryBelief {
+      return new HasInMemoryBelief {
         tags = tags,
         checkDistance = checkDistance,
         maxDistance = maxDistance,
@@ -37,7 +33,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
         condition = condition,
         minCount = minCount
       };
-      return copy;
     }
   }
 }

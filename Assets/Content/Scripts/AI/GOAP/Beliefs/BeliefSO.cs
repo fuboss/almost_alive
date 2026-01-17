@@ -13,6 +13,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
     }
 
     public AgentBelief Get() {
+      if (belief == null) {
+        Debug.LogError($"Belief {name} is invalid", this);
+        return null;
+      }
+
       return belief.Copy();
     }
   }

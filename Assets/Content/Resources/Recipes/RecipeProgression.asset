@@ -21,4 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  unlocks: []
+  unlocks:
+  - level: 0
+    recipe: {fileID: 11400000, guid: aac47cd981fef48978ad043e74cd7d21, type: 2}
+  - level: 1
+    recipe: {fileID: 11400000, guid: e5e59eb5b3b504ad4897be61f5b99b44, type: 2}
+  - level: 1
+    recipe: {fileID: 11400000, guid: 61533bae1bfd74fb199dcb279670c902, type: 2}
+  - level: 2
+    recipe: {fileID: 11400000, guid: 3cf1af46e0a934b5480b4d860a3083a0, type: 2}
+  - level: 2
+    recipe: {fileID: 11400000, guid: 675d1f3b41e644072b2db32919c1dda1, type: 2}

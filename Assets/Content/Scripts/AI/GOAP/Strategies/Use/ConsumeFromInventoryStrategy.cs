@@ -107,18 +107,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public override void OnComplete() {
       if (target == null) return;
 
-      if (_slot.count > count) {
-        _slot.stackData.current -= count;
-      }
-      else {
-        if (_slot.Release(out var consumed)) {
-          Object.Destroy(consumed.gameObject);
-        }
-        else {
-          Debug.LogError("failed to releae item from inventory slot", target);
-          return;
-        }
-      }
+      _slot.RemoveCount(count);
 
       //consume!
       ApplyUseStat();

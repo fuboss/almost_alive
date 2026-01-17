@@ -60,6 +60,10 @@ namespace Content.Scripts.AI.GOAP {
         }
 
         actions.AddRange(featureSet.actionDatas.Select(actionDataSo => {
+          if (actionDataSo == null) {
+            Debug.LogError("actionDataSo == null");
+            return null;
+          }
           var action = actionDataSo.GetAction(agent, _objectResolver);
           return action;
         }).ToList());

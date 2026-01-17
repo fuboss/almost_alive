@@ -125,8 +125,8 @@ GameObject:
   - component: {fileID: 7145274956803166683}
   - component: {fileID: -5195146423728848175}
   - component: {fileID: 6715743217193776656}
-  - component: {fileID: 9076695933428497412}
   - component: {fileID: 8957464732797230323}
+  - component: {fileID: 7034160964667869072}
   m_Layer: 6
   m_Name: unfinished
   m_TagString: Untagged
@@ -236,28 +236,6 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
---- !u!114 &9076695933428497412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8041409771114869610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84e5f4e130ea452fb8d679efde6c6898, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.ActorInventory
-  serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
-    ReferencedUnityObjects: []
-    SerializedBytesString: 
-    Prefab: {fileID: 0}
-    PrefabModificationsReferencedUnityObjects: []
-    PrefabModifications: []
-    SerializationNodes: []
-  _slots: []
 --- !u!114 &8957464732797230323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,3 +257,56 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+--- !u!114 &7034160964667869072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041409771114869610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e269cdf8284467bcaad09c8357bb76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.FilteredActorInventory
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _slots:
+  - index: 0
+    item: {fileID: 0}
+    stackData:
+      min: 0
+      max: 10
+      current: 1
+  - index: 1
+    item: {fileID: 0}
+    stackData:
+      min: 0
+      max: 10
+      current: 1
+  - index: 2
+    item: {fileID: 0}
+    stackData:
+      min: 0
+      max: 10
+      current: 1
+  - index: 3
+    item: {fileID: 0}
+    stackData:
+      min: 0
+      max: 10
+      current: 1
+  - index: 4
+    item: {fileID: 0}
+    stackData:
+      min: 0
+      max: 10
+      current: 1
+  availableTags: []

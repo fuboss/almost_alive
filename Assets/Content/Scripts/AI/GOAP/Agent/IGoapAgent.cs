@@ -30,8 +30,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     int transientTargetId { get; }
     GameObject gameObject { get; }
 
+    Transform transform { get; }
     public AgentExperience experience { get; }
     public AgentRecipes recipes { get; }
+    RecipeModule recipeModule { get; }
 
     WorkPriority GetWorkScheduler();
     void AddExperience(int amount);
