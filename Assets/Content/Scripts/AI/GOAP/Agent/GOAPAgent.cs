@@ -22,12 +22,13 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private ActorInventory _inventory;
     [SerializeField] private WorkPriority _workPriority;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
-    
-    [FoldoutGroup("Progression")]
-    [SerializeField] private AgentExperience _experience = new();
-    [FoldoutGroup("Progression")]
-    [SerializeField] private AgentRecipes _recipes = new();
-    
+
+    [FoldoutGroup("Progression")] [SerializeField]
+    private AgentExperience _experience = new();
+
+    [FoldoutGroup("Progression")] [SerializeField]
+    private AgentRecipes _recipes = new();
+
     [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
     [ShowInInspector, ReadOnly] private float _baseNavSpeed;
 
@@ -42,11 +43,14 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public ActorInventory inventory => _inventory;
     public AgentExperience experience => _experience;
     public AgentRecipes recipes => _recipes;
+
     public ActorDescription transientTarget {
       get => _transientTarget;
       set {
         if (_transientTarget == value) return;
         _transientTarget = value;
+        var nameOf = _transientTarget?.name ?? "NULL";
+        Debug.Log($"Agent new target {nameOf}", transientTarget);
       }
     }
 
@@ -61,7 +65,12 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void AddExperience(int amount) {
       _experience.AddXP(amount);
     }
-    
+
+    public void StopAndCleanPath() {
+      navMeshAgent.ResetPath();
+      navMeshAgent.isStopped = true;
+    }
+
     private void Awake() {
       RefreshLinks();
       _baseNavSpeed = navMeshAgent.speed;

@@ -3,6 +3,7 @@ using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game.Craft;
+using ImprovedTimers;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Craft {
@@ -15,12 +16,16 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     [Tooltip("Work units added per second")]
     public float workRate = 1f;
 
+    public float duration = 30;
+
     private IGoapAgent _agent;
     private CampLocation _camp;
     private UnfinishedActor _target;
-    private WorkState _state;
+    private CountdownTimer _timer;
+    private bool _abort;
 
-    public WorkOnUnfinishedStrategy() { }
+    public WorkOnUnfinishedStrategy() {
+    }
 
     private WorkOnUnfinishedStrategy(IGoapAgent agent, WorkOnUnfinishedStrategy template) {
       _agent = agent;
@@ -36,29 +41,40 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public override void OnStart() {
       complete = false;
-      _state = WorkState.FindTarget;
+      FindTarget();
+      IniTimer();
+    }
+
+    private void IniTimer() {
+      _timer?.Dispose();
+      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
+
+      _timer.OnTimerStart += () => complete = false;
+      _timer.OnTimerStop += () => complete = true;
     }
 
     public override void OnUpdate(float deltaTime) {
-      switch (_state) {
-        case WorkState.FindTarget:
-          FindTarget();
-          break;
-        case WorkState.MovingToTarget:
-          UpdateMoving();
-          break;
-        case WorkState.Working:
-          UpdateWorking(deltaTime);
-          break;
-        case WorkState.Done:
-          complete = true;
-          break;
+      _timer?.Tick();
+      if (complete) return;
+      if (_abort) {
+        complete = true;
+        _timer?.Stop();
+        return;
       }
+
+      UpdateWorking(deltaTime);
     }
 
     private void FindTarget() {
       _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-      
+
+      if (_agent.transientTarget.GetComponent<UnfinishedActor>() is { } unfinishedActor) {
+        _target = unfinishedActor;
+        Debug.Log($"[WorkUnfinished] Using transient target {_target.recipe.recipeId}");
+        _agent.navMeshAgent.SetDestination(_target.transform.position);
+        return;
+      }
+
       // Find that has all resources and needs work
       _target = UnfinishedQuery.GetNeedingWork(_camp);
 
@@ -69,40 +85,23 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       if (_target == null) {
         Debug.Log("[WorkUnfinished] No target ready for work");
-        _state = WorkState.Done;
+        _abort = true;
         return;
       }
 
       Debug.Log($"[WorkUnfinished] Found {_target.recipe.recipeId}");
-      _state = WorkState.MovingToTarget;
       _agent.navMeshAgent.SetDestination(_target.transform.position);
-    }
-
-    private void UpdateMoving() {
-      if (_target == null) {
-        _state = WorkState.Done;
-        return;
-      }
-
-      var nav = _agent.navMeshAgent;
-      if (nav.pathPending) return;
-
-      if (nav.remainingDistance <= 2f) {
-        nav.ResetPath();
-        _state = WorkState.Working;
-        Debug.Log("[WorkUnfinished] Started working");
-      }
     }
 
     private void UpdateWorking(float deltaTime) {
       if (_target == null) {
-        _state = WorkState.Done;
+        _abort = true;
         return;
       }
 
       if (!_target.hasAllResources) {
         Debug.LogWarning("[WorkUnfinished] Resources missing, stopping");
-        _state = WorkState.Done;
+        _abort = true;
         return;
       }
 
@@ -119,22 +118,16 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         _agent.AddExperience(10);
         Debug.Log($"[WorkUnfinished] Completed {result.actorKey}!");
       }
-      
+
+      _timer.Stop();
+      complete = true;
       _target = null;
-      _state = WorkState.Done;
     }
 
     public override void OnStop() {
       _agent?.navMeshAgent?.ResetPath();
       _target = null;
       _camp = null;
-    }
-
-    private enum WorkState {
-      FindTarget,
-      MovingToTarget,
-      Working,
-      Done
     }
   }
 }

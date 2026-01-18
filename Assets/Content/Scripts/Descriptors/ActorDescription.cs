@@ -36,6 +36,9 @@ namespace Content.Scripts.Game {
       }
       return _descriptionData.tags.Length == 0 || tags.All(t => _descriptionData.tags.Contains(t));
     }
+    public bool HasAnyTags(string[] resourcesTags) {
+      return resourcesTags.Any(t => _descriptionData.tags.Contains(t));
+    }
 
     public T GetDefinition<T>() where T : TagDefinition {
       return GetComponent<T>();
@@ -49,5 +52,7 @@ namespace Content.Scripts.Game {
       _tagDefinitions = GetComponents<TagDefinition>();
       _descriptionData.tags = _tagDefinitions.Select(td => td.Tag).ToArray();
     }
+
+    
   }
 }

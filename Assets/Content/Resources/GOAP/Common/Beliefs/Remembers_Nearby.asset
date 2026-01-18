@@ -22,107 +22,158 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112976116548039
-  - rid: 365112976116548040
-  - rid: 365112976116548041
-  - rid: 365112976116548042
-  - rid: 365112976116548043
-  - rid: 365112976116548044
-  - rid: 365112976116548045
-  - rid: 365112976116548046
-  - rid: 365112976116548047
-  - rid: 365112976116548048
-  - rid: 365112976116548049
+  - rid: 365113007176680193
+  - rid: 365113007176680194
+  - rid: 365113007176680195
+  - rid: 365113007176680196
+  - rid: 365113007176680197
+  - rid: 365113007176680198
+  - rid: 365113007176680199
+  - rid: 365113007176680200
+  - rid: 365113007176680201
+  - rid: 365113007176680202
+  - rid: 365113007176680203
+  - rid: 365113007176680204
+  - rid: 365113007176680205
+  - rid: 365113007176680206
+  - rid: 365113007176680207
   checkDistance: 1
   maxDistance: 100
   references:
     version: 2
     RefIds:
-    - rid: 365112976116548039
+    - rid: 365113007176680193
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/FOOD
         tags:
         - FOOD
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548040
+    - rid: 365113007176680194
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/REST
         tags:
         - REST
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548041
+    - rid: 365113007176680195
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/TOILET
         tags:
         - TOILET
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548042
+    - rid: 365113007176680196
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/SOCIAL
         tags:
         - SOCIAL
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548043
+    - rid: 365113007176680197
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/AGENT
         tags:
         - AGENT
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548044
+    - rid: 365113007176680198
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/STORAGE
         tags:
         - STORAGE
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548045
+    - rid: 365113007176680199
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/TREE
         tags:
         - TREE
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548046
+    - rid: 365113007176680200
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/RESOURCE
         tags:
         - RESOURCE
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548047
+    - rid: 365113007176680201
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/WOOD
         tags:
         - WOOD
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548048
+    - rid: 365113007176680202
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/STONE
         tags:
         - STONE
         checkDistance: 1
+        minCount: 1
         maxDistance: 100
-    - rid: 365112976116548049
+    - rid: 365113007176680203
       type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: Remembers_Nearby/ITEM
         tags:
         - ITEM
         checkDistance: 1
+        minCount: 1
+        maxDistance: 100
+    - rid: 365113007176680204
+      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: Remembers_Nearby/BED
+        tags:
+        - BED
+        checkDistance: 1
+        minCount: 1
+        maxDistance: 100
+    - rid: 365113007176680205
+      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: Remembers_Nearby/FIREPLACE
+        tags:
+        - FIREPLACE
+        checkDistance: 1
+        minCount: 1
+        maxDistance: 100
+    - rid: 365113007176680206
+      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: Remembers_Nearby/WORKBENCH
+        tags:
+        - WORKBENCH
+        checkDistance: 1
+        minCount: 1
+        maxDistance: 100
+    - rid: 365113007176680207
+      type: {class: HasInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: Remembers_Nearby/UNFINISHED
+        tags:
+        - UNFINISHED
+        checkDistance: 1
+        minCount: 1
         maxDistance: 100

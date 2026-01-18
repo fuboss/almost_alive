@@ -22,83 +22,126 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112976116547897
-  - rid: 365112976116547898
-  - rid: 365112976116547899
-  - rid: 365112976116547900
-  - rid: 365112976116547901
-  - rid: 365112976116547902
-  - rid: 365112976116547903
-  - rid: 365112976116547904
-  - rid: 365112976116547905
-  - rid: 365112976116547906
-  - rid: 365112976116547907
+  - rid: 365113007176680178
+  - rid: 365113007176680179
+  - rid: 365113007176680180
+  - rid: 365113007176680181
+  - rid: 365113007176680182
+  - rid: 365113007176680183
+  - rid: 365113007176680184
+  - rid: 365113007176680185
+  - rid: 365113007176680186
+  - rid: 365113007176680187
+  - rid: 365113007176680188
+  - rid: 365113007176680189
+  - rid: 365113007176680190
+  - rid: 365113007176680191
+  - rid: 365113007176680192
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547897
+    - rid: 365113007176680178
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/FOOD
         tags:
         - FOOD
-    - rid: 365112976116547898
+        minCount: 1
+    - rid: 365113007176680179
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/REST
         tags:
         - REST
-    - rid: 365112976116547899
+        minCount: 1
+    - rid: 365113007176680180
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/TOILET
         tags:
         - TOILET
-    - rid: 365112976116547900
+        minCount: 1
+    - rid: 365113007176680181
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/SOCIAL
         tags:
         - SOCIAL
-    - rid: 365112976116547901
+        minCount: 1
+    - rid: 365113007176680182
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/AGENT
         tags:
         - AGENT
-    - rid: 365112976116547902
+        minCount: 1
+    - rid: 365113007176680183
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/STORAGE
         tags:
         - STORAGE
-    - rid: 365112976116547903
+        minCount: 1
+    - rid: 365113007176680184
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/TREE
         tags:
         - TREE
-    - rid: 365112976116547904
+        minCount: 1
+    - rid: 365113007176680185
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/RESOURCE
         tags:
         - RESOURCE
-    - rid: 365112976116547905
+        minCount: 1
+    - rid: 365113007176680186
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/WOOD
         tags:
         - WOOD
-    - rid: 365112976116547906
+        minCount: 1
+    - rid: 365113007176680187
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/STONE
         tags:
         - STONE
-    - rid: 365112976116547907
+        minCount: 1
+    - rid: 365113007176680188
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/ITEM
         tags:
         - ITEM
+        minCount: 1
+    - rid: 365113007176680189
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers/BED
+        tags:
+        - BED
+        minCount: 1
+    - rid: 365113007176680190
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers/FIREPLACE
+        tags:
+        - FIREPLACE
+        minCount: 1
+    - rid: 365113007176680191
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers/WORKBENCH
+        tags:
+        - WORKBENCH
+        minCount: 1
+    - rid: 365113007176680192
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers/UNFINISHED
+        tags:
+        - UNFINISHED
+        minCount: 1

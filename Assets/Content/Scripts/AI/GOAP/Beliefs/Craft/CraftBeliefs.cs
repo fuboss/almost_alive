@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
@@ -59,34 +60,109 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
     public override AgentBelief Copy() => new UnfinishedReadyToCompleteBelief { name = name };
   }
 
-  [Serializable, TypeInfoBox("True when agent can deliver resources (has them in inventory or can get from storage).")]
+  [Serializable, TypeInfoBox("True when agent can deliver craft resources (has them in storages).")]
+  public class CanDeliverFromStorageToUnfinishedBelief : CanDeliverToUnfinishedBelief {
+    protected override bool Search(IGoapAgent agent, UnfinishedActor target) {
+      var needs = target.GetRemainingResources();
+      var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      if (!deliverAllNeededTypes) {
+        bool foundAny = false;
+        foreach (var (tag, _) in needs) {
+          var countInStorage = GetResourceCountInCampStorages(camp, tag);
+          if (countInStorage >= countThreshold) {
+            foundAny = true;
+            break;
+          }
+        }
+
+        return foundAny;
+      }
+
+      Dictionary<string, int> found = new();
+
+      foreach (var tag in needs.Select(n => n.tag)) {
+        found[tag] = GetResourceCountInCampStorages(camp, tag);
+      }
+
+      // Check if all needs can be fulfilled from inventory
+      bool allFulfilled = true;
+      foreach (var (tag, remaining) in needs) {
+        if (found[tag] < remaining) {
+          allFulfilled = false;
+          break;
+        }
+      }
+
+      return allFulfilled;
+    }
+
+    //todo: optimize by caching storages per camp
+    private int GetResourceCountInCampStorages(CampLocation camp, string tag) {
+      if (camp == null) return 0;
+      var campPos = camp.transform.position;
+
+      return ActorRegistry<StorageActor>.all
+        .Where(s => Vector3.Distance(s.transform.position, campPos) < 30f)
+        .Sum(s => s.GetCountWithTag(tag));
+    }
+    
+    public override AgentBelief Copy() => new CanDeliverFromStorageToUnfinishedBelief {
+      name = name,
+      countThreshold = countThreshold
+    };
+  }
+
+  [Serializable, TypeInfoBox("True when agent can deliver craft resources\n (has them in inventory).")]
   public class CanDeliverToUnfinishedBelief : AgentBelief {
+    public int countThreshold = 1;
+    public bool deliverAllNeededTypes = false;
+
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
         var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
         var target = UnfinishedQuery.GetNeedingResources(camp);
-        if (target == null) return false;
-
-        var needs = target.GetRemainingResources();
-        foreach (var (tag, _) in needs) {
-          if (agent.inventory.GetItemCount(tag) > 0) return true;
-          if (HasResourceInCampStorages(camp, tag)) return true;
-        }
-
-        return false;
+        return target != null && Search(agent, target);
       };
     }
 
-    private bool HasResourceInCampStorages(CampLocation camp, string tag) {
-      if (camp == null) return false;
-      var campPos = camp.transform.position;
+    protected virtual bool Search(IGoapAgent agent, UnfinishedActor target) {
+      var needs = target.GetRemainingResources();
+      if (!deliverAllNeededTypes) {
+        foreach (var (tag, _) in needs) {
+          if (agent.inventory.GetItemCount(tag) >= countThreshold) {
+            return true;
+          }
+          //if (checkCampStorage && HasResourceInCampStorages(camp, tag)) return true;
+        }
+      }
+      else {
+        var left = needs.ToDictionary(n => n.tag, n => n.remaining);
+        Dictionary<string, int> found = new();
 
-      return ActorRegistry<StorageActor>.all
-        .Any(s => Vector3.Distance(s.transform.position, campPos) < 30f &&
-                  s.GetCountWithTag(tag) > 0);
+        foreach (var leftKey in left.Keys) {
+          var countInInventory = agent.inventory.GetItemCount(leftKey);
+          found[leftKey] = countInInventory;
+        }
+
+        // Check if all needs can be fulfilled from inventory
+        bool allFulfilled = true;
+        foreach (var (tag, remaining) in left) {
+          if (found[tag] < remaining) {
+            allFulfilled = false;
+            break;
+          }
+        }
+
+        return allFulfilled;
+      }
+
+      return false;
     }
 
-    public override AgentBelief Copy() => new CanDeliverToUnfinishedBelief { name = name };
+    public override AgentBelief Copy() => new CanDeliverToUnfinishedBelief {
+      name = name,
+      countThreshold = countThreshold
+    };
   }
 
   [Serializable, TypeInfoBox("True when agent's inventory has at least one resource needed by unfinished.")]

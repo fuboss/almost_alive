@@ -22,83 +22,111 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112976116547873
-  - rid: 365112976116547874
-  - rid: 365112976116547875
-  - rid: 365112976116547876
-  - rid: 365112976116547877
-  - rid: 365112976116547878
-  - rid: 365112976116547879
-  - rid: 365112976116547880
-  - rid: 365112976116547881
-  - rid: 365112976116547882
-  - rid: 365112976116547883
+  - rid: 365113007176680163
+  - rid: 365113007176680164
+  - rid: 365113007176680165
+  - rid: 365113007176680166
+  - rid: 365113007176680167
+  - rid: 365113007176680168
+  - rid: 365113007176680169
+  - rid: 365113007176680170
+  - rid: 365113007176680171
+  - rid: 365113007176680172
+  - rid: 365113007176680173
+  - rid: 365113007176680174
+  - rid: 365113007176680175
+  - rid: 365113007176680176
+  - rid: 365113007176680177
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547873
+    - rid: 365113007176680163
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/FOOD
         tags:
         - FOOD
-    - rid: 365112976116547874
+    - rid: 365113007176680164
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/REST
         tags:
         - REST
-    - rid: 365112976116547875
+    - rid: 365113007176680165
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/TOILET
         tags:
         - TOILET
-    - rid: 365112976116547876
+    - rid: 365113007176680166
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/SOCIAL
         tags:
         - SOCIAL
-    - rid: 365112976116547877
+    - rid: 365113007176680167
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/AGENT
         tags:
         - AGENT
-    - rid: 365112976116547878
+    - rid: 365113007176680168
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/STORAGE
         tags:
         - STORAGE
-    - rid: 365112976116547879
+    - rid: 365113007176680169
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/TREE
         tags:
         - TREE
-    - rid: 365112976116547880
+    - rid: 365113007176680170
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/RESOURCE
         tags:
         - RESOURCE
-    - rid: 365112976116547881
+    - rid: 365113007176680171
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/WOOD
         tags:
         - WOOD
-    - rid: 365112976116547882
+    - rid: 365113007176680172
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/STONE
         tags:
         - STONE
-    - rid: 365112976116547883
+    - rid: 365113007176680173
       type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: CanInteract/ITEM
         tags:
         - ITEM
+    - rid: 365113007176680174
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/BED
+        tags:
+        - BED
+    - rid: 365113007176680175
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/FIREPLACE
+        tags:
+        - FIREPLACE
+    - rid: 365113007176680176
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/WORKBENCH
+        tags:
+        - WORKBENCH
+    - rid: 365113007176680177
+      type: {class: InteractionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: CanInteract/UNFINISHED
+        tags:
+        - UNFINISHED

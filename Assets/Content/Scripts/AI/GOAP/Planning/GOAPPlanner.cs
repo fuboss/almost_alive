@@ -65,12 +65,12 @@ namespace Content.Scripts.AI.GOAP.Planning {
         var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b);
 
         if (bestAction == null) { b.AppendLine(
-            $" - Failed to find action to resolve effects: {string.Join(",", requiredEffects.Select(e => e.name))}; ");
+            $" - <b>[Failed to find action to resolve effects: {string.Join(",", requiredEffects.Select(e => e.name))}; </b>]\n");
           // No action can satisfy remaining effects
           return null;
         }
         
-        b.AppendLine($" - <b>{bestAction.name}</b>");
+        
         plan.Add(bestAction);
         totalCost += bestAction.cost;
         totalBenefit += bestAction.benefit;
@@ -90,6 +90,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
             requiredEffects.Add(pre);
           }
         }
+        b.Append($"→ <b>{bestAction.name}</b>[{string.Join(",", bestAction.effects.Select(e => e.name))}] ");
       }
 
       if (plan.Count == 0) {

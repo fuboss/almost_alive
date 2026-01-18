@@ -37,5 +37,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     WorkPriority GetWorkScheduler();
     void AddExperience(int amount);
+    void StopAndCleanPath();
   }
 }

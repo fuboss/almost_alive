@@ -29,7 +29,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     private const string UNFINISHED_KEY = "unfinished";
 
-    public PlaceUnfinishedStrategy() { }
+    public PlaceUnfinishedStrategy() {
+    }
 
     private PlaceUnfinishedStrategy(IGoapAgent agent, PlaceUnfinishedStrategy template) {
       _agent = agent;
@@ -149,12 +150,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         return;
       }
 
-      _resolver?.Inject(unfinished);
       unfinished.Initialize(_selectedRecipe, _targetSpot);
 
       // Parent to spot
       actor.transform.SetParent(_targetSpot.transform);
       actor.transform.localPosition = Vector3.zero;
+      _agent.transientTarget = unfinished.description;
 
       Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
       _state = PlaceState.Done;
@@ -162,6 +163,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public override void OnStop() {
       _agent?.navMeshAgent?.ResetPath();
+      _agent.transientTarget = null;
       _targetSpot = null;
       _selectedRecipe = null;
       _camp = null;

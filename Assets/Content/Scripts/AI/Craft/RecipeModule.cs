@@ -79,6 +79,18 @@ namespace Content.Scripts.AI.Craft {
       _byStation.Clear();
     }
 
-    
+
+    public string[] GetResourcesTagsForAvailableRecipes(IGoapAgent agent) {
+      var agentRecipes = agent.recipes;
+      var unlockedRecipeIds = agentRecipes.unlockedRecipeIds;
+      var resourceTags = new HashSet<string>();
+      foreach (var recipe in _recipes) {
+        if (!unlockedRecipeIds.Contains(recipe.recipeId)) continue;
+        foreach (var resource in recipe.recipe.requiredResources) {
+          resourceTags.Add(resource.tag);
+        }
+      }
+      return resourceTags.ToArray();
+    }
   }
 }

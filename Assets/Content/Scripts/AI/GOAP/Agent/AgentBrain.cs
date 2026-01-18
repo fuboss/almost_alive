@@ -184,6 +184,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _currentAction = null;
         _currentGoal = null;
         _actionPlan = null;
+        _agent.transientTarget = null;
         return false;
       }
 

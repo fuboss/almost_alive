@@ -29,8 +29,10 @@ MonoBehaviour:
       rid: 365113007176679769
     preconditions:
     - Transfient_IsCraftResource
+    - HasTransientTarget
     effects:
     - Craft_Unfinished_Can_Deliver
+    - Craft_Unfinished_Can_DeliverAll
   references:
     version: 2
     RefIds:

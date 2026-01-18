@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -43,15 +44,24 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
       return () => {
         var transient = agent.transientTarget;
         if (transient == null) return false;
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var unfinishedTarget = UnfinishedQuery.GetNeedingResources(camp);
-        if (unfinishedTarget == null) return false;
-
-        var transientTags = transient.descriptionData.tags;
-        var needs = unfinishedTarget.GetRemainingResources();
-        var check = needs.Any(need => transientTags.Contains(need.tag));
+        var check = GetCraftingNeeds(agent, transient);
         return !inverse ? check : !check;
       };
+    }
+
+    private static bool GetCraftingNeeds(IGoapAgent agent, ActorDescription transient) {
+      //locate unfinished camp build target
+      var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      var unfinishedTarget = UnfinishedQuery.GetNeedingResources(camp);
+      if (unfinishedTarget != null) {
+        var needs = unfinishedTarget.GetRemainingResources();
+        var check = transient.HasAnyTags(needs.Select(n => n.tag).ToArray());
+        return check;
+      }
+
+      //look in available resources for any crafting recipes needing this transient
+      string[] resourcesTags = agent.recipeModule.GetResourcesTagsForAvailableRecipes(agent);
+      return transient.HasAnyTags(resourcesTags);
     }
 
     public override AgentBelief Copy() {

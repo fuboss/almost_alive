@@ -22,7 +22,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
     [ShowInInspector] private List<MemorySnapshot> _memory = new();
     [ShowInInspector] private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
-    
+
     /// <summary>Key-value store for persistent agent data (camp, ownership, etc).</summary>
     public AgentMemoryK persistentMemory { get; } = new();
 
@@ -54,17 +54,16 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
       return RememberResult.NewMemory;
     }
-    
-    public bool TryFind<T>(Func<MemorySnapshot, bool> predicate, out T result) {
+
+    public bool Recall(Func<MemorySnapshot, bool> predicate, out MemorySnapshot result) {
       result = default;
       if (predicate == null) return false;
       foreach (var memSnapshot in _memory) {
         if (memSnapshot == null) continue;
         if (memSnapshot.IsExpired) continue;
-        if (predicate(memSnapshot) && memSnapshot is T typed) {
-          result = typed;
-          return true;
-        }
+        if (!predicate(memSnapshot)) continue;
+        result = memSnapshot;
+        return true;
       }
 
       return false;
@@ -85,7 +84,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 
     public void Forget(ActorDescription actorToForget) {
-      if (TryFind(snap => snap.target == actorToForget, out MemorySnapshot snapshot)) {
+      if (Recall(snap => snap.target == actorToForget, out MemorySnapshot snapshot)) {
         Forget(snapshot);
       }
     }
@@ -317,9 +316,10 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
           set = new HashSet<MemorySnapshot>();
           _tagIndex[t] = set;
         }
+
         set.Add(snapshot);
       }
-      
+
       _octree.Remove(snapshot);
       _octree.Add(snapshot, snapshot.location);
     }
@@ -331,7 +331,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
         set.RemoveWhere(s => s.target == snapshot.target);
         if (set.Count == 0) _tagIndex.Remove(tag);
       }
- 
+
       _octree.Remove(snapshot);
     }
 
@@ -344,7 +344,5 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       if (snapshot.tags == null || tags == null) return false;
       return tags.All(tag => snapshot.tags.Contains(tag));
     }
-
-    
   }
 }

@@ -40,10 +40,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void Tick() {
-      if (InputSystem.actions.FindAction("Jump").WasReleasedThisFrame()) {
+      if (Keyboard.current.enterKey.wasReleasedThisFrame) {
         SpawnNewAgent(Vector3.zero + Random.onUnitSphere * 5);
       }
 
+      //todo move this into a separate system
       foreach (var goapAgent in _agents) {
         if(goapAgent == null) continue;
         goapAgent.Tick();

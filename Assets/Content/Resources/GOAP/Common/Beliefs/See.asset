@@ -22,83 +22,111 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112976116547908
-  - rid: 365112976116547909
-  - rid: 365112976116547910
-  - rid: 365112976116547911
-  - rid: 365112976116547912
-  - rid: 365112976116547913
-  - rid: 365112976116547914
-  - rid: 365112976116547915
-  - rid: 365112976116547916
-  - rid: 365112976116547917
-  - rid: 365112976116547918
+  - rid: 365113007176680208
+  - rid: 365113007176680209
+  - rid: 365113007176680210
+  - rid: 365113007176680211
+  - rid: 365113007176680212
+  - rid: 365113007176680213
+  - rid: 365113007176680214
+  - rid: 365113007176680215
+  - rid: 365113007176680216
+  - rid: 365113007176680217
+  - rid: 365113007176680218
+  - rid: 365113007176680219
+  - rid: 365113007176680220
+  - rid: 365113007176680221
+  - rid: 365113007176680222
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547908
+    - rid: 365113007176680208
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/FOOD
         tags:
         - FOOD
-    - rid: 365112976116547909
+    - rid: 365113007176680209
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/REST
         tags:
         - REST
-    - rid: 365112976116547910
+    - rid: 365113007176680210
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/TOILET
         tags:
         - TOILET
-    - rid: 365112976116547911
+    - rid: 365113007176680211
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/SOCIAL
         tags:
         - SOCIAL
-    - rid: 365112976116547912
+    - rid: 365113007176680212
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/AGENT
         tags:
         - AGENT
-    - rid: 365112976116547913
+    - rid: 365113007176680213
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/STORAGE
         tags:
         - STORAGE
-    - rid: 365112976116547914
+    - rid: 365113007176680214
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/TREE
         tags:
         - TREE
-    - rid: 365112976116547915
+    - rid: 365113007176680215
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/RESOURCE
         tags:
         - RESOURCE
-    - rid: 365112976116547916
+    - rid: 365113007176680216
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/WOOD
         tags:
         - WOOD
-    - rid: 365112976116547917
+    - rid: 365113007176680217
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/STONE
         tags:
         - STONE
-    - rid: 365112976116547918
+    - rid: 365113007176680218
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/ITEM
         tags:
         - ITEM
+    - rid: 365113007176680219
+      type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: See/BED
+        tags:
+        - BED
+    - rid: 365113007176680220
+      type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: See/FIREPLACE
+        tags:
+        - FIREPLACE
+    - rid: 365113007176680221
+      type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: See/WORKBENCH
+        tags:
+        - WORKBENCH
+    - rid: 365113007176680222
+      type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: See/UNFINISHED
+        tags:
+        - UNFINISHED

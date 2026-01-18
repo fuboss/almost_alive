@@ -60,6 +60,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnStop() {
       _timer?.Dispose();
+      _agent.StopAndCleanPath();
       _agent.transientTarget = null;
     }
 

@@ -16,7 +16,7 @@ namespace Content.Scripts.Game.Craft {
   [RequireComponent(typeof(ActorInventory))]
   public class UnfinishedActor : MonoBehaviour {
     [ShowInInspector, ReadOnly] private RecipeSO _recipe;
-    [ShowInInspector, ReadOnly] private float _workProgress;
+    [ShowInInspector, ReadOnly, Range(0,1f)] private float _workProgress;
     [ShowInInspector, ReadOnly] private CampSpot _assignedSpot;
     
     [Inject] private ActorCreationModule _actorCreation;
@@ -27,14 +27,14 @@ namespace Content.Scripts.Game.Craft {
     public RecipeSO recipe => _recipe;
     public ActorDescription description => _description;
     public ActorInventory inventory => _inventory;
-    public CampSpot assignedSpot => _assignedSpot;
+    [ShowInInspector]public CampSpot assignedSpot => _assignedSpot;
     
     public float workProgress => _workProgress;
     public float workRequired => _recipe?.recipe.workRequired ?? 0f;
     public float workRatio => workRequired > 0f ? Mathf.Clamp01(_workProgress / workRequired) : 1f;
     public bool workComplete => _workProgress >= workRequired;
     
-    public bool hasAllResources => CheckAllResourcesDelivered();
+    [ShowInInspector]public bool hasAllResources => CheckAllResourcesDelivered();
     public bool isReadyToComplete => hasAllResources && workComplete;
 
     private void Awake() {

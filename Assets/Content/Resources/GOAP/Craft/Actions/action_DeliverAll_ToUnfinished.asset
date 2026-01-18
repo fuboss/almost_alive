@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28da2453c9ec448bb55e295354dd936e, type: 3}
-  m_Name: action_MoveTo_CraftingResource
+  m_Name: action_DeliverAll_ToUnfinished
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Actions.ActionDataSO
   serializationData:
     SerializedFormat: 2
@@ -22,27 +22,25 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   data:
-    name: action_MoveTo_CraftingResource
-    cost: 1
-    benefit: 2
+    name: action_DeliverAll_ToUnfinished
+    cost: 3
+    benefit: 5
     strategy:
-      rid: 365113007176679784
+      rid: 365113007176680162
     preconditions:
-    - Remember_Nearby_CraftResource
-    effects:
-    - Transfient_IsCraftResource
+    - Transient_Is/UNFINISHED
+    - Craft_Unfinished_Can_DeliverAll
+    - Craft_Unfinished_Needs_Resources
     - HasTransientTarget
+    effects:
+    - Craft_Unfinished_NoNeeds_Resources
+    - Craft_Unfinished_Needs_Work
+    - Transfient_IsCraftResource
+    - Transient_Is/UNFINISHED
   references:
     version: 2
     RefIds:
-    - rid: 365113007176679784
-      type: {class: MoveToRequiredResourceStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Move, asm: Assembly-CSharp}
+    - rid: 365113007176680162
+      type: {class: DeliverToUnfinishedStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Craft, asm: Assembly-CSharp}
       data:
-        targetFromMemory:
-          searchMode: 0
-          requiredTags:
-          - RESOURCE
-        updateDestinationContinuously: 0
-        statPerTick:
-        - statType: 1
-          delta: -0.1
+        duration: 2

@@ -22,95 +22,127 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365112976116547919
-  - rid: 365112976116547920
-  - rid: 365112976116547921
-  - rid: 365112976116547922
-  - rid: 365112976116547923
-  - rid: 365112976116547924
-  - rid: 365112976116547925
-  - rid: 365112976116547926
-  - rid: 365112976116547927
-  - rid: 365112976116547928
-  - rid: 365112976116547929
+  - rid: 365113007176680223
+  - rid: 365113007176680224
+  - rid: 365113007176680225
+  - rid: 365113007176680226
+  - rid: 365113007176680227
+  - rid: 365113007176680228
+  - rid: 365113007176680229
+  - rid: 365113007176680230
+  - rid: 365113007176680231
+  - rid: 365113007176680232
+  - rid: 365113007176680233
+  - rid: 365113007176680234
+  - rid: 365113007176680235
+  - rid: 365113007176680236
+  - rid: 365113007176680237
   inverse: 0
   references:
     version: 2
     RefIds:
-    - rid: 365112976116547919
+    - rid: 365113007176680223
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/FOOD
         tags:
         - FOOD
         inverse: 0
-    - rid: 365112976116547920
+    - rid: 365113007176680224
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/REST
         tags:
         - REST
         inverse: 0
-    - rid: 365112976116547921
+    - rid: 365113007176680225
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/TOILET
         tags:
         - TOILET
         inverse: 0
-    - rid: 365112976116547922
+    - rid: 365113007176680226
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/SOCIAL
         tags:
         - SOCIAL
         inverse: 0
-    - rid: 365112976116547923
+    - rid: 365113007176680227
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/AGENT
         tags:
         - AGENT
         inverse: 0
-    - rid: 365112976116547924
+    - rid: 365113007176680228
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/STORAGE
         tags:
         - STORAGE
         inverse: 0
-    - rid: 365112976116547925
+    - rid: 365113007176680229
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/TREE
         tags:
         - TREE
         inverse: 0
-    - rid: 365112976116547926
+    - rid: 365113007176680230
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/RESOURCE
         tags:
         - RESOURCE
         inverse: 0
-    - rid: 365112976116547927
+    - rid: 365113007176680231
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/WOOD
         tags:
         - WOOD
         inverse: 0
-    - rid: 365112976116547928
+    - rid: 365113007176680232
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/STONE
         tags:
         - STONE
         inverse: 0
-    - rid: 365112976116547929
+    - rid: 365113007176680233
       type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
       data:
         name: Transient_Is/ITEM
         tags:
         - ITEM
+        inverse: 0
+    - rid: 365113007176680234
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
+      data:
+        name: Transient_Is/BED
+        tags:
+        - BED
+        inverse: 0
+    - rid: 365113007176680235
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
+      data:
+        name: Transient_Is/FIREPLACE
+        tags:
+        - FIREPLACE
+        inverse: 0
+    - rid: 365113007176680236
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
+      data:
+        name: Transient_Is/WORKBENCH
+        tags:
+        - WORKBENCH
+        inverse: 0
+    - rid: 365113007176680237
+      type: {class: TransientTargetHasTagsBelief, ns: Content.Scripts.AI.GOAP.Beliefs.TransientTarget, asm: Assembly-CSharp}
+      data:
+        name: Transient_Is/UNFINISHED
+        tags:
+        - UNFINISHED
         inverse: 0
