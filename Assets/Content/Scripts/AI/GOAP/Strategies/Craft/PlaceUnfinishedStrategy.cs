@@ -85,8 +85,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       // Get unlocked camp recipes by priority (don't check resources!)
       var campRecipes = _agent.recipes.GetUnlockedCampRecipes(_recipeModule);
-
+      var alreadyBuilt = _camp.setup.GetOccupiedSpots().Select(s => s.builtActor.actorKey).ToArray();
       foreach (var recipe in campRecipes) {
+        if (alreadyBuilt.Contains(recipe.recipe.resultActorKey)) {
+          continue;
+        }
+
         var spot = FindSpotForRecipe(recipe);
         if (spot == null) continue;
 
@@ -155,7 +159,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       // Parent to spot
       actor.transform.SetParent(_targetSpot.transform);
       actor.transform.localPosition = Vector3.zero;
-      
+
       _agent.transientTarget = unfinished.description;
       _agent.agentBrain.TryRemember(unfinished.description);
 

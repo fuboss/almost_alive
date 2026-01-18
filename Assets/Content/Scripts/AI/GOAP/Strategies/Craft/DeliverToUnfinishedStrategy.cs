@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
@@ -107,17 +108,39 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       var targetInventory = _target.inventory;
       int delivered = 0;
 
+      Debug.Log(
+        $"Start delivering to {_target.name}. Required{string.Join(",", needs.Select(n => $"{n.tag}x{n.remaining}"))}",
+        _target);
       foreach (var (tag, remaining) in needs) {
-        if (!_agent.inventory.TryGetSlotWithItemTags(new[] { tag }, out var slot)) continue;
+        if (!_agent.inventory.TryGetSlotWithItemTags(new[] { tag }, out var slot)) {
+          Debug.Log($"agent has no item with tag {tag}", _agent.inventory);
+          continue;
+        }
+        
         var count = slot.count;
-        if (count >= remaining) {
-          if (_creationModule.TrySpawnActor(slot.item.actorKey, _target.transform.position, out var newItem)) {
-            newItem.GetStackData().current = remaining;
-            if (targetInventory.TryPutItemInInventory(newItem, remaining)) {
-              Debug.Log($"Delivered full stack of {tag} x {remaining}");
+        if (count <= remaining) {
+          if (slot.Release(out var depositActor)) {
+            if (targetInventory.TryPutItemInInventory(depositActor)) {
+              Debug.Log($"Delivered full stack of {tag}", targetInventory);
+              delivered += depositActor.GetStackData().current;
             }
             else {
               Debug.LogError($"Failed to deliver full stack of {tag} to target, destroying spawned item");
+              Object.Destroy(depositActor.gameObject);
+            }
+          }
+          else {
+            Debug.LogError($"Failed to release item from agent inventory for delivery. from slot {slot.index}");
+          }
+        }
+        else {
+          if (_creationModule.TrySpawnActor(slot.item.actorKey, _target.transform.position, out var newItem)) {
+            newItem.GetStackData().current = remaining;
+            if (targetInventory.TryPutItemInInventory(newItem, remaining)) {
+              Debug.Log($"Delivered full stack of {tag} x {remaining}", targetInventory);
+            }
+            else {
+              Debug.LogError($"Failed to deliver full stack of {tag} to target, destroying spawned item", _target);
               Object.Destroy(newItem.gameObject);
             }
           }
@@ -127,21 +150,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
           slot.RemoveCount(remaining);
           delivered += remaining;
-          continue;
-        }
-
-        if (slot.Release(out var depositActor)) {
-          if (targetInventory.TryPutItemInInventory(depositActor)) {
-            Debug.Log($"Delivered full stack of {tag}");
-            delivered += depositActor.GetStackData().current;
-          }
-          else {
-            Debug.LogError($"Failed to deliver full stack of {tag} to target, destroying spawned item");
-            Object.Destroy(depositActor.gameObject);
-          }
-        }
-        else {
-          Debug.LogError($"Failed to release item from agent inventory for delivery. from slot {slot.index}");
         }
       }
 

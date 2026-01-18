@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP {
     [Inject] private IObjectResolver _objectResolver;
 
     private readonly List<ActorDescription> _allPrefabs = new();
-    
+
     private const float RAYCAST_HEIGHT = 50f;
     private const float RAYCAST_DISTANCE = 300f;
     private static readonly int GROUND_MASK = LayerMask.GetMask("Default");
@@ -34,13 +34,14 @@ namespace Content.Scripts.AI.GOAP {
       }
 
       var spawnPos = CalculateGroundedPosition(position, prefab.gameObject);
-      
       actor = _objectResolver.Instantiate(prefab, spawnPos, Quaternion.identity);
       _objectResolver.Inject(actor.gameObject);
-      
+
       var stackData = actor.GetStackData();
-      if (stackData != null) stackData.current = count;
-      
+      if (stackData != null) {
+        stackData.current = count;
+      }
+
       return true;
     }
 
@@ -53,7 +54,7 @@ namespace Content.Scripts.AI.GOAP {
     /// </summary>
     private Vector3 CalculateGroundedPosition(Vector3 targetPos, GameObject prefab) {
       var rayOrigin = new Vector3(targetPos.x, targetPos.y + RAYCAST_HEIGHT, targetPos.z);
-      
+
       if (!Physics.Raycast(rayOrigin, Vector3.down, out var hit, RAYCAST_DISTANCE, GROUND_MASK)) {
         // No ground found, fallback to original position
         Debug.LogWarning($"[ActorCreation] No ground found at {targetPos}, using original position");
@@ -62,8 +63,6 @@ namespace Content.Scripts.AI.GOAP {
 
       var groundY = hit.point.y;
       var boundsOffset = GetBoundsOffsetY(prefab);
-      Debug.Log($"spawn with bounds offset {boundsOffset} at groundY {groundY} ({hit.transform.name})", hit.transform);
-      
       return new Vector3(targetPos.x, groundY + boundsOffset, targetPos.z);
     }
 
