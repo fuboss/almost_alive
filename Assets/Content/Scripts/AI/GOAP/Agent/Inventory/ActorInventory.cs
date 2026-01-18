@@ -28,10 +28,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     /// Try to put item in inventory. First tries to stack with existing items,
     /// then uses empty slot if stacking not possible.
     /// </summary>
-    public virtual bool TryPutItemInInventory(ActorDescription target) {
+    public virtual bool TryPutItemInInventory(ActorDescription target, int count = 1) {
       // First try to stack with existing item of same type
       var stackSlot = FindStackableSlot(target);
-      if (stackSlot != null && stackSlot.TryStack(target)) {
+      if (stackSlot != null && stackSlot.TryStack(target, count)) {
         return true;
       }
 

@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   [Serializable]
   public class WorkOnUnfinishedStrategy : AgentStrategy {
     [Tooltip("Work units added per second")]
-    public float workRate = 1f;
+    public float workRate = 2f;
 
     public float duration = 30;
 
@@ -43,6 +43,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       complete = false;
       FindTarget();
       IniTimer();
+      Debug.LogError("START WORKING!!!");
     }
 
     private void IniTimer() {
@@ -51,6 +52,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       _timer.OnTimerStart += () => complete = false;
       _timer.OnTimerStop += () => complete = true;
+      _timer.Start();
     }
 
     public override void OnUpdate(float deltaTime) {

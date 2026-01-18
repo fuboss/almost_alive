@@ -75,9 +75,9 @@ MonoBehaviour:
       Data: 1
     - Name: workRequired
       Entry: 4
-      Data: 0
+      Data: 25
     - Name: 
       Entry: 8
       Data: 
   isCampRecipe: 1
-  campBuildPriority: 0
+  campBuildPriority: 18

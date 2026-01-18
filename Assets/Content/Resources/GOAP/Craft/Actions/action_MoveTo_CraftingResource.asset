@@ -31,7 +31,6 @@ MonoBehaviour:
     - Remember_Nearby_CraftResource
     effects:
     - Transfient_IsCraftResource
-    - HasTransientTarget
   references:
     version: 2
     RefIds:
@@ -43,6 +42,4 @@ MonoBehaviour:
           requiredTags:
           - RESOURCE
         updateDestinationContinuously: 0
-        statPerTick:
-        - statType: 1
-          delta: -0.1
+        statPerTick: []

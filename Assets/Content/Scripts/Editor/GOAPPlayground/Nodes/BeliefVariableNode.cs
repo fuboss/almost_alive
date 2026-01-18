@@ -3,8 +3,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Content.Scripts.Editor.GOAPPlayground.Nodes {
-  public enum BeliefNodeType { Get, Set }
-  
+  public enum BeliefNodeType {
+    Get,
+    Set
+  }
+
   public class BeliefVariableNode : Node {
     public string beliefName { get; }
     public BeliefNodeType nodeType { get; }
@@ -13,12 +16,12 @@ namespace Content.Scripts.Editor.GOAPPlayground.Nodes {
     public BeliefVariableNode(string beliefName, BeliefNodeType type) {
       this.beliefName = beliefName;
       this.nodeType = type;
-      
+
       // Remove default title container for compact look
       titleContainer.RemoveFromHierarchy();
-      
+
       AddToClassList("belief-variable-node");
-      
+
       // Compact style
       style.minWidth = 80;
       style.maxWidth = 140;
@@ -26,11 +29,11 @@ namespace Content.Scripts.Editor.GOAPPlayground.Nodes {
       style.paddingBottom = 4;
       style.paddingLeft = 6;
       style.paddingRight = 6;
-      
-      var color = type == BeliefNodeType.Get 
+
+      var color = type == BeliefNodeType.Get
         ? new Color(0.9f, 0.5f, 0.2f)
         : new Color(0.2f, 0.7f, 0.4f);
-      
+
       style.backgroundColor = color;
       style.borderTopLeftRadius = 4;
       style.borderTopRightRadius = 4;
@@ -72,7 +75,8 @@ namespace Content.Scripts.Editor.GOAPPlayground.Nodes {
         port.portColor = new Color(1f, 0.7f, 0.4f);
         port.style.marginRight = -8;
         outputContainer.Add(port);
-      } else {
+      }
+      else {
         port = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(bool));
         port.portName = "";
         port.portColor = new Color(0.4f, 0.9f, 0.5f);
@@ -82,16 +86,7 @@ namespace Content.Scripts.Editor.GOAPPlayground.Nodes {
     }
 
     private string ShortenName(string name) {
-      // Remove common prefixes
-      name = name.Replace("Craft_Unfinished_", "")
-                 .Replace("Craft_", "")
-                 .Replace("Camp_", "")
-                 .Replace("Inventory_", "Inv_")
-                 .Replace("Remembers_Nearby/", "")
-                 .Replace("Transient_Is/", "")
-                 .Replace("Transient_", "");
-      
-      return name.Length > 16 ? name.Substring(0, 14) + ".." : name;
+      return name;
     }
 
     public void SetHighlight(bool active) {

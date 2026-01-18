@@ -60,7 +60,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
       foreach (var effect in effects) {
         effect.Evaluate(agent);
       }
-      Debug.Log($"<b>{name}</b> with strategy <b>{_data.strategy.GetType().Name}</b> completed.");
+//      Debug.Log($"<b>{name}</b> with strategy <b>{_data.strategy.GetType().Name}</b> completed.");
     }
 
     public void OnStop() {

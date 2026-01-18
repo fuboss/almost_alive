@@ -35,7 +35,6 @@ MonoBehaviour:
     effects:
     - Craft_Unfinished_NoNeeds_Resources
     - Craft_Unfinished_Needs_Work
-    - Transfient_IsCraftResource
     - Transient_Is/UNFINISHED
   references:
     version: 2

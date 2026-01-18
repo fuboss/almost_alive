@@ -25,6 +25,7 @@ MonoBehaviour:
     name: goal_Craft
     desiredEffects:
     - Craft_Unfinished_Ready
+    - JobComplete
     utilityEvaluators:
     - utility: {fileID: 11400000, guid: 14d1c99d4914649578aec8d40f06c3f1, type: 2}
       evaluator:

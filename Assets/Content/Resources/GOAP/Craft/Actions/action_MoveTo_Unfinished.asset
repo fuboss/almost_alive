@@ -28,7 +28,6 @@ MonoBehaviour:
     strategy:
       rid: 365113007176680268
     preconditions:
-    - Remembers_Nearby/UNFINISHED
     - Craft_Unfinished_Has
     effects:
     - Transient_Is/UNFINISHED

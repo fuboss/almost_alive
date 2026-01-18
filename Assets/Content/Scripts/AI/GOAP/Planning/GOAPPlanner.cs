@@ -90,7 +90,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
             requiredEffects.Add(pre);
           }
         }
-        b.Append($"→ <b>{bestAction.name}</b>[{string.Join(",", bestAction.effects.Select(e => e.name))}] ");
+        b.Append($"→ <b>{bestAction.name}</b>");
       }
 
       if (plan.Count == 0) {

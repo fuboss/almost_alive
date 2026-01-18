@@ -28,7 +28,7 @@ MonoBehaviour:
     strategy:
       rid: 365112976116547852
     preconditions:
-    - Remember_Nearby_CraftResource
+    - NotRemember_Nearby_CraftResource
     effects:
     - Remember_Nearby_CraftResource
   references:

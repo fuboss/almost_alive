@@ -88,6 +88,7 @@ namespace Content.Scripts.Game.Craft {
       foreach (var req in _recipe.recipe.requiredResources) {
         if (GetRemainingResourceCount(req.tag) > 0) return false;
       }
+
       return true;
     }
 

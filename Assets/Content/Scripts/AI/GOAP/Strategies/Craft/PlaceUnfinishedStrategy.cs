@@ -155,14 +155,16 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       // Parent to spot
       actor.transform.SetParent(_targetSpot.transform);
       actor.transform.localPosition = Vector3.zero;
+      
       _agent.transientTarget = unfinished.description;
+      _agent.agentBrain.TryRemember(unfinished.description);
 
       Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
       _state = PlaceState.Done;
     }
 
     public override void OnStop() {
-      _agent?.navMeshAgent?.ResetPath();
+      _agent.navMeshAgent?.ResetPath();
       _agent.transientTarget = null;
       _targetSpot = null;
       _selectedRecipe = null;

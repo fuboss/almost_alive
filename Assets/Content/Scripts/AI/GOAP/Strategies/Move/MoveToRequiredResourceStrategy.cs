@@ -18,12 +18,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
 
     protected override MemorySnapshot GetTargetMemory() {
       var camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-      var target = UnfinishedQuery.GetNeedingResources(camp);
-      if (target == null) return targetFromMemory.GetNearest(_agent, s => s.HasTag(Tag.RESOURCE));
+      var unfinished = UnfinishedQuery.GetNeedingResources(camp);
+      if (unfinished == null) return targetFromMemory.GetNearest(_agent, s => s.HasTag(Tag.RESOURCE));
 
-      var needs = target.GetRemainingResources().Where(n=>n.remaining > 0).Select(n=>n.tag).ToArray();
-      var check = needs.SelectMany(tag => _agent.memory.GetWithAnyTags(new[] { tag }));
-      return check.FirstOrDefault();
+      var inMemory = unfinished.GetRemainingResources().Select(n => n.tag)
+        .SelectMany(tag => _agent.memory.GetWithAnyTags(new[] { tag })).ToArray();
+      return inMemory.FirstOrDefault();
     }
 
     public override IActionStrategy Create(IGoapAgent agent) {
