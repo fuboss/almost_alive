@@ -60,6 +60,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private IGoapPlanner _gPlanner;
     private AgentGoal _lastGoal;
     private bool _initialized;
+    private float _currentDeltaTime;
 
 
     public void Initialize(IGoapAgent agent) {
@@ -108,6 +109,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public void Tick(float deltaTime) {
       if (!_initialized) return;
+      _currentDeltaTime = deltaTime;
       ExecutePlanning();
       ExecuteMemory(deltaTime);
       ExecuteSensors(deltaTime);
@@ -214,7 +216,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private bool ExecuteCurrentAction() {
       if (actionPlan == null || _currentAction == null) return false;
 
-      _currentAction.OnUpdate(Time.deltaTime);
+      _currentAction.OnUpdate(_currentDeltaTime);
       if (_currentAction.complete) {
         OnCurrentActionComplete();
         return true;

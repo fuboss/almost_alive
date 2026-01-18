@@ -2,8 +2,8 @@ using System;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game.Craft;
-using ImprovedTimers;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Craft {
@@ -21,7 +21,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private IGoapAgent _agent;
     private CampLocation _camp;
     private UnfinishedActor _target;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
     private bool _abort;
 
     public WorkOnUnfinishedStrategy() {
@@ -41,22 +41,21 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public override void OnStart() {
       complete = false;
+      _abort = false;
       FindTarget();
-      IniTimer();
-      Debug.LogError("START WORKING!!!");
+      InitTimer();
+      Debug.Log("[WorkUnfinished] Start working");
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
       _timer.Start();
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer?.Tick();
+      _timer?.Tick(deltaTime);
       if (complete) return;
       if (_abort) {
         complete = true;
@@ -128,6 +127,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public override void OnStop() {
       _agent?.navMeshAgent?.ResetPath();
+      _timer?.Dispose();
+      _timer = null;
       _target = null;
       _camp = null;
     }

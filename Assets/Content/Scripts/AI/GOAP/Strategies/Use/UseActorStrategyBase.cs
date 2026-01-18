@@ -1,8 +1,7 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
-using ImprovedTimers;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Use {
@@ -10,7 +9,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
   public abstract class UseActorStrategyBase : AgentStrategy {
     public float useDuration = 10;
     protected IGoapAgent agent;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     public override bool canPerform => !complete && agent.transientTarget != null;
 
@@ -19,7 +18,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
-      IniTimer();
+      complete = false;
+      InitTimer();
       _timer.Start();
 
       target = agent.transientTarget.GetComponent<ActorDescription>();
@@ -33,12 +33,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
       agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(useDuration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(useDuration);
+      _timer.OnTimerComplete += () => complete = true;
     }
 
     public override void OnStop() {
@@ -58,12 +56,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
 
       if (agent.transientTarget == null) {
         complete = true;
       }
-      //todo: terminate early if fatigue stat is full
     }
   }
 }

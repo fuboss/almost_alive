@@ -3,8 +3,8 @@ using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
-using ImprovedTimers;
 using UnityEngine;
 using VContainer;
 
@@ -20,7 +20,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     private IGoapAgent _agent;
     private CampLocation _targetLocation;
-    private CountdownTimer _claimTimer;
+    private SimTimer _claimTimer;
     private ClaimState _state;
 
     public ClaimCampStrategy() { }
@@ -47,8 +47,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     private void InitTimer() {
       _claimTimer?.Dispose();
-      _claimTimer = new CountdownTimer(claimDuration);
-      _claimTimer.OnTimerStop += OnClaimComplete;
+      _claimTimer = new SimTimer(claimDuration);
+      _claimTimer.OnTimerComplete += OnClaimComplete;
     }
 
     public override void OnUpdate(float deltaTime) {
@@ -60,7 +60,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
           UpdateMoving();
           break;
         case ClaimState.Claiming:
-          _claimTimer.Tick();
+          _claimTimer?.Tick(deltaTime);
           break;
         case ClaimState.Done:
           complete = true;
@@ -143,7 +143,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     public override void OnStop() {
       _claimTimer?.Dispose();
-      _agent.navMeshAgent.ResetPath();
+      _claimTimer = null;
+      _agent?.navMeshAgent?.ResetPath();
       _targetLocation = null;
     }
 

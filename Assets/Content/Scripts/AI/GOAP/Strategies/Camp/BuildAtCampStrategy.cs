@@ -4,10 +4,9 @@ using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using ImprovedTimers;
+using Content.Scripts.Core.Simulation;
 using UnityEngine;
 using VContainer;
-using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Camp {
   /// <summary>
@@ -23,7 +22,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     private CampLocation _camp;
     private CampSpot _targetSpot;
     private RecipeSO _selectedRecipe;
-    private CountdownTimer _buildTimer;
+    private SimTimer _buildTimer;
     private BuildState _state;
 
     public BuildAtCampStrategy() {
@@ -56,7 +55,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
           UpdateMoving();
           break;
         case BuildState.Building:
-          _buildTimer?.Tick();
+          _buildTimer?.Tick(deltaTime);
           break;
         case BuildState.Done:
           complete = true;
@@ -137,8 +136,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
       // Start build timer
       _buildTimer?.Dispose();
-      _buildTimer = new CountdownTimer(_selectedRecipe.recipe.craftTime);
-      _buildTimer.OnTimerStop += OnBuildComplete;
+      _buildTimer = new SimTimer(_selectedRecipe.recipe.craftTime);
+      _buildTimer.OnTimerComplete += OnBuildComplete;
       _buildTimer.Start();
 
       Debug.Log($"[BuildAtCamp] Building {_selectedRecipe.recipeId}...");
@@ -185,7 +184,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     public override void OnStop() {
       _buildTimer?.Dispose();
-      _agent.navMeshAgent.ResetPath();
+      _buildTimer = null;
+      _agent?.navMeshAgent?.ResetPath();
       _targetSpot = null;
       _selectedRecipe = null;
       _camp = null;

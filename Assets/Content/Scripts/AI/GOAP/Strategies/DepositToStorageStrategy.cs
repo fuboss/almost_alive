@@ -2,8 +2,8 @@ using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Animation;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game.Storage;
-using ImprovedTimers;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float duration = 2f;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     public override IActionStrategy Create(IGoapAgent agent) {
       return new DepositToStorageStrategy(agent) {
@@ -34,33 +34,32 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public StorageActor target { get; private set; }
 
     public override void OnStart() {
+      complete = false;
       target = _agent?.transientTarget != null
         ? _agent.transientTarget.GetComponent<StorageActor>()
         : null;
 
       if (target == null) {
         complete = true;
-        Debug.LogError(
-          "Failed to pick up transient target, no ActorDescription found. Aborting PickupTransientStrategy");
+        Debug.LogWarning("[DepositStorage] No storage target, abort");
         return;
       }
 
-      IniTimer();
+      InitTimer();
       _timer.Start();
-      _animations.DepositItem();
+      _animations?.DepositItem();
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
     }
 
     public override void OnStop() {
       _timer?.Dispose();
-      _agent.StopAndCleanPath();
+      _timer = null;
+      _agent?.StopAndCleanPath();
       _agent.transientTarget = null;
     }
 
@@ -85,7 +84,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
     }
   }
 }

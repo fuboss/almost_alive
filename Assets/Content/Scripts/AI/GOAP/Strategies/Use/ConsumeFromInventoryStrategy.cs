@@ -1,14 +1,12 @@
 using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
 using Content.Scripts.Animation;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
-using ImprovedTimers;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Use {
@@ -19,7 +17,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public int count = 1;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
     private InventorySlot _slot;
 
     public override IActionStrategy Create(IGoapAgent agent) {
@@ -44,23 +42,22 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
+      complete = false;
       _slot = null;
 
       if (!_agent.inventory.TryGetSlotWithItemTags(tags, out var slot)) {
-        Debug.LogError("No matching item in inventory, Aborting ConsumeFromInventoryStrategy");
-        _timer?.Stop();
+        Debug.LogWarning("[ConsumeInventory] No matching item, abort");
         complete = true;
         return;
       }
 
-      IniTimer();
+      InitTimer();
 
       _slot = slot;
       target = slot.item;
 
       _timer.Start();
-      _animations.Eat();
-      //apply per-tick stat changes
+      _animations?.Eat();
       ApplyPerStatTick();
     }
 
@@ -83,23 +80,21 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
       }
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(consumeDuration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(consumeDuration);
+      _timer.OnTimerComplete += () => complete = true;
     }
 
     public override void OnStop() {
-      //discard per-tick stat changes
       ApplyPerStatTick(-1);
 
-      if (_timer != null && _timer.IsFinished) {
+      if (_timer != null && _timer.isComplete) {
         OnComplete();
       }
 
       _timer?.Dispose();
+      _timer = null;
       _slot = null;
       target = null;
     }
@@ -114,7 +109,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
     }
   }
 }

@@ -2,10 +2,9 @@ using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Animation;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
-using ImprovedTimers;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
@@ -13,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float duration = 1f;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     public override IActionStrategy Create(IGoapAgent agent) {
       return new PickupTransientStrategy(agent) {
@@ -35,28 +34,25 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
+      complete = false;
       target = _agent?.transientTarget != null
         ? _agent.transientTarget.GetComponent<ActorDescription>()
         : null;
       if (target == null) {
         complete = true;
-        Debug.LogError(
-          "Failed to pick up transient target, no ActorDescription found. Aborting PickupTransientStrategy");
+        Debug.LogWarning("[PickupTransient] No target, abort");
         return;
       }
 
-      IniTimer();
+      InitTimer();
       _timer.Start();
-      _animations.PickUp();
-      complete = false;
+      _animations?.PickUp();
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
     }
 
     public override void OnComplete() {
@@ -70,10 +66,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnStop() {
       _timer?.Dispose();
+      _timer = null;
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
     }
   }
 }

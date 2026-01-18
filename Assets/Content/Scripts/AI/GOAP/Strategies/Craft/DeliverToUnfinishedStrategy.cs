@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
-using ImprovedTimers;
 using UnityEngine;
 using VContainer;
 using Object = UnityEngine.Object;
@@ -19,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private CampLocation _camp;
     private UnfinishedActor _target;
     private bool _abort;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     [Inject] protected ActorCreationModule _creationModule;
     private bool _complete;
@@ -45,31 +44,30 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public override void OnStart() {
       complete = false;
+      _abort = false;
       FindTarget();
       if (_target == null) {
         complete = true;
         return;
       }
 
-      IniTimer();
+      InitTimer();
     }
 
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
       _timer.Start();
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer?.Tick();
+      _timer?.Tick(deltaTime);
       if (_abort) {
         complete = true;
         _timer?.Stop();
-        Debug.LogError($"[DeliverUnfinished] Aborting delivery strategy");
+        Debug.LogWarning("[DeliverUnfinished] Aborting delivery strategy");
       }
     }
 
@@ -157,7 +155,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     public override void OnStop() {
-      _agent.StopAndCleanPath();
+      _timer?.Dispose();
+      _timer = null;
+      _agent?.StopAndCleanPath();
       _target = null;
       _camp = null;
     }

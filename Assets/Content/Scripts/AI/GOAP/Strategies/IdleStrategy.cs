@@ -1,48 +1,42 @@
 using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.Ui;
-using ImprovedTimers;
-using UnityEngine;
-using VContainer;
+using Content.Scripts.Core.Simulation;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class IdleStrategy : AgentStrategy {
     public float duration;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     public override IActionStrategy Create(IGoapAgent agent) {
       return new IdleStrategy(duration);
     }
 
     public IdleStrategy() {
-      InitTimer(duration);
     }
 
     private IdleStrategy(float duration) {
-      InitTimer(duration);
+      this.duration = duration;
     }
 
-    private void InitTimer(float d) {
-      _timer = new CountdownTimer(d);
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
-    }
-
-    public override bool canPerform => true; // Agent can always Idle
+    public override bool canPerform => true;
     public override bool complete { get; internal set; }
 
     public override void OnStart() {
-      if (_timer == null) {
-        InitTimer(duration);
-      }
-
-      _timer!.Start();
+      complete = false;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
+      _timer.Start();
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
+    }
+
+    public override void OnStop() {
+      _timer?.Dispose();
+      _timer = null;
     }
   }
 }

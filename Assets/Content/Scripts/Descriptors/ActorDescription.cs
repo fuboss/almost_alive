@@ -2,6 +2,7 @@ using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.Game.Interaction;
+using Content.Scripts.World.Grid;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -53,6 +54,16 @@ namespace Content.Scripts.Game {
       _descriptionData.tags = _tagDefinitions.Select(td => td.Tag).ToArray();
     }
 
-    
+    private void OnEnable() {
+      WorldGrid.Register(this);
+    }
+
+    private void OnDisable() {
+      WorldGrid.Unregister(this);
+    }
+
+    public bool HasTag(string tag) {
+      return _descriptionData?.tags != null && _descriptionData.tags.Contains(tag);
+    }
   }
 }

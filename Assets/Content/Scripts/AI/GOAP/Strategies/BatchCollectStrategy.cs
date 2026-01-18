@@ -3,9 +3,9 @@ using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.Animation;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Storage;
-using ImprovedTimers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -25,7 +25,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private AnimationController _animations;
     private int _collectedCount;
     private MemorySnapshot _currentTarget;
-    private CountdownTimer _pickupTimer;
+    private SimTimer _pickupTimer;
     private BatchState _state;
 
     public BatchCollectStrategy() {
@@ -57,8 +57,8 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     private void InitTimer() {
       _pickupTimer?.Dispose();
-      _pickupTimer = new CountdownTimer(pickupDuration);
-      _pickupTimer.OnTimerStop += OnPickupComplete;
+      _pickupTimer = new SimTimer(pickupDuration);
+      _pickupTimer.OnTimerComplete += OnPickupComplete;
     }
 
     public override void OnUpdate(float deltaTime) {
@@ -72,7 +72,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
           break;
 
         case BatchState.PickingUp:
-          _pickupTimer.Tick();
+          _pickupTimer?.Tick(deltaTime);
           break;
 
         case BatchState.Done:
@@ -163,7 +163,8 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     public override void OnStop() {
       _pickupTimer?.Dispose();
-      _agent.navMeshAgent.ResetPath();
+      _pickupTimer = null;
+      _agent?.navMeshAgent?.ResetPath();
       _agent.transientTarget = null;
       _currentTarget = null;
     }

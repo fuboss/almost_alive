@@ -2,9 +2,9 @@ using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Animation;
+using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Interaction;
-using ImprovedTimers;
 using UnityEngine;
 using VContainer;
 
@@ -15,7 +15,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float duration = 3f;
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
-    private CountdownTimer _timer;
+    private SimTimer _timer;
 
     public override IActionStrategy Create(IGoapAgent agent) {
       return new CutTheTreeStrategy(agent) {
@@ -37,26 +37,25 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
+      complete = false;
       target = _agent?.transientTarget != null
         ? _agent.transientTarget.GetComponent<ActorDescription>()
         : null;
       if (target == null) {
         complete = true;
-        Debug.LogError("abort");
+        Debug.LogWarning("[CutTree] No target, abort");
         return;
       }
 
-      IniTimer();
+      InitTimer();
       _timer.Start();
-      _animations.CutTree();
+      _animations?.CutTree();
     }
 
-    private void IniTimer() {
+    private void InitTimer() {
       _timer?.Dispose();
-      _timer = new CountdownTimer(duration); //animations.GetAnimationLength(animations.)
-
-      _timer.OnTimerStart += () => complete = false;
-      _timer.OnTimerStop += () => complete = true;
+      _timer = new SimTimer(duration);
+      _timer.OnTimerComplete += () => complete = true;
     }
 
     public override void OnComplete() {
@@ -72,7 +71,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer.Tick();
+      _timer?.Tick(deltaTime);
     }
   }
 }
