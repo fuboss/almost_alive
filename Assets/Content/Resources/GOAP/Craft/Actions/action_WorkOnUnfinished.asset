@@ -41,5 +41,5 @@ MonoBehaviour:
     - rid: 365113007176680255
       type: {class: WorkOnUnfinishedStrategy, ns: Content.Scripts.AI.GOAP.Strategies.Craft, asm: Assembly-CSharp}
       data:
-        workRate: 1
+        workRate: 4
         duration: 30

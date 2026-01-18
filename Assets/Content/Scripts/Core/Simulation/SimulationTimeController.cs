@@ -60,5 +60,9 @@ namespace Content.Scripts.Core.Simulation {
     public void AddSimTime(float delta) {
       _totalSimTime += delta;
     }
+    
+    public void SetSimTime(float simTime) {
+      _totalSimTime = simTime;
+    }
   }
 }

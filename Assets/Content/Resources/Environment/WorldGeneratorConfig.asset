@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee7ac4e6eed784ac5a27e6b8ea06e9b6, type: 3}
+  m_Name: WorldGeneratorConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.WorldGeneratorConfigSO
+  terrain: {fileID: 0}
+  edgeMargin: 10
+  seed: 0
+  scatterRules:
+  - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
+  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+  logGeneration: 1
+  drawGizmos: 1

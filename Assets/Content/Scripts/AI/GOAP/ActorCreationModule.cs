@@ -10,6 +10,7 @@ using VContainer.Unity;
 namespace Content.Scripts.AI.GOAP {
   public class ActorCreationModule : IInitializable, IDisposable {
     [Inject] private IObjectResolver _objectResolver;
+    public bool IsInitialized { get; private set; }
 
     private readonly List<ActorDescription> _allPrefabs = new();
 
@@ -22,6 +23,7 @@ namespace Content.Scripts.AI.GOAP {
       Addressables.LoadAssetsAsync<GameObject>("Actors").Completed += handle => {
         var actors = handle.Result.Select(g => g.GetComponent<ActorDescription>());
         _allPrefabs.AddRange(actors);
+        IsInitialized = true;
       };
     }
 

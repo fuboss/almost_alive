@@ -10,6 +10,7 @@ using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Interaction;
 using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
+using Content.Scripts.World;
 using Unity.Cinemachine;
 using UnityEngine;
 using VContainer;
@@ -34,6 +35,8 @@ namespace Content.Scripts {
       // Environment
       builder.RegisterInstance(environmentSetup).AsSelf();
       builder.Register<WorldEnvironment>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<WorldModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       
       // Decay & Work
