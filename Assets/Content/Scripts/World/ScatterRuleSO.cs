@@ -9,17 +9,17 @@ namespace Content.Scripts.World {
   /// </summary>
   [CreateAssetMenu(menuName = "World/Scatter Rule", fileName = "ScatterRule_")]
   public class ScatterRuleSO : ScriptableObject {
-    
     // ═══════════════════════════════════════════════════════════════
     // ACTOR
     // ═══════════════════════════════════════════════════════════════
 
-    [BoxGroup("Actor")]
-    [Tooltip("Addressables actor key")]
+    [BoxGroup("Actor")] [Tooltip("Addressables actor key")]
     public string actorKey;
 
-    [BoxGroup("Actor")]
-    [Tooltip("Total instances to spawn per biome (overrides density if > 0)")]
+    [BoxGroup("Actor")] [Tooltip("Regular Prefab")]
+    public GameObject prefab;
+
+    [BoxGroup("Actor")] [Tooltip("Total instances to spawn per biome (overrides density if > 0)")]
     public int fixedCount;
 
     // ═══════════════════════════════════════════════════════════════
@@ -31,13 +31,10 @@ namespace Content.Scripts.World {
     [Range(0.01f, 10f)]
     public float density = 0.5f;
 
-    [BoxGroup("Distribution")]
-    [Tooltip("Minimum distance between instances")]
-    [Range(1f, 50f)]
+    [BoxGroup("Distribution")] [Tooltip("Minimum distance between instances")] [Range(1f, 50f)]
     public float minSpacing = 5f;
 
-    [BoxGroup("Distribution")]
-    [Tooltip("Max placement attempts per instance")]
+    [BoxGroup("Distribution")] [Tooltip("Max placement attempts per instance")]
     public int maxAttempts = 30;
 
     // ═══════════════════════════════════════════════════════════════
@@ -49,53 +46,40 @@ namespace Content.Scripts.World {
     [MinMaxSlider(1, 20, true)]
     public Vector2Int clusterSize = new(1, 1);
 
-    [BoxGroup("Clustering")]
-    [Tooltip("Spread radius within cluster")]
-    [Range(1f, 30f)]
+    [BoxGroup("Clustering")] [Tooltip("Spread radius within cluster")] [Range(1f, 30f)]
     public float clusterSpread = 5f;
 
     // ═══════════════════════════════════════════════════════════════
     // TERRAIN FILTER
     // ═══════════════════════════════════════════════════════════════
 
-    [BoxGroup("Terrain Filter")]
-    [Tooltip("Allowed slope angle range (degrees)")]
-    [MinMaxSlider(0f, 90f, true)]
+    [BoxGroup("Terrain Filter")] [Tooltip("Allowed slope angle range (degrees)")] [MinMaxSlider(0f, 90f, true)]
     public Vector2 slopeRange = new(0f, 30f);
 
-    [BoxGroup("Terrain Filter")]
-    [Tooltip("Allowed height range (terrain-relative)")]
-    [MinMaxSlider(-100f, 500f, true)]
+    [BoxGroup("Terrain Filter")] [Tooltip("Allowed height range (terrain-relative)")] [MinMaxSlider(-100f, 500f, true)]
     public Vector2 heightRange = new(0f, 100f);
 
-    [BoxGroup("Terrain Filter")]
-    [Tooltip("Terrain layers allowed for placement (empty = all)")]
+    [BoxGroup("Terrain Filter")] [Tooltip("Terrain layers allowed for placement (empty = all)")]
     public int[] allowedTerrainLayers;
 
     // ═══════════════════════════════════════════════════════════════
     // AVOIDANCE
     // ═══════════════════════════════════════════════════════════════
 
-    [BoxGroup("Avoidance")]
-    [Tooltip("Don't spawn near actors with these tags")]
+    [BoxGroup("Avoidance")] [Tooltip("Don't spawn near actors with these tags")]
     public string[] avoidTags;
 
-    [BoxGroup("Avoidance")]
-    [Tooltip("Minimum distance from avoided actors")]
-    [Range(0f, 50f)]
+    [BoxGroup("Avoidance")] [Tooltip("Minimum distance from avoided actors")] [Range(0f, 50f)]
     public float avoidRadius = 5f;
 
     // ═══════════════════════════════════════════════════════════════
     // SPAWN VARIATION
     // ═══════════════════════════════════════════════════════════════
 
-    [BoxGroup("Spawn Variation")]
-    [Tooltip("Random Y rotation")]
+    [BoxGroup("Spawn Variation")] [Tooltip("Random Y rotation")]
     public bool randomRotation = true;
 
-    [BoxGroup("Spawn Variation")]
-    [Tooltip("Scale variation range")]
-    [MinMaxSlider(0.5f, 2f, true)]
+    [BoxGroup("Spawn Variation")] [Tooltip("Scale variation range")] [MinMaxSlider(0.5f, 2f, true)]
     public Vector2 scaleRange = new(0.9f, 1.1f);
 
     // ═══════════════════════════════════════════════════════════════
@@ -114,6 +98,13 @@ namespace Content.Scripts.World {
     public bool useClustering => clusterSize.x > 1 || clusterSize.y > 1;
     public bool hasChildren => childScatters != null && childScatters.Count > 0;
 
+    public string actorName =>
+      !string.IsNullOrWhiteSpace(actorKey)
+        ? actorKey
+        : prefab != null
+          ? prefab.name
+          : "NULL";
+
     // ═══════════════════════════════════════════════════════════════
     // DEBUG
     // ═══════════════════════════════════════════════════════════════
@@ -124,8 +115,11 @@ namespace Content.Scripts.World {
         Debug.Log($"Fixed count: {fixedCount}");
         return;
       }
+
       // Assume 500x500 terrain for estimate
-      var area = 500f * 500f;
+      var globalConfig = WorldGeneratorConfigSO.GetFromResources();
+      var size = globalConfig?.size ?? 500;
+      var area = size * size;
       var estimated = Mathf.RoundToInt(area / 100f * density);
       Debug.Log($"Estimated instances on 500x500 terrain: {estimated}");
     }

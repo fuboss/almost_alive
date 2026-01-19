@@ -15,56 +15,38 @@ MonoBehaviour:
   type: 4
   debugColor: {r: 0.0710217, g: 0.7924528, b: 0.50360113, a: 1}
   weight: 0.56
-  baseHeight: 6
-  heightAmplitude: 17.8
+  baseHeight: 3
+  heightAmplitude: 8
   heightProfile:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.003753662
-      value: 1.0249939
+      time: 0
+      value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.341322
-      value: 1.0544469
-      inSlope: -0.059714757
-      outSlope: -0.059714757
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.17330916
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.80128115
-      value: 1.0396473
-      inSlope: -0.058707505
-      outSlope: -0.058707505
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.32885635
-    - serializedVersion: 3
-      time: 1.0075073
-      value: 1.030716
+      time: 1
+      value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  noiseFrequency: 0.0028
-  noiseOctaves: 4
-  noisePersistence: 0.802
+  noiseFrequency: 0.0115
+  noiseOctaves: 5
+  noisePersistence: 0.58
   primaryTerrainLayer: 0
   secondaryTerrainLayer: 1
-  slopeThreshold: 35.7
+  slopeThreshold: 2.1
   scatterRules:
   - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
   - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

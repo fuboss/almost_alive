@@ -25,6 +25,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
           return snapshot;
         }
       }
+      else {
+        Debug.LogError("MoveToBestUnfinishedStrategy: No unfinished tasks found at camp", camp);
+      }
 
       var slotWithHaulableItem =
         _agent.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();

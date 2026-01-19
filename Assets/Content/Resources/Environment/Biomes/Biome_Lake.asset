@@ -10,51 +10,51 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ef73c77d5dff457395e1f4f62958ba0, type: 3}
-  m_Name: Biome_Desert
+  m_Name: Biome_Lake
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Biomes.BiomeSO
-  type: 3
-  debugColor: {r: 0.9427508, g: 1, b: 0, a: 1}
-  weight: 0.67
-  baseHeight: 2
-  heightAmplitude: 2
+  type: 2
+  debugColor: {r: 0.055535804, g: 0.69468504, b: 0.9056604, a: 1}
+  weight: 0.29
+  baseHeight: 0
+  heightAmplitude: 2.3
   heightProfile:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: -2.367046
+      outSlope: -2.367046
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.42768475
-      value: 0.87134546
-      inSlope: -0.090122
-      outSlope: -0.090122
-      tangentMode: 0
+      time: 0.506961
+      value: -0.2
+      inSlope: -0.95877063
+      outSlope: -0.95877063
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.21944715
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0012207
-      value: 0.86618805
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      time: 1.0007806
+      value: 0.021974295
+      inSlope: 0.44950485
+      outSlope: 0.44950485
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  noiseFrequency: 0.0036
+  noiseFrequency: 0.0072
   noiseOctaves: 5
-  noisePersistence: 0.684
+  noisePersistence: 0.802
   primaryTerrainLayer: 0
   secondaryTerrainLayer: 1
-  slopeThreshold: 12.5
+  slopeThreshold: 4
   scatterRules:
   - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

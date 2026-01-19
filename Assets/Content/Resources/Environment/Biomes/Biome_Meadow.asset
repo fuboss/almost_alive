@@ -21,8 +21,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.005179316
+      value: 1.0006033
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -30,40 +30,33 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.3481106
-      value: 1.0050049
-      inSlope: 0
-      outSlope: 0
+      time: 0.5052663
+      value: 0.66242766
+      inSlope: -0.26344946
+      outSlope: -0.26344946
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.14279717
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.7164263
-      value: 0.9949951
-      inSlope: 0
-      outSlope: 0
+      time: 0.9986819
+      value: 0.7143847
+      inSlope: 0.22986922
+      outSlope: 0.22986922
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
+      inWeight: 0.13386467
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   noiseFrequency: 0.0072
-  noiseOctaves: 3
-  noisePersistence: 0.5
+  noiseOctaves: 2
+  noisePersistence: 0.401
   primaryTerrainLayer: 0
   secondaryTerrainLayer: 1
   slopeThreshold: 30
   scatterRules:
   - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
+  - {fileID: 11400000, guid: 45339c168e285481e809a228935e8b23, type: 2}
+  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

@@ -15,56 +15,49 @@ MonoBehaviour:
   type: 0
   debugColor: {r: 0, g: 0.4056604, b: 0, a: 1}
   weight: 1
-  baseHeight: 4
+  baseHeight: 3
   heightAmplitude: 5.5
   heightProfile:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0012664795
-      value: 0.987381
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      time: -0.00983429
+      value: 0.8364334
+      inSlope: -0.036223434
+      outSlope: -0.036223434
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.25271422
-      value: 1.0144536
-      inSlope: 0.011314606
-      outSlope: 0.011314606
-      tangentMode: 0
+      time: 0.511545
+      value: 0.81754726
+      inSlope: 0.0014952533
+      outSlope: 0.0014952533
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.70676416
-      value: 0.98582095
-      inSlope: -0.08630611
-      outSlope: -0.08630611
-      tangentMode: 0
+      time: 1.0118408
+      value: 0.83716583
+      inSlope: 0.03921394
+      outSlope: 0.03921394
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.13185723
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0100708
-      value: 0.96762085
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  noiseFrequency: 0.0242
-  noiseOctaves: 2
-  noisePersistence: 0.743
+  noiseFrequency: 0.0339
+  noiseOctaves: 5
+  noisePersistence: 0.494
   primaryTerrainLayer: 0
   secondaryTerrainLayer: 1
-  slopeThreshold: 20.9
+  slopeThreshold: 14.1
   scatterRules:
   - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
   - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
+  - {fileID: 11400000, guid: 45339c168e285481e809a228935e8b23, type: 2}
+  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

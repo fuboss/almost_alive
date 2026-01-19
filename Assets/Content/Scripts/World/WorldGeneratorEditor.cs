@@ -108,6 +108,8 @@ namespace Content.Scripts.Editor.World {
         return;
       }
 
+      InitTerrain(config, terrain);
+
       _container = new GameObject(CONTAINER_NAME).transform;
       Undo.RegisterCreatedObjectUndo(_container.gameObject, "Generate World");
 
@@ -201,11 +203,17 @@ namespace Content.Scripts.Editor.World {
         $"[WorldGenEditor] Started generation (seed: {seed}, biomes: {biomeMap.cells.Count}, target actors: {totalTarget})");
     }
 
+    private static void InitTerrain(WorldGeneratorConfigSO config, Terrain terrain) {
+      terrain.terrainData.size = new Vector3(config.size, 200, config.size);
+      terrain.transform.localPosition = new Vector3(-config.size / 2f, 0, -config.size / 2f);
+    }
+
     public static void Clear() {
       var existing = GameObject.Find(CONTAINER_NAME);
       if (existing != null) {
         Undo.DestroyObjectImmediate(existing);
       }
+
       var navSurface = Terrain.activeTerrain.GetComponent<NavMeshSurface>();
       if (navSurface != null) navSurface.BuildNavMesh();
       _container = null;
@@ -274,11 +282,12 @@ namespace Content.Scripts.Editor.World {
 
             if (rule == null) continue;
 
-            _state.currentStatus = $"{biome.type}/{rule.actorKey}";
+            var ruleAssetName = !string.IsNullOrWhiteSpace(rule.actorKey) ? rule.actorKey : rule.prefab.name;
+            _state.currentStatus = $"{biome.type}/{ruleAssetName}";
             EnqueueRuleTasks(rule, biome.type);
 
             if (config.logGeneration) {
-              Debug.Log($"[WorldGenEditor] Processing: {biome.type} → {rule.actorKey}");
+              Debug.Log($"[WorldGenEditor] Processing: {biome.type} → {ruleAssetName}");
             }
 
             return;
@@ -292,9 +301,9 @@ namespace Content.Scripts.Editor.World {
     }
 
     private static void EnqueueRuleTasks(ScatterRuleSO rule, BiomeType biomeType) {
-      var prefab = LoadPrefab(rule.actorKey);
+      var prefab = LoadPrefab(rule);
       if (prefab == null) {
-        Debug.LogWarning($"[WorldGenEditor] Prefab '{rule.actorKey}' not found");
+        Debug.LogWarning($"[WorldGenEditor] Prefab for rule '{rule.name}' not found");
         return;
       }
 
@@ -391,7 +400,7 @@ namespace Content.Scripts.Editor.World {
         if (childConfig?.rule == null) continue;
 
         var childRule = childConfig.rule;
-        var childPrefab = LoadPrefab(childRule.actorKey);
+        var childPrefab = LoadPrefab(childRule);
         if (childPrefab == null) continue;
 
         var count = UnityEngine.Random.Range(childConfig.countPerParent.x, childConfig.countPerParent.y + 1);
@@ -565,7 +574,12 @@ namespace Content.Scripts.Editor.World {
       return config;
     }
 
-    private static GameObject LoadPrefab(string actorKey) {
+    private static GameObject LoadPrefab(ScatterRuleSO rule) {
+      var actorKey = rule.actorKey;
+      if (string.IsNullOrWhiteSpace(actorKey) && rule.prefab != null) {
+        return rule.prefab;
+      }
+
       if (_prefabCache.TryGetValue(actorKey, out var cached)) return cached;
 
       var handle = Addressables.LoadAssetsAsync<GameObject>("Actors", null);

@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: ScatterRule_stones
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.ScatterRuleSO
   actorKey: stone_0
+  prefab: {fileID: 0}
   fixedCount: 0
-  density: 0.5
+  density: 0.06
   minSpacing: 1.5
   maxAttempts: 25
-  clusterSize: {x: 1, y: 3}
-  clusterSpread: 6.44
-  slopeRange: {x: 0, y: 30}
+  clusterSize: {x: 1, y: 2}
+  clusterSpread: 12.14
+  slopeRange: {x: 0, y: 22.727272}
   heightRange: {x: 0, y: 100}
   allowedTerrainLayers: 
-  avoidTags:
-  - TREE
-  avoidRadius: 0.5
+  avoidTags: []
+  avoidRadius: 1
   randomRotation: 1
   scaleRange: {x: 0.9, y: 1.1}
+  childScatters: []

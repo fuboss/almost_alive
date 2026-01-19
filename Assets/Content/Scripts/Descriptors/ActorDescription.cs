@@ -51,7 +51,9 @@ namespace Content.Scripts.Game {
 
     private void OnValidate() {
       _tagDefinitions = GetComponents<TagDefinition>();
-      _descriptionData.tags = _tagDefinitions.Select(td => td.Tag).ToArray();
+      if (_descriptionData != null) {
+        _descriptionData.tags = _tagDefinitions.Select(td => td.Tag).ToArray();
+      }
     }
 
     private void OnEnable() {

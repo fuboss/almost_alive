@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba734edcc3ff4a098d413e55ebef477
+    m_Address: Assets/Content/Prefabs/Actors/CampLocation.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5a490ce0eb548466d8cbc8ef6daba1ac
     m_Address: restPoint
     m_ReadOnly: 0

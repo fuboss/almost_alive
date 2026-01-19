@@ -62,35 +62,12 @@ namespace Content.Scripts.AI.GOAP {
         Debug.LogWarning($"[ActorCreation] No ground found at {targetPos}, using original position");
         return targetPos;
       }
-
+      
       var groundY = hit.point.y;
-      var boundsOffset = GetBoundsOffsetY(prefab);
+      var boundsOffset = 0;
       return new Vector3(targetPos.x, groundY + boundsOffset, targetPos.z);
     }
-
-    /// <summary>
-    /// Get Y offset from pivot to bottom of bounds.
-    /// </summary>
-    private float GetBoundsOffsetY(GameObject prefab) {
-      // Try collider first
-      var collider = prefab.GetComponentInChildren<Collider>();
-      if (collider != null) {
-        var bounds = collider.bounds;
-        var localMin = prefab.transform.InverseTransformPoint(bounds.min);
-        return -localMin.y;
-      }
-
-      // Fallback to renderer
-      var renderer = prefab.GetComponentInChildren<Renderer>();
-      if (renderer != null) {
-        var bounds = renderer.bounds;
-        var localMin = prefab.transform.InverseTransformPoint(bounds.min);
-        return -localMin.y;
-      }
-
-      // No bounds info, assume pivot at bottom
-      return 0f;
-    }
+    
 
     public void Dispose() {
       _allPrefabs.Clear();

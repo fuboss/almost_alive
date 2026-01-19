@@ -20,7 +20,7 @@ namespace Content.Scripts.World {
   /// 4. Spawn scatters per biome
   /// </summary>
   public class WorldModule : IInitializable, IDisposable {
-    private const int SPAWN_MAX_PER_FRAME = 30;
+    private const int SPAWN_MAX_PER_FRAME = 10;
     private const string CONTAINER_NAME = "[World_Generated]";
 
     private int _spawnedThisFrame;
@@ -79,6 +79,7 @@ namespace Content.Scripts.World {
 
       Clear();
       await UniTask.WaitForSeconds(1f, cancellationToken: externalCt);
+      SetTerrainFromConfig();
       await UniTask.WaitUntil(_actorCreation, c => c.IsInitialized, cancellationToken: externalCt);
 
       _generationCts = CancellationTokenSource.CreateLinkedTokenSource(externalCt);
@@ -169,7 +170,8 @@ namespace Content.Scripts.World {
           if (rule.useClustering) {
             placed = await GenerateClusteredAsync(rule, biome.type, bounds, targetCount, ct,
               p => UpdateProgress(0.3f + 0.7f * (totalPlaced + p) / Mathf.Max(1, totalTarget)));
-          } else {
+          }
+          else {
             placed = await GenerateUniformAsync(rule, biome.type, bounds, targetCount, ct,
               p => UpdateProgress(0.3f + 0.7f * (totalPlaced + p) / Mathf.Max(1, totalTarget)));
           }
@@ -177,7 +179,7 @@ namespace Content.Scripts.World {
           totalPlaced += placed;
 
           if (_config.logGeneration) {
-            Debug.Log($"[WorldModule] {biome.type}/{rule.actorKey}: placed {placed}/{targetCount}");
+            Debug.Log($"[WorldModule] {biome.type}/{rule.actorName}: placed {placed}/{targetCount}");
           }
         }
       }
@@ -193,13 +195,18 @@ namespace Content.Scripts.World {
       if (isGenerated) {
         var navSurface = Terrain.activeTerrain.GetComponent<NavMeshSurface>();
         if (navSurface != null) navSurface.BuildNavMesh();
-        
+
         if (_config.logGeneration) Debug.Log($"[WorldModule] ✓ Generated {_spawnedActors.Count} actors total");
         OnGenerationComplete?.Invoke();
       }
 
       _generationCts?.Dispose();
       _generationCts = null;
+    }
+
+    private void SetTerrainFromConfig() {
+      _terrain.terrainData.size = new Vector3(_config.size, 200, _config.size);
+      _terrain.transform.localPosition = new Vector3(-_config.size / 2f, 0, -_config.size / 2f);
     }
 
     public void CancelGeneration() {
@@ -245,9 +252,11 @@ namespace Content.Scripts.World {
       var existing = GameObject.Find(CONTAINER_NAME);
       if (existing != null) {
         _container = existing.transform;
-      } else {
+      }
+      else {
         _container = new GameObject(CONTAINER_NAME).transform;
       }
+
       return _container;
     }
 
@@ -307,6 +316,7 @@ namespace Content.Scripts.World {
 
           var offset = Random.insideUnitCircle * rule.clusterSpread;
           var pos = clusterCenter + new Vector3(offset.x, 0, offset.y);
+          pos.y = _terrain.SampleHeight(clusterCenter) + 0.015f;
 
           // Each point must also be in correct biome
           if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
@@ -363,7 +373,8 @@ namespace Content.Scripts.World {
             if (childConfig.localSpacingOnly) {
               if (!ValidateLocalSpacing(childRule.minSpacing, pos, localSpawned))
                 continue;
-            } else {
+            }
+            else {
               if (!ValidateSpacing(childRule, pos))
                 continue;
             }
@@ -413,6 +424,7 @@ namespace Content.Scripts.World {
         if ((siblingPos - position).sqrMagnitude < sqrSpacing)
           return false;
       }
+
       return true;
     }
 

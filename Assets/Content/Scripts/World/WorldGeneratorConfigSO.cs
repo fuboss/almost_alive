@@ -22,6 +22,8 @@ namespace Content.Scripts.World {
     [Tooltip("If null, will find Terrain in scene")]
     [SceneObjectsOnly]
     public Terrain terrain;
+    [BoxGroup("Terrain")]
+    public int size = 400;
 
     [BoxGroup("Terrain")]
     [Tooltip("Margin from terrain edges")]
@@ -119,7 +121,7 @@ namespace Content.Scripts.World {
               if (rule == null) {
                 Debug.LogError($"[WorldGenConfig] Null scatter rule in biome {biome.name}");
                 errors++;
-              } else if (string.IsNullOrEmpty(rule.actorKey)) {
+              } else if (string.IsNullOrEmpty(rule.actorKey) && rule.prefab == null) {
                 Debug.LogError($"[WorldGenConfig] Missing actorKey in rule {rule.name} (biome: {biome.name})");
                 errors++;
               }
@@ -129,6 +131,10 @@ namespace Content.Scripts.World {
       }
 
       Debug.Log(errors == 0 ? "✓ Config valid" : $"✗ {errors} errors found");
+    }
+
+    public static WorldGeneratorConfigSO GetFromResources() {
+      return Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
     }
 
     // ═══════════════════════════════════════════════════════════════
