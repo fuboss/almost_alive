@@ -18,5 +18,6 @@ MonoBehaviour:
   scatterRules:
   - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
   - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+  - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
   logGeneration: 1
-  drawGizmos: 1
+  drawGizmos: 0

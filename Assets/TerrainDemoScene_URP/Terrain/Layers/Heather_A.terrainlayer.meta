@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b5b3f5965c68540b6a6e12e023e18435
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 8574412962073106934
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 213197
+  packageName: Unity Terrain - URP Demo Scene
+  packageVersion: 1.0.3
+  assetPath: Assets/TerrainDemoScene_URP/Terrain/Layers/Heather_A.terrainlayer
+  uploadId: 727820
