@@ -13,11 +13,20 @@ MonoBehaviour:
   m_Name: WorldGeneratorConfig
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.WorldGeneratorConfigSO
   terrain: {fileID: 0}
-  edgeMargin: 10
+  edgeMargin: 1
+  sculptTerrain: 1
+  paintSplatmap: 1
   seed: 0
-  scatterRules:
-  - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
-  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
-  - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
+  biomes:
+  - {fileID: 11400000, guid: 80a28265ed14c489194c747350b7610a, type: 2}
+  - {fileID: 11400000, guid: 329f88d8c4f5145d5acd9556a8cf9a30, type: 2}
+  - {fileID: 11400000, guid: 2a50fb2547aed40a282423343f83effc, type: 2}
+  - {fileID: 11400000, guid: e034e7daa00e74edba9226b406966606, type: 2}
+  biomeBorderBlend: 21
+  minBiomeCells: 7
+  maxBiomeCells: 28
   logGeneration: 1
-  drawGizmos: 0
+  drawBiomeGizmos: 0
+  gizmoResolution: 39
+  drawCellCenters: 1
+  createScattersInEditor: 0

@@ -52,8 +52,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void SpawnNewAgent(Vector3 position) {
+      if (!Physics.Raycast(position + Vector3.up * 100, Vector3.down, out RaycastHit hit)) return;
       if (_agentsRoot != null) {
-        var instance = _agentFactory.Spawn(position);
+        
+        var instance = _agentFactory.Spawn(hit.point);
         Add(instance);
         AddToCameraGroup(instance);
       }

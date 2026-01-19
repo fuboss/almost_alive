@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef73c77d5dff457395e1f4f62958ba0, type: 3}
+  m_Name: Biome_Desert
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Biomes.BiomeSO
+  type: 3
+  debugColor: {r: 0.9427508, g: 1, b: 0, a: 1}
+  weight: 0.67
+  baseHeight: 2
+  heightAmplitude: 2
+  heightProfile:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.503784
+      value: 1.0028551
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.0012207
+      value: 1.0233307
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  noiseFrequency: 0.0036
+  noiseOctaves: 2
+  noisePersistence: 0.5
+  primaryTerrainLayer: 0
+  secondaryTerrainLayer: 1
+  slopeThreshold: 23.1
+  scatterRules:
+  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

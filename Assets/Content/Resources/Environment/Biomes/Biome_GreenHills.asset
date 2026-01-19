@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef73c77d5dff457395e1f4f62958ba0, type: 3}
+  m_Name: Biome_GreenHills
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Biomes.BiomeSO
+  type: 4
+  debugColor: {r: 0.0710217, g: 0.7924528, b: 0.50360113, a: 1}
+  weight: 0.56
+  baseHeight: 6
+  heightAmplitude: 17.8
+  heightProfile:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.003753662
+      value: 1.0249939
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.341322
+      value: 1.0544469
+      inSlope: -0.059714757
+      outSlope: -0.059714757
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.17330916
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.80128115
+      value: 1.0396473
+      inSlope: -0.058707505
+      outSlope: -0.058707505
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.32885635
+    - serializedVersion: 3
+      time: 1.0075073
+      value: 1.030716
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  noiseFrequency: 0.0028
+  noiseOctaves: 4
+  noisePersistence: 0.802
+  primaryTerrainLayer: 0
+  secondaryTerrainLayer: 1
+  slopeThreshold: 35.7
+  scatterRules:
+  - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
+  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}

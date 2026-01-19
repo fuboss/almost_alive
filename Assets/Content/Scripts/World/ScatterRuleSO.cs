@@ -1,20 +1,30 @@
-using Content.Scripts.Editor.World;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-#if UNITY_EDITOR
-
-#endif
 
 namespace Content.Scripts.World {
+  /// <summary>
+  /// Configuration for spawning actors in the world.
+  /// Assigned to biomes via BiomeSO.scatterRules.
+  /// </summary>
   [CreateAssetMenu(menuName = "World/Scatter Rule", fileName = "ScatterRule_")]
   public class ScatterRuleSO : ScriptableObject {
+    
+    // ═══════════════════════════════════════════════════════════════
+    // ACTOR
+    // ═══════════════════════════════════════════════════════════════
+
     [BoxGroup("Actor")]
     [Tooltip("Addressables actor key")]
     public string actorKey;
 
     [BoxGroup("Actor")]
-    [Tooltip("Total instances to spawn (overrides density if > 0)")]
+    [Tooltip("Total instances to spawn per biome (overrides density if > 0)")]
     public int fixedCount;
+
+    // ═══════════════════════════════════════════════════════════════
+    // DISTRIBUTION
+    // ═══════════════════════════════════════════════════════════════
 
     [BoxGroup("Distribution")]
     [Tooltip("Instances per 100 square units (ignored if fixedCount > 0)")]
@@ -30,6 +40,10 @@ namespace Content.Scripts.World {
     [Tooltip("Max placement attempts per instance")]
     public int maxAttempts = 30;
 
+    // ═══════════════════════════════════════════════════════════════
+    // CLUSTERING
+    // ═══════════════════════════════════════════════════════════════
+
     [BoxGroup("Clustering")]
     [Tooltip("Min/max instances per cluster (1,1 = no clustering)")]
     [MinMaxSlider(1, 20, true)]
@@ -39,6 +53,10 @@ namespace Content.Scripts.World {
     [Tooltip("Spread radius within cluster")]
     [Range(1f, 30f)]
     public float clusterSpread = 5f;
+
+    // ═══════════════════════════════════════════════════════════════
+    // TERRAIN FILTER
+    // ═══════════════════════════════════════════════════════════════
 
     [BoxGroup("Terrain Filter")]
     [Tooltip("Allowed slope angle range (degrees)")]
@@ -51,8 +69,12 @@ namespace Content.Scripts.World {
     public Vector2 heightRange = new(0f, 100f);
 
     [BoxGroup("Terrain Filter")]
-    [Tooltip("Terrain layers allowed for placement")]
+    [Tooltip("Terrain layers allowed for placement (empty = all)")]
     public int[] allowedTerrainLayers;
+
+    // ═══════════════════════════════════════════════════════════════
+    // AVOIDANCE
+    // ═══════════════════════════════════════════════════════════════
 
     [BoxGroup("Avoidance")]
     [Tooltip("Don't spawn near actors with these tags")]
@@ -63,6 +85,10 @@ namespace Content.Scripts.World {
     [Range(0f, 50f)]
     public float avoidRadius = 5f;
 
+    // ═══════════════════════════════════════════════════════════════
+    // SPAWN VARIATION
+    // ═══════════════════════════════════════════════════════════════
+
     [BoxGroup("Spawn Variation")]
     [Tooltip("Random Y rotation")]
     public bool randomRotation = true;
@@ -72,9 +98,27 @@ namespace Content.Scripts.World {
     [MinMaxSlider(0.5f, 2f, true)]
     public Vector2 scaleRange = new(0.9f, 1.1f);
 
-    public bool useClustering => clusterSize.x > 1 || clusterSize.y > 1;
+    // ═══════════════════════════════════════════════════════════════
+    // CHILD SCATTERS
+    // ═══════════════════════════════════════════════════════════════
 
-    [Button, BoxGroup("Debug")]
+    [FoldoutGroup("Child Scatters")]
+    [Tooltip("Actors to spawn around each instance of this rule")]
+    [ListDrawerSettings(ShowFoldout = true)]
+    public List<ChildScatterConfig> childScatters = new();
+
+    // ═══════════════════════════════════════════════════════════════
+    // PROPERTIES
+    // ═══════════════════════════════════════════════════════════════
+
+    public bool useClustering => clusterSize.x > 1 || clusterSize.y > 1;
+    public bool hasChildren => childScatters != null && childScatters.Count > 0;
+
+    // ═══════════════════════════════════════════════════════════════
+    // DEBUG
+    // ═══════════════════════════════════════════════════════════════
+
+    [Button("Estimate Count"), BoxGroup("Debug")]
     private void EstimateCount() {
       if (fixedCount > 0) {
         Debug.Log($"Fixed count: {fixedCount}");
@@ -85,12 +129,5 @@ namespace Content.Scripts.World {
       var estimated = Mathf.RoundToInt(area / 100f * density);
       Debug.Log($"Estimated instances on 500x500 terrain: {estimated}");
     }
-
-#if UNITY_EDITOR
-    [Button("Test This Rule"), BoxGroup("Debug"), GUIColor(0.6f, 0.8f, 1f)]
-    private void TestThisRule() {
-      WorldGeneratorEditor.GenerateSingleRule(this);
-    }
-#endif
   }
 }
