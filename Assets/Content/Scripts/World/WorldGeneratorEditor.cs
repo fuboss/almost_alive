@@ -108,9 +108,6 @@ namespace Content.Scripts.Editor.World {
       var positionRandom = new WorldRandom(seed);
       var transformRandom = new WorldRandom(seed + 1000);
 
-      Debug.Log($"[EDITOR] ========== GENERATION START ==========");
-      Debug.Log($"[EDITOR] Seed: {seed}");
-
       EditorUtility.DisplayProgressBar("Generating World", "Creating biome map...", 0.05f);
 
       var bounds = config.GetTerrainBounds(terrain);
@@ -167,7 +164,7 @@ namespace Content.Scripts.Editor.World {
             var targetCount = CalculateTargetCount(rule, bounds);
 
             if (config.logGeneration) {
-              Debug.Log($"[EDITOR] Processing: {rule.actorName}, useClustering={rule.useClustering}, clusterSize={rule.clusterSize}");
+              Debug.Log($"[WorldGenEditor] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
             }
 
             if (rule.useClustering) {
@@ -179,8 +176,7 @@ namespace Content.Scripts.Editor.World {
         }
       }
 
-      Debug.Log($"[EDITOR] ========== POSITIONS COMPLETE ==========");
-      Debug.Log($"[EDITOR] Total positions generated: {_state.allPositions.Count}");
+      Debug.Log($"[WorldGenEditor] Positions: {_state.allPositions.Count}");
 
       // Phase 2: Generate transforms for all positions (transformRandom only)
       EditorUtility.DisplayProgressBar("Generating World", "Generating transforms...", 0.50f);
@@ -215,8 +211,6 @@ namespace Content.Scripts.Editor.World {
       var attempts = 0;
       var maxAttempts = targetCount * rule.maxAttempts;
 
-      Debug.Log($"[EDITOR] GenerateUniformPositions: {rule.actorName}, target={targetCount}");
-
       while (placed < targetCount && attempts < maxAttempts) {
         attempts++;
 
@@ -227,11 +221,6 @@ namespace Content.Scripts.Editor.World {
         _state.allPositions.Add((rule.actorKey, pos, rule));
         _state.spawnedPositions.Add(pos);
         placed++;
-
-        // Log first 3 positions for comparison
-        if (placed <= 3) {
-          Debug.Log($"[EDITOR] Uniform pos #{placed}: {pos:F2}");
-        }
 
         if (rule.hasChildren) {
           GenerateChildPositions(rule, pos);
@@ -245,9 +234,6 @@ namespace Content.Scripts.Editor.World {
       var remaining = targetCount;
       var clusterAttempts = 0;
       var maxClusterAttempts = targetCount * 10;
-      var totalPlaced = 0;
-
-      Debug.Log($"[EDITOR] GenerateClusteredPositions: {rule.actorName}, target={targetCount}, clusterSize={rule.clusterSize}, spread={rule.clusterSpread}");
 
       while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
         clusterAttempts++;
@@ -263,8 +249,7 @@ namespace Content.Scripts.Editor.World {
 
         // Track positions within THIS cluster only
         var clusterLocalPositions = new List<Vector3>();
-        var clusterPlaced = 0;
-        var clusterStartIndex = _state.spawnedPositions.Count; // Index before this cluster
+        var clusterStartIndex = _state.spawnedPositions.Count;
 
         for (var i = 0; i < clusterCount; i++) {
           var offset = _state.positionRandom.InsideUnitCircle() * rule.clusterSpread;
@@ -272,31 +257,17 @@ namespace Content.Scripts.Editor.World {
 
           if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
           if (!ValidateTerrainAt(sc, pos)) continue;
-          
-          // Check spacing only against positions BEFORE this cluster started
           if (!ValidateSpacingRange(rule.minSpacing, pos, _state.spawnedPositions, 0, clusterStartIndex)) continue;
-          
-          // Inside cluster: use reduced spacing (30% of minSpacing) between cluster members
           if (!ValidateLocalSpacing(rule.minSpacing * 0.3f, pos, clusterLocalPositions)) continue;
 
           _state.allPositions.Add((rule.actorKey, pos, rule));
           _state.spawnedPositions.Add(pos);
           clusterLocalPositions.Add(pos);
           remaining--;
-          totalPlaced++;
-          clusterPlaced++;
-
-          if (totalPlaced <= 3) {
-            Debug.Log($"[EDITOR] Clustered pos #{totalPlaced}: {pos:F2} (cluster center: {clusterCenter:F2})");
-          }
 
           if (rule.hasChildren) {
             GenerateChildPositions(rule, pos);
           }
-        }
-        
-        if (clusterPlaced > 0) {
-          Debug.Log($"[EDITOR] Cluster placed {clusterPlaced}/{clusterCount} at center {clusterCenter:F2}");
         }
       }
     }

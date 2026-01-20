@@ -97,10 +97,6 @@ namespace Content.Scripts.World {
       var seed = _config.seed != 0 ? _config.seed : Environment.TickCount;
       _positionRandom = new WorldRandom(seed);
       _transformRandom = new WorldRandom(seed + 1000);
-      
-      Debug.Log($"[RUNTIME] ========== GENERATION START ==========");
-      Debug.Log($"[RUNTIME] Seed: {seed}");
-      
       if (_config.logGeneration) Debug.Log($"[WorldModule] Generating with seed {seed}");
 
       var bounds = GetTerrainBounds();
@@ -156,7 +152,7 @@ namespace Content.Scripts.World {
           var targetCount = CalculateTargetCount(rule, bounds);
 
           if (_config.logGeneration) {
-            Debug.Log($"[RUNTIME] Processing: {rule.actorName}, useClustering={rule.useClustering}, clusterSize={rule.clusterSize}");
+            Debug.Log($"[WorldModule] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
           }
 
           if (rule.useClustering) {
@@ -171,8 +167,7 @@ namespace Content.Scripts.World {
         }
       }
 
-      Debug.Log($"[RUNTIME] ========== POSITIONS COMPLETE ==========");
-      Debug.Log($"[RUNTIME] Total positions generated: {allPositions.Count}");
+      if (_config.logGeneration) Debug.Log($"[WorldModule] Positions: {allPositions.Count}");
 
       // Phase 5: Generate transforms for all positions (transformRandom only)
       UpdateProgress(0.50f);
@@ -236,8 +231,6 @@ namespace Content.Scripts.World {
       var placed = 0;
       var attempts = 0;
       var maxAttempts = targetCount * rule.maxAttempts;
-
-      Debug.Log($"[RUNTIME] GenerateUniformPositions: {rule.actorName}, target={targetCount}");
 
       while (placed < targetCount && attempts < maxAttempts) {
         attempts++;
