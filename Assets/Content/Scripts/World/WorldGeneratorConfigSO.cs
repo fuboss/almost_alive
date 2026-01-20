@@ -102,6 +102,7 @@ namespace Content.Scripts.World {
 
     // Cached biome map for gizmo drawing
     [System.NonSerialized] public BiomeMap cachedBiomeMap;
+    [System.NonSerialized] public TerrainFeatureMap cachedFeatureMap;
 
     // ═══════════════════════════════════════════════════════════════
     // VALIDATION
@@ -122,13 +123,16 @@ namespace Content.Scripts.World {
             continue;
           }
 
-          if (biome.scatterRules != null) {
-            foreach (var rule in biome.scatterRules) {
-              if (rule == null) {
-                Debug.LogError($"[WorldGenConfig] Null scatter rule in biome {biome.name}");
+          if (biome.scatterConfigs != null) {
+            foreach (var sc in biome.scatterConfigs) {
+              if (sc == null) {
+                Debug.LogError($"[WorldGenConfig] Null scatter config in biome {biome.name}");
                 errors++;
-              } else if (string.IsNullOrEmpty(rule.actorKey) && rule.prefab == null) {
-                Debug.LogError($"[WorldGenConfig] Missing actorKey in rule {rule.name} (biome: {biome.name})");
+              } else if (sc.rule == null) {
+                Debug.LogError($"[WorldGenConfig] Null rule in scatter config (biome: {biome.name})");
+                errors++;
+              } else if (string.IsNullOrEmpty(sc.rule.actorKey) && sc.rule.prefab == null) {
+                Debug.LogError($"[WorldGenConfig] Missing actorKey in rule {sc.rule.name} (biome: {biome.name})");
                 errors++;
               }
             }

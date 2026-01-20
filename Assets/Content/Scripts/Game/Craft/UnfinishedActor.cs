@@ -8,13 +8,17 @@ using UnityEngine;
 using VContainer;
 
 namespace Content.Scripts.Game.Craft {
+  
+  public interface IProgressProvider {
+    float progress { get; }
+  }
   /// <summary>
   /// Unfinished actor - intermediate state during crafting/building.
   /// Stores recipe reference, required resources inventory, and work progress.
   /// </summary>
   [RequireComponent(typeof(ActorDescription))]
   [RequireComponent(typeof(ActorInventory))]
-  public class UnfinishedActor : MonoBehaviour {
+  public class UnfinishedActor : MonoBehaviour, IProgressProvider {
     [ShowInInspector, ReadOnly] private RecipeSO _recipe;
     [ShowInInspector, ReadOnly, Range(0,1f)] private float _workProgress;
     [ShowInInspector, ReadOnly] private CampSpot _assignedSpot;
@@ -27,7 +31,7 @@ namespace Content.Scripts.Game.Craft {
     public RecipeSO recipe => _recipe;
     public ActorDescription description => _description;
     public ActorInventory inventory => _inventory;
-    [ShowInInspector]public CampSpot assignedSpot => _assignedSpot;
+    [ShowInInspector] public CampSpot assignedSpot => _assignedSpot;
     
     public float workProgress => _workProgress;
     public float workRequired => _recipe?.recipe.workRequired ?? 0f;
@@ -123,5 +127,7 @@ namespace Content.Scripts.Game.Craft {
       
       return result;
     }
+
+    float IProgressProvider.progress => workRatio;
   }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Content.Scripts.Core;
 using UnityEngine;
@@ -11,6 +12,9 @@ namespace Content.Scripts.Game {
     private static readonly Dictionary<int, T> _byActorId = new();
     private static readonly HashSet<T> _all = new();
 
+    public static event Action<T> onRegistered = delegate { };
+    public static event Action<T> onUnregistered = delegate { };
+
     static ActorRegistry() {
       StaticResetRegistry.RegisterReset(Clear);
     }
@@ -22,6 +26,8 @@ namespace Content.Scripts.Game {
       if (actorId != null && actorId.id >= 0) {
         _byActorId[actorId.id] = component;
       }
+
+      onRegistered(component);
       _all.Add(component);
     }
 
@@ -32,6 +38,8 @@ namespace Content.Scripts.Game {
       if (actorId != null) {
         _byActorId.Remove(actorId.id);
       }
+
+      onUnregistered(component);
       _all.Remove(component);
     }
 

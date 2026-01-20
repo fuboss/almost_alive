@@ -18,8 +18,8 @@ MonoBehaviour:
   density: 0.06
   minSpacing: 1.5
   maxAttempts: 25
-  clusterSize: {x: 1, y: 2}
-  clusterSpread: 12.14
+  clusterSize: {x: 1, y: 3}
+  clusterSpread: 5.52
   slopeRange: {x: 0, y: 22.727272}
   heightRange: {x: 0, y: 100}
   allowedTerrainLayers: 

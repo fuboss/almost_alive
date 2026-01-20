@@ -65,8 +65,22 @@ MonoBehaviour:
   cliffTexture:
     layerName: Cliff_Mossy_E
     threshold: 83.9
-  scatterRules:
-  - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
-  - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
-  - {fileID: 11400000, guid: 45339c168e285481e809a228935e8b23, type: 2}
-  - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+  scatterConfigs:
+  - rule: {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
+    placement: 1
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 17.295374}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}
+  - rule: {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
+    placement: 1
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 30}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}
+  - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+    placement: 0
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 30}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}

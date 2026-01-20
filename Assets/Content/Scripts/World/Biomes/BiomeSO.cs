@@ -92,10 +92,9 @@ namespace Content.Scripts.World.Biomes {
     // ═══════════════════════════════════════════════════════════════
 
     [FoldoutGroup("Scatter")]
-    [Tooltip("Scatter rules for this biome")]
-    [AssetsOnly]
+    [Tooltip("Scatter configurations for this biome")]
     [ListDrawerSettings(ShowFoldout = true)]
-    public List<ScatterRuleSO> scatterRules = new();
+    public List<BiomeScatterConfig> scatterConfigs = new();
 
     // ═══════════════════════════════════════════════════════════════
     // TEXTURE SLOT CLASSES
@@ -238,7 +237,7 @@ namespace Content.Scripts.World.Biomes {
       return baseHeight + heightProfile.Evaluate(normalizedDistance) * heightAmplitude;
     }
 
-    public bool hasScatters => scatterRules != null && scatterRules.Count > 0;
+    public bool hasScatters => scatterConfigs != null && scatterConfigs.Count > 0;
 
     // ═══════════════════════════════════════════════════════════════
     // DEBUG
@@ -272,10 +271,14 @@ namespace Content.Scripts.World.Biomes {
         }
       }
 
-      if (scatterRules != null) {
-        for (var i = 0; i < scatterRules.Count; i++) {
-          if (scatterRules[i] == null) {
-            Debug.LogError($"[{name}] Null scatter rule at index {i}");
+      if (scatterConfigs != null) {
+        for (var i = 0; i < scatterConfigs.Count; i++) {
+          var config = scatterConfigs[i];
+          if (config == null) {
+            Debug.LogError($"[{name}] Null scatter config at index {i}");
+            errors++;
+          } else if (config.rule == null) {
+            Debug.LogError($"[{name}] Null rule in scatter config at index {i}");
             errors++;
           }
         }

@@ -19,8 +19,8 @@ MonoBehaviour:
   minSpacing: 6.5
   maxAttempts: 25
   clusterSize: {x: 4, y: 7}
-  clusterSpread: 7.52
-  slopeRange: {x: 0, y: 30}
+  clusterSpread: 3.89
+  slopeRange: {x: 0, y: 16.19469}
   heightRange: {x: 0, y: 100}
   allowedTerrainLayers: 
   avoidTags: []

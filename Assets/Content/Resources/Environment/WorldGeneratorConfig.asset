@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.WorldGeneratorConfigSO
   terrainPalette: {fileID: 11400000, guid: 84bb87ae5541d43799c7e3f4fbf4b2ab, type: 2}
   terrain: {fileID: 0}
-  size: 200
+  size: 150
   edgeMargin: 1
   sculptTerrain: 1
   paintSplatmap: 1
@@ -28,8 +28,8 @@ MonoBehaviour:
   biomeBorderBlend: 20
   minBiomeCells: 10
   maxBiomeCells: 26
-  logGeneration: 0
+  logGeneration: 1
   drawBiomeGizmos: 0
   gizmoResolution: 37
   drawCellCenters: 1
-  createScattersInEditor: 0
+  createScattersInEditor: 1
