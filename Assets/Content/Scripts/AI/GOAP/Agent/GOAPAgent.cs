@@ -1,4 +1,5 @@
 using System;
+using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.Animation;
 using Content.Scripts.Core.Simulation;
@@ -16,6 +17,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [Inject] private SimulationLoop _simLoop;
     [Inject] private SimulationTimeController _simTime;
     [Inject] private RecipeModule _recipeModule;
+    [Inject] private CampModule _campModule;
 
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
@@ -61,6 +63,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
 
     public RecipeModule recipeModule => _recipeModule;
+
+    public AgentCampData campData => _campModule?.GetAgentCampData(this);
 
     public void AddExperience(int amount) {
       _experience.AddXP(amount);

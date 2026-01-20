@@ -62,46 +62,26 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
   public class CanDeliverFromStorageToUnfinishedBelief : CanDeliverToUnfinishedBelief {
     protected override bool Search(IGoapAgent agent, UnfinishedActor target) {
       var needs = target.GetRemainingResources();
-      var camp = agent.camp;
+      var campData = agent.campData;
+      if (campData == null || !campData.hasCamp) return false;
+      
       if (!deliverAllNeededTypes) {
-        bool foundAny = false;
         foreach (var (tag, _) in needs) {
-          var countInStorage = GetResourceCountInCampStorages(camp, tag);
-          if (countInStorage >= countThreshold) {
-            foundAny = true;
-            break;
+          if (campData.GetResourceCount(tag) >= countThreshold) {
+            return true;
           }
         }
-
-        return foundAny;
+        return false;
       }
 
-      Dictionary<string, int> found = new();
-
-      foreach (var tag in needs.Select(n => n.tag)) {
-        found[tag] = GetResourceCountInCampStorages(camp, tag);
-      }
-
-      // Check if all needs can be fulfilled from inventory
-      bool allFulfilled = true;
+      // Check if all needs can be fulfilled from camp storages
       foreach (var (tag, remaining) in needs) {
-        if (found[tag] < remaining) {
-          allFulfilled = false;
-          break;
+        if (campData.GetResourceCount(tag) < remaining) {
+          return false;
         }
       }
 
-      return allFulfilled;
-    }
-
-    //todo: optimize by caching storages per camp
-    private int GetResourceCountInCampStorages(CampLocation camp, string tag) {
-      if (camp == null) return 0;
-      var campPos = camp.transform.position;
-
-      return ActorRegistry<StorageActor>.all
-        .Where(s => Vector3.Distance(s.transform.position, campPos) < 30f)
-        .Sum(s => s.GetCountWithTag(tag));
+      return true;
     }
 
     public override AgentBelief Copy() => new CanDeliverFromStorageToUnfinishedBelief {

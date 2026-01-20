@@ -41,6 +41,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     /// </summary>
     CampLocation camp => memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
 
+    /// <summary>
+    /// Returns agent's camp data with caching. Requires CampModule injection.
+    /// </summary>
+    AgentCampData campData { get; }
+
     WorkPriority GetWorkScheduler();
     void AddExperience(int amount);
     void StopAndCleanPath();

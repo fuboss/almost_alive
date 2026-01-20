@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.Camp {
   public class CampLocation : MonoBehaviour {
-    [ShowInInspector, ReadOnly] private GOAPAgent _owner;
+    [ShowInInspector, ReadOnly] private IGoapAgent _owner;
     [ShowInInspector, ReadOnly] private CampSetup _setup;
 
-    public GOAPAgent owner => _owner;
+    public IGoapAgent owner => _owner;
     public CampSetup setup => _setup;
     public bool isClaimed => _owner != null;
     public bool hasSetup => _setup != null;
@@ -16,10 +16,10 @@ namespace Content.Scripts.AI.Camp {
     private void OnEnable() => Registry<CampLocation>.Register(this);
     private void OnDisable() => Registry<CampLocation>.Unregister(this);
 
-    public bool TryClaim(GOAPAgent agent) {
+    public bool TryClaim(IGoapAgent agent) {
       if (isClaimed) return false;
       _owner = agent;
-      Debug.LogError($"[CampLocation] Claim {name}", this);
+      Debug.Log($"[CampLocation] Claimed {name} by {agent.navMeshAgent.name}");
       return true;
     }
 
@@ -33,11 +33,11 @@ namespace Content.Scripts.AI.Camp {
       _setup.transform.SetParent(transform);
       _setup.transform.localPosition = Vector3.zero;
       _setup.transform.localRotation = Quaternion.identity;
-      Debug.LogError($"[CampLocation] Setup {setup.name}assigned to {name}", this);
+      Debug.Log($"[CampLocation] Setup {setup.name} assigned to {name}");
     }
 
     public void Release() {
-      Debug.LogError($"[CampLocation] Release setup {name}", this);
+      Debug.Log($"[CampLocation] Release {name}");
       if (_setup != null) {
         Destroy(_setup.gameObject);
         _setup = null;

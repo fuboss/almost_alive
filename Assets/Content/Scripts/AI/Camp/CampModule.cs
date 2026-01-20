@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using VContainer;
@@ -7,10 +8,15 @@ using VContainer.Unity;
 using Random = UnityEngine.Random;
 
 namespace Content.Scripts.AI.Camp {
+  /// <summary>
+  /// Central module for camp management. Handles camp setup instantiation
+  /// and per-agent camp data caching.
+  /// </summary>
   public class CampModule : IInitializable, IDisposable {
     [Inject] private IObjectResolver _resolver;
 
     private readonly List<CampSetup> _setupPrefabs = new();
+    private readonly Dictionary<IGoapAgent, AgentCampData> _agentCampData = new();
     private bool _loaded;
 
     void IInitializable.Initialize() {
@@ -25,6 +31,34 @@ namespace Content.Scripts.AI.Camp {
     }
 
     public bool isReady => _loaded && _setupPrefabs.Count > 0;
+
+    /// <summary>Get or create camp data for agent.</summary>
+    public AgentCampData GetAgentCampData(IGoapAgent agent) {
+      if (agent == null) return null;
+      
+      if (!_agentCampData.TryGetValue(agent, out var data)) {
+        data = new AgentCampData();
+        _agentCampData[agent] = data;
+      }
+      return data;
+    }
+
+    /// <summary>Register camp for agent. Updates agent's camp data.</summary>
+    public void RegisterAgentCamp(IGoapAgent agent, CampLocation camp) {
+      var data = GetAgentCampData(agent);
+      data?.SetCamp(camp);
+    }
+
+    /// <summary>Unregister agent's camp.</summary>
+    public void UnregisterAgentCamp(IGoapAgent agent) {
+      var data = GetAgentCampData(agent);
+      data?.ClearCamp();
+    }
+
+    /// <summary>Remove agent from tracking entirely.</summary>
+    public void RemoveAgent(IGoapAgent agent) {
+      _agentCampData.Remove(agent);
+    }
 
     /// <summary>Instantiates random CampSetup at given location.</summary>
     public CampSetup InstantiateRandomSetup(CampLocation location) {
@@ -51,6 +85,7 @@ namespace Content.Scripts.AI.Camp {
 
     void IDisposable.Dispose() {
       _setupPrefabs.Clear();
+      _agentCampData.Clear();
     }
   }
 }

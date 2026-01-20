@@ -134,6 +134,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
         return;
       }
 
+      _campModule.RegisterAgentCamp(_agent, _targetLocation);
       // Store in memory
       _agent.memory.persistentMemory.Remember(CampKeys.PERSONAL_CAMP, _targetLocation);
       Debug.Log($"[ClaimCamp] Claimed camp at {_targetLocation.name}");
