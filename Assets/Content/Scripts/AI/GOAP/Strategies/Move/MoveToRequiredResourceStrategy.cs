@@ -4,6 +4,7 @@ using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Game.Craft;
 using UnityEngine;
 
@@ -19,11 +20,24 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     protected override MemorySnapshot GetTargetMemory() {
       var camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       var unfinished = UnfinishedQuery.GetNeedingResources(camp);
-      if (unfinished == null) return targetFromMemory.GetNearest(_agent, s => s.HasTag(Tag.RESOURCE));
+      
+      if (unfinished == null) {
+        return targetFromMemory.GetNearest(_agent, s => s.HasTag(Tag.RESOURCE));
+      }
 
-      var inMemory = unfinished.GetRemainingResources().Select(n => n.tag)
-        .SelectMany(tag => _agent.memory.GetWithAnyTags(new[] { tag })).ToArray();
-      return inMemory.FirstOrDefault();
+      // Get all required resource tags
+      var requiredTags = unfinished.GetRemainingResources().Select(n => n.tag).ToArray();
+      
+      // Collect all matching memories
+      var candidates = requiredTags
+        .SelectMany(tag => _agent.memory.GetWithAnyTags(new[] { tag }))
+        .Distinct()
+        .ToArray();
+
+      if (candidates.Length == 0) return null;
+
+      // Find nearest reachable
+      return PathCostEvaluator.GetNearestReachable(_agent.navMeshAgent, candidates);
     }
 
     public override IActionStrategy Create(IGoapAgent agent) {

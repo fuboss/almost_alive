@@ -73,7 +73,8 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-
+*.md
+*.md.meta
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
@@ -96,22 +97,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 **/[Aa]ssets/[Ss]treamingAssets/aa.meta
 **/[Aa]ssets/[Ss]treamingAssets/aa/*
-
-**/[Aa]ssets/[Ss]cripts/**/Generated/**/*.meta
-**/[Aa]ssets/[Ll]ib/**/Generated/**/*.meta
 .idea
 .DS_Store
 PWBData*
-**/Assets/Plugins/Easy Save 3/Resources/ES3/ES3Defaults.*
-**/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.*
-**/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset.meta
-**/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset
-headless_builder_backup/
-**/Assets/Animation/Tests/
-**/Assets/Animation/Tests.meta
-**/Assets/Samples
-**/Assets/Samples.meta
-
 # Personal settings for QuickNav Plugin
 **/sand_WwiseProject
 **/Assets/StreamingAssets/Audio
@@ -127,24 +115,14 @@ headless_builder_backup/
 **/GameBuildInfo.asset.meta
 **/BUILD_OUTPUT/
 
-#Sand server assets that are imported from client
-**/[Aa]ssets/ImportedAssetsFromClient
-**/[Aa]ssets/ImportedAssetsFromClient/*
-**/[Aa]ssets/ImportedAssetsFromClient.meta
-
-#Ignore addressables for server because they are improted from client before the build
-**/sand_server/[Aa]ssets/AddressableAssetsData/AssetGroups/*
-**/sand_server/[Aa]ssets/AddressableAssetsData/AddressableAssetSettings.asset
-**/sand_server/[Aa]ssets/AddressableAssetsData/AddressableAssetSettings.asset.meta
-
-#Server performance log files
-**/sand-server-performance_*.csv
-
-#Exported EPB json's
-**/[Aa]ssets/Editor/ExportedEPBJsons
-**/[Aa]ssets/Editor/ExportedEPBJsons.meta
-
-#Obfuscator plugin
-!**/[Aa]ssets/OPS/**
 Assets/Content/Scripts/AI_NOTES.md
 Assets/Content/Scripts/AI_NOTES.md.meta
+Assets/Content/Scripts/Docs/INDEX.md.meta
+Assets/Content/Scripts/Docs/ARCHITECTURE.md.meta
+Assets/Content/Scripts/Docs/WORLD_GENERATION.md.meta
+Assets/Content/Scripts/Docs/NAVIGATION.md.meta
+Assets/Content/Scripts/Docs/INVENTORY_CRAFT.md.meta
+Assets/Content/Scripts/Docs/GOAP.md.meta
+Assets/Content/Scripts/Docs/CAMP.md.meta
+Assets/Content/Scripts/Docs/REFACTORING_IDEAS.md.meta
+Assets/Content/Scripts/Docs.meta

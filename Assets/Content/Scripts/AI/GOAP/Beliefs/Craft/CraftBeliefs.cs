@@ -300,13 +300,15 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
         var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var target = UnfinishedQuery.GetNeedingResources(camp);
-        if (target == null) return false;
+        var targetUnfinished = UnfinishedQuery.GetNeedingResources(camp);
+        if (targetUnfinished == null) return false;
 
-        var inMemory = target.GetRemainingResources().Select(n => n.tag)
+        var inMemory = targetUnfinished.GetRemainingResources().Select(n => n.tag)
           .SelectMany(tag => agent.memory.GetWithAnyTags(new[] { tag })).ToArray();
         var check = inMemory.Any();
-        return inverse ? !check : check;
+        var result = inverse ? !check : check;
+
+        return result;
       };
     }
 

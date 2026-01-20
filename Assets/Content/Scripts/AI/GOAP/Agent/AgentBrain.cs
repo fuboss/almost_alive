@@ -7,6 +7,7 @@ using Content.Scripts.AI.GOAP.Agent.Sensors;
 using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.AI.GOAP.Goals;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -31,6 +32,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [VerticalGroup("Sensors")] [SerializeField]
     private VisionSensor _visionSensor;
+
+    [Header("Navigation")]
+    [SerializeField] private AgentStuckDetector _stuckDetector = new();
 
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentAction> actions;
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<GoalTemplate> goalTemplates;
@@ -73,7 +77,16 @@ namespace Content.Scripts.AI.GOAP.Agent {
       SetupStats();
 
       _memory.Initialize(new Bounds(Vector3.zero, Vector3.one * 300));
+      _stuckDetector.Initialize(agent.position);
+      _stuckDetector.OnStuck += HandleStuck;
+      
       _initialized = true;
+    }
+
+    private void OnDestroy() {
+      if (_stuckDetector != null) {
+        _stuckDetector.OnStuck -= HandleStuck;
+      }
     }
 
     private void SetupBeliefs(List<AgentBelief> agentBeliefs) {
@@ -110,9 +123,36 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void Tick(float deltaTime) {
       if (!_initialized) return;
       _currentDeltaTime = deltaTime;
+      
+      ExecuteStuckDetection(deltaTime);
       ExecutePlanning();
       ExecuteMemory(deltaTime);
       ExecuteSensors(deltaTime);
+    }
+
+    private void ExecuteStuckDetection(float deltaTime) {
+      // Only check when we have an active action with movement
+      if (_currentAction == null) return;
+      if (!_agent.navMeshAgent.hasPath) return;
+      
+      _stuckDetector.Update(_agent.navMeshAgent, deltaTime);
+    }
+
+    private void HandleStuck() {
+      Debug.LogWarning($"[Brain] Agent stuck! Clearing plan and replanning. Action: {_currentAction?.name}", this);
+      
+      // Stop current action
+      _currentAction?.OnStop();
+      
+      // Clear everything
+      ClearPlan(rememberGoal: false);
+      
+      // Stop NavMeshAgent
+      _agent.navMeshAgent.ResetPath();
+      _agent.navMeshAgent.isStopped = true;
+      
+      // Start cooldown
+      _stuckDetector.StartCooldown();
     }
 
     private void ExecuteSensors(float deltaTime) {
@@ -174,19 +214,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _currentAction = actionPlan.actions.Pop();
       _currentAction.agent = _agent;
 
-      //actionPlan = CalculatePlan();
       // Verify all precondition effects are true
       var allPreconditionsMet = _currentAction.AreAllPreconditionsMet(_agent);
       if (allPreconditionsMet) {
         _currentAction.OnStart();
+        _stuckDetector.OnNewAction(_agent.position);
       }
       else {
         Debug.Log($"[Brain] {_currentAction.name} Preconditions not met, clearing current action and goal", this);
-        _lastGoal = _currentGoal;
-        _currentAction = null;
-        _currentGoal = null;
-        _actionPlan = null;
-        _agent.transientTarget = null;
+        ClearPlan(rememberGoal: true);
         return false;
       }
 
@@ -222,7 +258,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
         return true;
       }
 
-      // Debug.Log($"{_currentAction.Name} complete", this);
       return true;
     }
 
@@ -235,12 +270,24 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var allActionsComplete = actionPlan.actions.Count == 0;
       if (allActionsComplete) {
         Debug.Log($"[Brain] Plan {actionPlan.agentGoal.Name} complete", this);
-        _lastGoal = _currentGoal;
-        _currentGoal = null;
-        actionPlan = null;
+        ClearPlan(rememberGoal: true);
       }
     }
 
+    /// <summary>
+    /// Clear current plan, action, and goal.
+    /// </summary>
+    /// <param name="rememberGoal">If true, stores current goal as _lastGoal for planner reference</param>
+    private void ClearPlan(bool rememberGoal) {
+      if (rememberGoal && _currentGoal != null) {
+        _lastGoal = _currentGoal;
+      }
+      
+      _currentAction = null;
+      _currentGoal = null;
+      _actionPlan = null;
+      _agent.transientTarget = null;
+    }
 
     private void SetupGoals(List<GoalTemplate> array) {
       goalTemplates = new HashSet<GoalTemplate>(array);
@@ -251,12 +298,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       Debug.Log($"[Brain] Action created: {actions.Count}", this);
     }
 
-
     private void HandleInteractionSensor(ActorDescription actorDescription) {
       //Debug.Log($"[Brain] Interaction sensor triggered by {actorDescription.name}", actorDescription);
-      // // Force the planner to re-evaluate the plan
-      // _currentAction = null;
-      // _currentGoal = null;
     }
   }
 }

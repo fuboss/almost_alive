@@ -2,6 +2,7 @@ using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Animation;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
@@ -88,12 +89,13 @@ namespace Content.Scripts.AI.GOAP.Strategies {
         return;
       }
 
-      // Find nearest collectible item in memory
+      // Find nearest reachable collectible item in memory
       var tags = itemTags.Length > 0 ? itemTags : new[] { Tag.ITEM };
-      _currentTarget = _agent.memory.GetNearest(
-        _agent.position,
-        searchRadius,
-        tags,
+      var candidates = _agent.memory.GetInRadius(_agent.position, searchRadius, tags);
+      
+      _currentTarget = PathCostEvaluator.GetNearestReachable(
+        _agent.navMeshAgent,
+        candidates,
         IsValidTarget
       );
 
