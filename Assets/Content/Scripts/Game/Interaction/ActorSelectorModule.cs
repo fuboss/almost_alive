@@ -10,10 +10,11 @@ using VContainer.Unity;
 namespace Content.Scripts.Game.Interaction {
   public class ActorSelectionModule : IAgentSelectionModule, ITickable {
     [Inject] private AgentContainerModule _agentContainerModule;
-    private IGoapAgent _selectedAgent;
+    private IGoapAgent _prevSelectedAgent;
     private RaycastHit[] _raycastResult = new RaycastHit[32];
 
     public event Action<IGoapAgent, IGoapAgent> OnSelectionChanged;
+    public event Action OnSelectionCleared;
 
     public IGoapAgent GetSelectedAgent() {
       if (_agentContainerModule == null) {
@@ -57,6 +58,7 @@ namespace Content.Scripts.Game.Interaction {
         if (agent.Value is not ISelectableActor selectableActor) continue;
         selectableActor.isSelected = false;
       }
+      OnSelectionCleared?.Invoke();
     }
 
     public void Tick() {
@@ -66,11 +68,11 @@ namespace Content.Scripts.Game.Interaction {
 
 
       var selectedAgent = GetSelectedAgent();
-      if (selectedAgent != _selectedAgent) {
-        OnSelectionChanged?.Invoke(selectedAgent, _selectedAgent);
-        _selectedAgent = selectedAgent;
+      if (selectedAgent != _prevSelectedAgent) {
+        OnSelectionChanged?.Invoke(selectedAgent, _prevSelectedAgent);
+        _prevSelectedAgent = selectedAgent;
         Debug.Log(
-          $"[ActorSelectionModule]Selection changed to {(_selectedAgent != null ? _selectedAgent.gameObject.name : "null")}");
+          $"[ActorSelectionModule]Selection changed to {(_prevSelectedAgent != null ? _prevSelectedAgent.gameObject.name : "null")}");
       }
     }
 

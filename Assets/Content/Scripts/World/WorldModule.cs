@@ -9,11 +9,11 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
-using Random = UnityEngine.Random;
 
 namespace Content.Scripts.World {
   /// <summary>
   /// Runtime world generation with full biome pipeline.
+  /// Two-phase generation for determinism: positions first, then transforms.
   /// </summary>
   public class WorldModule : IInitializable, IDisposable {
     private const int SPAWN_MAX_PER_FRAME = 10;
@@ -31,6 +31,9 @@ namespace Content.Scripts.World {
     private TerrainFeatureMap _featureMap;
     private readonly List<ActorDescription> _spawnedActors = new();
     private CancellationTokenSource _generationCts;
+    
+    private WorldRandom _positionRandom;
+    private WorldRandom _transformRandom;
 
     public IReadOnlyList<ActorDescription> spawnedActors => _spawnedActors;
     public BiomeMap biomeMap => _biomeMap;
@@ -41,6 +44,14 @@ namespace Content.Scripts.World {
 
     public event Action<float> OnGenerationProgress;
     public event Action OnGenerationComplete;
+
+    // Pre-generated spawn data
+    private struct SpawnData {
+      public string actorKey;
+      public Vector3 position;
+      public float rotation;
+      public float scale;
+    }
 
     void IInitializable.Initialize() {
       _config = Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
@@ -84,7 +95,12 @@ namespace Content.Scripts.World {
       generationProgress = 0f;
 
       var seed = _config.seed != 0 ? _config.seed : Environment.TickCount;
-      Random.InitState(seed);
+      _positionRandom = new WorldRandom(seed);
+      _transformRandom = new WorldRandom(seed + 1000);
+      
+      Debug.Log($"[RUNTIME] ========== GENERATION START ==========");
+      Debug.Log($"[RUNTIME] Seed: {seed}");
+      
       if (_config.logGeneration) Debug.Log($"[WorldModule] Generating with seed {seed}");
 
       var bounds = GetTerrainBounds();
@@ -123,19 +139,10 @@ namespace Content.Scripts.World {
       _featureMap = TerrainFeatureMap.Generate(_terrain);
       _config.cachedFeatureMap = _featureMap;
 
-      // Phase 4: Spawn Scatters
+      // Phase 4: Generate ALL positions first (positionRandom only)
       UpdateProgress(0.30f);
-
-      var totalTarget = 0;
-      foreach (var biome in _config.biomes) {
-        if (biome?.scatterConfigs == null) continue;
-        foreach (var sc in biome.scatterConfigs) {
-          if (sc?.rule != null) totalTarget += CalculateTargetCount(sc.rule, bounds);
-        }
-      }
-
-      var totalPlaced = 0;
-      _spawnedThisFrame = 0;
+      var allPositions = new List<(string actorKey, Vector3 position, ScatterRuleSO rule)>();
+      var spawnedPositions = new List<Vector3>();
 
       foreach (var biome in _config.biomes) {
         if (biome?.scatterConfigs == null) continue;
@@ -147,22 +154,59 @@ namespace Content.Scripts.World {
 
           var rule = sc.rule;
           var targetCount = CalculateTargetCount(rule, bounds);
-          int placed;
-
-          if (rule.useClustering) {
-            placed = await GenerateClusteredAsync(sc, biome.type, bounds, targetCount, ct,
-              p => UpdateProgress(0.3f + 0.7f * (totalPlaced + p) / Mathf.Max(1, totalTarget)));
-          } else {
-            placed = await GenerateUniformAsync(sc, biome.type, bounds, targetCount, ct,
-              p => UpdateProgress(0.3f + 0.7f * (totalPlaced + p) / Mathf.Max(1, totalTarget)));
-          }
-
-          totalPlaced += placed;
 
           if (_config.logGeneration) {
-            Debug.Log($"[WorldModule] {biome.type}/{rule.actorName} ({sc.placement}): {placed}/{targetCount}");
+            Debug.Log($"[RUNTIME] Processing: {rule.actorName}, useClustering={rule.useClustering}, clusterSize={rule.clusterSize}");
+          }
+
+          if (rule.useClustering) {
+            GenerateClusteredPositions(sc, biome.type, bounds, targetCount, allPositions, spawnedPositions);
+          } else {
+            GenerateUniformPositions(sc, biome.type, bounds, targetCount, allPositions, spawnedPositions);
+          }
+
+          if (_config.logGeneration) {
+            Debug.Log($"[WorldModule] Positions: {biome.type}/{rule.actorName}");
           }
         }
+      }
+
+      Debug.Log($"[RUNTIME] ========== POSITIONS COMPLETE ==========");
+      Debug.Log($"[RUNTIME] Total positions generated: {allPositions.Count}");
+
+      // Phase 5: Generate transforms for all positions (transformRandom only)
+      UpdateProgress(0.50f);
+      var allSpawnData = new List<SpawnData>(allPositions.Count);
+      
+      foreach (var (actorKey, position, rule) in allPositions) {
+        var rotation = rule.randomRotation ? _transformRandom.Range(0f, 360f) : 0f;
+        var scale = _transformRandom.Range(rule.scaleRange.x, rule.scaleRange.y);
+        
+        allSpawnData.Add(new SpawnData {
+          actorKey = actorKey,
+          position = position,
+          rotation = rotation,
+          scale = scale
+        });
+      }
+
+      // Phase 6: Spawn all actors
+      UpdateProgress(0.60f);
+      _spawnedThisFrame = 0;
+      
+      for (var i = 0; i < allSpawnData.Count; i++) {
+        if (ct.IsCancellationRequested) break;
+        
+        var data = allSpawnData[i];
+        if (_actorCreation.TrySpawnActor(data.actorKey, data.position, out var actor)) {
+          actor.transform.SetParent(GetOrCreateContainer(), true);
+          actor.transform.rotation = Quaternion.Euler(0, data.rotation, 0);
+          actor.transform.localScale = Vector3.one * data.scale;
+          _spawnedActors.Add(actor);
+        }
+
+        UpdateProgress(0.60f + 0.40f * i / Mathf.Max(1, allSpawnData.Count));
+        await YieldIfNeeded(ct);
       }
 
       // Done
@@ -181,6 +225,150 @@ namespace Content.Scripts.World {
       _generationCts?.Dispose();
       _generationCts = null;
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // POSITION GENERATION (positionRandom only)
+    // ═══════════════════════════════════════════════════════════════
+
+    private void GenerateUniformPositions(BiomeScatterConfig sc, BiomeType biomeType, Bounds bounds,
+      int targetCount, List<(string, Vector3, ScatterRuleSO)> output, List<Vector3> spawnedPositions) {
+      var rule = sc.rule;
+      var placed = 0;
+      var attempts = 0;
+      var maxAttempts = targetCount * rule.maxAttempts;
+
+      Debug.Log($"[RUNTIME] GenerateUniformPositions: {rule.actorName}, target={targetCount}");
+
+      while (placed < targetCount && attempts < maxAttempts) {
+        attempts++;
+
+        var pos = _positionRandom.RandomPointInBounds(bounds);
+        if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
+        if (!ValidatePlacement(sc, pos, spawnedPositions)) continue;
+
+        output.Add((rule.actorKey, pos, rule));
+        spawnedPositions.Add(pos);
+        placed++;
+
+        // Log first 3 positions for comparison
+        if (placed <= 3) {
+          Debug.Log($"[RUNTIME] Uniform pos #{placed}: {pos:F2}");
+        }
+
+        if (rule.hasChildren) {
+          GenerateChildPositions(rule, pos, output, spawnedPositions);
+        }
+      }
+    }
+
+    private void GenerateClusteredPositions(BiomeScatterConfig sc, BiomeType biomeType, Bounds bounds,
+      int targetCount, List<(string, Vector3, ScatterRuleSO)> output, List<Vector3> spawnedPositions) {
+      var rule = sc.rule;
+      var remaining = targetCount;
+      var clusterAttempts = 0;
+      var maxClusterAttempts = targetCount * 10;
+      var totalPlaced = 0;
+
+      Debug.Log($"[RUNTIME] GenerateClusteredPositions: {rule.actorName}, target={targetCount}, clusterSize={rule.clusterSize}, spread={rule.clusterSpread}");
+
+      while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
+        clusterAttempts++;
+
+        var clusterCenter = _positionRandom.RandomPointInBounds(bounds);
+        if (_biomeMap.GetBiomeAt(clusterCenter) != biomeType) continue;
+        if (!ValidateTerrainAt(sc, clusterCenter)) continue;
+
+        var clusterCount = Mathf.Min(
+          _positionRandom.Range(rule.clusterSize.x, rule.clusterSize.y + 1),
+          remaining
+        );
+
+        // Track positions within THIS cluster only
+        var clusterLocalPositions = new List<Vector3>();
+        var clusterPlaced = 0;
+        var clusterStartIndex = spawnedPositions.Count; // Index before this cluster
+
+        for (var i = 0; i < clusterCount; i++) {
+          var offset = _positionRandom.InsideUnitCircle() * rule.clusterSpread;
+          var pos = clusterCenter + new Vector3(offset.x, 0, offset.y);
+
+          if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
+          if (!ValidateTerrainAt(sc, pos)) continue;
+          
+          // Check spacing only against positions BEFORE this cluster started
+          if (!ValidateSpacingRange(rule.minSpacing, pos, spawnedPositions, 0, clusterStartIndex)) continue;
+          
+          // Inside cluster: use reduced spacing (30% of minSpacing) between cluster members
+          if (!ValidateLocalSpacing(rule.minSpacing * 0.3f, pos, clusterLocalPositions)) continue;
+
+          output.Add((rule.actorKey, pos, rule));
+          spawnedPositions.Add(pos);
+          clusterLocalPositions.Add(pos);
+          remaining--;
+          totalPlaced++;
+          clusterPlaced++;
+
+          if (totalPlaced <= 3) {
+            Debug.Log($"[RUNTIME] Clustered pos #{totalPlaced}: {pos:F2} (cluster center: {clusterCenter:F2})");
+          }
+
+          if (rule.hasChildren) {
+            GenerateChildPositions(rule, pos, output, spawnedPositions);
+          }
+        }
+        
+        if (clusterPlaced > 0) {
+          Debug.Log($"[RUNTIME] Cluster placed {clusterPlaced}/{clusterCount} at center {clusterCenter:F2}");
+        }
+      }
+    }
+
+    private void GenerateChildPositions(ScatterRuleSO parentRule, Vector3 parentPos,
+      List<(string, Vector3, ScatterRuleSO)> output, List<Vector3> spawnedPositions, int depth = 0) {
+      const int MAX_DEPTH = 3;
+      if (depth >= MAX_DEPTH || parentRule.childScatters == null) return;
+
+      foreach (var childConfig in parentRule.childScatters) {
+        if (childConfig?.rule == null) continue;
+
+        var childRule = childConfig.rule;
+        var count = _positionRandom.Range(childConfig.countPerParent.x, childConfig.countPerParent.y + 1);
+        var localSpawned = new List<Vector3>();
+
+        for (var i = 0; i < count; i++) {
+          var attempts = 0;
+          while (attempts < childRule.maxAttempts) {
+            attempts++;
+
+            var angle = _positionRandom.Range(0f, Mathf.PI * 2f);
+            var radius = _positionRandom.Range(childConfig.radiusMin, childConfig.radiusMax);
+            var pos = parentPos + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+
+            if (!ValidateTerrainAtRule(childRule, pos)) continue;
+            if (childConfig.inheritTerrainFilter && !ValidateTerrainAtRule(parentRule, pos)) continue;
+
+            var spacing = childConfig.localSpacingOnly
+              ? ValidateLocalSpacing(childRule.minSpacing, pos, localSpawned)
+              : ValidateSpacingList(childRule.minSpacing, pos, spawnedPositions);
+
+            if (!spacing) continue;
+
+            output.Add((childRule.actorKey, pos, childRule));
+            localSpawned.Add(pos);
+            spawnedPositions.Add(pos);
+
+            if (childRule.hasChildren) {
+              GenerateChildPositions(childRule, pos, output, spawnedPositions, depth + 1);
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════
 
     private void SetTerrainFromConfig() {
       _terrain.terrainData.size = new Vector3(_config.size, 200, _config.size);
@@ -203,6 +391,8 @@ namespace Content.Scripts.World {
 
       _biomeMap = null;
       _featureMap = null;
+      _positionRandom = null;
+      _transformRandom = null;
       isGenerated = false;
       generationProgress = 0f;
     }
@@ -215,134 +405,6 @@ namespace Content.Scripts.World {
       var existing = GameObject.Find(CONTAINER_NAME);
       _container = existing != null ? existing.transform : new GameObject(CONTAINER_NAME).transform;
       return _container;
-    }
-
-    private async UniTask<int> GenerateUniformAsync(BiomeScatterConfig sc, BiomeType biomeType, Bounds bounds,
-      int targetCount, CancellationToken ct, Action<int> onProgress) {
-      var rule = sc.rule;
-      var placed = 0;
-      var attempts = 0;
-      var maxAttempts = targetCount * rule.maxAttempts;
-
-      while (placed < targetCount && attempts < maxAttempts) {
-        if (ct.IsCancellationRequested) break;
-        attempts++;
-
-        var pos = RandomPointInBounds(bounds);
-        if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
-
-        if (TryPlaceActor(sc, pos, out var actor)) {
-          _spawnedActors.Add(actor);
-          placed++;
-          onProgress?.Invoke(placed);
-
-          if (rule.hasChildren) {
-            await SpawnChildrenAroundAsync(rule, actor.transform.position, ct);
-          }
-          await YieldIfNeeded(ct);
-        }
-      }
-      return placed;
-    }
-
-    private async UniTask<int> GenerateClusteredAsync(BiomeScatterConfig sc, BiomeType biomeType, Bounds bounds,
-      int targetCount, CancellationToken ct, Action<int> onProgress) {
-      var rule = sc.rule;
-      var placed = 0;
-      var remaining = targetCount;
-      var clusterAttempts = 0;
-      var maxClusterAttempts = targetCount * 10;
-
-      while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
-        if (ct.IsCancellationRequested) break;
-        clusterAttempts++;
-
-        var clusterCenter = RandomPointInBounds(bounds);
-        if (_biomeMap.GetBiomeAt(clusterCenter) != biomeType) continue;
-        if (!ValidateTerrainAt(sc, clusterCenter)) continue;
-
-        var clusterCount = Mathf.Min(
-          Random.Range(rule.clusterSize.x, rule.clusterSize.y + 1),
-          remaining
-        );
-
-        for (var i = 0; i < clusterCount; i++) {
-          if (ct.IsCancellationRequested) break;
-
-          var offset = Random.insideUnitCircle * rule.clusterSpread;
-          var pos = clusterCenter + new Vector3(offset.x, 0, offset.y);
-
-          if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
-
-          if (TryPlaceActor(sc, pos, out var actor)) {
-            _spawnedActors.Add(actor);
-            placed++;
-            remaining--;
-            onProgress?.Invoke(placed);
-
-            if (rule.hasChildren) {
-              await SpawnChildrenAroundAsync(rule, actor.transform.position, ct);
-            }
-            await YieldIfNeeded(ct);
-          }
-        }
-      }
-      return placed;
-    }
-
-    private async UniTask SpawnChildrenAroundAsync(ScatterRuleSO parentRule, Vector3 parentPos,
-      CancellationToken ct, int depth = 0) {
-      const int MAX_DEPTH = 3;
-      if (depth >= MAX_DEPTH || parentRule.childScatters == null) return;
-
-      foreach (var childConfig in parentRule.childScatters) {
-        if (childConfig?.rule == null) continue;
-        if (ct.IsCancellationRequested) break;
-
-        var childRule = childConfig.rule;
-        var count = Random.Range(childConfig.countPerParent.x, childConfig.countPerParent.y + 1);
-        var localSpawned = new List<Vector3>();
-
-        for (var i = 0; i < count; i++) {
-          if (ct.IsCancellationRequested) break;
-
-          var attempts = 0;
-          while (attempts < childRule.maxAttempts) {
-            attempts++;
-
-            var angle = Random.Range(0f, Mathf.PI * 2f);
-            var radius = Random.Range(childConfig.radiusMin, childConfig.radiusMax);
-            var pos = parentPos + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
-
-            if (!ValidateTerrainAtRule(childRule, pos)) continue;
-            if (childConfig.inheritTerrainFilter && !ValidateTerrainAtRule(parentRule, pos)) continue;
-
-            var spacing = childConfig.localSpacingOnly
-              ? ValidateLocalSpacing(childRule.minSpacing, pos, localSpawned)
-              : ValidateSpacing(childRule, pos);
-
-            if (!spacing) continue;
-            if (!ValidateAvoidance(childRule, pos)) continue;
-
-            if (_actorCreation.TrySpawnActor(childRule.actorKey, pos, out var actor)) {
-              actor.transform.SetParent(GetOrCreateContainer(), true);
-              if (childRule.randomRotation) {
-                actor.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-              }
-              actor.transform.localScale = Vector3.one * Random.Range(childRule.scaleRange.x, childRule.scaleRange.y);
-
-              _spawnedActors.Add(actor);
-              localSpawned.Add(pos);
-
-              if (childRule.hasChildren) {
-                await SpawnChildrenAroundAsync(childRule, pos, ct, depth + 1);
-              }
-              await YieldIfNeeded(ct);
-              break;
-            }
-          }
-        }
-      }
     }
 
     private async UniTask YieldIfNeeded(CancellationToken ct) {
@@ -358,27 +420,18 @@ namespace Content.Scripts.World {
       OnGenerationProgress?.Invoke(generationProgress);
     }
 
-    private bool TryPlaceActor(BiomeScatterConfig sc, Vector3 position, out ActorDescription actor) {
-      actor = null;
-      var rule = sc.rule;
+    // ═══════════════════════════════════════════════════════════════
+    // VALIDATION
+    // ═══════════════════════════════════════════════════════════════
 
-      if (!ValidateTerrainAt(sc, position)) return false;
-      if (!ValidateSpacing(rule, position)) return false;
-      if (!ValidateAvoidance(rule, position)) return false;
+    private bool ValidatePlacement(BiomeScatterConfig sc, Vector3 pos, List<Vector3> spawned) {
+      if (!ValidateTerrainAt(sc, pos)) return false;
+      if (!ValidateSpacingList(sc.rule.minSpacing, pos, spawned)) return false;
       
-      // Check feature map for edge-aware placements
       if (sc.requiresFeatureMap && _featureMap != null) {
-        if (!_featureMap.CheckPlacement(position, sc.placement)) return false;
+        if (!_featureMap.CheckPlacement(pos, sc.placement)) return false;
       }
-
-      if (!_actorCreation.TrySpawnActor(rule.actorKey, position, out actor)) return false;
-
-      actor.transform.SetParent(GetOrCreateContainer(), true);
-      if (rule.randomRotation) {
-        actor.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-      }
-      actor.transform.localScale = Vector3.one * Random.Range(rule.scaleRange.x, rule.scaleRange.y);
-
+      
       return true;
     }
 
@@ -447,11 +500,18 @@ namespace Content.Scripts.World {
       return true;
     }
 
-    private bool ValidateSpacing(ScatterRuleSO rule, Vector3 position) {
-      var sqrSpacing = rule.minSpacing * rule.minSpacing;
-      foreach (var actor in _spawnedActors) {
-        if (actor != null && (actor.transform.position - position).sqrMagnitude < sqrSpacing)
-          return false;
+    private bool ValidateSpacingList(float minSpacing, Vector3 position, List<Vector3> spawned) {
+      var sqrSpacing = minSpacing * minSpacing;
+      foreach (var pos in spawned) {
+        if ((pos - position).sqrMagnitude < sqrSpacing) return false;
+      }
+      return true;
+    }
+
+    private bool ValidateSpacingRange(float minSpacing, Vector3 position, List<Vector3> spawned, int startIndex, int endIndex) {
+      var sqrSpacing = minSpacing * minSpacing;
+      for (var i = startIndex; i < endIndex && i < spawned.Count; i++) {
+        if ((spawned[i] - position).sqrMagnitude < sqrSpacing) return false;
       }
       return true;
     }
@@ -464,33 +524,12 @@ namespace Content.Scripts.World {
       return true;
     }
 
-    private bool ValidateAvoidance(ScatterRuleSO rule, Vector3 position) {
-      if (rule.avoidTags == null || rule.avoidTags.Length == 0) return true;
-
-      var sqrRadius = rule.avoidRadius * rule.avoidRadius;
-      foreach (var actor in _spawnedActors) {
-        if (actor == null) continue;
-        if (!actor.HasAnyTags(rule.avoidTags)) continue;
-        if ((actor.transform.position - position).sqrMagnitude < sqrRadius)
-          return false;
-      }
-      return true;
-    }
-
     private Bounds GetTerrainBounds() {
       var pos = _terrain.transform.position;
       var size = _terrain.terrainData.size;
       return new Bounds(
         pos + size * 0.5f,
         new Vector3(size.x - _config.edgeMargin * 2, size.y, size.z - _config.edgeMargin * 2)
-      );
-    }
-
-    private Vector3 RandomPointInBounds(Bounds bounds) {
-      return new Vector3(
-        Random.Range(bounds.min.x, bounds.max.x),
-        0,
-        Random.Range(bounds.min.z, bounds.max.z)
       );
     }
 

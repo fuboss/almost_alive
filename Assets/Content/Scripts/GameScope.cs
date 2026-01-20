@@ -2,6 +2,7 @@ using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.Core.Environment;
 using Content.Scripts.Core.Simulation;
@@ -56,11 +57,12 @@ namespace Content.Scripts {
       builder.Register<RecipeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
+      
       builder.RegisterComponent(agentPrefab).AsSelf();
       builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
-      
+      builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       InitUi(builder);
     }

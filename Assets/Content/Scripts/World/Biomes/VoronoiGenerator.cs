@@ -50,8 +50,8 @@ namespace Content.Scripts.World.Biomes {
       var boundsSize = new Vector2(bounds.size.x, bounds.size.z);
       var boundsMin = new Vector2(bounds.min.x, bounds.min.z);
 
-      // Cell count from parameters
-      var targetCellCount = UnityEngine.Random.Range(minCellCount, maxCellCount + 1);
+      // Cell count from parameters (using isolated rng for determinism)
+      var targetCellCount = rng.Next(minCellCount, maxCellCount + 1);
 
       // Generate seed points with Poisson-like distribution
       var points = GeneratePoissonPoints(rng, boundsMin, boundsSize, targetCellCount);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Content.Scripts.AI.Camp;
+using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.Game;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityUtils;
@@ -11,8 +11,7 @@ using VContainer.Unity;
 namespace Content.Scripts.AI.GOAP.Agent {
   public class AgentContainerModule : ITickable, IStartable {
     [Inject] private IAgentFactory _agentFactory;
-    [Inject] private CinemachineTargetGroup _agentsRoot;
-    [Inject] private CinemachineCamera _camera;
+    [Inject] private CameraModule _cameraModule;
 
     private readonly List<IGoapAgent> _agents = new();
     private readonly Dictionary<IGoapAgent, IActorDescription> _agentDescriptions = new();
@@ -28,6 +27,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _agentDescriptions[instance] = instance.gameObject.GetComponent<IActorDescription>();
       Debug.Log($"[AgentContainerModule] Agent added to container. Total agents: {_agents.Count}",
         instance.gameObject);
+      _cameraModule.AddToCameraGroup(instance);
     }
 
     public void Remove(IGoapAgent instance) {
@@ -59,31 +59,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void SpawnNewAgent(Vector3 position) {
-      if (_agentsRoot == null) return;
       if (!Physics.Raycast(position + Vector3.up * 100, Vector3.down, out RaycastHit hit)) return;
 
       var instance = _agentFactory.Spawn(hit.point);
       Add(instance);
-      AddToCameraGroup(instance);
     }
-
-    private void AddToCameraGroup(GOAPAgent instance) {
-      var camGroup = _agentsRoot.GetComponent<CinemachineTargetGroup>();
-      camGroup.Targets ??= new List<CinemachineTargetGroup.Target>();
-      camGroup.Targets.Add(new CinemachineTargetGroup.Target() {
-        Object = instance.transform,
-        Radius = 5,
-        Weight = 1
-      });
-    }
+  
 
     public void Start() {
-      _camera.Target = new CameraTarget() {
-        CustomLookAtTarget = false,
-        LookAtTarget = _agentsRoot.transform,
-        TrackingTarget = _agentsRoot.transform
-      };
-      _camera.UpdateTargetCache();
+     
     }
   }
 }

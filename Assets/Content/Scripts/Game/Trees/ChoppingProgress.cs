@@ -30,6 +30,7 @@ namespace Content.Scripts.Game.Trees {
 
     private void OnDisable() {
       ActorRegistry<ChoppingProgress>.Unregister(this);
+      if (actor != null) actor.transform.DOKill();
     }
 
     /// <summary>Initialize chopping with required work amount.</summary>

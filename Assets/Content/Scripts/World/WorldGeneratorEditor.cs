@@ -12,6 +12,7 @@ using UnityEngine.AddressableAssets;
 namespace Content.Scripts.Editor.World {
   /// <summary>
   /// Edit-mode world generation with full biome pipeline.
+  /// Two-phase generation for determinism: positions first, then transforms.
   /// </summary>
   public static class WorldGeneratorEditor {
     private const string CONTAINER_NAME = "[EditorWorld_Generated]";
@@ -31,29 +32,23 @@ namespace Content.Scripts.Editor.World {
       public Terrain terrain;
       public BiomeMap biomeMap;
       public TerrainFeatureMap featureMap;
-      public List<Vector3> allSpawned = new();
-      public Queue<SpawnTask> spawnQueue = new();
-      public int totalTarget;
-      public int totalSpawned;
-      public int biomeIndex;
-      public int configIndex;
       public string currentStatus;
+      
+      public WorldRandom positionRandom;
+      public WorldRandom transformRandom;
+      
+      // Two-phase data
+      public List<(string actorKey, Vector3 position, ScatterRuleSO rule)> allPositions = new();
+      public List<Vector3> spawnedPositions = new();
+      public List<SpawnData> spawnQueue = new();
+      public int spawnIndex;
     }
 
-    private struct SpawnTask {
-      public ScatterRuleSO rule;
-      public BiomeScatterConfig config;
-      public GameObject prefab;
+    private struct SpawnData {
+      public string actorKey;
       public Vector3 position;
-      public BiomeType biome;
-      public List<ChildSpawnTask> children;
-    }
-
-    private struct ChildSpawnTask {
-      public ScatterRuleSO rule;
-      public GameObject prefab;
-      public Vector3 position;
-      public int depth;
+      public float rotation;
+      public float scale;
     }
 
     [MenuItem("World/Generate (Edit Mode)")]
@@ -110,9 +105,12 @@ namespace Content.Scripts.Editor.World {
       Undo.RegisterCreatedObjectUndo(_container.gameObject, "Generate World");
 
       var seed = config.seed != 0 ? config.seed : Environment.TickCount;
-      UnityEngine.Random.InitState(seed);
+      var positionRandom = new WorldRandom(seed);
+      var transformRandom = new WorldRandom(seed + 1000);
 
-      // Phase 1: Generate Biomes
+      Debug.Log($"[EDITOR] ========== GENERATION START ==========");
+      Debug.Log($"[EDITOR] Seed: {seed}");
+
       EditorUtility.DisplayProgressBar("Generating World", "Creating biome map...", 0.05f);
 
       var bounds = config.GetTerrainBounds(terrain);
@@ -129,52 +127,272 @@ namespace Content.Scripts.Editor.World {
 
       config.cachedBiomeMap = biomeMap;
 
-      // Phase 2: Sculpt Terrain
       if (config.sculptTerrain) {
         EditorUtility.DisplayProgressBar("Generating World", "Sculpting terrain...", 0.15f);
         Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Sculpt Terrain");
         TerrainSculptor.Sculpt(terrain, biomeMap, seed);
       }
 
-      // Phase 3: Paint Splatmap
       if (config.paintSplatmap) {
         EditorUtility.DisplayProgressBar("Generating World", "Painting terrain...", 0.25f);
         Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Paint Splatmap");
         SplatmapPainter.Paint(terrain, biomeMap, seed);
       }
 
-      // Phase 3.5: Generate Feature Map
       EditorUtility.DisplayProgressBar("Generating World", "Analyzing terrain features...", 0.28f);
       var featureMap = TerrainFeatureMap.Generate(terrain);
       config.cachedFeatureMap = featureMap;
-
-      // Phase 4: Spawn Scatters
-      var totalTarget = 0;
-      if (config.createScattersInEditor) {
-        foreach (var biome in config.biomes) {
-          if (biome?.scatterConfigs == null) continue;
-          foreach (var sc in biome.scatterConfigs) {
-            if (sc?.rule == null) continue;
-            totalTarget += CalculateTargetCount(sc.rule, bounds);
-          }
-        }
-      }
 
       _state = new GenerationState {
         config = config,
         terrain = terrain,
         biomeMap = biomeMap,
         featureMap = featureMap,
-        totalTarget = totalTarget,
-        biomeIndex = 0,
-        configIndex = 0,
-        currentStatus = "Spawning..."
+        currentStatus = "Generating positions...",
+        positionRandom = positionRandom,
+        transformRandom = transformRandom
       };
 
+      // Phase 1: Generate ALL positions (positionRandom only)
+      EditorUtility.DisplayProgressBar("Generating World", "Generating positions...", 0.30f);
+      
+      if (config.createScattersInEditor) {
+        foreach (var biome in config.biomes) {
+          if (biome?.scatterConfigs == null) continue;
+
+          foreach (var sc in biome.scatterConfigs) {
+            if (sc?.rule == null) continue;
+
+            var rule = sc.rule;
+            var targetCount = CalculateTargetCount(rule, bounds);
+
+            if (config.logGeneration) {
+              Debug.Log($"[EDITOR] Processing: {rule.actorName}, useClustering={rule.useClustering}, clusterSize={rule.clusterSize}");
+            }
+
+            if (rule.useClustering) {
+              GenerateClusteredPositions(sc, biome.type, bounds, targetCount);
+            } else {
+              GenerateUniformPositions(sc, biome.type, bounds, targetCount);
+            }
+          }
+        }
+      }
+
+      Debug.Log($"[EDITOR] ========== POSITIONS COMPLETE ==========");
+      Debug.Log($"[EDITOR] Total positions generated: {_state.allPositions.Count}");
+
+      // Phase 2: Generate transforms for all positions (transformRandom only)
+      EditorUtility.DisplayProgressBar("Generating World", "Generating transforms...", 0.50f);
+      
+      foreach (var (actorKey, position, rule) in _state.allPositions) {
+        var rotation = rule.randomRotation ? _state.transformRandom.Range(0f, 360f) : 0f;
+        var scale = _state.transformRandom.Range(rule.scaleRange.x, rule.scaleRange.y);
+        
+        _state.spawnQueue.Add(new SpawnData {
+          actorKey = actorKey,
+          position = position,
+          rotation = rotation,
+          scale = scale
+        });
+      }
+
+      _state.currentStatus = "Spawning...";
       _isGenerating = true;
       EditorApplication.update += OnEditorUpdate;
 
-      Debug.Log($"[WorldGenEditor] Started (seed: {seed}, biomes: {biomeMap.cells.Count}, target: {totalTarget})");
+      Debug.Log($"[WorldGenEditor] Started (seed: {seed}, biomes: {biomeMap.cells.Count}, positions: {_state.allPositions.Count})");
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // POSITION GENERATION (positionRandom only)
+    // ═══════════════════════════════════════════════════════════════
+
+    private static void GenerateUniformPositions(BiomeScatterConfig sc, BiomeType biomeType,
+      Bounds bounds, int targetCount) {
+      var rule = sc.rule;
+      var placed = 0;
+      var attempts = 0;
+      var maxAttempts = targetCount * rule.maxAttempts;
+
+      Debug.Log($"[EDITOR] GenerateUniformPositions: {rule.actorName}, target={targetCount}");
+
+      while (placed < targetCount && attempts < maxAttempts) {
+        attempts++;
+
+        var pos = _state.positionRandom.RandomPointInBounds(bounds);
+        if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
+        if (!ValidatePlacement(sc, pos)) continue;
+
+        _state.allPositions.Add((rule.actorKey, pos, rule));
+        _state.spawnedPositions.Add(pos);
+        placed++;
+
+        // Log first 3 positions for comparison
+        if (placed <= 3) {
+          Debug.Log($"[EDITOR] Uniform pos #{placed}: {pos:F2}");
+        }
+
+        if (rule.hasChildren) {
+          GenerateChildPositions(rule, pos);
+        }
+      }
+    }
+
+    private static void GenerateClusteredPositions(BiomeScatterConfig sc, BiomeType biomeType,
+      Bounds bounds, int targetCount) {
+      var rule = sc.rule;
+      var remaining = targetCount;
+      var clusterAttempts = 0;
+      var maxClusterAttempts = targetCount * 10;
+      var totalPlaced = 0;
+
+      Debug.Log($"[EDITOR] GenerateClusteredPositions: {rule.actorName}, target={targetCount}, clusterSize={rule.clusterSize}, spread={rule.clusterSpread}");
+
+      while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
+        clusterAttempts++;
+
+        var clusterCenter = _state.positionRandom.RandomPointInBounds(bounds);
+        if (_state.biomeMap.GetBiomeAt(clusterCenter) != biomeType) continue;
+        if (!ValidateTerrainAt(sc, clusterCenter)) continue;
+
+        var clusterCount = Mathf.Min(
+          _state.positionRandom.Range(rule.clusterSize.x, rule.clusterSize.y + 1),
+          remaining
+        );
+
+        // Track positions within THIS cluster only
+        var clusterLocalPositions = new List<Vector3>();
+        var clusterPlaced = 0;
+        var clusterStartIndex = _state.spawnedPositions.Count; // Index before this cluster
+
+        for (var i = 0; i < clusterCount; i++) {
+          var offset = _state.positionRandom.InsideUnitCircle() * rule.clusterSpread;
+          var pos = clusterCenter + new Vector3(offset.x, 0, offset.y);
+
+          if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
+          if (!ValidateTerrainAt(sc, pos)) continue;
+          
+          // Check spacing only against positions BEFORE this cluster started
+          if (!ValidateSpacingRange(rule.minSpacing, pos, _state.spawnedPositions, 0, clusterStartIndex)) continue;
+          
+          // Inside cluster: use reduced spacing (30% of minSpacing) between cluster members
+          if (!ValidateLocalSpacing(rule.minSpacing * 0.3f, pos, clusterLocalPositions)) continue;
+
+          _state.allPositions.Add((rule.actorKey, pos, rule));
+          _state.spawnedPositions.Add(pos);
+          clusterLocalPositions.Add(pos);
+          remaining--;
+          totalPlaced++;
+          clusterPlaced++;
+
+          if (totalPlaced <= 3) {
+            Debug.Log($"[EDITOR] Clustered pos #{totalPlaced}: {pos:F2} (cluster center: {clusterCenter:F2})");
+          }
+
+          if (rule.hasChildren) {
+            GenerateChildPositions(rule, pos);
+          }
+        }
+        
+        if (clusterPlaced > 0) {
+          Debug.Log($"[EDITOR] Cluster placed {clusterPlaced}/{clusterCount} at center {clusterCenter:F2}");
+        }
+      }
+    }
+
+    private static void GenerateChildPositions(ScatterRuleSO parentRule, Vector3 parentPos, int depth = 0) {
+      const int MAX_DEPTH = 3;
+      if (depth >= MAX_DEPTH || parentRule.childScatters == null) return;
+
+      foreach (var childConfig in parentRule.childScatters) {
+        if (childConfig?.rule == null) continue;
+
+        var childRule = childConfig.rule;
+        var count = _state.positionRandom.Range(childConfig.countPerParent.x, childConfig.countPerParent.y + 1);
+        var localSpawned = new List<Vector3>();
+
+        for (var i = 0; i < count; i++) {
+          var attempts = 0;
+          while (attempts < childRule.maxAttempts) {
+            attempts++;
+
+            var angle = _state.positionRandom.Range(0f, Mathf.PI * 2f);
+            var radius = _state.positionRandom.Range(childConfig.radiusMin, childConfig.radiusMax);
+            var pos = parentPos + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+
+            if (!ValidateTerrainAtRule(childRule, pos)) continue;
+            if (childConfig.inheritTerrainFilter && !ValidateTerrainAtRule(parentRule, pos)) continue;
+
+            var spacing = childConfig.localSpacingOnly
+              ? ValidateLocalSpacing(childRule.minSpacing, pos, localSpawned)
+              : ValidateSpacing(childRule.minSpacing, pos, _state.spawnedPositions);
+
+            if (!spacing) continue;
+
+            _state.allPositions.Add((childRule.actorKey, pos, childRule));
+            localSpawned.Add(pos);
+            _state.spawnedPositions.Add(pos);
+
+            if (childRule.hasChildren) {
+              GenerateChildPositions(childRule, pos, depth + 1);
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SPAWNING
+    // ═══════════════════════════════════════════════════════════════
+
+    private static void OnEditorUpdate() {
+      if (!_isGenerating || _state == null) {
+        EditorApplication.update -= OnEditorUpdate;
+        EditorUtility.ClearProgressBar();
+        return;
+      }
+
+      var spawnsThisFrame = 0;
+      while (_state.spawnIndex < _state.spawnQueue.Count && spawnsThisFrame < SPAWNS_PER_FRAME) {
+        var data = _state.spawnQueue[_state.spawnIndex];
+        SpawnActor(data);
+        _state.spawnIndex++;
+        spawnsThisFrame++;
+      }
+
+      var progress = _state.spawnQueue.Count > 0 
+        ? (float)_state.spawnIndex / _state.spawnQueue.Count 
+        : 1f;
+        
+      if (EditorUtility.DisplayCancelableProgressBar("Generating World",
+            $"{_state.currentStatus}: {_state.spawnIndex}/{_state.spawnQueue.Count}",
+            0.6f + progress * 0.4f)) {
+        CancelGeneration();
+        return;
+      }
+
+      if (_state.spawnIndex >= _state.spawnQueue.Count) {
+        FinishGeneration();
+      }
+    }
+
+    private static void SpawnActor(SpawnData data) {
+      if (_container == null) return;
+
+      var prefab = LoadPrefabByKey(data.actorKey);
+      if (prefab == null) return;
+
+      var groundedPos = CalculateGroundedPosition(data.position);
+      var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, _container);
+      if (instance == null) return;
+
+      instance.transform.position = groundedPos;
+      instance.transform.rotation = Quaternion.Euler(0, data.rotation, 0);
+      instance.transform.localScale = Vector3.one * data.scale;
+
+      Undo.RegisterCreatedObjectUndo(instance, "Spawn Actor");
     }
 
     private static void InitTerrain(WorldGeneratorConfigSO config, Terrain terrain) {
@@ -194,270 +412,11 @@ namespace Content.Scripts.Editor.World {
       _container = null;
     }
 
-    private static void OnEditorUpdate() {
-      if (!_isGenerating || _state == null) {
-        EditorApplication.update -= OnEditorUpdate;
-        EditorUtility.ClearProgressBar();
-        return;
-      }
-
-      var spawnsThisFrame = 0;
-      while (_state.spawnQueue.Count > 0 && spawnsThisFrame < SPAWNS_PER_FRAME) {
-        var task = _state.spawnQueue.Dequeue();
-        if (SpawnActor(task.prefab, task.rule, task.position)) {
-          _state.allSpawned.Add(task.position);
-          _state.totalSpawned++;
-          if (task.children != null) {
-            foreach (var child in task.children) EnqueueChildTask(child);
-          }
-        }
-        spawnsThisFrame++;
-      }
-
-      if (_state.spawnQueue.Count == 0) LoadNextScatterConfig();
-
-      var progress = _state.totalTarget > 0 ? (float)_state.totalSpawned / _state.totalTarget : 1f;
-      if (EditorUtility.DisplayCancelableProgressBar("Generating World",
-            $"{_state.currentStatus}: {_state.totalSpawned}/{_state.totalTarget}",
-            0.3f + progress * 0.7f)) {
-        CancelGeneration();
-        return;
-      }
-
-      if (_state.spawnQueue.Count == 0 && _state.biomeIndex >= _state.config.biomes.Count) {
-        FinishGeneration();
-      }
-    }
-
-    private static void LoadNextScatterConfig() {
-      var config = _state.config;
-
-      while (_state.biomeIndex < config.biomes.Count) {
-        var biome = config.biomes[_state.biomeIndex];
-
-        if (biome?.scatterConfigs != null && config.createScattersInEditor) {
-          while (_state.configIndex < biome.scatterConfigs.Count) {
-            var sc = biome.scatterConfigs[_state.configIndex];
-            _state.configIndex++;
-
-            if (sc?.rule == null) continue;
-
-            _state.currentStatus = $"{biome.type}/{sc.rule.actorName}";
-            EnqueueScatterTasks(sc, biome.type);
-
-            if (config.logGeneration) {
-              Debug.Log($"[WorldGenEditor] Processing: {biome.type} → {sc.rule.actorName} ({sc.placement})");
-            }
-            return;
-          }
-        }
-
-        _state.biomeIndex++;
-        _state.configIndex = 0;
-      }
-    }
-
-    private static void EnqueueScatterTasks(BiomeScatterConfig sc, BiomeType biomeType) {
-      var rule = sc.rule;
-      var prefab = LoadPrefab(rule);
-      if (prefab == null) {
-        Debug.LogWarning($"[WorldGenEditor] Prefab for '{rule.name}' not found");
-        return;
-      }
-
-      var bounds = _state.config.GetTerrainBounds(_state.terrain);
-      var targetCount = CalculateTargetCount(rule, bounds);
-
-      // Use targeted placement for feature-based scatters
-      if (sc.requiresFeatureMap && _state.featureMap != null) {
-        var validPositions = _state.featureMap.GetValidPositions(sc.placement);
-        Debug.Log($"[WorldGenEditor] {sc.placement}: {validPositions.Count} valid positions found");
-        EnqueueTargetedTasks(sc, prefab, biomeType, validPositions, targetCount);
-        return;
-      }
-
-      if (rule.useClustering) {
-        EnqueueClusteredTasks(sc, prefab, biomeType, bounds, targetCount);
-      } else {
-        EnqueueUniformTasks(sc, prefab, biomeType, bounds, targetCount);
-      }
-    }
-
-    private static void EnqueueTargetedTasks(BiomeScatterConfig sc, GameObject prefab, BiomeType biomeType,
-      List<Vector3> validPositions, int targetCount) {
-      if (validPositions.Count == 0) return;
-      
-      var rule = sc.rule;
-      var placed = 0;
-      
-      // Shuffle positions for randomness
-      for (var i = validPositions.Count - 1; i > 0; i--) {
-        var j = UnityEngine.Random.Range(0, i + 1);
-        (validPositions[i], validPositions[j]) = (validPositions[j], validPositions[i]);
-      }
-      
-      foreach (var pos in validPositions) {
-        if (placed >= targetCount) break;
-        
-        // Check biome
-        if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
-        
-        // Skip slope/height validation - feature map already validated position
-        // Only check spacing
-        if (!ValidateSpacing(rule.minSpacing, pos, _state.allSpawned)) continue;
-        
-        _state.spawnQueue.Enqueue(new SpawnTask {
-          rule = rule,
-          config = sc,
-          prefab = prefab,
-          position = pos,
-          biome = biomeType,
-          children = rule.hasChildren ? PrepareChildTasks(rule, pos) : null
-        });
-        
-        _state.allSpawned.Add(pos);
-        placed++;
-      }
-      
-      if (_state.config.logGeneration) {
-        Debug.Log($"[WorldGenEditor] Targeted placement: {placed}/{targetCount} for {sc.placement}");
-      }
-    }
-
-    private static void EnqueueUniformTasks(BiomeScatterConfig sc, GameObject prefab, BiomeType biomeType,
-      Bounds bounds, int targetCount) {
-      var rule = sc.rule;
-      var placed = 0;
-      var attempts = 0;
-      var maxAttempts = targetCount * rule.maxAttempts;
-
-      while (placed < targetCount && attempts < maxAttempts) {
-        attempts++;
-        var pos = RandomPointInBounds(bounds);
-
-        if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
-        if (!ValidatePlacement(sc, pos, _state.allSpawned)) continue;
-
-        _state.spawnQueue.Enqueue(new SpawnTask {
-          rule = rule,
-          config = sc,
-          prefab = prefab,
-          position = pos,
-          biome = biomeType,
-          children = rule.hasChildren ? PrepareChildTasks(rule, pos) : null
-        });
-
-        _state.allSpawned.Add(pos);
-        placed++;
-      }
-    }
-
-    private static void EnqueueClusteredTasks(BiomeScatterConfig sc, GameObject prefab, BiomeType biomeType,
-      Bounds bounds, int targetCount) {
-      var rule = sc.rule;
-      var remaining = targetCount;
-      var clusterAttempts = 0;
-      var maxClusterAttempts = targetCount * 10;
-
-      while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
-        clusterAttempts++;
-        var clusterCenter = RandomPointInBounds(bounds);
-
-        if (_state.biomeMap.GetBiomeAt(clusterCenter) != biomeType) continue;
-        if (!ValidateTerrainAt(sc, clusterCenter)) continue;
-
-        var clusterCount = Mathf.Min(
-          UnityEngine.Random.Range(rule.clusterSize.x, rule.clusterSize.y + 1),
-          remaining
-        );
-
-        for (var i = 0; i < clusterCount; i++) {
-          var offset = UnityEngine.Random.insideUnitCircle * rule.clusterSpread;
-          var pos = clusterCenter + new Vector3(offset.x, 0, offset.y);
-
-          if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
-          if (!ValidatePlacement(sc, pos, _state.allSpawned)) continue;
-
-          _state.spawnQueue.Enqueue(new SpawnTask {
-            rule = rule,
-            config = sc,
-            prefab = prefab,
-            position = pos,
-            biome = biomeType,
-            children = rule.hasChildren ? PrepareChildTasks(rule, pos) : null
-          });
-
-          _state.allSpawned.Add(pos);
-          remaining--;
-        }
-      }
-    }
-
-    private static List<ChildSpawnTask> PrepareChildTasks(ScatterRuleSO parentRule, Vector3 parentPos, int depth = 0) {
-      const int MAX_DEPTH = 3;
-      if (depth >= MAX_DEPTH || parentRule.childScatters == null) return null;
-
-      var result = new List<ChildSpawnTask>();
-
-      foreach (var childConfig in parentRule.childScatters) {
-        if (childConfig?.rule == null) continue;
-
-        var childRule = childConfig.rule;
-        var childPrefab = LoadPrefab(childRule);
-        if (childPrefab == null) continue;
-
-        var count = UnityEngine.Random.Range(childConfig.countPerParent.x, childConfig.countPerParent.y + 1);
-        var localSpawned = new List<Vector3>();
-
-        for (var i = 0; i < count; i++) {
-          var attempts = 0;
-          while (attempts < childRule.maxAttempts) {
-            attempts++;
-
-            var angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
-            var radius = UnityEngine.Random.Range(childConfig.radiusMin, childConfig.radiusMax);
-            var pos = parentPos + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
-
-            if (!ValidateTerrainAtRule(childRule, pos)) continue;
-            if (childConfig.inheritTerrainFilter && !ValidateTerrainAtRule(parentRule, pos)) continue;
-
-            var spacing = childConfig.localSpacingOnly
-              ? ValidateLocalSpacing(childRule.minSpacing, pos, localSpawned)
-              : ValidateSpacing(childRule.minSpacing, pos, _state.allSpawned);
-
-            if (!spacing) continue;
-
-            result.Add(new ChildSpawnTask {
-              rule = childRule,
-              prefab = childPrefab,
-              position = pos,
-              depth = depth + 1
-            });
-
-            localSpawned.Add(pos);
-            _state.allSpawned.Add(pos);
-            break;
-          }
-        }
-      }
-
-      return result.Count > 0 ? result : null;
-    }
-
-    private static void EnqueueChildTask(ChildSpawnTask child) {
-      _state.spawnQueue.Enqueue(new SpawnTask {
-        rule = child.rule,
-        prefab = child.prefab,
-        position = child.position,
-        children = child.rule.hasChildren ? PrepareChildTasks(child.rule, child.position, child.depth) : null
-      });
-    }
-
     private static void FinishGeneration() {
       EditorApplication.update -= OnEditorUpdate;
       EditorUtility.ClearProgressBar();
 
-      Debug.Log($"[WorldGenEditor] ✓ Generated {_state.totalSpawned} actors");
+      Debug.Log($"[WorldGenEditor] ✓ Generated {_state.spawnIndex} actors");
 
       var terrain = Terrain.activeTerrain;
       if (terrain != null) {
@@ -471,35 +430,14 @@ namespace Content.Scripts.Editor.World {
       SceneView.RepaintAll();
     }
 
-    private static bool SpawnActor(GameObject prefab, ScatterRuleSO rule, Vector3 position) {
-      if (_container == null) return false;
-
-      var groundedPos = CalculateGroundedPosition(position);
-      var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, _container);
-      if (instance == null) return false;
-
-      instance.transform.position = groundedPos;
-
-      if (rule.randomRotation) {
-        instance.transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0f, 360f), 0);
-      }
-
-      var scale = UnityEngine.Random.Range(rule.scaleRange.x, rule.scaleRange.y);
-      instance.transform.localScale = Vector3.one * scale;
-
-      Undo.RegisterCreatedObjectUndo(instance, "Spawn Actor");
-      return true;
-    }
-
     // ═══════════════════════════════════════════════════════════════
     // VALIDATION
     // ═══════════════════════════════════════════════════════════════
 
-    private static bool ValidatePlacement(BiomeScatterConfig sc, Vector3 pos, List<Vector3> spawned) {
+    private static bool ValidatePlacement(BiomeScatterConfig sc, Vector3 pos) {
       if (!ValidateTerrainAt(sc, pos)) return false;
-      if (!ValidateSpacing(sc.rule.minSpacing, pos, spawned)) return false;
+      if (!ValidateSpacing(sc.rule.minSpacing, pos, _state.spawnedPositions)) return false;
       
-      // Check feature map for edge-aware placements
       if (sc.requiresFeatureMap && _state.featureMap != null) {
         if (!_state.featureMap.CheckPlacement(pos, sc.placement)) return false;
       }
@@ -582,6 +520,14 @@ namespace Content.Scripts.Editor.World {
       return true;
     }
 
+    private static bool ValidateSpacingRange(float minSpacing, Vector3 position, List<Vector3> spawned, int startIndex, int endIndex) {
+      var sqrSpacing = minSpacing * minSpacing;
+      for (var i = startIndex; i < endIndex && i < spawned.Count; i++) {
+        if ((spawned[i] - position).sqrMagnitude < sqrSpacing) return false;
+      }
+      return true;
+    }
+
     private static bool ValidateLocalSpacing(float minSpacing, Vector3 position, List<Vector3> siblings) {
       var sqrSpacing = minSpacing * minSpacing;
       foreach (var pos in siblings) {
@@ -602,20 +548,17 @@ namespace Content.Scripts.Editor.World {
       return config;
     }
 
-    private static GameObject LoadPrefab(ScatterRuleSO rule) {
-      if (string.IsNullOrWhiteSpace(rule.actorKey) && rule.prefab != null) {
-        return rule.prefab;
-      }
-
-      if (_prefabCache.TryGetValue(rule.actorKey, out var cached)) return cached;
+    private static GameObject LoadPrefabByKey(string actorKey) {
+      if (string.IsNullOrWhiteSpace(actorKey)) return null;
+      if (_prefabCache.TryGetValue(actorKey, out var cached)) return cached;
 
       var handle = Addressables.LoadAssetsAsync<GameObject>("Actors", null);
       var prefabs = handle.WaitForCompletion();
 
       foreach (var prefab in prefabs) {
         var actor = prefab.GetComponent<ActorDescription>();
-        if (actor != null && actor.actorKey == rule.actorKey) {
-          _prefabCache[rule.actorKey] = prefab;
+        if (actor != null && actor.actorKey == actorKey) {
+          _prefabCache[actorKey] = prefab;
           return prefab;
         }
       }
@@ -627,14 +570,6 @@ namespace Content.Scripts.Editor.World {
       return Physics.Raycast(rayOrigin, Vector3.down, out var hit, RAYCAST_DISTANCE, GROUND_MASK)
         ? hit.point
         : targetPos;
-    }
-
-    private static Vector3 RandomPointInBounds(Bounds bounds) {
-      return new Vector3(
-        UnityEngine.Random.Range(bounds.min.x, bounds.max.x),
-        0,
-        UnityEngine.Random.Range(bounds.min.z, bounds.max.z)
-      );
     }
 
     private static int CalculateTargetCount(ScatterRuleSO rule, Bounds bounds) {
