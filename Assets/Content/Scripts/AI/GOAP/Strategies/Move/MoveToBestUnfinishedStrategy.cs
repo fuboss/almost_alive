@@ -21,7 +21,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       var camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       var target = UnfinishedQuery.GetAllAtCamp(camp).FirstOrDefault();
       if (target != null) {
-        if (_agent.memory.Recall(ms => ms.target.gameObject == target.gameObject, out var snapshot)) {
+        if (_agent.memory.Recall(ms => ms.target != null && ms.target.gameObject == target.gameObject, out var snapshot)) {
           return snapshot;
         }
       }
@@ -35,6 +35,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       MemorySnapshot mem = null;
       foreach (var slot in slotWithHaulableItem) {
         var snapshot = targetFromMemory?.GetNearest(_agent, ms => {
+          if (ms.target == null) return false;
           var storageComp = ms.target.GetComponent<StorageActor>();
           return storageComp != null && !storageComp.isFull && storageComp.CanDeposit(slot.item);
         });

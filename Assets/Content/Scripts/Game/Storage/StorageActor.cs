@@ -22,11 +22,16 @@ namespace Content.Scripts.Game.Storage {
 
     public string[] acceptedTags => _inventory.availableTags;
     public int totalSlots => _inventory.slotCount;
-    public int freeSlots => _inventory.freeSlots.Count();
-    public int occupiedSlots => _inventory.occupiedSlots.Count();
-    public bool isFull => freeSlots == 0;
-    public bool isEmpty => occupiedSlots == 0;
+    public int freeSlots => _inventory.freeSlotCount;
+    public int occupiedSlots => totalSlots - freeSlots;
+    public bool isFull => _inventory.isFull;
+    public bool isEmpty => _inventory.isEmpty;
     public float fillRatio => totalSlots > 0 ? (float)occupiedSlots / totalSlots : 0f;
+
+    /// <summary>
+    /// Get accepted tags array for caching purposes.
+    /// </summary>
+    public string[] GetAcceptedTags() => acceptedTags;
 
     private void Awake() {
       _inventory = GetComponent<FilteredActorInventory>();
