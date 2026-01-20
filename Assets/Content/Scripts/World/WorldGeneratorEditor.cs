@@ -268,10 +268,59 @@ namespace Content.Scripts.Editor.World {
       var bounds = _state.config.GetTerrainBounds(_state.terrain);
       var targetCount = CalculateTargetCount(rule, bounds);
 
+      // Use targeted placement for feature-based scatters
+      if (sc.requiresFeatureMap && _state.featureMap != null) {
+        var validPositions = _state.featureMap.GetValidPositions(sc.placement);
+        Debug.Log($"[WorldGenEditor] {sc.placement}: {validPositions.Count} valid positions found");
+        EnqueueTargetedTasks(sc, prefab, biomeType, validPositions, targetCount);
+        return;
+      }
+
       if (rule.useClustering) {
         EnqueueClusteredTasks(sc, prefab, biomeType, bounds, targetCount);
       } else {
         EnqueueUniformTasks(sc, prefab, biomeType, bounds, targetCount);
+      }
+    }
+
+    private static void EnqueueTargetedTasks(BiomeScatterConfig sc, GameObject prefab, BiomeType biomeType,
+      List<Vector3> validPositions, int targetCount) {
+      if (validPositions.Count == 0) return;
+      
+      var rule = sc.rule;
+      var placed = 0;
+      
+      // Shuffle positions for randomness
+      for (var i = validPositions.Count - 1; i > 0; i--) {
+        var j = UnityEngine.Random.Range(0, i + 1);
+        (validPositions[i], validPositions[j]) = (validPositions[j], validPositions[i]);
+      }
+      
+      foreach (var pos in validPositions) {
+        if (placed >= targetCount) break;
+        
+        // Check biome
+        if (_state.biomeMap.GetBiomeAt(pos) != biomeType) continue;
+        
+        // Skip slope/height validation - feature map already validated position
+        // Only check spacing
+        if (!ValidateSpacing(rule.minSpacing, pos, _state.allSpawned)) continue;
+        
+        _state.spawnQueue.Enqueue(new SpawnTask {
+          rule = rule,
+          config = sc,
+          prefab = prefab,
+          position = pos,
+          biome = biomeType,
+          children = rule.hasChildren ? PrepareChildTasks(rule, pos) : null
+        });
+        
+        _state.allSpawned.Add(pos);
+        placed++;
+      }
+      
+      if (_state.config.logGeneration) {
+        Debug.Log($"[WorldGenEditor] Targeted placement: {placed}/{targetCount} for {sc.placement}");
       }
     }
 

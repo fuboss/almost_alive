@@ -28,11 +28,13 @@ namespace Content.Scripts.World {
     private WorldGeneratorConfigSO _config;
     private Terrain _terrain;
     private BiomeMap _biomeMap;
+    private TerrainFeatureMap _featureMap;
     private readonly List<ActorDescription> _spawnedActors = new();
     private CancellationTokenSource _generationCts;
 
     public IReadOnlyList<ActorDescription> spawnedActors => _spawnedActors;
     public BiomeMap biomeMap => _biomeMap;
+    public TerrainFeatureMap featureMap => _featureMap;
     public bool isGenerated { get; private set; }
     public bool isGenerating { get; private set; }
     public float generationProgress { get; private set; }
@@ -116,6 +118,11 @@ namespace Content.Scripts.World {
         await UniTask.Yield(ct);
       }
 
+      // Phase 3.5: Generate Feature Map
+      UpdateProgress(0.28f);
+      _featureMap = TerrainFeatureMap.Generate(_terrain);
+      _config.cachedFeatureMap = _featureMap;
+
       // Phase 4: Spawn Scatters
       UpdateProgress(0.30f);
 
@@ -195,6 +202,7 @@ namespace Content.Scripts.World {
       }
 
       _biomeMap = null;
+      _featureMap = null;
       isGenerated = false;
       generationProgress = 0f;
     }
@@ -357,6 +365,11 @@ namespace Content.Scripts.World {
       if (!ValidateTerrainAt(sc, position)) return false;
       if (!ValidateSpacing(rule, position)) return false;
       if (!ValidateAvoidance(rule, position)) return false;
+      
+      // Check feature map for edge-aware placements
+      if (sc.requiresFeatureMap && _featureMap != null) {
+        if (!_featureMap.CheckPlacement(position, sc.placement)) return false;
+      }
 
       if (!_actorCreation.TrySpawnActor(rule.actorKey, position, out actor)) return false;
 

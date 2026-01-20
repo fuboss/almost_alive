@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Content.Scripts.World {
@@ -11,18 +12,16 @@ namespace Content.Scripts.World {
     private readonly float _terrainHeight;
     private readonly Vector3 _terrainPos;
 
-    // Feature maps
-    private readonly float[,] _edgeStrength;     // 0-1 cliff intensity
-    private readonly Vector2[,] _gradientDir;    // slope direction (normalized)
-    private readonly float[,] _normalizedHeight; // 0-1 height
+    private readonly float[,] _edgeStrength;
+    private readonly float[,] _normalizedHeight;
 
-    // Thresholds
-    private const float CLIFF_EDGE_THRESHOLD = 0.4f;
-    private const float CLIFF_BASE_THRESHOLD = 0.3f;
-    private const float VALLEY_HEIGHT_THRESHOLD = 0.25f;
-    private const float PEAK_HEIGHT_THRESHOLD = 0.75f;
+    private const float CLIFF_THRESHOLD = 0.10f;
+    private const float HEIGHT_DIFF_THRESHOLD = 0.015f; // Min height difference to count as edge/base
+    private const float VALLEY_HEIGHT_THRESHOLD = 0.3f;
+    private const int SEARCH_RADIUS = 3;
 
     public int resolution => _resolution;
+    public float maxEdgeStrength { get; private set; }
 
     private TerrainFeatureMap(Terrain terrain, int resolution) {
       _resolution = resolution;
@@ -32,21 +31,16 @@ namespace Content.Scripts.World {
       _terrainPos = terrain.transform.position;
 
       _edgeStrength = new float[resolution, resolution];
-      _gradientDir = new Vector2[resolution, resolution];
       _normalizedHeight = new float[resolution, resolution];
     }
 
-    /// <summary>
-    /// Generate feature map from terrain heightmap.
-    /// </summary>
-    public static TerrainFeatureMap Generate(Terrain terrain, int resolution = 128) {
+    public static TerrainFeatureMap Generate(Terrain terrain, int resolution = 256) {
       if (terrain == null) return null;
 
       var map = new TerrainFeatureMap(terrain, resolution);
       var data = terrain.terrainData;
       var heightmapRes = data.heightmapResolution;
 
-      // Sample heights at feature map resolution
       var heights = new float[resolution, resolution];
       for (var z = 0; z < resolution; z++) {
         for (var x = 0; x < resolution; x++) {
@@ -61,18 +55,30 @@ namespace Content.Scripts.World {
         }
       }
 
-      // Sobel edge detection
-      ApplySobel(heights, resolution, map._edgeStrength, map._gradientDir);
+      ApplySobel(heights, resolution, map._edgeStrength);
+      map.maxEdgeStrength = NormalizeEdgeStrength(map._edgeStrength, resolution);
 
-      // Normalize edge strength
-      NormalizeEdgeStrength(map._edgeStrength, resolution);
+      // Count for debug
+      var cliffCount = 0;
+      var edgeCount = 0;
+      var baseCount = 0;
+      for (var z = SEARCH_RADIUS; z < resolution - SEARCH_RADIUS; z++) {
+        for (var x = SEARCH_RADIUS; x < resolution - SEARCH_RADIUS; x++) {
+          if (map._edgeStrength[z, x] > CLIFF_THRESHOLD) {
+            cliffCount++;
+            if (map.IsLocalHigh(x, z)) edgeCount++;
+            if (map.IsLocalLow(x, z)) baseCount++;
+          }
+        }
+      }
 
-      Debug.Log($"[TerrainFeatureMap] Generated ({resolution}x{resolution})");
+      Debug.Log($"[TerrainFeatureMap] Generated ({resolution}x{resolution}), " +
+                $"maxEdge: {map.maxEdgeStrength:F3}, cliffs: {cliffCount}, edges: {edgeCount}, bases: {baseCount}");
+      
       return map;
     }
 
-    private static void ApplySobel(float[,] heights, int res, float[,] strength, Vector2[,] direction) {
-      // Sobel kernels
+    private static void ApplySobel(float[,] heights, int res, float[,] strength) {
       var sobelX = new float[,] {
         { -1, 0, 1 },
         { -2, 0, 2 },
@@ -98,12 +104,11 @@ namespace Content.Scripts.World {
           }
 
           strength[z, x] = Mathf.Sqrt(gx * gx + gz * gz);
-          direction[z, x] = new Vector2(gx, gz).normalized;
         }
       }
     }
 
-    private static void NormalizeEdgeStrength(float[,] strength, int res) {
+    private static float NormalizeEdgeStrength(float[,] strength, int res) {
       var max = 0f;
       for (var z = 0; z < res; z++) {
         for (var x = 0; x < res; x++) {
@@ -118,80 +123,136 @@ namespace Content.Scripts.World {
           }
         }
       }
+
+      return max;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Check if this cell is higher than at least one neighbor within radius.
+    /// </summary>
+    private bool IsLocalHigh(int x, int z) {
+      var myHeight = _normalizedHeight[z, x];
+      
+      for (var dz = -SEARCH_RADIUS; dz <= SEARCH_RADIUS; dz++) {
+        for (var dx = -SEARCH_RADIUS; dx <= SEARCH_RADIUS; dx++) {
+          if (dx == 0 && dz == 0) continue;
+          
+          var nx = x + dx;
+          var nz = z + dz;
+          
+          if (nx < 0 || nx >= _resolution || nz < 0 || nz >= _resolution) continue;
+          
+          if (_normalizedHeight[nz, nx] < myHeight - HEIGHT_DIFF_THRESHOLD) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Check if this cell is lower than at least one neighbor within radius.
+    /// </summary>
+    private bool IsLocalLow(int x, int z) {
+      var myHeight = _normalizedHeight[z, x];
+      
+      for (var dz = -SEARCH_RADIUS; dz <= SEARCH_RADIUS; dz++) {
+        for (var dx = -SEARCH_RADIUS; dx <= SEARCH_RADIUS; dx++) {
+          if (dx == 0 && dz == 0) continue;
+          
+          var nx = x + dx;
+          var nz = z + dz;
+          
+          if (nx < 0 || nx >= _resolution || nz < 0 || nz >= _resolution) continue;
+          
+          if (_normalizedHeight[nz, nx] > myHeight + HEIGHT_DIFF_THRESHOLD) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     // ═══════════════════════════════════════════════════════════════
     // PUBLIC API
     // ═══════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Get edge strength at world position (0-1).
-    /// </summary>
-    public float GetEdgeStrength(Vector2 worldPos) {
-      var (x, z) = WorldToGrid(worldPos);
+    public float GetEdgeStrength(Vector3 worldPos) {
+      var (x, z) = WorldToGrid(new Vector2(worldPos.x, worldPos.z));
       if (x < 0 || x >= _resolution || z < 0 || z >= _resolution) return 0f;
       return _edgeStrength[z, x];
     }
 
     /// <summary>
-    /// Get edge strength at world position (0-1).
-    /// </summary>
-    public float GetEdgeStrength(Vector3 worldPos) {
-      return GetEdgeStrength(new Vector2(worldPos.x, worldPos.z));
-    }
-
-    /// <summary>
-    /// Get gradient direction at world position.
-    /// </summary>
-    public Vector2 GetGradientDirection(Vector2 worldPos) {
-      var (x, z) = WorldToGrid(worldPos);
-      if (x < 0 || x >= _resolution || z < 0 || z >= _resolution) return Vector2.zero;
-      return _gradientDir[z, x];
-    }
-
-    /// <summary>
-    /// Check if position is at top of a cliff.
+    /// Check if position is at TOP of a cliff (flat area with steep drop nearby).
     /// </summary>
     public bool IsCliffEdge(Vector2 worldPos) {
       var (x, z) = WorldToGrid(worldPos);
-      if (x < 1 || x >= _resolution - 1 || z < 1 || z >= _resolution - 1) return false;
+      if (x < SEARCH_RADIUS || x >= _resolution - SEARCH_RADIUS || 
+          z < SEARCH_RADIUS || z >= _resolution - SEARCH_RADIUS) return false;
 
-      var edge = _edgeStrength[z, x];
-      if (edge < CLIFF_EDGE_THRESHOLD) return false;
+      // This cell must be relatively flat (low edge strength)
+      if (_edgeStrength[z, x] > CLIFF_THRESHOLD * 0.5f) return false;
 
-      // Check if we're on the "high" side of the gradient
-      var grad = _gradientDir[z, x];
-      var checkX = x - Mathf.RoundToInt(grad.x);
-      var checkZ = z - Mathf.RoundToInt(grad.y);
-
-      if (checkX < 0 || checkX >= _resolution || checkZ < 0 || checkZ >= _resolution) return false;
-
-      return _normalizedHeight[z, x] > _normalizedHeight[checkZ, checkX];
+      var myHeight = _normalizedHeight[z, x];
+      
+      // Look for steep drop nearby (neighbor with high edge AND lower height)
+      for (var dz = -SEARCH_RADIUS; dz <= SEARCH_RADIUS; dz++) {
+        for (var dx = -SEARCH_RADIUS; dx <= SEARCH_RADIUS; dx++) {
+          if (dx == 0 && dz == 0) continue;
+          
+          var nx = x + dx;
+          var nz = z + dz;
+          
+          if (nx < 0 || nx >= _resolution || nz < 0 || nz >= _resolution) continue;
+          
+          // Neighbor is on steep slope AND lower than us
+          if (_edgeStrength[nz, nx] > CLIFF_THRESHOLD && 
+              _normalizedHeight[nz, nx] < myHeight - HEIGHT_DIFF_THRESHOLD) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     /// <summary>
-    /// Check if position is at bottom of a cliff.
+    /// Check if position is at BOTTOM of a cliff (flat area with steep rise nearby).
     /// </summary>
     public bool IsCliffBase(Vector2 worldPos) {
       var (x, z) = WorldToGrid(worldPos);
-      if (x < 1 || x >= _resolution - 1 || z < 1 || z >= _resolution - 1) return false;
+      if (x < SEARCH_RADIUS || x >= _resolution - SEARCH_RADIUS || 
+          z < SEARCH_RADIUS || z >= _resolution - SEARCH_RADIUS) return false;
 
-      var edge = _edgeStrength[z, x];
-      if (edge < CLIFF_BASE_THRESHOLD) return false;
+      // This cell must be relatively flat (low edge strength)
+      if (_edgeStrength[z, x] > CLIFF_THRESHOLD * 0.5f) return false;
 
-      // Check if we're on the "low" side of the gradient
-      var grad = _gradientDir[z, x];
-      var checkX = x - Mathf.RoundToInt(grad.x);
-      var checkZ = z - Mathf.RoundToInt(grad.y);
-
-      if (checkX < 0 || checkX >= _resolution || checkZ < 0 || checkZ >= _resolution) return false;
-
-      return _normalizedHeight[z, x] < _normalizedHeight[checkZ, checkX];
+      var myHeight = _normalizedHeight[z, x];
+      
+      // Look for steep rise nearby (neighbor with high edge AND higher height)
+      for (var dz = -SEARCH_RADIUS; dz <= SEARCH_RADIUS; dz++) {
+        for (var dx = -SEARCH_RADIUS; dx <= SEARCH_RADIUS; dx++) {
+          if (dx == 0 && dz == 0) continue;
+          
+          var nx = x + dx;
+          var nz = z + dz;
+          
+          if (nx < 0 || nx >= _resolution || nz < 0 || nz >= _resolution) continue;
+          
+          // Neighbor is on steep slope AND higher than us
+          if (_edgeStrength[nz, nx] > CLIFF_THRESHOLD && 
+              _normalizedHeight[nz, nx] > myHeight + HEIGHT_DIFF_THRESHOLD) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
-    /// <summary>
-    /// Check if position is in a valley (local low point).
-    /// </summary>
     public bool IsValley(Vector2 worldPos) {
       var (x, z) = WorldToGrid(worldPos);
       if (x < 1 || x >= _resolution - 1 || z < 1 || z >= _resolution - 1) return false;
@@ -199,7 +260,6 @@ namespace Content.Scripts.World {
       var h = _normalizedHeight[z, x];
       if (h > VALLEY_HEIGHT_THRESHOLD) return false;
 
-      // Check if lower than neighbors
       var neighborAvg = (
         _normalizedHeight[z - 1, x] +
         _normalizedHeight[z + 1, x] +
@@ -210,37 +270,13 @@ namespace Content.Scripts.World {
       return h <= neighborAvg;
     }
 
-    /// <summary>
-    /// Check if position is at a peak (local high point).
-    /// </summary>
-    public bool IsPeak(Vector2 worldPos) {
-      var (x, z) = WorldToGrid(worldPos);
-      if (x < 1 || x >= _resolution - 1 || z < 1 || z >= _resolution - 1) return false;
-
-      var h = _normalizedHeight[z, x];
-      if (h < PEAK_HEIGHT_THRESHOLD) return false;
-
-      // Check if higher than neighbors
-      var neighborAvg = (
-        _normalizedHeight[z - 1, x] +
-        _normalizedHeight[z + 1, x] +
-        _normalizedHeight[z, x - 1] +
-        _normalizedHeight[z, x + 1]
-      ) / 4f;
-
-      return h >= neighborAvg;
-    }
-
-    /// <summary>
-    /// Check placement type at position.
-    /// </summary>
     public bool CheckPlacement(Vector3 worldPos, Biomes.ScatterPlacement placement) {
       var pos2D = new Vector2(worldPos.x, worldPos.z);
       return placement switch {
         Biomes.ScatterPlacement.CliffEdge => IsCliffEdge(pos2D),
         Biomes.ScatterPlacement.CliffBase => IsCliffBase(pos2D),
         Biomes.ScatterPlacement.Valley => IsValley(pos2D),
-        _ => true // Any, FlatOnly, SlopeOnly, CliffOnly handled by slope checks
+        _ => true
       };
     }
 
@@ -262,30 +298,45 @@ namespace Content.Scripts.World {
     // ═══════════════════════════════════════════════════════════════
 
 #if UNITY_EDITOR
-    /// <summary>
-    /// Draw gizmos for feature map visualization.
-    /// </summary>
-    public void DrawGizmos(float y = 0f, bool drawEdges = true, bool drawValleys = false) {
+    public int CountPlacementCells(Biomes.ScatterPlacement placement) {
+      var count = 0;
       var cellWidth = _terrainWidth / _resolution;
       var cellHeight = _terrainHeight / _resolution;
-
-      for (var z = 0; z < _resolution; z++) {
-        for (var x = 0; x < _resolution; x++) {
+      
+      for (var z = SEARCH_RADIUS; z < _resolution - SEARCH_RADIUS; z++) {
+        for (var x = SEARCH_RADIUS; x < _resolution - SEARCH_RADIUS; x++) {
           var worldX = _terrainPos.x + (x + 0.5f) * cellWidth;
           var worldZ = _terrainPos.z + (z + 0.5f) * cellHeight;
-          var pos = new Vector3(worldX, y, worldZ);
-
-          if (drawEdges && _edgeStrength[z, x] > CLIFF_EDGE_THRESHOLD) {
-            Gizmos.color = new Color(1f, 0.5f, 0f, _edgeStrength[z, x]);
-            Gizmos.DrawWireCube(pos, new Vector3(cellWidth * 0.8f, 0.5f, cellHeight * 0.8f));
-          }
-
-          if (drawValleys && _normalizedHeight[z, x] < VALLEY_HEIGHT_THRESHOLD) {
-            Gizmos.color = new Color(0f, 0.5f, 1f, 0.3f);
-            Gizmos.DrawCube(pos, new Vector3(cellWidth * 0.5f, 0.3f, cellHeight * 0.5f));
+          
+          if (CheckPlacement(new Vector3(worldX, 0, worldZ), placement)) {
+            count++;
           }
         }
       }
+      return count;
+    }
+    
+    /// <summary>
+    /// Get all world positions that match the placement type.
+    /// Used for targeted scatter placement.
+    /// </summary>
+    public List<Vector3> GetValidPositions(Biomes.ScatterPlacement placement) {
+      var result = new List<Vector3>();
+      var cellWidth = _terrainWidth / _resolution;
+      var cellHeight = _terrainHeight / _resolution;
+      
+      for (var z = SEARCH_RADIUS; z < _resolution - SEARCH_RADIUS; z++) {
+        for (var x = SEARCH_RADIUS; x < _resolution - SEARCH_RADIUS; x++) {
+          var worldX = _terrainPos.x + (x + 0.5f) * cellWidth;
+          var worldZ = _terrainPos.z + (z + 0.5f) * cellHeight;
+          var pos = new Vector3(worldX, 0, worldZ);
+          
+          if (CheckPlacement(pos, placement)) {
+            result.Add(pos);
+          }
+        }
+      }
+      return result;
     }
 #endif
   }

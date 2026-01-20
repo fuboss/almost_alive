@@ -5,17 +5,19 @@ using UnityEngine;
 namespace Content.Scripts.World.Biomes {
   /// <summary>
   /// Runtime biome map generated from Voronoi diagram.
-  /// Provides biome lookups by world position with blend weights for borders.
+  /// Uses noise-distorted distances for organic, wavy borders.
   /// </summary>
   public class BiomeMap {
     private readonly List<BiomeCell> _cells = new();
     private readonly Dictionary<BiomeType, BiomeSO> _biomeData = new();
     private readonly float _blendDistance;
     private readonly Bounds _bounds;
+    private readonly float _noiseOffset;
 
-    /// <summary>
-    /// Single Voronoi cell representing a biome region.
-    /// </summary>
+    // Noise settings for organic borders
+    private const float BORDER_NOISE_SCALE = 0.015f;  // Larger scale = smoother waves
+    private const float BORDER_NOISE_STRENGTH = 25f;  // How much noise affects distance
+
     public readonly struct BiomeCell {
       public readonly Vector2 center;
       public readonly BiomeType type;
@@ -28,9 +30,6 @@ namespace Content.Scripts.World.Biomes {
       }
     }
 
-    /// <summary>
-    /// Result of biome query with blend weights.
-    /// </summary>
     public readonly struct BiomeQuery {
       public readonly BiomeType primaryType;
       public readonly BiomeSO primaryData;
@@ -62,73 +61,52 @@ namespace Content.Scripts.World.Biomes {
     public IReadOnlyList<BiomeCell> cells => _cells;
     public Bounds bounds => _bounds;
 
-    public BiomeMap(Bounds bounds, float blendDistance) {
+    public BiomeMap(Bounds bounds, float blendDistance, int seed = 0) {
       _bounds = bounds;
       _blendDistance = blendDistance;
+      _noiseOffset = seed * 137.5f; // Deterministic offset
     }
 
-    /// <summary>
-    /// Register biome data for lookups.
-    /// </summary>
     public void RegisterBiome(BiomeSO biome) {
       if (biome != null) {
         _biomeData[biome.type] = biome;
       }
     }
 
-    /// <summary>
-    /// Add a Voronoi cell to the map.
-    /// </summary>
     public void AddCell(Vector2 center, BiomeType type, int biomeIndex) {
       _cells.Add(new BiomeCell(center, type, biomeIndex));
     }
 
-    /// <summary>
-    /// Get biome type at world position (simple, no blending).
-    /// </summary>
     public BiomeType GetBiomeAt(Vector3 worldPos) {
       return GetBiomeAt(new Vector2(worldPos.x, worldPos.z));
     }
 
-    /// <summary>
-    /// Get biome type at 2D position (simple, no blending).
-    /// </summary>
     public BiomeType GetBiomeAt(Vector2 pos) {
-      var (_, cell) = FindNearestCell(pos);
+      var (_, cell) = FindNearestCellWithNoise(pos);
       return cell.type;
     }
 
-    /// <summary>
-    /// Get biome data at world position.
-    /// </summary>
     public BiomeSO GetBiomeDataAt(Vector3 worldPos) {
       var type = GetBiomeAt(worldPos);
       return _biomeData.GetValueOrDefault(type);
     }
 
-    /// <summary>
-    /// Query biome with blend weights for smooth transitions.
-    /// </summary>
     public BiomeQuery QueryBiome(Vector3 worldPos) {
       return QueryBiome(new Vector2(worldPos.x, worldPos.z));
     }
 
     /// <summary>
-    /// Query biome with blend weights at 2D position.
+    /// Query biome with smooth blend. Uses noise-distorted distances for organic borders.
     /// </summary>
     public BiomeQuery QueryBiome(Vector2 pos) {
-      if (_cells.Count == 0) {
-        return default;
-      }
+      if (_cells.Count == 0) return default;
 
-      // Find two nearest cells
-      var (dist1, cell1) = FindNearestCell(pos);
-      var (dist2, cell2) = FindSecondNearestCell(pos, cell1);
+      // Find cells with noise-distorted distances
+      var (dist1, cell1, dist2, cell2) = FindTwoNearestCellsWithNoise(pos);
 
       var primaryData = _biomeData.GetValueOrDefault(cell1.type);
 
-      // No blending if only one cell or second is too far
-      if (_cells.Count == 1 || dist2 - dist1 > _blendDistance * 2) {
+      if (_cells.Count == 1) {
         return new BiomeQuery(
           cell1.type, primaryData, 1f,
           cell1.type, primaryData, 0f,
@@ -136,12 +114,10 @@ namespace Content.Scripts.World.Biomes {
         );
       }
 
-      // Calculate blend factor based on distance difference
-      var blendZone = _blendDistance;
       var distDiff = dist2 - dist1;
       
-      // If we're clearly in one biome (distance diff > blend zone), no blending
-      if (distDiff > blendZone) {
+      // No blending if clearly inside one biome
+      if (distDiff >= _blendDistance) {
         return new BiomeQuery(
           cell1.type, primaryData, 1f,
           cell1.type, primaryData, 0f,
@@ -149,10 +125,11 @@ namespace Content.Scripts.World.Biomes {
         );
       }
 
-      // Blend: when distDiff=0, we're exactly on border (50/50)
-      // when distDiff=blendZone, we're at edge of blend (100/0)
-      var t = distDiff / blendZone;
-      var primaryWeight = 0.5f + t * 0.5f;  // 0.5 to 1.0
+      // Quintic smoothstep for C2 continuity
+      var t = distDiff / _blendDistance;
+      var smooth = t * t * t * (t * (t * 6f - 15f) + 10f);
+      
+      var primaryWeight = 0.5f + smooth * 0.5f;
       var secondaryWeight = 1f - primaryWeight;
 
       var secondaryData = _biomeData.GetValueOrDefault(cell2.type);
@@ -165,69 +142,79 @@ namespace Content.Scripts.World.Biomes {
     }
 
     /// <summary>
-    /// Get blend weight for specific biome at position (0-1).
-    /// Useful for splatmap generation.
+    /// Get noise-distorted distance to cell. This creates organic, wavy borders.
     /// </summary>
+    private float GetNoisyDistance(Vector2 pos, BiomeCell cell) {
+      var realDist = Vector2.Distance(pos, cell.center);
+      
+      // Use position-based noise so it's consistent for same position
+      // Add cell center to noise input for unique pattern per cell
+      var noiseX = (pos.x + cell.center.x * 0.1f + _noiseOffset) * BORDER_NOISE_SCALE;
+      var noiseY = (pos.y + cell.center.y * 0.1f + _noiseOffset) * BORDER_NOISE_SCALE;
+      
+      var noise = Mathf.PerlinNoise(noiseX, noiseY);
+      var noiseOffset = (noise - 0.5f) * 2f * BORDER_NOISE_STRENGTH;
+      
+      return realDist + noiseOffset;
+    }
+
+    private (float distance, BiomeCell cell) FindNearestCellWithNoise(Vector2 pos) {
+      var minDist = float.MaxValue;
+      var nearest = _cells[0];
+
+      foreach (var cell in _cells) {
+        var dist = GetNoisyDistance(pos, cell);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = cell;
+        }
+      }
+
+      return (minDist, nearest);
+    }
+
+    private (float dist1, BiomeCell cell1, float dist2, BiomeCell cell2) FindTwoNearestCellsWithNoise(Vector2 pos) {
+      var minDist1 = float.MaxValue;
+      var minDist2 = float.MaxValue;
+      var nearest1 = _cells[0];
+      var nearest2 = _cells.Count > 1 ? _cells[1] : _cells[0];
+
+      foreach (var cell in _cells) {
+        var dist = GetNoisyDistance(pos, cell);
+        
+        if (dist < minDist1) {
+          minDist2 = minDist1;
+          nearest2 = nearest1;
+          minDist1 = dist;
+          nearest1 = cell;
+        } else if (dist < minDist2) {
+          minDist2 = dist;
+          nearest2 = cell;
+        }
+      }
+
+      return (minDist1, nearest1, minDist2, nearest2);
+    }
+
     public float GetBlendWeight(Vector2 pos, BiomeType biome) {
       var query = QueryBiome(pos);
-      
       if (query.primaryType == biome) return query.primaryWeight;
       if (query.secondaryType == biome) return query.secondaryWeight;
       return 0f;
     }
 
-    /// <summary>
-    /// Get normalized distance from position to nearest cell center (0-1).
-    /// Useful for height profile sampling.
-    /// </summary>
     public float GetNormalizedDistanceToCenter(Vector2 pos) {
       if (_cells.Count == 0) return 0f;
 
-      var (dist, cell) = FindNearestCell(pos);
-      var (_, neighbor) = FindSecondNearestCell(pos, cell);
+      var (dist, cell) = FindNearestCellWithNoise(pos);
+      var (_, _, dist2, neighbor) = FindTwoNearestCellsWithNoise(pos);
 
-      // Estimate cell "radius" as half distance to neighbor
       var cellRadius = Vector2.Distance(cell.center, neighbor.center) * 0.5f;
       if (cellRadius < 0.001f) return 0f;
 
       return Mathf.Clamp01(dist / cellRadius);
     }
 
-    private (float distance, BiomeCell cell) FindNearestCell(Vector2 pos) {
-      var minDist = float.MaxValue;
-      var nearest = _cells[0];
-
-      foreach (var cell in _cells) {
-        var dist = Vector2.Distance(pos, cell.center);
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = cell;
-        }
-      }
-
-      return (minDist, nearest);
-    }
-
-    private (float distance, BiomeCell cell) FindSecondNearestCell(Vector2 pos, BiomeCell exclude) {
-      var minDist = float.MaxValue;
-      var nearest = _cells.Count > 1 ? _cells[1] : _cells[0];
-
-      foreach (var cell in _cells) {
-        if (cell.center == exclude.center) continue;
-        
-        var dist = Vector2.Distance(pos, cell.center);
-        if (dist < minDist) {
-          minDist = dist;
-          nearest = cell;
-        }
-      }
-
-      return (minDist, nearest);
-    }
-
-    /// <summary>
-    /// Clear all cells (for regeneration).
-    /// </summary>
     public void Clear() {
       _cells.Clear();
     }

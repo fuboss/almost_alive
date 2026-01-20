@@ -32,7 +32,7 @@ namespace Content.Scripts.World.Biomes {
       // Init deterministic random
       var rng = new System.Random(seed);
       
-      var map = new BiomeMap(bounds, blendDistance);
+      var map = new BiomeMap(bounds, blendDistance, seed);
       
       // Register biome data
       foreach (var biome in biomes) {
