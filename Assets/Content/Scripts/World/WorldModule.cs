@@ -132,7 +132,7 @@ namespace Content.Scripts.World {
       if (_config.paintSplatmap) {
         UpdateProgress(0.25f);
         if (_config.logGeneration) Debug.Log("[WorldModule] Phase 3: Painting terrain...");
-        SplatmapPainter.Paint(_terrain, _biomeMap);
+        SplatmapPainter.Paint(_terrain, _biomeMap, seed);
         await UniTask.Yield(ct);
       }
 

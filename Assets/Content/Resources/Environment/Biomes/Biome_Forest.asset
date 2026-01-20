@@ -53,9 +53,18 @@ MonoBehaviour:
   noiseFrequency: 0.0339
   noiseOctaves: 5
   noisePersistence: 0.494
-  primaryTerrainLayer: 0
-  secondaryTerrainLayer: 1
-  slopeThreshold: 14.1
+  baseTexture:
+    layerName: Grass_B
+  detailTexture:
+    layerName: Muddy_TerrainLayer
+    strength: 0.3
+    noiseScale: 0.02
+  slopeTexture:
+    layerName: Rock_TerrainLayer
+    slopeRange: {x: 73.22581, y: 90}
+  cliffTexture:
+    layerName: Cliff_Mossy_E
+    threshold: 83.9
   scatterRules:
   - {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
   - {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}

@@ -153,7 +153,7 @@ namespace Content.Scripts.Editor.World {
       if (config.paintSplatmap) {
         EditorUtility.DisplayProgressBar("Generating World", "Painting terrain...", 0.25f);
         Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Paint Splatmap");
-        SplatmapPainter.Paint(terrain, biomeMap);
+        SplatmapPainter.Paint(terrain, biomeMap, seed);
       }
 
       // ═══════════════════════════════════════════════════════════════

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5ec22af895764fcba1c77354fc5d729, type: 3}
+  m_Name: TerrainPalette
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.TerrainPaletteSO
+  layers:
+  - name: Grass_A
+    layer: {fileID: 8574412962073106934, guid: e83e5b2c03473f74983ef0f5b9c160c0, type: 2}
+  - name: Grass_Moss_A
+    layer: {fileID: 8574412962073106934, guid: c92d180648e3c4149b7f024457016b52, type: 2}
+  - name: Grass_Soil_A
+    layer: {fileID: 8574412962073106934, guid: ffb94bff813c3c041b5c22cc023fb25e, type: 2}
+  - name: Heather_A
+    layer: {fileID: 8574412962073106934, guid: b5b3f5965c68540b6a6e12e023e18435, type: 2}
+  - name: Muddy_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: 091511b8c4f042c4082a4d5af73e92c7, type: 2}
+  - name: Pebbles_B
+    layer: {fileID: 8574412962073106934, guid: 4e32022d306550941935a9898d9a184c, type: 2}
+  - name: Rock_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: c997c17aa360cb749a27932fe3bdfcce, type: 2}
+  - name: Sand_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: 1ded3ba1c5a90054e8f23ddfa62fb2b7, type: 2}
+  - name: Soil_Rocks_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: 73f0b5ac607c28d4696a6dd09a1de66a, type: 2}
+  - name: Snow_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: 59b98ca43f27d8c4a89d4058d2a962e5, type: 2}
+  - name: Cliff_Mossy_E
+    layer: {fileID: 8574412962073106934, guid: 7ba7a711695a4904a86967c335f59fc9, type: 2}
+  - name: Grass_B
+    layer: {fileID: 8574412962073106934, guid: 6732cf49561d5472a97200b6d471842e, type: 2}
+  - name: Grass_Dry_TerrainLayer
+    layer: {fileID: 8574412962073106934, guid: 0cbb01b61ed524a48a119d81aa262fed, type: 2}
+  - name: Black_Sand_Rocks_B
+    layer: {fileID: 8574412962073106934, guid: 34f335dee004a4a11b3ab5fb21c97a1e, type: 2}

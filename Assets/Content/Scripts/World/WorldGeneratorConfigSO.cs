@@ -19,6 +19,12 @@ namespace Content.Scripts.World {
     // ═══════════════════════════════════════════════════════════════
 
     [BoxGroup("Terrain")]
+    [Tooltip("Terrain texture palette (applies layers to terrain)")]
+    [AssetsOnly]
+    [InlineEditor(InlineEditorModes.GUIOnly, Expanded = false)]
+    public TerrainPaletteSO terrainPalette;
+
+    [BoxGroup("Terrain")]
     [Tooltip("If null, will find Terrain in scene")]
     [SceneObjectsOnly]
     public Terrain terrain;
@@ -182,6 +188,19 @@ namespace Content.Scripts.World {
     private void ClearBiomePreview() {
       cachedBiomeMap = null;
       UnityEditor.SceneView.RepaintAll();
+    }
+
+    [Button(ButtonSizes.Small, Name = "Apply Terrain Palette"), FoldoutGroup("Editor/Terrain Tools")]
+    private void ApplyPalette() {
+      if (terrainPalette == null) {
+        Debug.LogError("[WorldGenConfig] No terrain palette assigned");
+        return;
+      }
+      var t = terrain != null ? terrain : Terrain.activeTerrain;
+      if (t != null) {
+        UnityEditor.Undo.RecordObject(t.terrainData, "Apply Terrain Palette");
+        terrainPalette.ApplyToTerrain(t);
+      }
     }
 
     [Button(ButtonSizes.Small, Name = "Flatten Terrain"), FoldoutGroup("Editor/Terrain Tools")]

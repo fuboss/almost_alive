@@ -52,9 +52,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   noiseFrequency: 0.0036
   noiseOctaves: 5
-  noisePersistence: 0.684
-  primaryTerrainLayer: 0
-  secondaryTerrainLayer: 1
-  slopeThreshold: 12.5
+  noisePersistence: 0.641
+  baseTexture:
+    layerName: Sand_TerrainLayer
+  detailTexture:
+    layerName: Soil_Rocks_TerrainLayer
+    strength: 0.3
+    noiseScale: 0.02
+  slopeTexture:
+    layerName: Sand_TerrainLayer
+    slopeRange: {x: 25, y: 45}
+  cliffTexture:
+    layerName: Cliff_Mossy_E
+    threshold: 55
   scatterRules:
   - {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
