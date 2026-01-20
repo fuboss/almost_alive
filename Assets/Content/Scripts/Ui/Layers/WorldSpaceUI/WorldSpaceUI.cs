@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.Game.Craft;
+using Content.Scripts.Game.Trees;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -48,12 +49,18 @@ namespace Content.Scripts.Ui.Layers.WorldSpaceUI {
       }
     }
 
-    public IWorldSpaceWidget CreateProgressBar(UnfinishedActor actor) {
+    public IWorldSpaceWidget CreateProgressBar(IProgressProvider actor) {
       var widget = Instantiate(_widgetsPrefabs.progressBarWidget, _container);
-      widget.SetTarget(actor.transform);
+      widget.SetTarget(actor.actor.transform);
       widget.Repaint();
       RegisterWidget(widget);
       return widget;
+    }
+    
+    public void UnregisterWidgetsWithTarget(Transform target) {
+      foreach (var widget in _widgets.Where(w => w.target == target).ToArray()) {
+        UnregisterWidget(widget);
+      }
     }
 
     public override void OnUpdate() {

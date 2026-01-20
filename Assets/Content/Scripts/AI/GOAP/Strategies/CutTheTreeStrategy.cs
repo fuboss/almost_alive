@@ -2,24 +2,26 @@ using System;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Animation;
-using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
-using Content.Scripts.Game.Interaction;
+using Content.Scripts.Game.Trees;
 using UnityEngine;
 using VContainer;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class CutTheTreeStrategy : AgentStrategy {
-    [Inject] private ActorDestructionModule _destructionModule;
-    public float duration = 3f;
+    [Inject] private TreeModule _treeModule;
+
+    [Tooltip("Work units added per second")]
+    public float workRate = 2f;
+
     private readonly AnimationController _animations;
     private readonly IGoapAgent _agent;
-    private SimTimer _timer;
+    private ChoppingProgress _choppingProgress;
 
     public override IActionStrategy Create(IGoapAgent agent) {
       return new CutTheTreeStrategy(agent) {
-        duration = duration
+        workRate = workRate
       };
     }
 
@@ -47,31 +49,36 @@ namespace Content.Scripts.AI.GOAP.Strategies {
         return;
       }
 
-      InitTimer();
-      _timer.Start();
-      _animations?.CutTree();
-    }
+      var treeTag = target.GetDefinition<TreeTag>();
+      if (treeTag == null) {
+        complete = true;
+        Debug.LogWarning("[CutTree] No TreeTag on target, abort");
+        return;
+      }
 
-    private void InitTimer() {
-      _timer?.Dispose();
-      _timer = new SimTimer(duration);
-      _timer.OnTimerComplete += () => complete = true;
+      _choppingProgress = ChoppingProgress.GetOrCreate(target.gameObject, treeTag.workRequired);
+      _animations?.CutTree();
+      Debug.Log($"[CutTree] Started chopping {target.name}, work required: {treeTag.workRequired}");
     }
 
     public override void OnComplete() {
       if (target == null) return;
-      Debug.Log($"{target.name} cut complete!");
       _agent.memory.Forget(_agent.transientTarget);
       _agent.transientTarget = null;
-      _destructionModule?.DestroyActor(target, _agent);
+      _treeModule.ChopDownTree(_choppingProgress, _agent);
     }
 
     public override void OnStop() {
-      _timer?.Dispose();
+      _choppingProgress = null;
     }
 
     public override void OnUpdate(float deltaTime) {
-      _timer?.Tick(deltaTime);
+      if (_choppingProgress == null) return;
+
+      var workDone = _choppingProgress.AddWork(workRate * deltaTime);
+      if (workDone) {
+        complete = true;
+      }
     }
   }
 }

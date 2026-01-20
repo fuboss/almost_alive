@@ -6,6 +6,7 @@ using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.AI.GOAP.Agent.Sensors;
 using Content.Scripts.AI.GOAP.Beliefs;
 using Content.Scripts.AI.GOAP.Goals;
+using Content.Scripts.AI.GOAP.Interruption;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.AI.Navigation;
 using Content.Scripts.Game;
@@ -27,7 +28,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [Required] [SerializeField] private AgentMemory _memory = new();
     [Required] [SerializeField] private MemoryConsolidationModule _memoryConsolidation = new();
 
-    [Header("Sensors")] [VerticalGroup("Sensors")] [SerializeField]
+    [Header("Sensors")]
+    [VerticalGroup("Sensors")] [SerializeField]
     private InteractionSensor _interactSensor;
 
     [VerticalGroup("Sensors")] [SerializeField]
@@ -35,6 +37,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [Header("Navigation")]
     [SerializeField] private AgentStuckDetector _stuckDetector = new();
+
+    [Header("Interruption")]
+    [SerializeField] private InterruptionManager _interruptionManager = new();
+    [SerializeField] private int _planStackMaxDepth = 3;
 
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentAction> actions;
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<GoalTemplate> goalTemplates;
@@ -48,13 +54,19 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private ActionHistoryTracker _actionHistory = new();
 
     [FoldoutGroup("Debug")] [ReadOnly] private AgentGoal _currentGoal;
+    
+    [FoldoutGroup("Debug")] [ReadOnly] [ShowInInspector]
+    private int _planStackCount => _planStack?.count ?? 0;
+
     public Dictionary<string, AgentBelief> beliefs;
     private IGoapAgent _agent;
     public InteractionSensor interactSensor => _interactSensor;
     public ActionHistoryTracker actionHistory => _actionHistory;
     public VisionSensor visionSensor => _visionSensor;
+    public InterruptionManager interruptionManager => _interruptionManager;
 
     public AgentMemory memory => _memory;
+    public AgentGoal currentGoal => _currentGoal;
 
     public ActionPlan actionPlan {
       get => _actionPlan;
@@ -63,13 +75,16 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private IGoapPlanner _gPlanner;
     private AgentGoal _lastGoal;
+    private PlanStack _planStack;
     private bool _initialized;
     private float _currentDeltaTime;
+    private AgentGoal _forcedGoal; // For interruption - plan specifically for this goal
 
 
     public void Initialize(IGoapAgent agent) {
       _agent = agent;
       _gPlanner = _gPlanFactory?.CreatePlanner();
+      _planStack = new PlanStack(_planStackMaxDepth);
 
       SetupBeliefs(_goalsBankModule.GetBeliefs(availableFeatures));
       SetupActions(_goalsBankModule.GetActions(agent, availableFeatures));
@@ -125,13 +140,17 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _currentDeltaTime = deltaTime;
       
       ExecuteStuckDetection(deltaTime);
+      ExecuteInterruptionCheck();
       ExecutePlanning();
       ExecuteMemory(deltaTime);
       ExecuteSensors(deltaTime);
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // STUCK DETECTION
+    // ═══════════════════════════════════════════════════════════════
+
     private void ExecuteStuckDetection(float deltaTime) {
-      // Only check when we have an active action with movement
       if (_currentAction == null) return;
       if (!_agent.navMeshAgent.hasPath) return;
       
@@ -141,19 +160,93 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private void HandleStuck() {
       Debug.LogWarning($"[Brain] Agent stuck! Clearing plan and replanning. Action: {_currentAction?.name}", this);
       
-      // Stop current action
       _currentAction?.OnStop();
-      
-      // Clear everything
       ClearPlan(rememberGoal: false);
       
-      // Stop NavMeshAgent
       _agent.navMeshAgent.ResetPath();
       _agent.navMeshAgent.isStopped = true;
       
-      // Start cooldown
       _stuckDetector.StartCooldown();
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // INTERRUPTION
+    // ═══════════════════════════════════════════════════════════════
+
+    private void ExecuteInterruptionCheck() {
+      // Don't interrupt if no current plan
+      if (_currentGoal == null || _actionPlan == null) return;
+      
+      if (_interruptionManager.CheckForInterruption(
+            _agent, _currentGoal, 
+            out var interruptGoal, 
+            out var shouldSave)) {
+        
+        InterruptForGoal(interruptGoal, shouldSave);
+      }
+    }
+
+    private void InterruptForGoal(AgentGoal newGoal, bool saveCurrent) {
+      Debug.Log($"[Brain] Interrupting '{_currentGoal?.Name}' for '{newGoal?.Name}' (save: {saveCurrent})", this);
+
+      // Save current plan if requested
+      if (saveCurrent && _planStack.canPush && _currentGoal != null && _actionPlan != null) {
+        _planStack.TryPush(_currentGoal, _actionPlan);
+        Debug.Log($"[Brain] Saved plan to stack. Stack depth: {_planStack.count}", this);
+      }
+
+      // Stop current action
+      _currentAction?.OnStop();
+      
+      // Set forced goal for next planning cycle
+      _forcedGoal = newGoal;
+      
+      // Clear current state
+      _currentAction = null;
+      _currentGoal = null;
+      _actionPlan = null;
+      _agent.transientTarget = null;
+      _agent.navMeshAgent.ResetPath();
+    }
+
+    /// <summary>
+    /// Try to resume a saved plan from the stack.
+    /// </summary>
+    /// <returns>True if resumed successfully</returns>
+    private bool TryResumeSavedPlan() {
+      if (!_planStack.TryPop(out var saved)) return false;
+      
+      // Validate the saved plan is still achievable
+      if (!ValidateSavedPlan(saved)) {
+        Debug.Log($"[Brain] Saved plan '{saved.goal?.Name}' no longer valid, discarding", this);
+        return false;
+      }
+
+      Debug.Log($"[Brain] Resuming saved plan '{saved.goal?.Name}'. Stack depth: {_planStack.count}", this);
+      
+      _currentGoal = saved.goal;
+      _actionPlan = saved.plan;
+      
+      return true;
+    }
+
+    private bool ValidateSavedPlan(PlanStack.SavedPlan saved) {
+      if (!saved.isValid) return false;
+      
+      // Check if goal is still desirable
+      var goalInstance = saved.goal;
+      if (goalInstance == null) return false;
+      
+      // Check if remaining actions have valid preconditions
+      // (simplified - just check if plan has actions)
+      if (saved.plan.actions.Count == 0) return false;
+      
+      return true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SENSORS
+    // ═══════════════════════════════════════════════════════════════
 
     private void ExecuteSensors(float deltaTime) {
       _visionSensor.OnUpdate();
@@ -162,7 +255,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void ExecuteMemory(float deltaTime) {
       _memoryConsolidation.Tick(memory, deltaTime, _agent.position);
-      _memory.PurgeExpired(); //todo: use cooldown
+      _memory.PurgeExpired();
     }
 
     private void HandleVisibilityEnd(ActorDescription noMoreVisibleActor) {
@@ -187,6 +280,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _memoryConsolidation.ReinforceMemory(snapshot);
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // PLANNING
+    // ═══════════════════════════════════════════════════════════════
+
     private void ExecutePlanning() {
       var processed = false;
       processed |= TryPickNextPlannedAction();
@@ -194,17 +291,14 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (processed) return;
 
       if ((actionPlan == null || actionPlan.actions.Count == 0) && _currentAction == null) {
+        // Try to resume saved plan first
+        if (TryResumeSavedPlan()) return;
+        
         actionPlan = CalculatePlan();
-        if (actionPlan != null) {
-          // Debug.Log(
-          //   $"[Brain] New plan: {actionPlan.agentGoal.Name} score:{actionPlan.Score}\n{string.Join(", ", actionPlan.actions.Select(a => $"{a.name}:{a.score}"))}",
-          //   this);
-        }
       }
     }
 
     private bool TryPickNextPlannedAction() {
-      // Update the plan and current action if there is one
       if (_actionPlan == null || _actionPlan.actions.Count <= 0) return false;
       if (_currentAction != null) return true;
 
@@ -214,7 +308,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _currentAction = actionPlan.actions.Pop();
       _currentAction.agent = _agent;
 
-      // Verify all precondition effects are true
       var allPreconditionsMet = _currentAction.AreAllPreconditionsMet(_agent);
       if (allPreconditionsMet) {
         _currentAction.OnStart();
@@ -230,23 +323,29 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private ActionPlan CalculatePlan() {
+      if (_gPlanner == null) {
+        Debug.LogError("[Brain] Planner is null, cannot calculate plan", this);
+        return null;
+      }
+
+      // If we have a forced goal from interruption, plan for that
+      if (_forcedGoal != null) {
+        var forcedPlan = _gPlanner.Plan(_agent, new HashSet<AgentGoal> { _forcedGoal }, _lastGoal);
+        _forcedGoal = null;
+        return forcedPlan;
+      }
+
       var currentCommitment = actionPlan?.commitment ?? 0f;
       var priorityLevel = (_currentGoal?.Priority ?? 0) + Mathf.InverseLerp(0, 1.5f, currentCommitment);
 
       var availableGoals = goalTemplates.Select(gt => gt.Get(_agent)).ToHashSet();
       var goalsToCheck = availableGoals;
 
-      // If we have a current goal, we only want to check goals with higher priority
       if (_currentGoal != null) {
         goalsToCheck = new HashSet<AgentGoal>(availableGoals.Where(g => g.isUrgent || g.Priority > priorityLevel));
       }
 
-      if (_gPlanner == null) {
-        Debug.LogError("[Brain] Planner is null, cannot calculate plan", this);
-        return null;
-      }
-
-      return _gPlanner?.Plan(_agent, goalsToCheck, _lastGoal);
+      return _gPlanner.Plan(_agent, goalsToCheck, _lastGoal);
     }
 
     private bool ExecuteCurrentAction() {
@@ -277,7 +376,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     /// <summary>
     /// Clear current plan, action, and goal.
     /// </summary>
-    /// <param name="rememberGoal">If true, stores current goal as _lastGoal for planner reference</param>
     private void ClearPlan(bool rememberGoal) {
       if (rememberGoal && _currentGoal != null) {
         _lastGoal = _currentGoal;
@@ -289,6 +387,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _agent.transientTarget = null;
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // SETUP
+    // ═══════════════════════════════════════════════════════════════
+
     private void SetupGoals(List<GoalTemplate> array) {
       goalTemplates = new HashSet<GoalTemplate>(array);
     }
@@ -299,7 +401,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void HandleInteractionSensor(ActorDescription actorDescription) {
-      //Debug.Log($"[Brain] Interaction sensor triggered by {actorDescription.name}", actorDescription);
     }
   }
 }

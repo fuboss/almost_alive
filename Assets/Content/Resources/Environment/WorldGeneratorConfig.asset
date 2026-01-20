@@ -28,7 +28,7 @@ MonoBehaviour:
   biomeBorderBlend: 20
   minBiomeCells: 10
   maxBiomeCells: 26
-  logGeneration: 1
+  logGeneration: 0
   drawBiomeGizmos: 0
   gizmoResolution: 37
   drawCellCenters: 1

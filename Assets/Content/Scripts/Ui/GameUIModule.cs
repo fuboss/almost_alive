@@ -1,9 +1,9 @@
 using System;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
+using Content.Scripts.Game.Trees;
 using Content.Scripts.Ui.Layers.ControlsPanel;
 using Content.Scripts.Ui.Layers.WorldSpaceUI;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -12,7 +12,7 @@ namespace Content.Scripts.Ui {
     [Inject] private UiModule _uiModule;
     [Inject] private ControlsPanelLayer _controlsPanelLayer;
     [Inject] private WorldSpaceUI _worldSpaceUI;
-    
+
     public void Initialize() {
     }
 
@@ -22,17 +22,22 @@ namespace Content.Scripts.Ui {
 
       ActorRegistry<UnfinishedActor>.onRegistered += OnUnfinishedCreated;
       ActorRegistry<UnfinishedActor>.onUnregistered += OnUnfinishedRemoved;
+
+      ActorRegistry<ChoppingProgress>.onRegistered += OnChoppingStarted;
+      ActorRegistry<ChoppingProgress>.onUnregistered += OnChoppingEnded;
     }
 
-    private void OnUnfinishedCreated(UnfinishedActor actor) {
-      Debug.LogError($"UI should show progress widget for unfinished actor {actor.name}");
+    private void OnUnfinishedCreated(UnfinishedActor actor) => 
       _worldSpaceUI.CreateProgressBar(actor);
-    }
-    
-    private void OnUnfinishedRemoved(UnfinishedActor actor) {
-      _worldSpaceUI.UnregisterWidgetsWithActor(actor);
-      Debug.LogError($"UI should remove progress widget for unfinished actor {actor.name}");
-    }
+
+    private void OnChoppingStarted(ChoppingProgress choppingProgress) =>
+      _worldSpaceUI.CreateProgressBar(choppingProgress);
+
+    private void OnChoppingEnded(ChoppingProgress choppingProgress) =>
+      _worldSpaceUI.UnregisterWidgetsWithTarget(choppingProgress.actor.transform);
+
+    private void OnUnfinishedRemoved(UnfinishedActor actor) =>
+      _worldSpaceUI.UnregisterWidgetsWithTarget(actor.actor.transform);
 
     public void Tick() {
     }
@@ -40,6 +45,9 @@ namespace Content.Scripts.Ui {
     public void Dispose() {
       ActorRegistry<UnfinishedActor>.onRegistered -= OnUnfinishedCreated;
       ActorRegistry<UnfinishedActor>.onUnregistered -= OnUnfinishedRemoved;
+
+      ActorRegistry<ChoppingProgress>.onRegistered -= OnChoppingStarted;
+      ActorRegistry<ChoppingProgress>.onUnregistered -= OnChoppingEnded;
     }
   }
 }

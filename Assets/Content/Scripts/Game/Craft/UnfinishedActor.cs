@@ -11,6 +11,7 @@ namespace Content.Scripts.Game.Craft {
   
   public interface IProgressProvider {
     float progress { get; }
+    ActorDescription actor { get; }
   }
   /// <summary>
   /// Unfinished actor - intermediate state during crafting/building.
@@ -29,7 +30,7 @@ namespace Content.Scripts.Game.Craft {
     private ActorInventory _inventory;
 
     public RecipeSO recipe => _recipe;
-    public ActorDescription description => _description;
+    public ActorDescription actor => _description;
     public ActorInventory inventory => _inventory;
     [ShowInInspector] public CampSpot assignedSpot => _assignedSpot;
     

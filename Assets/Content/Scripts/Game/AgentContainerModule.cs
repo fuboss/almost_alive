@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using Content.Scripts.AI.Camp;
 using Content.Scripts.Game;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityUtils;
 using VContainer;
 using VContainer.Unity;
 
@@ -40,28 +42,29 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void Tick() {
+      //input to spawn new agent(debug) -> move to separate input system later
       if (Keyboard.current.enterKey.wasReleasedThisFrame) {
-        SpawnNewAgent(Vector3.zero + Random.onUnitSphere * 5);
+        var randCamp = Registry<CampLocation>.GetAll().Random();
+        var spawnPos = randCamp != null
+          ? randCamp.transform.position + Random.onUnitSphere * 5 + Vector3.up * 3
+          : Vector3.zero + Random.onUnitSphere * 5;
+        SpawnNewAgent(spawnPos);
       }
 
       //todo move this into a separate system
       foreach (var goapAgent in _agents) {
-        if(goapAgent == null) continue;
+        if (goapAgent == null) continue;
         goapAgent.Tick();
       }
     }
 
     private void SpawnNewAgent(Vector3 position) {
+      if (_agentsRoot == null) return;
       if (!Physics.Raycast(position + Vector3.up * 100, Vector3.down, out RaycastHit hit)) return;
-      if (_agentsRoot != null) {
-        
-        var instance = _agentFactory.Spawn(hit.point);
-        Add(instance);
-        AddToCameraGroup(instance);
-      }
-      else {
-        Debug.LogError("np factory resolved");
-      }
+
+      var instance = _agentFactory.Spawn(hit.point);
+      Add(instance);
+      AddToCameraGroup(instance);
     }
 
     private void AddToCameraGroup(GOAPAgent instance) {

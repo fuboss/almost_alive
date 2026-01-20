@@ -8,6 +8,7 @@ using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Interaction;
+using Content.Scripts.Game.Trees;
 using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
 using Content.Scripts.World;
@@ -37,6 +38,7 @@ namespace Content.Scripts {
       builder.Register<WorldEnvironment>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<WorldModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+     
       
       
       // Decay & Work
@@ -52,6 +54,7 @@ namespace Content.Scripts {
       builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<RecipeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       builder.RegisterComponent(agentPrefab).AsSelf();
       builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
@@ -59,6 +62,10 @@ namespace Content.Scripts {
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       
       
+      InitUi(builder);
+    }
+
+    private void InitUi(IContainerBuilder builder) {
       builder.Register<AgentUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<GameUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       

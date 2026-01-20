@@ -160,8 +160,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       actor.transform.SetParent(_targetSpot.transform);
       actor.transform.localPosition = Vector3.zero;
 
-      _agent.transientTarget = unfinished.description;
-      _agent.agentBrain.TryRemember(unfinished.description);
+      _agent.transientTarget = unfinished.actor;
+      _agent.agentBrain.TryRemember(unfinished.actor);
 
       Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
       _state = PlaceState.Done;

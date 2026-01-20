@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Biomes.BiomeSO
   type: 2
   debugColor: {r: 0.055535804, g: 0.69468504, b: 0.9056604, a: 1}
-  weight: 0.29
+  weight: 0.5
   baseHeight: 0
   heightAmplitude: 2.3
   heightProfile:
