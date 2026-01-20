@@ -22,6 +22,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
     [ShowInInspector] private List<MemorySnapshot> _memory = new();
     [ShowInInspector] private Dictionary<string, HashSet<MemorySnapshot>> _tagIndex = new();
+    [ShowInInspector] private Dictionary<ActorDescription, MemorySnapshot> _targetIndex = new();
 
     /// <summary>Key-value store for persistent agent data (camp, ownership, etc).</summary>
     public AgentMemoryK persistentMemory { get; } = new();
@@ -34,8 +35,28 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       _octree = new Octree<MemorySnapshot>(worldBounds, 1f);
     }
 
+    /// <summary>O(1) check if memory contains snapshot for given target.</summary>
     public bool MemoryContains(MemorySnapshot snapshot) {
-      return snapshot != null && _memory.Any(ms => ms.Equals(snapshot));
+      if (snapshot?.target == null) return false;
+      return _targetIndex.ContainsKey(snapshot.target);
+    }
+
+    /// <summary>O(1) check if memory contains snapshot for given actor.</summary>
+    public bool MemoryContains(ActorDescription target) {
+      return target != null && _targetIndex.ContainsKey(target);
+    }
+
+    /// <summary>O(1) get snapshot by target actor.</summary>
+    public bool TryGetByTarget(ActorDescription target, out MemorySnapshot snapshot) {
+      snapshot = null;
+      if (target == null) return false;
+      return _targetIndex.TryGetValue(target, out snapshot);
+    }
+
+    /// <summary>O(1) get snapshot by target actor.</summary>
+    public MemorySnapshot GetByTarget(ActorDescription target) {
+      if (target == null) return null;
+      return _targetIndex.GetValueOrDefault(target);
     }
 
     public RememberResult TryRemember(MemorySnapshot snapshot) {
@@ -77,14 +98,17 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 
     public void Forget(MemorySnapshot snapshot) {
-      if (snapshot == null) return;
-      if (_memory.RemoveAll(m => m.target == snapshot.target) > 0) {
+      if (snapshot?.target == null) return;
+      if (_targetIndex.Remove(snapshot.target)) {
+        _memory.Remove(snapshot);
         RemoveFromIndex(snapshot);
       }
     }
 
+    /// <summary>O(1) forget by actor target.</summary>
     public void Forget(ActorDescription actorToForget) {
-      if (Recall(snap => snap.target == actorToForget, out MemorySnapshot snapshot)) {
+      if (actorToForget == null) return;
+      if (_targetIndex.TryGetValue(actorToForget, out var snapshot)) {
         Forget(snapshot);
       }
     }
@@ -92,6 +116,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     public void Clear() {
       _memory.Clear();
       _tagIndex.Clear();
+      _targetIndex.Clear();
     }
 
     public void PurgeExpired() {
@@ -152,6 +177,72 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       snapshot.lastUpdateTime = DateTime.UtcNow;
     }
 
+    /// <summary>
+    /// Check if memory contains at least one snapshot with all specified tags. No allocation.
+    /// </summary>
+    public bool HasWithAllTags(string[] tags, bool includeOutdated = false) {
+      if (tags == null || tags.Length == 0) return false;
+
+      HashSet<MemorySnapshot> intersection = null;
+      foreach (var tag in tags) {
+        if (!_tagIndex.TryGetValue(tag, out var set) || set.Count == 0) {
+          return false;
+        }
+
+        if (intersection == null) {
+          intersection = set;
+        } else {
+          // Check intersection without allocation
+          bool found = false;
+          foreach (var snap in intersection) {
+            if (set.Contains(snap)) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) return false;
+        }
+      }
+
+      if (intersection == null) return false;
+
+      // Check if any is not expired
+      foreach (var snap in intersection) {
+        if (includeOutdated || !snap.IsExpired) return true;
+      }
+      return false;
+    }
+
+    /// <summary>
+    /// Count snapshots with all specified tags. No array allocation.
+    /// </summary>
+    public int CountWithAllTags(string[] tags, bool includeOutdated = false) {
+      if (tags == null || tags.Length == 0) return 0;
+
+      HashSet<MemorySnapshot> intersection = null;
+      foreach (var tag in tags) {
+        if (!_tagIndex.TryGetValue(tag, out var set)) {
+          return 0;
+        }
+
+        if (intersection == null) {
+          intersection = new HashSet<MemorySnapshot>(set);
+        } else {
+          intersection.IntersectWith(set);
+        }
+
+        if (intersection.Count == 0) return 0;
+      }
+
+      if (intersection == null) return 0;
+
+      var count = 0;
+      foreach (var snap in intersection) {
+        if (includeOutdated || !snap.IsExpired) count++;
+      }
+      return count;
+    }
+
     public MemorySnapshot[] GetWithAllTags(string[] tags, bool includeOutdated = false) {
       if (tags == null || tags.Length == 0) return Array.Empty<MemorySnapshot>();
 
@@ -178,6 +269,21 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       var arr = outList.ToArray();
       ReleaseList(outList);
       return arr;
+    }
+
+    /// <summary>
+    /// Check if memory contains at least one snapshot with any of specified tags. No allocation.
+    /// </summary>
+    public bool HasWithAnyTags(string[] tags, bool includeOutdated = false) {
+      if (tags == null || tags.Length == 0) return false;
+
+      foreach (var tag in tags) {
+        if (!_tagIndex.TryGetValue(tag, out var set)) continue;
+        foreach (var snap in set) {
+          if (includeOutdated || !snap.IsExpired) return true;
+        }
+      }
+      return false;
     }
 
     public MemorySnapshot[] GetWithAnyTags(string[] tags, bool includeOutdated = false) {
@@ -310,29 +416,48 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 
     private void AddToIndex(MemorySnapshot snapshot) {
-      if (snapshot?.tags == null) return;
-      foreach (var t in snapshot.tags) {
-        if (!_tagIndex.TryGetValue(t, out var set)) {
-          set = new HashSet<MemorySnapshot>();
-          _tagIndex[t] = set;
+      if (snapshot == null) return;
+      
+      // Target index
+      if (snapshot.target != null) {
+        _targetIndex[snapshot.target] = snapshot;
+      }
+      
+      // Tag index
+      if (snapshot.tags != null) {
+        foreach (var t in snapshot.tags) {
+          if (!_tagIndex.TryGetValue(t, out var set)) {
+            set = new HashSet<MemorySnapshot>();
+            _tagIndex[t] = set;
+          }
+          set.Add(snapshot);
         }
-
-        set.Add(snapshot);
       }
 
-      _octree.Remove(snapshot);
-      _octree.Add(snapshot, snapshot.location);
+      // Spatial index
+      _octree?.Remove(snapshot);
+      _octree?.Add(snapshot, snapshot.location);
     }
 
     private void RemoveFromIndex(MemorySnapshot snapshot) {
-      if (snapshot?.tags == null) return;
-      foreach (var tag in snapshot.tags) {
-        if (!_tagIndex.TryGetValue(tag, out var set)) continue;
-        set.RemoveWhere(s => s.target == snapshot.target);
-        if (set.Count == 0) _tagIndex.Remove(tag);
+      if (snapshot == null) return;
+      
+      // Target index
+      if (snapshot.target != null) {
+        _targetIndex.Remove(snapshot.target);
+      }
+      
+      // Tag index
+      if (snapshot.tags != null) {
+        foreach (var tag in snapshot.tags) {
+          if (!_tagIndex.TryGetValue(tag, out var set)) continue;
+          set.Remove(snapshot);
+          if (set.Count == 0) _tagIndex.Remove(tag);
+        }
       }
 
-      _octree.Remove(snapshot);
+      // Spatial index
+      _octree?.Remove(snapshot);
     }
 
     private void UpdateIndexForSnapshot(MemorySnapshot snapshot) {

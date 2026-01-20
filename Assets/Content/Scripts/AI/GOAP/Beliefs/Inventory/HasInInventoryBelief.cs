@@ -3,13 +3,17 @@ using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
-  [Serializable, TypeInfoBox("True when agent has item with specified tags in inventory.")]
+  [Serializable, TypeInfoBox("True when agent has item with specified tags in inventory (or inverse: doesn't have).")]
   public class HasInInventoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public int requiredItemCount = 1;
+    public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => agent.inventory.TryGetSlotWithItemTags(tags, out var slot) && slot.count >= requiredItemCount;
+      return () => {
+        var hasEnough = agent.inventory.TryGetSlotWithItemTags(tags, out var slot) && slot.count >= requiredItemCount;
+        return !inverse ? hasEnough : !hasEnough;
+      };
     }
 
     public override AgentBelief Copy() {
@@ -17,7 +21,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
         tags = tags,
         name = name,
         requiredItemCount = requiredItemCount,
-        condition = condition
+        inverse = inverse
       };
     }
   }

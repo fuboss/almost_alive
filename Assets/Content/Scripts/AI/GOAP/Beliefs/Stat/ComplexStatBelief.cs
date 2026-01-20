@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
 
     public override AgentBelief Copy() {
       var copy = new ComplexStatBelief {
-        condition = condition, name = name,
+        name = name,
         statDatas = new FloatAgentStat.Data[statDatas.Length]
       };
       for (var i = 0; i < statDatas.Length; i++) {

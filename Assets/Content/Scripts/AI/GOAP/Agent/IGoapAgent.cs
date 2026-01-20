@@ -1,3 +1,4 @@
+using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.AI.GOAP.Beliefs;
@@ -34,6 +35,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentExperience experience { get; }
     public AgentRecipes recipes { get; }
     RecipeModule recipeModule { get; }
+
+    /// <summary>
+    /// Returns agent's personal camp from persistent memory. Cached per call.
+    /// </summary>
+    CampLocation camp => memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
 
     WorkPriority GetWorkScheduler();
     void AddExperience(int amount);

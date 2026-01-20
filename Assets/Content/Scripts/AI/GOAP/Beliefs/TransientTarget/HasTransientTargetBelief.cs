@@ -16,8 +16,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
     public override AgentBelief Copy() {
       return new HasTransientTargetBelief {
         inverse = inverse,
-        name = name,
-        condition = condition
+        name = name
       };
     }
   }

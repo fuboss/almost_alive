@@ -16,7 +16,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
     }
 
     public override AgentBelief Copy() {
-      return new StatBelief { condition = condition, name = name, statData = statData.Copy() };
+      return new StatBelief { name = name, statData = statData.Copy() };
     }
 
     public override string ToString() {

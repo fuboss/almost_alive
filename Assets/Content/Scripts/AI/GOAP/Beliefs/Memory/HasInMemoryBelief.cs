@@ -1,26 +1,49 @@
 using System;
-using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
-  [Serializable, TypeInfoBox("True when agent remembers object with specified tags (optionally within distance).")]
+  [Serializable, TypeInfoBox("True when agent remembers object with specified tags (or inverse: doesn't remember). Optionally checks distance.")]
   public class HasInMemoryBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool checkDistance;
     public int minCount = 1;
     [EnableIf("checkDistance")] public float maxDistance = 20;
+    public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
+      var sqrMaxDistance = maxDistance * maxDistance;
       return () => {
         var memory = agent.memory;
+        
+        // Fast path: no distance check
+        if (!checkDistance) {
+          if (minCount == 1) {
+            var has = memory.HasWithAllTags(tags);
+            return !inverse ? has : !has;
+          }
+          var count = memory.CountWithAllTags(tags);
+          var hasEnough = count >= minCount;
+          return !inverse ? hasEnough : !hasEnough;
+        }
+        
+        // Distance check required - need to iterate
         var withTags = memory.GetWithAllTags(tags);
-        if (withTags.Length == 0) return false;
+        if (withTags.Length == 0) {
+          return inverse;
+        }
 
-        if (!checkDistance) return withTags.Length >= minCount;
-
-        return withTags.Count(m => Vector3.Distance(agent.position, m.location) < maxDistance) >= minCount;
+        var foundCount = 0;
+        var agentPos = agent.position;
+        foreach (var m in withTags) {
+          if ((agentPos - m.location).sqrMagnitude < sqrMaxDistance) {
+            foundCount++;
+            if (foundCount >= minCount) break;
+          }
+        }
+        var hasEnoughInRange = foundCount >= minCount;
+        return !inverse ? hasEnoughInRange : !hasEnoughInRange;
       };
     }
 
@@ -30,8 +53,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
         checkDistance = checkDistance,
         maxDistance = maxDistance,
         name = name,
-        condition = condition,
-        minCount = minCount
+        minCount = minCount,
+        inverse = inverse
       };
     }
   }

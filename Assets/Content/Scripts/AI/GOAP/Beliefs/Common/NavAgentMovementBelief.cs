@@ -13,7 +13,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
 
     public override AgentBelief Copy() {
       return new NavAgentMovementBelief {
-        condition = condition,
         name = name,
         isMoving = isMoving
       };

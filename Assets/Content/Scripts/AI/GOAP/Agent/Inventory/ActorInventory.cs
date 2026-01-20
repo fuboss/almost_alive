@@ -10,11 +10,58 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private List<InventorySlot> _slots = new();
     public int slotCount => _slots.Count;
 
-    public IEnumerable<InventorySlot> occupiedSlots => _slots.Where(slot => slot.isOccupied);
-    public IEnumerable<InventorySlot> freeSlots => _slots.Where(slot => !slot.isOccupied);
-    public bool isFull => !freeSlots.Any();
-    public bool isEmpty => !occupiedSlots.Any();
-    public int freeSlotCount => freeSlots.Count();
+    public IEnumerable<InventorySlot> occupiedSlots {
+      get {
+        foreach (var slot in _slots) {
+          if (slot.isOccupied) yield return slot;
+        }
+      }
+    }
+
+    public IEnumerable<InventorySlot> freeSlots {
+      get {
+        foreach (var slot in _slots) {
+          if (!slot.isOccupied) yield return slot;
+        }
+      }
+    }
+
+    public bool isFull {
+      get {
+        foreach (var slot in _slots) {
+          if (!slot.isOccupied) return false;
+        }
+        return true;
+      }
+    }
+
+    public bool isEmpty {
+      get {
+        foreach (var slot in _slots) {
+          if (slot.isOccupied) return false;
+        }
+        return true;
+      }
+    }
+
+    public int freeSlotCount {
+      get {
+        var count = 0;
+        foreach (var slot in _slots) {
+          if (!slot.isOccupied) count++;
+        }
+        return count;
+      }
+    }
+
+    public bool hasAnyFreeSlot {
+      get {
+        foreach (var slot in _slots) {
+          if (!slot.isOccupied) return true;
+        }
+        return false;
+      }
+    }
 
     public InventorySlot FirstFreeSlot() {
       return _slots.FirstOrDefault(slot => !slot.isOccupied);

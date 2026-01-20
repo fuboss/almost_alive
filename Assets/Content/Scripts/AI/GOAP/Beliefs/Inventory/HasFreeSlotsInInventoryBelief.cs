@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
@@ -9,14 +8,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
     public int requiredItemCount = 1;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => agent.inventory.freeSlots.Count() > requiredItemCount;
+      return () => agent.inventory.freeSlotCount >= requiredItemCount;
     }
 
     public override AgentBelief Copy() {
       return new HasFreeSlotsInInventoryBelief {
         name = name,
-        requiredItemCount = requiredItemCount,
-        condition = condition
+        requiredItemCount = requiredItemCount
       };
     }
   }

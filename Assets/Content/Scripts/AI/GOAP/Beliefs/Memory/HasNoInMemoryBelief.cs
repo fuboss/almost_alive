@@ -1,26 +1,26 @@
 using System;
-using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
-  [Serializable, TypeInfoBox("True when agent does not remember enough objects with specified tags.")]
-  public class HasNoInMemoryBelief : AgentBelief {
-    [ValueDropdown("GetTags")] public string[] tags;
-    public int minCount = 1;
-
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => {
-        var withTags = agent.memory.GetWithAllTags(tags);
-        return withTags.Length < minCount;
-      };
+  /// <summary>
+  /// Deprecated: Use HasInMemoryBelief with inverse=true instead.
+  /// Kept for backward compatibility with existing SO assets.
+  /// </summary>
+  [Serializable, TypeInfoBox("DEPRECATED: Use HasInMemoryBelief with inverse=true. True when agent doesn't remember objects with specified tags.")]
+  [Obsolete("Use HasInMemoryBelief with inverse=true")]
+  public class HasNoInMemoryBelief : HasInMemoryBelief {
+    public HasNoInMemoryBelief() {
+      inverse = true;
     }
 
     public override AgentBelief Copy() {
       return new HasNoInMemoryBelief {
         tags = tags,
         name = name,
-        condition = condition,
-        minCount = minCount
+        minCount = minCount,
+        checkDistance = checkDistance,
+        maxDistance = maxDistance,
+        inverse = true
       };
     }
   }

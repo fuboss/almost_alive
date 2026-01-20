@@ -11,9 +11,10 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
     public bool inverted;
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
+      var sqrRange = range * range;
       return () => {
-        var distance = Vector3.Distance(agent.position, location);
-        return !inverted ? distance < range : distance >= range;
+        var sqrDistance = (agent.position - location).sqrMagnitude;
+        return !inverted ? sqrDistance < sqrRange : sqrDistance >= sqrRange;
       };
     }
 
@@ -22,8 +23,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
         location = location,
         range = range,
         inverted = inverted,
-        name = name,
-        condition = condition
+        name = name
       };
     }
   }

@@ -30,7 +30,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
       return new TransientTargetHasTagsBelief {
         inverse = inverse,
         name = name,
-        condition = condition,
         tags = tags
       };
     }

@@ -15,10 +15,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
   [Serializable, TypeInfoBox("True when camp has active unfinished actor.")]
   public class HasActiveUnfinishedBelief : AgentBelief {
     protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => {
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        return UnfinishedQuery.HasActiveUnfinished(camp);
-      };
+      return () => UnfinishedQuery.HasActiveUnfinished(agent.camp);
     }
 
     public override AgentBelief Copy() => new HasActiveUnfinishedBelief { name = name };
@@ -29,8 +26,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
     public bool inverse;
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var result =  UnfinishedQuery.GetNeedingResources(camp) != null;
+        var result = UnfinishedQuery.GetNeedingResources(agent.camp) != null;
         return !inverse ? result : !result;
       };
     }
@@ -44,8 +40,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var unfinished = UnfinishedQuery.GetNeedingWork(camp);
+        var unfinished = UnfinishedQuery.GetNeedingWork(agent.camp);
         var result = unfinished != null;
         return !inverse ? result : !result;
       };
@@ -57,11 +52,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
   [Serializable, TypeInfoBox("True when unfinished is ready to complete (has resources + work done).")]
   public class UnfinishedReadyToCompleteBelief : AgentBelief {
     protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => {
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var ready = UnfinishedQuery.GetReadyToComplete(camp);
-        return ready != null;
-      };
+      return () => UnfinishedQuery.GetReadyToComplete(agent.camp) != null;
     }
 
     public override AgentBelief Copy() => new UnfinishedReadyToCompleteBelief { name = name };
@@ -71,7 +62,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
   public class CanDeliverFromStorageToUnfinishedBelief : CanDeliverToUnfinishedBelief {
     protected override bool Search(IGoapAgent agent, UnfinishedActor target) {
       var needs = target.GetRemainingResources();
-      var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      var camp = agent.camp;
       if (!deliverAllNeededTypes) {
         bool foundAny = false;
         foreach (var (tag, _) in needs) {
@@ -126,8 +117,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
 
     protected override Func<bool> GetCondition(IGoapAgent agent) {
       return () => {
-        var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-        var target = UnfinishedQuery.GetNeedingResources(camp);
+        var target = UnfinishedQuery.GetNeedingResources(agent.camp);
         return target != null && Search(agent, target);
       };
     }
