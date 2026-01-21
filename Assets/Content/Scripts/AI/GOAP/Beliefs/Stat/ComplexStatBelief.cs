@@ -8,7 +8,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
   public class ComplexStatBelief : AgentBelief {
     public FloatAgentStat.Data[] statDatas;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => {
         var body = agent.body;
         foreach (var statData in statDatas) {

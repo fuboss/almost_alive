@@ -7,10 +7,14 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
   public class HasTransientTargetBelief : AgentBelief {
     public bool inverse;
     
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ITransientTargetAgent targetAgent) {
+        return () => inverse; // No target capability = no target
+      }
+      
       return () => !inverse 
-        ? agent.transientTarget != null
-        : agent.transientTarget == null;
+        ? targetAgent.transientTarget != null
+        : targetAgent.transientTarget == null;
     }
 
     public override AgentBelief Copy() {

@@ -6,20 +6,17 @@ namespace Content.Scripts.AI.GOAP.Actions {
     bool complete { get; }
 
     void OnStart() {
-      // noop
     }
 
     void OnUpdate(float deltaTime) {
-      // noop
     }
 
     void OnStop() {
-      // noop
     }
-
-    IActionStrategy Create(IGoapAgent agent);
 
     void OnComplete() {
     }
+
+    IActionStrategy Create(IGoapAgentCore agent);
   }
 }

@@ -12,12 +12,13 @@ namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class EatNearestStrategy : AgentStrategy {
     public float consumeDuration = 4f;
-    private readonly AnimationController _animations;
-    private readonly IGoapAgent _agent;
+    
+    private IGoapAgentCore _agent;
+    private AnimationController _animations;
     private MemorySearcher _searcher;
     private SimTimer _timer;
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new EatNearestStrategy(agent) {
         consumeDuration = consumeDuration
       };
@@ -29,9 +30,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       };
     }
 
-    public EatNearestStrategy(IGoapAgent agent) : this() {
+    public EatNearestStrategy(IGoapAgentCore agent) : this() {
       _agent = agent;
-      _animations = _agent.animationController;
+      _animations = _agent.body?.animationController;
     }
 
     public override bool canPerform => !complete;
@@ -77,7 +78,6 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnComplete() {
-      //discard per-tick stat changes
       ApplyPerStatTick(-1);
 
       if (target != null) {

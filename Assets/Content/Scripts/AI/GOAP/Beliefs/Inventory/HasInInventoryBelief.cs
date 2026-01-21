@@ -9,9 +9,13 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
     public int requiredItemCount = 1;
     public bool inverse;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) {
+        return () => inverse; // No inventory = no items = inverse logic
+      }
+      
       return () => {
-        var hasEnough = agent.inventory.TryGetSlotWithItemTags(tags, out var slot) && slot.count >= requiredItemCount;
+        var hasEnough = inv.inventory.TryGetSlotWithItemTags(tags, out var slot) && slot.count >= requiredItemCount;
         return !inverse ? hasEnough : !hasEnough;
       };
     }

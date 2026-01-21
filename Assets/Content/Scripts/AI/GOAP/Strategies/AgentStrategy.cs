@@ -8,22 +8,18 @@ namespace Content.Scripts.AI.GOAP.Strategies {
   public abstract class AgentStrategy : IActionStrategy {
     public abstract bool canPerform { get; }
     public abstract bool complete { get; internal set; }
-    public abstract IActionStrategy Create(IGoapAgent agent);
+    public abstract IActionStrategy Create(IGoapAgentCore agent);
 
     public virtual void OnStart() {
-      // noop
     }
 
     public virtual void OnUpdate(float deltaTime) {
-      // noop
     }
 
     public virtual void OnStop() {
-      // noop
     }
 
     public virtual void OnComplete() {
-      
     }
 
 #if UNITY_EDITOR

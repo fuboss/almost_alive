@@ -9,7 +9,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float duration;
     private SimTimer _timer;
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new IdleStrategy(duration);
     }
 

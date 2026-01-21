@@ -5,7 +5,7 @@ using Content.Scripts.AI.GOAP.Agent;
 namespace Content.Scripts.AI.GOAP.Strategies.Use {
   [Serializable]
   public class UseToiletStrategy : UseActorStrategyBase {
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new UseToiletStrategy(agent) {
         useDuration = useDuration
       };
@@ -14,8 +14,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public UseToiletStrategy() {
     }
 
-    public UseToiletStrategy(IGoapAgent agent) {
+    public UseToiletStrategy(IGoapAgentCore agent) {
       this.agent = agent;
+      this.transientAgent = agent as ITransientTargetAgent;
     }
 
     protected override void ApplyOnStart() {

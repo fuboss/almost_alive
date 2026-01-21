@@ -3,6 +3,7 @@ using System.Linq;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Agent.Memory.Descriptors;
 using Content.Scripts.AI.GOAP.Stats;
+using Content.Scripts.Animation;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,18 +11,37 @@ namespace Content.Scripts.AI.GOAP.Agent {
   public class AgentBody : SerializedMonoBehaviour {
     [SerializeField] private List<AgentStat> _stats = new();
 
+    [FoldoutGroup("Components")]
+    [SerializeField] private AnimationController _animationController;
+    
+    [FoldoutGroup("Components")]
+    [SerializeField] private Rigidbody _rigidbody;
 
     [ShowInInspector] private Dictionary<StatType, float> _perTickDelta = new();
     public IReadOnlyDictionary<StatType, float> perTickDelta => _perTickDelta;
 
+    public AnimationController animationController => _animationController;
+    public new Rigidbody rigidbody => _rigidbody;
 
-    private IGoapAgent _agent;
+    private IGoapAgentCore _agent;
 
-    public void Initialize(IGoapAgent agent) {
+    public void Initialize(IGoapAgentCore agent) {
       _agent = agent;
       _perTickDelta ??= new Dictionary<StatType, float>();
-
       _stats = _agent.defaultStatSet.GetDefaultStats();
+      
+      RefreshLinks();
+    }
+
+    private void RefreshLinks() {
+      if (_animationController == null) 
+        _animationController = GetComponentInChildren<AnimationController>();
+      if (_rigidbody == null) 
+        _rigidbody = GetComponentInParent<Rigidbody>();
+    }
+
+    private void OnValidate() {
+      RefreshLinks();
     }
 
     public void TickStats(float deltaTime) {
@@ -62,7 +82,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void SetPerTickDelta(StatType statName, float delta) {
       _perTickDelta[statName] = delta;
     }
-
 
     public void SetResting(bool isResting) {
       Debug.LogError($"BODY isResting: {isResting}", this);

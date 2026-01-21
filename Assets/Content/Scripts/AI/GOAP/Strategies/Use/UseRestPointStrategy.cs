@@ -5,7 +5,7 @@ using Content.Scripts.AI.GOAP.Agent;
 namespace Content.Scripts.AI.GOAP.Strategies.Use {
   [Serializable]
   public class UseRestPointStrategy : UseActorStrategyBase {
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new UseRestPointStrategy(agent) {
         useDuration = useDuration
       };
@@ -14,8 +14,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public UseRestPointStrategy() {
     }
 
-    public UseRestPointStrategy(IGoapAgent agent) {
+    public UseRestPointStrategy(IGoapAgentCore agent) {
       base.agent = agent;
+      base.transientAgent = agent as ITransientTargetAgent;
     }
 
     protected override void ApplyOnStart() {

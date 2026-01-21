@@ -19,14 +19,14 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       new PerTickStatChange() { statType = StatType.HUNGER, delta = -0.1f },
     };
 
-    protected IGoapAgent _agent;
+    protected IGoapAgentCore _agent;
     protected Func<Vector3> _destination;
     protected MemorySnapshot _targetSnapshot;
 
     public MoveStrategy() {
     }
 
-    public MoveStrategy(IGoapAgent agent, Func<Vector3> destination) {
+    public MoveStrategy(IGoapAgentCore agent, Func<Vector3> destination) {
       _agent = agent;
       _destination = destination;
     }
@@ -86,7 +86,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public override void OnComplete() {
       if (_targetSnapshot != null) {
         _agent.gameObject.transform.LookAt(_targetSnapshot.location, Vector3.up);
-        _agent.transientTarget = _targetSnapshot.target;
+        if (_agent is ITransientTargetAgent transientAgent) {
+          transientAgent.transientTarget = _targetSnapshot.target;
+        }
         Debug.Log($"MoveStrategy OnComplete. to {_targetSnapshot.target.name} {_targetSnapshot.location}", _targetSnapshot.target);
       }
       _agent.navMeshAgent.ResetPath();
@@ -108,7 +110,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       }
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       var dest = _destination;
       if (targetFromMemory != null) {
         dest = () => targetFromMemory.Search(agent).location;

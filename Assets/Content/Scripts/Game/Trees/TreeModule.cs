@@ -8,7 +8,7 @@ namespace Content.Scripts.Game.Trees {
     [Inject] private ActorDestructionModule _actorDestruction;
     [Inject] private ActorCreationModule _creationModule;
 
-    public void ChopDownTree(ChoppingProgress choppingProgress, IGoapAgent byAgent) {
+    public void ChopDownTree(ChoppingProgress choppingProgress, IGoapAgentCore byAgent) {
       if (choppingProgress == null || choppingProgress.actor == null) return;
       if (!choppingProgress.isComplete) return;
 
@@ -20,10 +20,10 @@ namespace Content.Scripts.Game.Trees {
       }
 
       Debug.Log($"[TreeModule] Tree {choppingProgress.actor.name} chopped down by agent");
-      _actorDestruction.DestroyActor(choppingProgress.actor, byAgent);
+      _actorDestruction.DestroyActor(choppingProgress.actor);
     }
 
-    private void SpawnYieldWood(ChoppingProgress choppingProgress, IGoapAgent byAgent, int yield, string actorID) {
+    private void SpawnYieldWood(ChoppingProgress choppingProgress, IGoapAgentCore byAgent, int yield, string actorID) {
       var shift = Vector3.zero;
       for (int i = 0; i < yield; i++) {
         if (!_creationModule.TrySpawnActor(actorID, choppingProgress.transform.position + shift,

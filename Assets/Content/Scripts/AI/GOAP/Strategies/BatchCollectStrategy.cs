@@ -22,7 +22,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float pickupDuration = 1f;
     [ValueDropdown("GetTags")] public string[] itemTags = { Tag.ITEM };
 
-    private IGoapAgent _agent;
+    private IGoapAgentCore _agent;
+    private IInventoryAgent _inventoryAgent;
+    private ITransientTargetAgent _transientAgent;
     private AnimationController _animations;
     private int _collectedCount;
     private MemorySnapshot _currentTarget;
@@ -32,9 +34,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public BatchCollectStrategy() {
     }
 
-    private BatchCollectStrategy(IGoapAgent agent, BatchCollectStrategy template) {
+    private BatchCollectStrategy(IGoapAgentCore agent, BatchCollectStrategy template) {
       _agent = agent;
-      _animations = agent.animationController;
+      _inventoryAgent = agent as IInventoryAgent;
+      _transientAgent = agent as ITransientTargetAgent;
+      _animations = agent.body?.animationController;
       targetCount = template.targetCount;
       searchRadius = template.searchRadius;
       pickupDuration = template.pickupDuration;
@@ -44,7 +48,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override bool canPerform => !complete;
     public override bool complete { get; internal set; }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new BatchCollectStrategy(agent, this);
     }
 
@@ -52,6 +56,13 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _collectedCount = 0;
       _state = BatchState.SearchingTarget;
       complete = false;
+      
+      if (_inventoryAgent == null || _transientAgent == null) {
+        Debug.LogWarning("[BatchCollect] Agent missing IInventoryAgent or ITransientTargetAgent");
+        complete = true;
+        return;
+      }
+      
       InitTimer();
       FindNextTarget();
     }
@@ -65,7 +76,6 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public override void OnUpdate(float deltaTime) {
       switch (_state) {
         case BatchState.SearchingTarget:
-          // Handled in FindNextTarget
           break;
 
         case BatchState.MovingToTarget:
@@ -83,13 +93,16 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     private void FindNextTarget() {
-      // Check stop conditions
-      if (_agent.inventory.isFull || _collectedCount >= targetCount) {
+      if (_inventoryAgent == null) {
+        _state = BatchState.Done;
+        return;
+      }
+      
+      if (_inventoryAgent.inventory.isFull || _collectedCount >= targetCount) {
         _state = BatchState.Done;
         return;
       }
 
-      // Find nearest reachable collectible item in memory
       var tags = itemTags.Length > 0 ? itemTags : new[] { Tag.ITEM };
       var candidates = _agent.memory.GetInRadius(_agent.position, searchRadius, tags);
       
@@ -100,12 +113,10 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       );
 
       if (_currentTarget == null) {
-        // No more items - done if we collected something
         _state = BatchState.Done;
         return;
       }
 
-      // Move to target
       _state = BatchState.MovingToTarget;
       _agent.navMeshAgent.SetDestination(_currentTarget.location);
     }
@@ -114,13 +125,11 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       if (m.target == null) return false;
       var desc = m.target.GetComponent<ActorDescription>();
       if (desc == null || !desc.collectable) return false;
-      // Check if any storage needs this item
       return StorageQuery.AnyStorageNeeds(desc);
     }
 
     private void UpdateMoving() {
       if (_currentTarget?.target == null) {
-        // Target disappeared - find next
         FindNextTarget();
         return;
       }
@@ -139,27 +148,28 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
       _state = BatchState.PickingUp;
       _agent.navMeshAgent.ResetPath();
-      _agent.transientTarget = _currentTarget.target;
+      if (_transientAgent != null) {
+        _transientAgent.transientTarget = _currentTarget.target;
+      }
       _animations?.PickUp();
       _pickupTimer.Start();
     }
 
     private void OnPickupComplete() {
-      if (_agent.transientTarget != null) {
-        var target = _agent.transientTarget.GetComponent<ActorDescription>();
-        if (target != null && _agent.inventory.TryPutItemInInventory(target)) {
+      if (_transientAgent?.transientTarget != null && _inventoryAgent != null) {
+        var target = _transientAgent.transientTarget.GetComponent<ActorDescription>();
+        if (target != null && _inventoryAgent.inventory.TryPutItemInInventory(target)) {
           _collectedCount++;
           Debug.Log($"[BatchCollect] Picked up {target.name}, total: {_collectedCount}/{targetCount}");
-
-          // Remove from memory since we picked it up
           _agent.memory.Forget(_currentTarget);
         }
       }
 
-      _agent.transientTarget = null;
+      if (_transientAgent != null) {
+        _transientAgent.transientTarget = null;
+      }
       _currentTarget = null;
 
-      // Find next target
       FindNextTarget();
     }
 
@@ -167,7 +177,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _pickupTimer?.Dispose();
       _pickupTimer = null;
       _agent?.navMeshAgent?.ResetPath();
-      _agent.transientTarget = null;
+      if (_transientAgent != null) {
+        _transientAgent.transientTarget = null;
+      }
       _currentTarget = null;
     }
 

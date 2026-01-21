@@ -6,9 +6,11 @@ using Sirenix.OdinInspector;
 namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
   [Serializable, TypeInfoBox("True when agent has item in inventory that some storage needs.")]
   public class HasHaulableItemInInventoryBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) return () => false;
+      
       return () => {
-        foreach (var slot in agent.inventory.occupiedSlots) {
+        foreach (var slot in inv.inventory.occupiedSlots) {
           if (slot.item.collectable && StorageQuery.AnyStorageNeeds(slot.item)) {
             return true;
           }

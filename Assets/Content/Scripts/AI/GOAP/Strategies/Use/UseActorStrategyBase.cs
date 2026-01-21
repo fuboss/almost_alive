@@ -8,10 +8,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
   [Serializable]
   public abstract class UseActorStrategyBase : AgentStrategy {
     public float useDuration = 10;
-    protected IGoapAgent agent;
+    protected IGoapAgentCore agent;
+    protected ITransientTargetAgent transientAgent;
     private SimTimer _timer;
 
-    public override bool canPerform => !complete && agent.transientTarget != null;
+    public override bool canPerform => !complete && transientAgent?.transientTarget != null;
 
     public override bool complete { get; internal set; }
 
@@ -19,16 +20,23 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
 
     public override void OnStart() {
       complete = false;
+      
+      if (transientAgent?.transientTarget == null) {
+        Debug.LogWarning("[UseActorStrategy] No transient target");
+        complete = true;
+        return;
+      }
+      
       InitTimer();
       _timer.Start();
 
-      target = agent.transientTarget.GetComponent<ActorDescription>();
+      target = transientAgent.transientTarget.GetComponent<ActorDescription>();
       ApplyOnStart();
     }
 
 
     protected void ApplyPerStatTick(float multiplier = 1f) {
-      var descriptor = target.GetComponent<ActorDescription>();
+      var descriptor = target?.GetComponent<ActorDescription>();
       if (descriptor == null) return;
       agent.body.AdjustStatPerTickDelta(descriptor.descriptionData.onUseAddStatPerTick, multiplier);
     }
@@ -40,10 +48,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     }
 
     public override void OnStop() {
-      //discard per-tick stat changes
       ApplyOnStop();
 
-      agent.transientTarget = null;
+      if (transientAgent != null) {
+        transientAgent.transientTarget = null;
+      }
       _timer?.Dispose();
     }
 
@@ -58,7 +67,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public override void OnUpdate(float deltaTime) {
       _timer?.Tick(deltaTime);
 
-      if (agent.transientTarget == null) {
+      if (transientAgent?.transientTarget == null) {
         complete = true;
       }
     }

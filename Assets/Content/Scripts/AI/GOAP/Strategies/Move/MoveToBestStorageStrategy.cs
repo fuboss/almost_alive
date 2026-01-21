@@ -9,15 +9,17 @@ using UnityEngine;
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
   [Serializable]
   public class MoveToBestStorageStrategy : MoveStrategy {
-    public MoveToBestStorageStrategy(IGoapAgent agent, Func<Vector3> destination) : base(agent, destination) {
+    public MoveToBestStorageStrategy(IGoapAgentCore agent, Func<Vector3> destination) : base(agent, destination) {
     }
 
     public MoveToBestStorageStrategy() {
     }
 
     protected override MemorySnapshot GetTargetMemory() {
+      if (_agent is not IInventoryAgent inv) return null;
+      
       var slotWithHaulableItem =
-        _agent.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();
+        inv.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();
 
       MemorySnapshot mem = null;
       foreach (var slot in slotWithHaulableItem) {
@@ -35,7 +37,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       return mem;
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       var dest = _destination;
       if (targetFromMemory != null) {
         dest = () => targetFromMemory.Search(agent).location;

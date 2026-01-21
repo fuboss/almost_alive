@@ -18,15 +18,17 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     [Inject] private CampModule _campModule;
 
-    private IGoapAgent _agent;
+    private IGoapAgentCore _agent;
     private CampLocation _targetLocation;
     private SimTimer _claimTimer;
     private ClaimState _state;
+    private readonly ICampAgent _campAgent;
 
     public ClaimCampStrategy() { }
 
-    private ClaimCampStrategy(IGoapAgent agent, ClaimCampStrategy template) {
+    private ClaimCampStrategy(IGoapAgentCore agent, ClaimCampStrategy template) {
       _agent = agent;
+      _campAgent = agent as ICampAgent;
       claimDuration = template.claimDuration;
       _campModule = template._campModule;
     }
@@ -34,7 +36,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     public override bool canPerform => _campModule != null && _campModule.isReady;
     public override bool complete { get; internal set; }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new ClaimCampStrategy(agent, this);
     }
 
@@ -54,7 +56,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     public override void OnUpdate(float deltaTime) {
       switch (_state) {
         case ClaimState.FindingLocation:
-          // Handled in FindCampLocation
           break;
         case ClaimState.MovingToLocation:
           UpdateMoving();
@@ -87,7 +88,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
 
     private void UpdateMoving() {
       if (_targetLocation == null || _targetLocation.isClaimed) {
-        // Location taken while moving - find another
         FindCampLocation();
         return;
       }
@@ -117,7 +117,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
         return;
       }
 
-      // Try claim
       var goapAgent = _agent as GOAPAgent;
       if (goapAgent == null || !_targetLocation.TryClaim(goapAgent)) {
         Debug.LogWarning("[ClaimCamp] Failed to claim location");
@@ -125,7 +124,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
         return;
       }
 
-      // Instantiate setup
       var setup = _campModule.InstantiateRandomSetup(_targetLocation);
       if (setup == null) {
         Debug.LogError("[ClaimCamp] Failed to instantiate camp setup");
@@ -134,8 +132,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
         return;
       }
 
-      _campModule.RegisterAgentCamp(_agent, _targetLocation);
-      // Store in memory
+      _campModule.RegisterAgentCamp(_campAgent, _targetLocation);
       _agent.memory.persistentMemory.Remember(CampKeys.PERSONAL_CAMP, _targetLocation);
       Debug.Log($"[ClaimCamp] Claimed camp at {_targetLocation.name}");
 

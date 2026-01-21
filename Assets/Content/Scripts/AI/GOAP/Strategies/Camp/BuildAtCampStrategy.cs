@@ -18,7 +18,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     [Inject] private RecipeModule _recipeModule;
     [Inject] private ActorCreationModule _actorCreation;
 
-    private IGoapAgent _agent;
+    private IGoapAgentCore _agent;
+    private ICampAgent _campAgent;
+    private IInventoryAgent _inventoryAgent;
+    private IWorkAgent _workAgent;
     private CampLocation _camp;
     private CampSpot _targetSpot;
     private RecipeSO _selectedRecipe;
@@ -28,8 +31,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     public BuildAtCampStrategy() {
     }
 
-    private BuildAtCampStrategy(IGoapAgent agent, BuildAtCampStrategy template) {
+    private BuildAtCampStrategy(IGoapAgentCore agent, BuildAtCampStrategy template) {
       _agent = agent;
+      _campAgent = agent as ICampAgent;
+      _inventoryAgent = agent as IInventoryAgent;
+      _workAgent = agent as IWorkAgent;
       _recipeModule = template._recipeModule;
       _actorCreation = template._actorCreation;
     }
@@ -37,13 +43,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     public override bool canPerform => _recipeModule != null && _actorCreation != null;
     public override bool complete { get; internal set; }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new BuildAtCampStrategy(agent, this);
     }
 
     public override void OnStart() {
       complete = false;
       _state = BuildState.SelectingRecipe;
+      
+      if (_campAgent == null || _inventoryAgent == null || _workAgent == null) {
+        Debug.LogWarning("[BuildAtCamp] Agent missing required interfaces");
+        _state = BuildState.Done;
+        return;
+      }
+      
       SelectRecipeAndSpot();
     }
 
@@ -64,22 +77,18 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     }
 
     private void SelectRecipeAndSpot() {
-      // Get agent's camp
-      _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      _camp = _campAgent.camp;
       if (_camp == null || _camp.setup == null) {
         Debug.LogWarning("[BuildAtCamp] No camp or setup found");
         _state = BuildState.Done;
         return;
       }
 
-      // Get unlocked camp recipes sorted by priority
-      var campRecipes = _agent.recipes.GetUnlockedCampRecipes(_recipeModule);
+      var campRecipes = _workAgent.recipes.GetUnlockedCampRecipes(_recipeModule);
 
-      // Find first recipe we can craft that has an empty spot
       foreach (var recipe in campRecipes) {
-        if (!_recipeModule.CanCraft(recipe, _agent.inventory)) continue;
+        if (!_recipeModule.CanCraft(recipe, _inventoryAgent.inventory)) continue;
 
-        // Find empty spot matching this recipe's tag
         var spot = FindSpotForRecipe(recipe);
         if (spot == null) continue;
 
@@ -102,19 +111,16 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
     private CampSpot FindSpotForRecipe(RecipeSO recipe) {
       var tags = _recipeModule.GetResultActorTags(recipe);
       var tag = tags[0];
-      // If recipe has specific tag, find spot that prefers it
       if (!string.IsNullOrEmpty(tag)) {
         var preferredSpot = _camp.setup.GetSpotsNeedingTag(tag).FirstOrDefault();
         if (preferredSpot != null) return preferredSpot;
       }
 
-      // Otherwise any empty spot
       return _camp.setup.GetAnyEmptySpot();
     }
 
     private void UpdateMoving() {
       if (_targetSpot == null || !_targetSpot.isEmpty) {
-        // Spot taken - reselect
         SelectRecipeAndSpot();
         return;
       }
@@ -131,10 +137,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
       _state = BuildState.Building;
       _agent.navMeshAgent.ResetPath();
 
-      // Consume resources
       ConsumeResources();
 
-      // Start build timer
       _buildTimer?.Dispose();
       _buildTimer = new SimTimer(_selectedRecipe.recipe.craftTime);
       _buildTimer.OnTimerComplete += OnBuildComplete;
@@ -147,7 +151,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
       foreach (var requiredResource in _selectedRecipe.recipe.requiredResources) {
         var remaining = (int)requiredResource.count;
         while (remaining > 0) {
-          if (!_agent.inventory.TryGetSlotWithItemTags(new[] { requiredResource.tag }, out var slot)) break;
+          if (!_inventoryAgent.inventory.TryGetSlotWithItemTags(new[] { requiredResource.tag }, out var slot)) break;
 
           var toRemove = Mathf.Min(remaining, slot.count);
           slot.RemoveCount(toRemove);
@@ -165,14 +169,13 @@ namespace Content.Scripts.AI.GOAP.Strategies.Camp {
         return;
       }
 
-      // Spawn actor
       if (_actorCreation.TrySpawnActor(
             _selectedRecipe.recipe.resultActorKey,
             _targetSpot.position,
             out var actor,
             _selectedRecipe.recipe.outputCount)) {
         _targetSpot.SetBuiltActor(actor);
-        _agent.AddExperience(10); // XP for building
+        _workAgent?.AddExperience(10);
         Debug.Log($"[BuildAtCamp] Built {actor.actorKey} at {_targetSpot.name}");
       }
       else {

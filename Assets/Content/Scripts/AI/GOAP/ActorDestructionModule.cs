@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
 using UnityEngine;
 using VContainer;
@@ -12,7 +11,7 @@ namespace Content.Scripts.AI.GOAP {
     void IInitializable.Initialize() {
     }
 
-    public void DestroyActor(ActorDescription actor, IGoapAgent byAgent = null) {
+    public void DestroyActor(ActorDescription actor) {
       if (actor == null) {
         Debug.LogError("ActorDestructionModule: DestroyActor: actor is null");
         return;

@@ -27,7 +27,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 #endif
 
-    public MemorySnapshot Search(IGoapAgent agent, Func<MemorySnapshot, bool> predicate = null) {
+    public MemorySnapshot Search(IGoapAgentCore agent, Func<MemorySnapshot, bool> predicate = null) {
       var targetMem = searchMode switch {
         SearchMode.NEAREST => GetNearest(agent, predicate),
         SearchMode.ANY => agent.memory.GetWithAllTags(requiredTags).Random(),
@@ -43,7 +43,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       return null;
     }
 
-    public MemorySnapshot GetNearest(IGoapAgent agent, Func<MemorySnapshot, bool> predicate = null) {
+    public MemorySnapshot GetNearest(IGoapAgentCore agent, Func<MemorySnapshot, bool> predicate = null) {
       var candidates = agent.memory.GetWithAllTags(requiredTags);
       
       if (candidates.Length == 0) return null;
@@ -76,7 +76,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
       return GetNearestByEuclidean(agent.position, candidates);
     }
 
-    private MemorySnapshot GetNearestByNavMesh(IGoapAgent agent, MemorySnapshot[] candidates) {
+    private MemorySnapshot GetNearestByNavMesh(IGoapAgentCore agent, MemorySnapshot[] candidates) {
       MemorySnapshot best = null;
       var bestCost = float.MaxValue;
 

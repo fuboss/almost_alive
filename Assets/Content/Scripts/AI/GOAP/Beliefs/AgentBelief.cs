@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs {
   [Serializable]
@@ -14,15 +13,14 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
 
     public bool lastEvaluation => _lastEvaluation;
 
-    public virtual bool Evaluate(IGoapAgent agent) {
+    public virtual bool Evaluate(IGoapAgentCore agent) {
       condition = GetCondition(agent);
       var evaluate = condition != null && condition();
       _lastEvaluation = evaluate;
-      // Debug.Log($"[EVALUATE]{ToString()} = {evaluate}");
       return evaluate;
     }
 
-    protected virtual Func<bool> GetCondition(IGoapAgent agent) {
+    protected virtual Func<bool> GetCondition(IGoapAgentCore agent) {
       return condition ?? (() => false);
     }
 

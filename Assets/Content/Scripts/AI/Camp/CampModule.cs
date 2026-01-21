@@ -16,7 +16,7 @@ namespace Content.Scripts.AI.Camp {
     [Inject] private IObjectResolver _resolver;
 
     private readonly List<CampSetup> _setupPrefabs = new();
-    private readonly Dictionary<IGoapAgent, AgentCampData> _agentCampData = new();
+    private readonly Dictionary<ICampAgent, AgentCampData> _agentCampData = new();
     private bool _loaded;
 
     void IInitializable.Initialize() {
@@ -33,7 +33,7 @@ namespace Content.Scripts.AI.Camp {
     public bool isReady => _loaded && _setupPrefabs.Count > 0;
 
     /// <summary>Get or create camp data for agent.</summary>
-    public AgentCampData GetAgentCampData(IGoapAgent agent) {
+    public AgentCampData GetAgentCampData(ICampAgent agent) {
       if (agent == null) return null;
       
       if (!_agentCampData.TryGetValue(agent, out var data)) {
@@ -44,19 +44,19 @@ namespace Content.Scripts.AI.Camp {
     }
 
     /// <summary>Register camp for agent. Updates agent's camp data.</summary>
-    public void RegisterAgentCamp(IGoapAgent agent, CampLocation camp) {
+    public void RegisterAgentCamp(ICampAgent agent, CampLocation camp) {
       var data = GetAgentCampData(agent);
       data?.SetCamp(camp);
     }
 
     /// <summary>Unregister agent's camp.</summary>
-    public void UnregisterAgentCamp(IGoapAgent agent) {
+    public void UnregisterAgentCamp(ICampAgent agent) {
       var data = GetAgentCampData(agent);
       data?.ClearCamp();
     }
 
     /// <summary>Remove agent from tracking entirely.</summary>
-    public void RemoveAgent(IGoapAgent agent) {
+    public void RemoveAgent(ICampAgent agent) {
       _agentCampData.Remove(agent);
     }
 

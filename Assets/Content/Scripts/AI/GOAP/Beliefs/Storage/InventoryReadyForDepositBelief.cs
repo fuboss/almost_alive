@@ -1,5 +1,6 @@
 using System;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Game;
 using Content.Scripts.Game.Storage;
 using Sirenix.OdinInspector;
 
@@ -10,12 +11,14 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Storage {
     public float searchRadius = 30f;
     [ValueDropdown("GetTags")] public string[] itemTags;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) return () => false;
+      
       return () => {
-        if (agent.inventory.isFull) return true;
+        if (inv.inventory.isFull) return true;
 
         var haulableCount = 0;
-        foreach (var slot in agent.inventory.occupiedSlots) {
+        foreach (var slot in inv.inventory.occupiedSlots) {
           if (StorageQuery.AnyStorageNeeds(slot.item)) {
             haulableCount += slot.count;
           }

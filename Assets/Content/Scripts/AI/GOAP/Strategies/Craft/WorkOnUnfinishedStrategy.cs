@@ -1,5 +1,4 @@
 using System;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Core.Simulation;
@@ -18,8 +17,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     public float duration = 30;
 
-    private IGoapAgent _agent;
-    private CampLocation _camp;
+    private IGoapAgentCore _agent;
+    private ITransientTargetAgent _transientAgent;
+    private ICampAgent _campAgent;
+    private IWorkAgent _workAgent;
     private UnfinishedActor _target;
     private SimTimer _timer;
     private bool _abort;
@@ -27,21 +28,32 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     public WorkOnUnfinishedStrategy() {
     }
 
-    private WorkOnUnfinishedStrategy(IGoapAgent agent, WorkOnUnfinishedStrategy template) {
+    private WorkOnUnfinishedStrategy(IGoapAgentCore agent, WorkOnUnfinishedStrategy template) {
       _agent = agent;
+      _transientAgent = agent as ITransientTargetAgent;
+      _campAgent = agent as ICampAgent;
+      _workAgent = agent as IWorkAgent;
       workRate = template.workRate;
+      duration = template.duration;
     }
 
     public override bool canPerform => true;
     public override bool complete { get; internal set; }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new WorkOnUnfinishedStrategy(agent, this);
     }
 
     public override void OnStart() {
       complete = false;
       _abort = false;
+      
+      if (_campAgent == null) {
+        Debug.LogWarning("[WorkUnfinished] Agent missing ICampAgent");
+        complete = true;
+        return;
+      }
+      
       FindTarget();
       InitTimer();
       Debug.Log("[WorkUnfinished] Start working");
@@ -67,21 +79,19 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     private void FindTarget() {
-      _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-
-      if (_agent.transientTarget.GetComponent<UnfinishedActor>() is { } unfinishedActor) {
+      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
+      if (unfinishedActor != null) {
         _target = unfinishedActor;
         Debug.Log($"[WorkUnfinished] Using transient target {_target.recipe.recipeId}");
         _agent.navMeshAgent.SetDestination(_target.transform.position);
         return;
       }
 
-      // Find that has all resources and needs work
-      _target = UnfinishedQuery.GetNeedingWork(_camp);
+      var camp = _campAgent.camp;
+      _target = UnfinishedQuery.GetNeedingWork(camp);
 
       if (_target == null) {
-        // Maybe ready to complete?
-        _target = UnfinishedQuery.GetReadyToComplete(_camp);
+        _target = UnfinishedQuery.GetReadyToComplete(camp);
       }
 
       if (_target == null) {
@@ -116,7 +126,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private void TryComplete() {
       var result = _target.TryComplete();
       if (result != null) {
-        _agent.AddExperience(10);
+        _workAgent?.AddExperience(10);
         Debug.Log($"[WorkUnfinished] Completed {result.actorKey}!");
       }
 
@@ -130,7 +140,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       _timer?.Dispose();
       _timer = null;
       _target = null;
-      _camp = null;
     }
   }
 }

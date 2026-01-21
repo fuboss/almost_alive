@@ -7,7 +7,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
   public class NavAgentMovementBelief : AgentBelief {
     public bool isMoving;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => agent.isMoving == isMoving;
     }
 

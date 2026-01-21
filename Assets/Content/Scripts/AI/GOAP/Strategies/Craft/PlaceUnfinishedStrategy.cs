@@ -21,7 +21,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     [Inject] private ActorCreationModule _actorCreation;
     [Inject] private IObjectResolver _resolver;
 
-    private IGoapAgent _agent;
+    private IGoapAgentCore _agent;
+    private ITransientTargetAgent _transientAgent;
+    private ICampAgent _campAgent;
+    private IWorkAgent _workAgent;
     private CampLocation _camp;
     private CampSpot _targetSpot;
     private RecipeSO _selectedRecipe;
@@ -32,8 +35,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     public PlaceUnfinishedStrategy() {
     }
 
-    private PlaceUnfinishedStrategy(IGoapAgent agent, PlaceUnfinishedStrategy template) {
+    private PlaceUnfinishedStrategy(IGoapAgentCore agent, PlaceUnfinishedStrategy template) {
       _agent = agent;
+      _transientAgent = agent as ITransientTargetAgent;
+      _campAgent = agent as ICampAgent;
+      _workAgent = agent as IWorkAgent;
       _recipeModule = template._recipeModule;
       _actorCreation = template._actorCreation;
       _resolver = template._resolver;
@@ -42,13 +48,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     public override bool canPerform => _recipeModule != null && _actorCreation != null;
     public override bool complete { get; internal set; }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new PlaceUnfinishedStrategy(agent, this);
     }
 
     public override void OnStart() {
       complete = false;
       _state = PlaceState.Selecting;
+      
+      if (_campAgent == null || _workAgent == null) {
+        Debug.LogWarning("[PlaceUnfinished] Agent missing required interfaces");
+        _state = PlaceState.Done;
+        return;
+      }
+      
       SelectRecipeAndSpot();
     }
 
@@ -69,22 +82,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     private void SelectRecipeAndSpot() {
-      _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      _camp = _campAgent.camp;
       if (_camp?.setup == null) {
         Debug.LogWarning("[PlaceUnfinished] No camp or setup");
         _state = PlaceState.Done;
         return;
       }
 
-      // Skip if there's already an active unfinished
       if (UnfinishedQuery.HasActiveUnfinished(_camp)) {
         Debug.Log("[PlaceUnfinished] Already has active unfinished");
         _state = PlaceState.Done;
         return;
       }
 
-      // Get unlocked camp recipes by priority (don't check resources!)
-      var campRecipes = _agent.recipes.GetUnlockedCampRecipes(_recipeModule);
+      var campRecipes = _workAgent.recipes.GetUnlockedCampRecipes(_recipeModule);
       var alreadyBuilt = _camp.setup.GetOccupiedSpots().Select(s => s.builtActor.actorKey).ToArray();
       foreach (var recipe in campRecipes) {
         if (alreadyBuilt.Contains(recipe.recipe.resultActorKey)) {
@@ -139,7 +150,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private void PlaceUnfinished() {
       _agent.navMeshAgent.ResetPath();
 
-      // Spawn unfinished prefab
       if (!_actorCreation.TrySpawnActor(UNFINISHED_KEY, _targetSpot.position, out var actor)) {
         Debug.LogError("[PlaceUnfinished] Failed to spawn unfinished prefab");
         _state = PlaceState.Done;
@@ -156,11 +166,12 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       unfinished.Initialize(_selectedRecipe, _targetSpot);
 
-      // Parent to spot
       actor.transform.SetParent(_targetSpot.transform);
       actor.transform.localPosition = Vector3.zero;
 
-      _agent.transientTarget = unfinished.actor;
+      if (_transientAgent != null) {
+        _transientAgent.transientTarget = unfinished.actor;
+      }
       _agent.agentBrain.TryRemember(unfinished.actor);
 
       Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
@@ -168,8 +179,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     public override void OnStop() {
-      _agent.navMeshAgent?.ResetPath();
-      _agent.transientTarget = null;
+      _agent?.navMeshAgent?.ResetPath();
+      if (_transientAgent != null) {
+        _transientAgent.transientTarget = null;
+      }
       _targetSpot = null;
       _selectedRecipe = null;
       _camp = null;

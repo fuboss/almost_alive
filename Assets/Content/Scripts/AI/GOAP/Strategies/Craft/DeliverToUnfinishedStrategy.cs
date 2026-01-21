@@ -14,8 +14,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   [Serializable]
   public class DeliverToUnfinishedStrategy : AgentStrategy {
     public float duration = 2f;
-    private IGoapAgent _agent;
-    private CampLocation _camp;
+    
+    private IGoapAgentCore _agent;
+    private ITransientTargetAgent _transientAgent;
+    private IInventoryAgent _inventoryAgent;
+    private ICampAgent _campAgent;
     private UnfinishedActor _target;
     private bool _abort;
     private SimTimer _timer;
@@ -26,9 +29,13 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     public DeliverToUnfinishedStrategy() {
     }
 
-    private DeliverToUnfinishedStrategy(IGoapAgent agent, DeliverToUnfinishedStrategy template) {
+    private DeliverToUnfinishedStrategy(IGoapAgentCore agent, DeliverToUnfinishedStrategy template) {
       _agent = agent;
+      _transientAgent = agent as ITransientTargetAgent;
+      _inventoryAgent = agent as IInventoryAgent;
+      _campAgent = agent as ICampAgent;
       duration = template.duration;
+      _creationModule = template._creationModule;
     }
 
     public override bool canPerform => true;
@@ -38,13 +45,20 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       internal set { _complete = value; }
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new DeliverToUnfinishedStrategy(agent, this);
     }
 
     public override void OnStart() {
       complete = false;
       _abort = false;
+      
+      if (_inventoryAgent == null || _campAgent == null) {
+        Debug.LogWarning("[DeliverUnfinished] Agent missing required interfaces");
+        complete = true;
+        return;
+      }
+      
       FindTarget();
       if (_target == null) {
         complete = true;
@@ -53,7 +67,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
       InitTimer();
     }
-
 
     private void InitTimer() {
       _timer?.Dispose();
@@ -77,9 +90,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     protected void FindTarget() {
-      var unfinishedActor = _agent.transientTarget != null
-        ? _agent.transientTarget.GetComponent<UnfinishedActor>()
-        : null;
+      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
       if (unfinishedActor != null) {
         _target = unfinishedActor;
         Debug.Log($"[DeliverUnfinished] Using transient target {_target.recipe.recipeId}");
@@ -87,8 +98,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         return;
       }
 
-      _camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-      _target = UnfinishedQuery.GetNeedingResources(_camp);
+      var camp = _campAgent.camp;
+      _target = UnfinishedQuery.GetNeedingResources(camp);
 
       if (_target == null) {
         Debug.Log("[DeliverUnfinished] No target needing resources");
@@ -97,7 +108,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     private void DeliverToTarget() {
-      if (_target == null) {
+      if (_target == null || _inventoryAgent == null) {
         _abort = true;
         return;
       }
@@ -110,8 +121,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         $"Start delivering to {_target.name}. Required{string.Join(",", needs.Select(n => $"{n.tag}x{n.remaining}"))}",
         _target);
       foreach (var (tag, remaining) in needs) {
-        if (!_agent.inventory.TryGetSlotWithItemTags(new[] { tag }, out var slot)) {
-          Debug.Log($"agent has no item with tag {tag}", _agent.inventory);
+        if (!_inventoryAgent.inventory.TryGetSlotWithItemTags(new[] { tag }, out var slot)) {
+          Debug.Log($"agent has no item with tag {tag}", _inventoryAgent.inventory);
           continue;
         }
         
@@ -159,7 +170,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       _timer = null;
       _agent?.StopAndCleanPath();
       _target = null;
-      _camp = null;
     }
   }
 }

@@ -12,12 +12,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
     [EnableIf("checkDistance")] public float maxDistance = 20;
     public bool inverse;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       var sqrMaxDistance = maxDistance * maxDistance;
       return () => {
         var memory = agent.memory;
         
-        // Fast path: no distance check
         if (!checkDistance) {
           if (minCount == 1) {
             var has = memory.HasWithAllTags(tags);
@@ -28,7 +27,6 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Memory {
           return !inverse ? hasEnough : !hasEnough;
         }
         
-        // Distance check required - need to iterate
         var withTags = memory.GetWithAllTags(tags);
         if (withTags.Length == 0) {
           return inverse;

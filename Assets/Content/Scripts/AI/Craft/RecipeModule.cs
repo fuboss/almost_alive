@@ -80,8 +80,8 @@ namespace Content.Scripts.AI.Craft {
     }
 
 
-    public string[] GetResourcesTagsForAvailableRecipes(IGoapAgent agent) {
-      var agentRecipes = agent.recipes;
+    public string[] GetResourcesTagsForAvailableRecipes(IWorkAgent workAgent) {
+      var agentRecipes = workAgent.recipes;
       var unlockedRecipeIds = agentRecipes.unlockedRecipeIds;
       var resourceTags = new HashSet<string>();
       foreach (var recipe in _recipes) {

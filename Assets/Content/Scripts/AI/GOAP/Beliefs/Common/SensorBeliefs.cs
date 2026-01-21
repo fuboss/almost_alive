@@ -7,7 +7,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs {
   public class VisionBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string[] tags;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => {
         var sensor = agent.agentBrain.visionSensor;
         return sensor.HasObjectsWithTagsInView(tags);

@@ -8,7 +8,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Stat {
   public class StatBelief : AgentBelief {
     public FloatAgentStat.Data statData = new();
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => {
         var stat = agent.body.GetStat(statData.statType) as FloatAgentStat;
         return stat != null && stat.Normalized >= statData.minValue && stat.Normalized <= statData.maxValue;

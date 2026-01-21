@@ -11,14 +11,17 @@ using UnityEngine;
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
   [Serializable]
   public class MoveToBestUnfinishedStrategy : MoveStrategy {
-    public MoveToBestUnfinishedStrategy(IGoapAgent agent, Func<Vector3> destination) : base(agent, destination) {
+    public MoveToBestUnfinishedStrategy(IGoapAgentCore agent, Func<Vector3> destination) : base(agent, destination) {
     }
 
     public MoveToBestUnfinishedStrategy() {
     }
 
     protected override MemorySnapshot GetTargetMemory() {
-      var camp = _agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+      if (_agent is not ICampAgent campAgent) return null;
+      if (_agent is not IInventoryAgent inv) return null;
+      
+      var camp = campAgent.camp;
       var target = UnfinishedQuery.GetAllAtCamp(camp).FirstOrDefault();
       if (target != null) {
         if (_agent.memory.Recall(ms => ms.target != null && ms.target.gameObject == target.gameObject, out var snapshot)) {
@@ -30,7 +33,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       }
 
       var slotWithHaulableItem =
-        _agent.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();
+        inv.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();
 
       MemorySnapshot mem = null;
       foreach (var slot in slotWithHaulableItem) {
@@ -49,7 +52,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       return mem;
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       var dest = _destination;
       if (targetFromMemory != null) {
         dest = () => targetFromMemory.Search(agent).location;

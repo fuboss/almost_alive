@@ -10,7 +10,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Common {
     public float range = 2;
     public bool inverted;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       var sqrRange = range * range;
       return () => {
         var sqrDistance = (agent.position - location).sqrMagnitude;

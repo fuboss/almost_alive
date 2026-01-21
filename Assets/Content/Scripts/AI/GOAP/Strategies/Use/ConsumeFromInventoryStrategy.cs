@@ -15,12 +15,14 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public float consumeDuration = 4f;
     [ValueDropdown("GetTags")] public string[] tags;
     public int count = 1;
-    private readonly AnimationController _animations;
-    private readonly IGoapAgent _agent;
+    
+    private IGoapAgentCore _agent;
+    private IInventoryAgent _inventoryAgent;
+    private AnimationController _animations;
     private SimTimer _timer;
     private InventorySlot _slot;
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new ConsumeFromInventoryStrategy(agent) {
         consumeDuration = consumeDuration,
         tags = tags,
@@ -31,9 +33,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     public ConsumeFromInventoryStrategy() {
     }
 
-    public ConsumeFromInventoryStrategy(IGoapAgent agent) : this() {
+    public ConsumeFromInventoryStrategy(IGoapAgentCore agent) : this() {
       _agent = agent;
-      _animations = _agent.animationController;
+      _inventoryAgent = agent as IInventoryAgent;
+      _animations = _agent.body?.animationController;
     }
 
     public override bool canPerform => !complete;
@@ -45,7 +48,13 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
       complete = false;
       _slot = null;
 
-      if (!_agent.inventory.TryGetSlotWithItemTags(tags, out var slot)) {
+      if (_inventoryAgent == null) {
+        Debug.LogWarning("[ConsumeInventory] Agent missing IInventoryAgent");
+        complete = true;
+        return;
+      }
+
+      if (!_inventoryAgent.inventory.TryGetSlotWithItemTags(tags, out var slot)) {
         Debug.LogWarning("[ConsumeInventory] No matching item, abort");
         complete = true;
         return;
@@ -69,9 +78,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     }
 
     private void ApplyUseStat(float multiplier = 1f) {
-      var descriptor = target.GetComponent<ActorDescription>();
-      if (descriptor == null) return;
-      if (descriptor.descriptionData.onUseAddStats == null) return;
+      var descriptor = target?.GetComponent<ActorDescription>();
+      if (descriptor?.descriptionData.onUseAddStats == null) return;
 
       foreach (var change in descriptor.descriptionData.onUseAddStats) {
         if (_agent.body.GetStat(change.statType) is FloatAgentStat stat) {
@@ -100,11 +108,9 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     }
 
     public override void OnComplete() {
-      if (target == null) return;
+      if (target == null || _slot == null) return;
 
       _slot.RemoveCount(count);
-
-      //consume!
       ApplyUseStat();
     }
 

@@ -10,11 +10,14 @@ namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class PickupTransientStrategy : AgentStrategy {
     public float duration = 1f;
-    private readonly AnimationController _animations;
-    private readonly IGoapAgent _agent;
+    
+    private IGoapAgentCore _agent;
+    private ITransientTargetAgent _transientAgent;
+    private IInventoryAgent _inventoryAgent;
+    private AnimationController _animations;
     private SimTimer _timer;
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new PickupTransientStrategy(agent) {
         duration = duration
       };
@@ -23,21 +26,28 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public PickupTransientStrategy() {
     }
 
-    public PickupTransientStrategy(IGoapAgent agent) : this() {
+    public PickupTransientStrategy(IGoapAgentCore agent) : this() {
       _agent = agent;
-      _animations = _agent.animationController;
+      _transientAgent = agent as ITransientTargetAgent;
+      _inventoryAgent = agent as IInventoryAgent;
+      _animations = _agent.body?.animationController;
     }
 
-    public override bool canPerform => !complete && _agent?.transientTarget != null;
+    public override bool canPerform => !complete && _transientAgent?.transientTarget != null;
     public override bool complete { get; internal set; }
 
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
       complete = false;
-      target = _agent?.transientTarget != null
-        ? _agent.transientTarget.GetComponent<ActorDescription>()
-        : null;
+      
+      if (_transientAgent == null || _inventoryAgent == null) {
+        complete = true;
+        Debug.LogWarning("[PickupTransient] Agent missing ITransientTargetAgent or IInventoryAgent");
+        return;
+      }
+      
+      target = _transientAgent.transientTarget?.GetComponent<ActorDescription>();
       if (target == null) {
         complete = true;
         Debug.LogWarning("[PickupTransient] No target, abort");
@@ -56,12 +66,13 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnComplete() {
-      if (target == null) return;
-      if (_agent.inventory.TryPutItemInInventory(target)) {
-        _agent.memory.Forget(_agent.transientTarget);
+      if (target == null || _inventoryAgent == null || _transientAgent == null) return;
+      
+      if (_inventoryAgent.inventory.TryPutItemInInventory(target)) {
+        _agent.memory.Forget(_transientAgent.transientTarget);
       }
 
-      _agent.transientTarget = null;
+      _transientAgent.transientTarget = null;
     }
 
     public override void OnStop() {

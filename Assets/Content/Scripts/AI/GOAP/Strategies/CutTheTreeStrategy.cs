@@ -15,11 +15,12 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     [Tooltip("Work units added per second")]
     public float workRate = 2f;
 
-    private readonly AnimationController _animations;
-    private readonly IGoapAgent _agent;
+    private IGoapAgentCore _agent;
+    private ITransientTargetAgent _transientAgent;
+    private AnimationController _animations;
     private ChoppingProgress _choppingProgress;
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new CutTheTreeStrategy(agent) {
         workRate = workRate
       };
@@ -28,21 +29,27 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public CutTheTreeStrategy() {
     }
 
-    public CutTheTreeStrategy(IGoapAgent agent) : this() {
+    public CutTheTreeStrategy(IGoapAgentCore agent) : this() {
       _agent = agent;
-      _animations = _agent.animationController;
+      _transientAgent = agent as ITransientTargetAgent;
+      _animations = _agent.body?.animationController;
     }
 
-    public override bool canPerform => !complete && _agent?.transientTarget != null;
+    public override bool canPerform => !complete && _transientAgent?.transientTarget != null;
     public override bool complete { get; internal set; }
 
     public ActorDescription target { get; private set; }
 
     public override void OnStart() {
       complete = false;
-      target = _agent?.transientTarget != null
-        ? _agent.transientTarget.GetComponent<ActorDescription>()
-        : null;
+      
+      if (_transientAgent == null) {
+        complete = true;
+        Debug.LogWarning("[CutTree] Agent missing ITransientTargetAgent");
+        return;
+      }
+      
+      target = _transientAgent.transientTarget?.GetComponent<ActorDescription>();
       if (target == null) {
         complete = true;
         Debug.LogWarning("[CutTree] No target, abort");
@@ -62,9 +69,9 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnComplete() {
-      if (target == null) return;
-      _agent.memory.Forget(_agent.transientTarget);
-      _agent.transientTarget = null;
+      if (target == null || _transientAgent == null) return;
+      _agent.memory.Forget(_transientAgent.transientTarget);
+      _transientAgent.transientTarget = null;
       _treeModule.ChopDownTree(_choppingProgress, _agent);
     }
 

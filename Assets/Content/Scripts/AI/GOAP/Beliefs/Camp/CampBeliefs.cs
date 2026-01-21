@@ -1,15 +1,16 @@
 using System;
 using System.Linq;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
   [Serializable, TypeInfoBox("True when agent has claimed camp with setup.")]
   public class HasCampBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return () => false;
+      
       return () => {
-        var camp = agent.camp;
+        var camp = campAgent.camp;
         return camp != null && camp.hasSetup;
       };
     }
@@ -19,9 +20,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
 
   [Serializable, TypeInfoBox("True when agent needs a camp (has no camp or no setup).")]
   public class NeedsCampBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return () => true; // No camp capability = needs camp? Debatable
+      
       return () => {
-        var camp = agent.camp;
+        var camp = campAgent.camp;
         return camp == null || !camp.hasSetup;
       };
     }
@@ -31,16 +34,20 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
 
   [Serializable, TypeInfoBox("True when camp has empty spots and agent can build something (has resources).")]
   public class CampNeedsBuildingBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return () => false;
+      if (agent is not IWorkAgent workAgent) return () => false;
+      if (agent is not IInventoryAgent invAgent) return () => false;
+      
       return () => {
-        var recipeModule = agent.recipeModule;
-        var camp = agent.camp;
+        var recipeModule = workAgent.recipeModule;
+        var camp = campAgent.camp;
         if (camp?.setup == null) return false;
         if (camp.setup.allSpotsFilled) return false;
 
         if (recipeModule == null) return false;
-        var campRecipes = agent.recipes.GetUnlockedCampRecipes(recipeModule);
-        return campRecipes.Any(r => recipeModule.CanCraft(r, agent.inventory));
+        var campRecipes = workAgent.recipes.GetUnlockedCampRecipes(recipeModule);
+        return campRecipes.Any(r => recipeModule.CanCraft(r, invAgent.inventory));
       };
     }
 
@@ -49,9 +56,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
 
   [Serializable, TypeInfoBox("True when camp is fully built (all spots filled).")]
   public class CampFullyBuiltBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return () => false;
+      
       return () => {
-        var camp = agent.camp;
+        var camp = campAgent.camp;
         return camp?.setup != null && camp.setup.allSpotsFilled;
       };
     }
@@ -63,9 +72,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Camp {
   public class CampHasModuleBelief : AgentBelief {
     [ValueDropdown("GetTags")] public string moduleTag;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return () => false;
+      
       return () => {
-        var camp = agent.camp;
+        var camp = campAgent.camp;
         if (camp == null) return false;
 
         var hasModule = camp.setup.allSpotsFilled;

@@ -15,7 +15,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public float defaultWanderRadius = 10f;
     public bool debugWanderAroundCenter = true;
 
-    protected IGoapAgent _agent;
+    protected IGoapAgentCore _agent;
     private Func<float> _wanderRadius;
     private int _visitedPoints = -1;
     private bool _aborted;
@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public WanderStrategy() {
     }
 
-    public WanderStrategy(IGoapAgent agent, Func<float> wanderRadius, Vector3? targetPosition = null) {
+    public WanderStrategy(IGoapAgentCore agent, Func<float> wanderRadius = null) {
       _agent = agent;
       _wanderRadius = wanderRadius;
     }
@@ -74,7 +74,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       _visitedPoints = -1;
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new WanderStrategy(agent, null) {
         debugWanderAroundCenter = debugWanderAroundCenter,
         navMeshSamples = navMeshSamples,

@@ -7,8 +7,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Inventory {
   public class HasFreeSlotsInInventoryBelief : AgentBelief {
     public int requiredItemCount = 1;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
-      return () => agent.inventory.freeSlotCount >= requiredItemCount;
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) {
+        return () => false;
+      }
+      return () => inv.inventory.freeSlotCount >= requiredItemCount;
     }
 
     public override AgentBelief Copy() {

@@ -7,12 +7,15 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Move {
   [Serializable]
-  public class WanderUntilStrategy : WanderStrategy { //todo: rename to WanderUntilMemoryStrategy
+  public class WanderUntilStrategy : WanderStrategy {
     [SerializeField] public MemorySearcher targetFromMemory;
     public int lookupForCountInMemory = 1;
     public Func<bool> stopCondition;
 
-    private WanderUntilStrategy(IGoapAgent agent) : base(agent, null) {
+    public WanderUntilStrategy() {
+    }
+
+    private WanderUntilStrategy(IGoapAgentCore agent) : base(agent, null) {
     }
 
     public override bool complete {
@@ -25,16 +28,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
       stopCondition = () => {
         var found = _agent.memory.FindWithTags(targetFromMemory.requiredTags);
         var hasInMemory = found.Length >= lookupForCountInMemory;
-        // if (hasInMemory) {
-        //   Debug.Log(
-        //     $"Wander Reason found {found.Length} targets in memory with tags {string.Join(", ", targetFromMemory.requiredTags)}");
-        // }
-
         return hasInMemory;
       };
     }
 
-    public override IActionStrategy Create(IGoapAgent agent) {
+    public override IActionStrategy Create(IGoapAgentCore agent) {
       return new WanderUntilStrategy(agent) {
         targetFromMemory = targetFromMemory,
         lookupForCountInMemory = lookupForCountInMemory,

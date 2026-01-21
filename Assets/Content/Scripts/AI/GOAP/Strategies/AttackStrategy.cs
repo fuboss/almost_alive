@@ -6,18 +6,21 @@ using Content.Scripts.Core.Simulation;
 
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
-  public class AttackStrategy : IActionStrategy {
-    private readonly AnimationController _animations;
+  public class AttackStrategy : AgentStrategy {
+    private AnimationController _animations;
     private SimTimer _timer;
 
-    public AttackStrategy(AnimationController animations) {
-      _animations = animations;
+    public AttackStrategy() {
     }
 
-    public bool canPerform => true;
-    public bool complete { get; private set; }
+    public AttackStrategy(IGoapAgentCore agent) {
+      _animations = agent.body?.animationController;
+    }
 
-    public void OnStart() {
+    public override bool canPerform => true;
+    public override bool complete { get; internal set; }
+
+    public override void OnStart() {
       complete = false;
       // TODO: Get duration from animation
       _timer = new SimTimer(1f);
@@ -25,20 +28,20 @@ namespace Content.Scripts.AI.GOAP.Strategies {
       _timer.Start();
     }
 
-    public void OnUpdate(float deltaTime) {
+    public override void OnUpdate(float deltaTime) {
       _timer?.Tick(deltaTime);
     }
 
-    public void OnStop() {
+    public override void OnStop() {
       _timer?.Dispose();
       _timer = null;
     }
 
-    public void OnComplete() {
+    public override void OnComplete() {
     }
 
-    public IActionStrategy Create(IGoapAgent agent) {
-      return new AttackStrategy(agent.animationController);
+    public override IActionStrategy Create(IGoapAgentCore agent) {
+      return new AttackStrategy(agent);
     }
   }
 }

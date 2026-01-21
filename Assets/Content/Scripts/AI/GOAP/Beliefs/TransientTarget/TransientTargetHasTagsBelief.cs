@@ -13,7 +13,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
     [ValueDropdown("GetTags")] public string[] tags;
     public bool inverse;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not ITransientTargetAgent targetAgent) {
+        return () => inverse;
+      }
+      
       return () => {
         if (tags == null) {
           Debug.LogError($"{GetType().Name} has null tags array");
@@ -21,8 +25,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
         }
 
         if (!inverse)
-          return agent.transientTarget != null && agent.transientTarget.HasAllTags(tags);
-        return agent.transientTarget == null || !agent.transientTarget.HasAllTags(tags);
+          return targetAgent.transientTarget != null && targetAgent.transientTarget.HasAllTags(tags);
+        return targetAgent.transientTarget == null || !targetAgent.transientTarget.HasAllTags(tags);
       };
     }
 
@@ -39,18 +43,22 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
   public class TransientIsCraftResourceBelief : AgentBelief {
     public bool inverse;
 
-    protected override Func<bool> GetCondition(IGoapAgent agent) {
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      // Requires multiple interfaces
+      if (agent is not ITransientTargetAgent targetAgent) return () => inverse;
+      if (agent is not ICampAgent campAgent) return () => inverse;
+      if (agent is not IWorkAgent workAgent) return () => inverse;
+      
       return () => {
-        var transient = agent.transientTarget;
-        if (transient == null) return false;
-        var check = GetCraftingNeeds(agent, transient);
+        var transient = targetAgent.transientTarget;
+        if (transient == null) return inverse;
+        var check = GetCraftingNeeds(agent, campAgent, workAgent, transient);
         return !inverse ? check : !check;
       };
     }
 
-    private static bool GetCraftingNeeds(IGoapAgent agent, ActorDescription transient) {
-      //locate unfinished camp build target
-      var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+    private static bool GetCraftingNeeds(IGoapAgentCore agent, ICampAgent campAgent, IWorkAgent workAgent, ActorDescription transient) {
+      var camp = campAgent.camp;
       var unfinishedTarget = UnfinishedQuery.GetNeedingResources(camp);
       if (unfinishedTarget != null) {
         var needs = unfinishedTarget.GetRemainingResources();
@@ -58,8 +66,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
         return check;
       }
 
-      //look in available resources for any crafting recipes needing this transient
-      string[] resourcesTags = agent.recipeModule.GetResourcesTagsForAvailableRecipes(agent);
+      string[] resourcesTags = workAgent.recipeModule.GetResourcesTagsForAvailableRecipes(workAgent);
       return transient.HasAnyTags(resourcesTags);
     }
 

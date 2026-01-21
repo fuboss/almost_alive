@@ -1,7 +1,6 @@
-using System;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
-using Content.Scripts.Animation;
+using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Work;
@@ -9,7 +8,6 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer;
-using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
@@ -21,6 +19,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
+    [SerializeField]private AgentBody _agentBody;
     [SerializeField] private ActorInventory _inventory;
     [SerializeField] private WorkPriority _workPriority;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
@@ -33,19 +32,16 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
     [ShowInInspector, ReadOnly] private float _baseNavSpeed;
-
-    private AgentBody _agentBody;
-
+    
     public int tickPriority => 0;
 
+    // IGoapAgentCore
     public AgentBrain agentBrain => _agentBrain;
     public NavMeshAgent navMeshAgent { get; private set; }
-    public new Rigidbody rigidbody { get; private set; }
-    public AnimationController animationController { get; private set; }
-    public ActorInventory inventory => _inventory;
-    public AgentExperience experience => _experience;
-    public AgentRecipes recipes => _recipes;
+    public AgentBody body => _agentBody;
+    public AgentStatSetSO defaultStatSet => _defaultStatSet;
 
+    // ITransientTargetAgent
     public ActorDescription transientTarget {
       get => _transientTarget;
       set {
@@ -55,21 +51,28 @@ namespace Content.Scripts.AI.GOAP.Agent {
         Debug.Log($"Agent new target {nameOf}", transientTarget);
       }
     }
+    public int transientTargetId => _transientTarget != null 
+      ? _transientTarget.GetComponent<ActorId>()?.id ?? -1 
+      : -1;
 
-    public int transientTargetId => _transientTarget.GetComponent<ActorId>()?.id ?? -1;
-    public WorkPriority GetWorkScheduler() => _workPriority;
+    // IInventoryAgent
+    public ActorInventory inventory => _inventory;
 
-    public AgentBody body => _agentBody;
-    public AgentStatSetSO defaultStatSet => _defaultStatSet;
-
+    // IWorkAgent
+    public AgentExperience experience => _experience;
+    public AgentRecipes recipes => _recipes;
     public RecipeModule recipeModule => _recipeModule;
-
-    public AgentCampData campData => _campModule?.GetAgentCampData(this);
-
+    public WorkPriority GetWorkScheduler() => _workPriority;
+    
     public void AddExperience(int amount) {
       _experience.AddXP(amount);
     }
 
+    // ICampAgent
+    public CampLocation camp => agentBrain.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+    public AgentCampData campData => _campModule?.GetAgentCampData(this);
+
+    // IGoapAgentCore
     public void StopAndCleanPath() {
       navMeshAgent.ResetPath();
       navMeshAgent.isStopped = true;
@@ -91,7 +94,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void Tick() {
-      // Visual-only updates (render time)
       UpdateAnimation();
     }
 
@@ -104,17 +106,19 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var scale = _simTime.timeScale;
       navMeshAgent.speed = _baseNavSpeed * scale;
 
-      if (animationController != null && animationController.animator != null) {
-        animationController.animator.speed = scale;
+      var animController = _agentBody?.animationController;
+      if (animController != null && animController.animator != null) {
+        animController.animator.speed = scale;
       }
     }
 
     private void UpdateAnimation() {
-      if (animationController == null) return;
+      var animController = _agentBody?.animationController;
+      if (animController == null) return;
 
       var maxSpeed = _baseNavSpeed * _sprintSpeedModifier;
       var speedNorm = navMeshAgent.velocity.magnitude / maxSpeed;
-      animationController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05f);
+      animController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05f);
     }
 
     private void OnValidate() {
@@ -123,8 +127,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void RefreshLinks() {
       if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
-      if (animationController == null) animationController = GetComponentInChildren<AnimationController>();
-      if (rigidbody == null) rigidbody = GetComponent<Rigidbody>();
       if (_agentBrain == null) _agentBrain = GetComponentInChildren<AgentBrain>();
       if (_agentBody == null) _agentBody = GetComponentInChildren<AgentBody>();
       if (_workPriority == null) _workPriority = GetComponentInChildren<WorkPriority>();
@@ -133,11 +135,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void OnCreated() {
       agentBrain.Initialize(this);
       _agentBody.Initialize(this);
-      // Initialize progression
+      
       _experience.OnLevelUp += _recipes.OnLevelUp;
       _recipes.Initialize(_experience.level);
 
-      // Apply initial time scale
       if (_simTime != null) {
         OnSimSpeedChanged(_simTime.currentSpeed);
       }
@@ -150,7 +151,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var velDir = new Vector3(vel.x, 0f, vel.z).normalized;
       if (velDir == Vector3.zero) return 0.5f;
 
-      var angle = Vector3.SignedAngle(animationController.transform.forward, velDir, Vector3.up);
+      var animController = _agentBody?.animationController;
+      if (animController == null) return 0.5f;
+      
+      var angle = Vector3.SignedAngle(animController.transform.forward, velDir, Vector3.up);
       var normalized = angle / 360f + 0.5f;
       return Mathf.Clamp01(normalized);
     }
