@@ -66,7 +66,7 @@ MonoBehaviour:
     layerName: Cliff_Mossy_E
     threshold: 81
   scatterConfigs:
-  - rule: {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
+  - rule: {fileID: 11400000, guid: 2c2064ce3fba040049f0c5fa7cad0d52, type: 2}
     placement: 1
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}

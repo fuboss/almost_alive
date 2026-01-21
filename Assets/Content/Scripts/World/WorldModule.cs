@@ -221,6 +221,11 @@ namespace Content.Scripts.World {
         var navSurface = _terrain.GetComponent<NavMeshSurface>();
         if (navSurface != null) navSurface.BuildNavMesh();
 
+        // Initialize vegetation manager after generation
+        if (VegetationManager.Instance != null) {
+          VegetationManager.Instance.Initialize(_terrain);
+        }
+
         if (_config.logGeneration) Debug.Log($"[WorldModule] ✓ Generated {_spawnedActors.Count} actors");
         OnGenerationComplete?.Invoke();
       }

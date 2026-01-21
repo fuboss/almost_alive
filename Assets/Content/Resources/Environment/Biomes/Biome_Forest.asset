@@ -73,12 +73,18 @@ MonoBehaviour:
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
   - rule: {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
-    placement: 1
+    placement: 0
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
   - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+    placement: 0
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 30}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}
+  - rule: {fileID: 11400000, guid: 04b521175f833442aae1270f96b84f92, type: 2}
     placement: 0
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
