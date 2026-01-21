@@ -44,6 +44,10 @@ namespace Content.Scripts.World {
     [Tooltip("Paint terrain textures based on biomes")]
     public bool paintSplatmap = true;
 
+    [BoxGroup("Terrain")]
+    [Tooltip("Paint grass and vegetation based on biomes")]
+    public bool paintVegetation = true;
+
     // ═══════════════════════════════════════════════════════════════
     // GENERATION
     // ═══════════════════════════════════════════════════════════════

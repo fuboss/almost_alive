@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Content.Scripts.World.Vegetation;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -95,6 +96,15 @@ namespace Content.Scripts.World.Biomes {
     [Tooltip("Scatter configurations for this biome")]
     [ListDrawerSettings(ShowFoldout = true)]
     public List<BiomeScatterConfig> scatterConfigs = new();
+
+    // ═══════════════════════════════════════════════════════════════
+    // VEGETATION (grass, bushes - Unity Terrain Details)
+    // ═══════════════════════════════════════════════════════════════
+
+    [FoldoutGroup("Vegetation")]
+    [Tooltip("Grass, flowers, and decorative vegetation for this biome")]
+    [InlineProperty, HideLabel]
+    public BiomeVegetationConfig vegetationConfig = new();
 
     // ═══════════════════════════════════════════════════════════════
     // TEXTURE SLOT CLASSES
@@ -238,6 +248,7 @@ namespace Content.Scripts.World.Biomes {
     }
 
     public bool hasScatters => scatterConfigs != null && scatterConfigs.Count > 0;
+    public bool hasVegetation => vegetationConfig?.layers != null && vegetationConfig.layers.Length > 0;
 
     // ═══════════════════════════════════════════════════════════════
     // DEBUG

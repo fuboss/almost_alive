@@ -4,6 +4,7 @@ using System.Threading;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.Game;
 using Content.Scripts.World.Biomes;
+using Content.Scripts.World.Vegetation;
 using Cysharp.Threading.Tasks;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -135,6 +136,13 @@ namespace Content.Scripts.World {
       _featureMap = TerrainFeatureMap.Generate(_terrain);
       _config.cachedFeatureMap = _featureMap;
 
+      // Phase 3.6: Paint Vegetation
+      if (_config.paintVegetation) {
+        UpdateProgress(0.32f);
+        VegetationPainter.Paint(_terrain, _biomeMap, _config.biomes, seed);
+        await UniTask.Yield(ct);
+      }
+
       // Phase 4: Generate ALL positions first (positionRandom only)
       UpdateProgress(0.30f);
       var allPositions = new List<(string actorKey, Vector3 position, ScatterRuleSO rule)>();
@@ -243,11 +251,6 @@ namespace Content.Scripts.World {
         spawnedPositions.Add(pos);
         placed++;
 
-        // Log first 3 positions for comparison
-        if (placed <= 3) {
-          Debug.Log($"[RUNTIME] Uniform pos #{placed}: {pos:F2}");
-        }
-
         if (rule.hasChildren) {
           GenerateChildPositions(rule, pos, output, spawnedPositions);
         }
@@ -260,9 +263,6 @@ namespace Content.Scripts.World {
       var remaining = targetCount;
       var clusterAttempts = 0;
       var maxClusterAttempts = targetCount * 10;
-      var totalPlaced = 0;
-
-      Debug.Log($"[RUNTIME] GenerateClusteredPositions: {rule.actorName}, target={targetCount}, clusterSize={rule.clusterSize}, spread={rule.clusterSpread}");
 
       while (remaining > 0 && clusterAttempts < maxClusterAttempts) {
         clusterAttempts++;
@@ -278,8 +278,7 @@ namespace Content.Scripts.World {
 
         // Track positions within THIS cluster only
         var clusterLocalPositions = new List<Vector3>();
-        var clusterPlaced = 0;
-        var clusterStartIndex = spawnedPositions.Count; // Index before this cluster
+        var clusterStartIndex = spawnedPositions.Count;
 
         for (var i = 0; i < clusterCount; i++) {
           var offset = _positionRandom.InsideUnitCircle() * rule.clusterSpread;
@@ -287,31 +286,17 @@ namespace Content.Scripts.World {
 
           if (_biomeMap.GetBiomeAt(pos) != biomeType) continue;
           if (!ValidateTerrainAt(sc, pos)) continue;
-          
-          // Check spacing only against positions BEFORE this cluster started
           if (!ValidateSpacingRange(rule.minSpacing, pos, spawnedPositions, 0, clusterStartIndex)) continue;
-          
-          // Inside cluster: use reduced spacing (30% of minSpacing) between cluster members
           if (!ValidateLocalSpacing(rule.minSpacing * 0.3f, pos, clusterLocalPositions)) continue;
 
           output.Add((rule.actorKey, pos, rule));
           spawnedPositions.Add(pos);
           clusterLocalPositions.Add(pos);
           remaining--;
-          totalPlaced++;
-          clusterPlaced++;
-
-          if (totalPlaced <= 3) {
-            Debug.Log($"[RUNTIME] Clustered pos #{totalPlaced}: {pos:F2} (cluster center: {clusterCenter:F2})");
-          }
 
           if (rule.hasChildren) {
             GenerateChildPositions(rule, pos, output, spawnedPositions);
           }
-        }
-        
-        if (clusterPlaced > 0) {
-          Debug.Log($"[RUNTIME] Cluster placed {clusterPlaced}/{clusterCount} at center {clusterCenter:F2}");
         }
       }
     }
@@ -380,6 +365,11 @@ namespace Content.Scripts.World {
       if (_container != null) {
         UnityEngine.Object.Destroy(_container.gameObject);
         _container = null;
+      }
+
+      // Clear vegetation
+      if (_terrain != null) {
+        VegetationPainter.Clear(_terrain);
       }
 
       _biomeMap = null;

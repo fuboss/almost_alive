@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Content.Scripts.Game;
 using Content.Scripts.World;
 using Content.Scripts.World.Biomes;
+using Content.Scripts.World.Vegetation;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
@@ -139,6 +140,13 @@ namespace Content.Scripts.Editor.World {
       EditorUtility.DisplayProgressBar("Generating World", "Analyzing terrain features...", 0.28f);
       var featureMap = TerrainFeatureMap.Generate(terrain);
       config.cachedFeatureMap = featureMap;
+
+      // Paint vegetation (grass, bushes)
+      if (config.paintVegetation) {
+        EditorUtility.DisplayProgressBar("Generating World", "Painting vegetation...", 0.32f);
+        Undo.RegisterCompleteObjectUndo(terrain.terrainData, "Paint Vegetation");
+        VegetationPainter.Paint(terrain, biomeMap, config.biomes, seed);
+      }
 
       _state = new GenerationState {
         config = config,

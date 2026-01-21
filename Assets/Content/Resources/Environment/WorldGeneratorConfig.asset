@@ -18,6 +18,7 @@ MonoBehaviour:
   edgeMargin: 1
   sculptTerrain: 1
   paintSplatmap: 1
+  paintVegetation: 1
   seed: 1
   biomes:
   - {fileID: 11400000, guid: 80a28265ed14c489194c747350b7610a, type: 2}
