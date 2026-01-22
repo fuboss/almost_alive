@@ -67,8 +67,11 @@ namespace Content.Scripts {
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<DebugPanel.DebugModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       InitUi(builder);
+      
+     
     }
 
     private void InitUi(IContainerBuilder builder) {

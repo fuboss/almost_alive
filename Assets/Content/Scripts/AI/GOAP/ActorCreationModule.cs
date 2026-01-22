@@ -12,6 +12,8 @@ namespace Content.Scripts.AI.GOAP {
     [Inject] private IObjectResolver _objectResolver;
     public bool IsInitialized { get; private set; }
 
+    public IReadOnlyList<ActorDescription> allPrefabs => _allPrefabs;
+
     private readonly List<ActorDescription> _allPrefabs = new();
 
     private const float RAYCAST_HEIGHT = 50f;

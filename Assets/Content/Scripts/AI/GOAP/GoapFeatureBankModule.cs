@@ -11,7 +11,7 @@ using VContainer.Unity;
 namespace Content.Scripts.AI.GOAP {
   public class GoapFeatureBankModule : IInitializable {
     [Inject] private IObjectResolver _objectResolver;
-    [Inject] private AgentContainerModule _test;
+    
     private List<GoapFeatureSO> _featuresSOs;
 
     void IInitializable.Initialize() {
