@@ -17,17 +17,19 @@ namespace Content.Scripts.AI.Utility {
     [Tooltip("Base value when camp needs building")]
     public float baseValue = 0.6f;
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
+      if (agent is not ICampAgent campAgent) return 0f;
+      if (agent is not IWorkAgent workAgent) return 0f;
+      if (agent is not IInventoryAgent invAgent) return 0f;
+      
       var camp = agent.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
       if (camp?.setup == null) return 0f;
       if (camp.setup.allSpotsFilled) return 0f;
 
-      // Check if can actually build something
       if (_recipeModule == null) return 0f;
-      var campRecipes = agent.recipes.GetUnlockedCampRecipes(_recipeModule);
-      if (!campRecipes.Any(r => _recipeModule.CanCraft(r, agent.inventory))) return 0f;
+      var campRecipes = workAgent.recipes.GetUnlockedCampRecipes(_recipeModule);
+      if (!campRecipes.Any(r => _recipeModule.CanCraft(r, invAgent.inventory))) return 0f;
 
-      // Calculate priority based on empty spots ratio
       var emptyCount = camp.setup.GetEmptySpots().Count();
       var totalCount = camp.setup.spotCount;
       var emptyRatio = (float)emptyCount / totalCount;

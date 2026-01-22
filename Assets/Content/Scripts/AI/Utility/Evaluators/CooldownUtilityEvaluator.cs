@@ -19,7 +19,7 @@ namespace Content.Scripts.AI.Utility {
 
     public AnimationCurve responseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var tracker = agent.agentBrain.actionHistory;
       if (tracker == null) return readyValue;
 
@@ -31,7 +31,7 @@ namespace Content.Scripts.AI.Utility {
 
       var timeSince = tracker.GetTimeSinceLastExecution(targetAction);
       
-      if (timeSince >= float.MaxValue) return readyValue; // never executed
+      if (timeSince >= float.MaxValue) return readyValue;
       
       var t = Mathf.Clamp01(timeSince / cooldownDuration);
       var curveValue = responseCurve.Evaluate(t);

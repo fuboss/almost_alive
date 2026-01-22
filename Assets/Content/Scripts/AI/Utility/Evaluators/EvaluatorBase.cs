@@ -6,7 +6,7 @@ using Content.Scripts.AI.GOAP.Agent;
 namespace Content.Scripts.AI.Utility {
   [Serializable]
   public abstract class EvaluatorBase : IUtilityEvaluator {
-    public abstract float Evaluate(IGoapAgent agent);
+    public abstract float Evaluate(IGoapAgentCore agent);
     
         
 #if UNITY_EDITOR

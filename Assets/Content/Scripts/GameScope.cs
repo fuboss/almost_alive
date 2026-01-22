@@ -1,3 +1,4 @@
+using Content.Scripts.AI.Animals;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP;
@@ -34,12 +35,15 @@ namespace Content.Scripts {
       builder.Register<SimulationTimeController>(Lifetime.Singleton).AsSelf();
       builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
       
+      builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       // Environment
       builder.RegisterInstance(environmentSetup).AsSelf();
       builder.Register<WorldEnvironment>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<WorldModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-     
+      builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       
       // Decay & Work
@@ -51,15 +55,15 @@ namespace Content.Scripts {
       
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
       builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<RecipeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       
       
       builder.RegisterComponent(agentPrefab).AsSelf();
       builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
+      
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

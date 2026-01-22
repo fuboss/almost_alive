@@ -8,9 +8,9 @@ namespace Content.Scripts.AI.Utility {
   [Serializable]
   public class VisionTagUtilityEvaluator : EvaluatorBase {
     public enum Mode {
-      ANY_VISIBLE, // 1 if any visible, 0 otherwise
-      COUNT, // normalized by maxCount
-      NEAREST_DISTANCE // curve by distance to nearest
+      ANY_VISIBLE,
+      COUNT,
+      NEAREST_DISTANCE
     }
 
     public Mode mode = Mode.ANY_VISIBLE;
@@ -23,7 +23,7 @@ namespace Content.Scripts.AI.Utility {
 
     public AnimationCurve responseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var sensor = agent.agentBrain.visionSensor;
       if (sensor == null) return 0f;
 

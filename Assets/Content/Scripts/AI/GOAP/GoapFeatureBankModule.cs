@@ -49,7 +49,7 @@ namespace Content.Scripts.AI.GOAP {
       return beliefs;
     }
 
-    public List<AgentAction> GetActions(IGoapAgent agent, string[] availableFeatures) {
+    public List<AgentAction> GetActions(IGoapAgentCore agent, string[] availableFeatures) {
       var actions = new List<AgentAction>();
 
       foreach (var featureName in availableFeatures) {
@@ -69,7 +69,6 @@ namespace Content.Scripts.AI.GOAP {
         }).ToList());
       }
 
-      // Debug.Log($"GoatFeatureBankModule:GetActions:{actions.Count}");
       return actions;
     }
   }

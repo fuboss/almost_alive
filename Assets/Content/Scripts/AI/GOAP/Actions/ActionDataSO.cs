@@ -27,7 +27,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
 
     public AgentActionData data;
 
-    public AgentAction GetAction(IGoapAgent agent, IObjectResolver objectResolver) {
+    public AgentAction GetAction(IGoapAgentCore agent, IObjectResolver objectResolver) {
       if (data == null) {
         Debug.LogError($"ERROR {name}", this);
         return null;

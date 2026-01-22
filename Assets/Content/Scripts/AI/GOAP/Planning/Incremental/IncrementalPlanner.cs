@@ -18,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
 
     public int maxCacheSize = 5;
 
-    public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
+    public ActionPlan Plan(IGoapAgentCore agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       var orderedGoals = GetOrderedGoals(agent, goals, mostRecentGoal);
 
       foreach (var goal in orderedGoals) {
@@ -57,14 +57,14 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       return null;
     }
 
-    public async UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals,
+    public async UniTask<ActionPlan> PlanAsync(IGoapAgentCore agent, HashSet<AgentGoal> goals,
       AgentGoal mostRecentGoal = null) {
       await UniTask.Yield();
       return Plan(agent, goals, mostRecentGoal);
     }
 
     private ActionPlan TryRepairPlan(ActionPlan originalPlan, HashSet<AgentBelief> invalidated,
-      IGoapAgent agent) {
+      IGoapAgentCore agent) {
       var actions = new Stack<AgentAction>(originalPlan.actions.Reverse());
       var repairedActions = new Stack<AgentAction>();
       var currentCost = 0f;
@@ -99,7 +99,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       return new ActionPlan(originalPlan.agentGoal, repairedActions, currentCost);
     }
 
-    private AgentAction FindReplacementAction(AgentAction failed, IGoapAgent agent,
+    private AgentAction FindReplacementAction(AgentAction failed, IGoapAgentCore agent,
       HashSet<AgentBelief> invalidated) {
       var availableActions = agent.agentBrain.actions
         .Where(a => a.effects.Intersect(failed.effects).Any())
@@ -110,7 +110,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       return availableActions.FirstOrDefault();
     }
 
-    private HashSet<AgentBelief> GetInvalidatedBeliefs(PlanCache cached, IGoapAgent agent) {
+    private HashSet<AgentBelief> GetInvalidatedBeliefs(PlanCache cached, IGoapAgentCore agent) {
       var invalidated = new HashSet<AgentBelief>();
 
       foreach (var belief in cached.requiredBeliefs) {
@@ -121,7 +121,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       return invalidated;
     }
 
-    private bool ValidateCachedPlan(PlanCache cached, IGoapAgent agent) {
+    private bool ValidateCachedPlan(PlanCache cached, IGoapAgentCore agent) {
       foreach (var belief in cached.requiredBeliefs) {
         var currentState = belief.Evaluate(agent);
         if (currentState != cached.beliefStates.GetValueOrDefault(belief, false)) return false;
@@ -130,7 +130,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       return true;
     }
 
-    private void UpdateCache(AgentGoal goal, ActionPlan plan, IGoapAgent agent) {
+    private void UpdateCache(AgentGoal goal, ActionPlan plan, IGoapAgentCore agent) {
       // Collect all beliefs used in this plan
       var requiredBeliefs = new HashSet<AgentBelief>();
       var beliefStates = new Dictionary<AgentBelief, bool>();
@@ -161,7 +161,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
       }
     }
 
-    private List<AgentGoal> GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals,
+    private List<AgentGoal> GetOrderedGoals(IGoapAgentCore agent, HashSet<AgentGoal> goals,
       AgentGoal mostRecentGoal) {
       return goals
         .Where(g => g != null && g.desiredEffects.Any(b => {
@@ -170,7 +170,7 @@ namespace Content.Scripts.AI.GOAP.Planning.Incremental {
             return !b.Evaluate(agent);
           }
           catch (Exception e) {
-            Debug.LogException(e, agent.agentBrain);
+            Debug.LogException(e, agent.gameObject);
             return false;
           }
         }))

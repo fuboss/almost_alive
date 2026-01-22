@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.Utility {
     public AnimationCurve distanceCurve =
       AnimationCurve.EaseInOut(0, 1, 1, 0);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var memory = agent.memory;
       var items = memory.GetWithAllTags(tags);
 

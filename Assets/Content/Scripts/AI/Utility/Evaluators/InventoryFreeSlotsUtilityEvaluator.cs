@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
 using UnityEngine;
 
@@ -11,8 +10,10 @@ namespace Content.Scripts.AI.Utility {
     public AnimationCurve slotsCurve =
       AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
-      var free = agent.inventory.freeSlots.Count();
+    public override float Evaluate(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) return 0f;
+      
+      var free = inv.inventory.freeSlotCount;
       if (free <= 0) {
         return slotsCurve.Evaluate(0);
       }

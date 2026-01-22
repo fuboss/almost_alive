@@ -71,7 +71,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
     }
 
     private void UpdatePlanningStats() {
-      var brain = agent.agentBrain;
+      IAgentBrain brain = agent.agentBrain;
       
       _currentGoalText.text = brain.actionPlan?.agentGoal?.Name ?? "None";
       _currentActionText.text = GetCurrentActionName(brain);
@@ -87,7 +87,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
       UpdatePlanActions(brain);
     }
 
-    private string GetCurrentActionName(AgentBrain brain) {
+    private string GetCurrentActionName(IAgentBrain brain) {
       if (brain.actionPlan == null) return "None";
       
       var remaining = brain.actionPlan.actions.Count;
@@ -97,7 +97,7 @@ namespace Content.Scripts.Ui.Layers.MainPanel {
       return $"{next.name} (+{remaining - 1} more)";
     }
 
-    private void UpdatePlanActions(AgentBrain brain) {
+    private void UpdatePlanActions(IAgentBrain brain) {
       // Clear existing
       foreach (Transform child in _planActionsContainer) {
         Destroy(child.gameObject);

@@ -21,7 +21,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     void StopAndCleanPath();
 
     // Brain & Memory
-    AgentBrain agentBrain { get; }
+    IAgentBrain agentBrain { get; }
     AgentMemory memory => agentBrain.memory;
 
     AgentBelief GetBelief(string beliefName) {
@@ -31,5 +31,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
     // Stats & Body
     AgentStatSetSO defaultStatSet { get; }
     AgentBody body { get; }
+    void OnCreated();
   }
 }

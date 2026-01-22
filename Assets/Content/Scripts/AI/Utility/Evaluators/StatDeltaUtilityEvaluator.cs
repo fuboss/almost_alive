@@ -17,17 +17,16 @@ namespace Content.Scripts.AI.Utility {
 
     public AnimationCurve responseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var body = agent.body;
       if (body == null) return 0f;
 
       if (!body.perTickDelta.TryGetValue(statType, out var delta))
         return 0f;
 
-      // Normalize delta to 0-1 range
       var t = Mathf.InverseLerp(minDelta, maxDelta, delta);
       
-      if (prioritizeDecay) t = 1f - t; // negative delta → higher value
+      if (prioritizeDecay) t = 1f - t;
       
       return responseCurve.Evaluate(t);
     }

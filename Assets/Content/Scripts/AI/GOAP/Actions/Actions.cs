@@ -31,19 +31,19 @@ namespace Content.Scripts.AI.GOAP.Actions {
     [ShowInInspector] public string name { get; }
     public bool complete => _data.strategy.complete;
 
-    public bool AreAllPreconditionsMet(IGoapAgent agent)
+    public bool AreAllPreconditionsMet(IGoapAgentCore agent)
       => preconditions.All(precondition => {
         var result = precondition.Evaluate(agent);
         if (!result)
           Debug.LogError(
             $"<b>{name}</b> precondition: <b>{precondition.name}</b>({precondition.GetType().Name}) failed",
-            agent.agentBrain);
+            agent.agentBrain as UnityEngine.Object);
         return result;
       });
 
     [ShowInInspector] public HashSet<AgentBelief> effects { get; set; }
     [ShowInInspector] public HashSet<AgentBelief> preconditions { get; set; }
-    public IGoapAgent agent { get; set; }
+    public IGoapAgentCore agent { get; set; }
 
     public void OnStart() {
       _data.strategy.OnStart();
@@ -60,7 +60,6 @@ namespace Content.Scripts.AI.GOAP.Actions {
       foreach (var effect in effects) {
         effect.Evaluate(agent);
       }
-//      Debug.Log($"<b>{name}</b> with strategy <b>{_data.strategy.GetType().Name}</b> completed.");
     }
 
     public void OnStop() {

@@ -1,6 +1,5 @@
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
-using Content.Scripts.AI.GOAP.Agent.Memory;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Work;
@@ -19,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
-    [SerializeField]private AgentBody _agentBody;
+    [SerializeField] private AgentBody _agentBody;
     [SerializeField] private ActorInventory _inventory;
     [SerializeField] private WorkPriority _workPriority;
     [SerializeField] private float _sprintSpeedModifier = 1.5f;
@@ -32,11 +31,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
     [ShowInInspector, ReadOnly] private float _baseNavSpeed;
-    
+
     public int tickPriority => 0;
 
-    // IGoapAgentCore
-    public AgentBrain agentBrain => _agentBrain;
+    // IGoapAgentCore - concrete access
+    public AgentBrain brain => _agentBrain;
+    
+    // IGoapAgentCore - interface implementation
+    IAgentBrain IGoapAgentCore.agentBrain => _agentBrain;
+    
     public NavMeshAgent navMeshAgent { get; private set; }
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
@@ -51,8 +54,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
         Debug.Log($"Agent new target {nameOf}", transientTarget);
       }
     }
-    public int transientTargetId => _transientTarget != null 
-      ? _transientTarget.GetComponent<ActorId>()?.id ?? -1 
+
+    public int transientTargetId => _transientTarget != null
+      ? _transientTarget.GetComponent<ActorId>()?.id ?? -1
       : -1;
 
     // IInventoryAgent
@@ -63,13 +67,13 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public AgentRecipes recipes => _recipes;
     public RecipeModule recipeModule => _recipeModule;
     public WorkPriority GetWorkScheduler() => _workPriority;
-    
+
     public void AddExperience(int amount) {
       _experience.AddXP(amount);
     }
 
     // ICampAgent
-    public CampLocation camp => agentBrain.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
+    public CampLocation camp => brain.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
     public AgentCampData campData => _campModule?.GetAgentCampData(this);
 
     // IGoapAgentCore
@@ -133,9 +137,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void OnCreated() {
-      agentBrain.Initialize(this);
+      brain.Initialize(this);
       _agentBody.Initialize(this);
-      
+
       _experience.OnLevelUp += _recipes.OnLevelUp;
       _recipes.Initialize(_experience.level);
 
@@ -153,7 +157,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       var animController = _agentBody?.animationController;
       if (animController == null) return 0.5f;
-      
+
       var angle = Vector3.SignedAngle(animController.transform.forward, velDir, Vector3.up);
       var normalized = angle / 360f + 0.5f;
       return Mathf.Clamp01(normalized);

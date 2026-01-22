@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.Utility {
     public AnimationCurve responseCurve =
       AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       if (agent.body.GetStat(statType) is not FloatAgentStat stat) return 0f;
 
       var normalized = Mathf.InverseLerp(range.x, range.y, stat.Normalized);

@@ -9,7 +9,7 @@ namespace Content.Scripts.AI.Utility {
     [Tooltip("Curve sampled at normalized time of day (0 = midnight, 0.5 = noon, 1 = midnight)")]
     public AnimationCurve responseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var env = WorldEnvironment.instance;
       if (env == null) return responseCurve.Evaluate(0.5f);
       return responseCurve.Evaluate(env.dayCycle.normalizedTime);

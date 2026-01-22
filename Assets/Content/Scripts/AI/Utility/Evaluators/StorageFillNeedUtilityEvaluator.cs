@@ -11,7 +11,7 @@ namespace Content.Scripts.AI.Utility {
 
     public AnimationCurve evaluationCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
-    public override float Evaluate(IGoapAgent agent) {
+    public override float Evaluate(IGoapAgentCore agent) {
       var maxPriority = 0;
       var totalFreeSlots = 0;
 

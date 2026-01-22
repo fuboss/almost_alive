@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Content.Scripts.AI.GOAP.Planning {
   public interface IGoapPlanner {
-    ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
-    UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
+    ActionPlan Plan(IGoapAgentCore agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
+    UniTask<ActionPlan> PlanAsync(IGoapAgentCore agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null);
   }
 }

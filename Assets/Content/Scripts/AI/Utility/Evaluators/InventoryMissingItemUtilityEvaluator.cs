@@ -12,8 +12,10 @@ namespace Content.Scripts.AI.Utility {
     public AnimationCurve missingCurve =
       AnimationCurve.EaseInOut(0, 1, 1, 0);
 
-    public override float Evaluate(IGoapAgent agent) {
-      var count = agent.inventory.GetTotalCountWithTags(tags);
+    public override float Evaluate(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent inv) return missingCurve.Evaluate(0);
+      
+      var count = inv.inventory.GetTotalCountWithTags(tags);
       if (count <= 0) return missingCurve.Evaluate(0);
       var t = Mathf.Clamp01((float)count / requiredCount);
       return missingCurve.Evaluate(t);

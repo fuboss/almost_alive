@@ -11,10 +11,9 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Planning {
   public class GOAPPlanner : IGoapPlanner {
-    public ActionPlan Plan(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
+    public ActionPlan Plan(IGoapAgentCore agent, HashSet<AgentGoal> goals, AgentGoal mostRecentGoal = null) {
       var orderedGoals = GetOrderedGoals(agent, goals, mostRecentGoal);
       var goalsStr = string.Join(",", orderedGoals.Select(g => $"[{g.Name}:{g.Priority}]"));
-     
 
       var maxScore = float.MinValue;
       ActionPlan plan = null;
@@ -47,11 +46,11 @@ namespace Content.Scripts.AI.GOAP.Planning {
       return null;
     }
 
-    private ActionPlan BuildPlan(IGoapAgent agent, AgentGoal goal, StringBuilder b) {
+    private ActionPlan BuildPlan(IGoapAgentCore agent, AgentGoal goal, StringBuilder b) {
       var requiredEffects = new HashSet<AgentBelief>(goal.desiredEffects);
 
       // Remove already satisfied effects
-      requiredEffects.RemoveWhere(b => b.Evaluate(agent));
+      requiredEffects.RemoveWhere(belief => belief.Evaluate(agent));
       if (requiredEffects.Count == 0) return null;
 
       var availableActions = new HashSet<AgentAction>(agent.agentBrain.actions);
@@ -64,13 +63,12 @@ namespace Content.Scripts.AI.GOAP.Planning {
       while (requiredEffects.Count > 0) {
         var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b);
 
-        if (bestAction == null) { b.AppendLine(
+        if (bestAction == null) {
+          b.AppendLine(
             $" - <b>[Failed to find action to resolve effects: {string.Join(",", requiredEffects.Select(e => e.name))}; </b>]\n");
-          // No action can satisfy remaining effects
           return null;
         }
-        
-        
+
         plan.Add(bestAction);
         totalCost += bestAction.cost;
         totalBenefit += bestAction.benefit;
@@ -90,6 +88,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
             requiredEffects.Add(pre);
           }
         }
+
         b.Append($"→ <b>{bestAction.name}</b>");
       }
 
@@ -106,10 +105,6 @@ namespace Content.Scripts.AI.GOAP.Planning {
       return newPlan;
     }
 
-    /// <summary>
-    /// Find best action that satisfies at least one required effect.
-    /// Prioritizes by score (benefit/cost).
-    /// </summary>
     private AgentAction FindBestAction(
       HashSet<AgentBelief> requiredEffects,
       HashSet<AgentAction> availableActions,
@@ -118,15 +113,12 @@ namespace Content.Scripts.AI.GOAP.Planning {
       AgentAction best = null;
       var bestScore = float.MinValue;
 
-      //b.AppendLine($"{string.Join(", ", requiredEffects.Select(e => e.name))}]  Checking actions:\n");
       foreach (var action in availableActions) {
-        // Check if action provides any required effect
         var providesRequired = action.effects.Where(e =>
           requiredEffects.Any(r => r.name == e.name)).ToArray();
         var count = providesRequired.Length;
         if (count == 0) continue;
 
-        // Skip if all effects are already visited (avoid redundant actions)
         var allEffectsVisited = action.effects.All(e => visitedEffects.Contains(e.name));
         if (allEffectsVisited) continue;
 
@@ -136,11 +128,11 @@ namespace Content.Scripts.AI.GOAP.Planning {
           best = action;
         }
       }
-      
+
       return best;
     }
 
-    private static List<AgentGoal> GetOrderedGoals(IGoapAgent agent, HashSet<AgentGoal> goals, AgentGoal recentGoal) {
+    private static List<AgentGoal> GetOrderedGoals(IGoapAgentCore agent, HashSet<AgentGoal> goals, AgentGoal recentGoal) {
       var desires = goals.Select(g => new GoalDesires(g)).ToList();
       foreach (var desire in desires) {
         foreach (var belief in desire.checks.Keys.ToList()) {
@@ -165,8 +157,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       }
     }
 
-
-    public async UniTask<ActionPlan> PlanAsync(IGoapAgent agent, HashSet<AgentGoal> goals,
+    public async UniTask<ActionPlan> PlanAsync(IGoapAgentCore agent, HashSet<AgentGoal> goals,
       AgentGoal mostRecentGoal = null) {
       await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
       return Plan(agent, goals, mostRecentGoal);

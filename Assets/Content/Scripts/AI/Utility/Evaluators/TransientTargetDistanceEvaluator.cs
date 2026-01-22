@@ -15,8 +15,10 @@ namespace Content.Scripts.AI.Utility {
 
     public AnimationCurve responseCurve = AnimationCurve.EaseInOut(0, 1, 1, 0);
 
-    public override float Evaluate(IGoapAgent agent) {
-      var target = agent.transientTarget;
+    public override float Evaluate(IGoapAgentCore agent) {
+      if (agent is not ITransientTargetAgent transientAgent) return noTargetValue;
+      
+      var target = transientAgent.transientTarget;
       if (target == null) return noTargetValue;
 
       var dist = Vector3.Distance(agent.position, target.transform.position);

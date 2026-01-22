@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.GOAP.Agent;
@@ -14,7 +13,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
     [Title("Utility")] public List<GoalUtility> utilityEvaluators = new();
     [MinValue(0f)] public float utilityBias = 1f;
 
-    public AgentGoal Get(IGoapAgent agent) {
+    public AgentGoal Get(IGoapAgentCore agent) {
       float utility = EvaluateUtility(agent);
       var builder = new AgentGoal.Builder(name)
         .WithDesiredEffects(desiredEffects.Select(agent.GetBelief))
@@ -23,7 +22,7 @@ namespace Content.Scripts.AI.GOAP.Goals {
       return builder.Build();
     }
 
-    private float EvaluateUtility(IGoapAgent agent) {
+    private float EvaluateUtility(IGoapAgentCore agent) {
       var value = utilityBias;
 
       foreach (var evaluator in utilityEvaluators) {
