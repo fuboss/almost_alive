@@ -57,3 +57,4 @@ MonoBehaviour:
   - {fileID: -8401498511303770125, guid: be7d5e28fd312472e944e7297bd6a268, type: 3}
   - {fileID: -6451863338487059937, guid: 76a4945ad4e404af3861b2cebba0edeb, type: 3}
   - {fileID: 5007448928981979815, guid: fc132fed422e54283b50ca5986009b8b, type: 3}
+  structureGhostMaterial: {fileID: 2100000, guid: 129d05324dfeb43ca9b79264554cdc18, type: 2}

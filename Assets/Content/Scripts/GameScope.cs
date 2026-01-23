@@ -5,6 +5,7 @@ using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Environment;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
@@ -26,15 +27,18 @@ namespace Content.Scripts {
     public CinemachineCamera cameraPrefab;
     public EnvironmentSetupSO environmentSetup;
     public UILayer[] uiLayers;
+
+    [Header("Building")] public Material structureGhostMaterial;
+
     private Transform _uiRoot;
-    
+
 
     protected override void Configure(IContainerBuilder builder) {
       base.Configure(builder);
       // Simulation
       builder.Register<SimulationTimeController>(Lifetime.Singleton).AsSelf();
       builder.RegisterEntryPoint<SimulationLoop>().AsSelf();
-      
+
       builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       // Environment
@@ -44,40 +48,44 @@ namespace Content.Scripts {
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
-      
+
+
       // Decay & Work
       builder.RegisterEntryPoint<DecayModule>().AsSelf();
       builder.RegisterEntryPoint<WorkAssignmentModule>().AsSelf();
 
       builder.Register<GoapPlanFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
+
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
+
       builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<RecipeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
-      
+
+      // Building
+      builder.RegisterInstance(structureGhostMaterial).Keyed("ghostMaterial").AsSelf();
+      builder.Register<StructurePlacementService>(Lifetime.Singleton).AsSelf();
+      builder.Register<StructureConstructionService>(Lifetime.Singleton).AsSelf();
+      builder.Register<StructuresModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+
+
       builder.RegisterComponent(agentPrefab).AsSelf();
       builder.Register<GoapFeatureBankModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
-      
+
+
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<DebugPanel.DebugModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
+
       InitUi(builder);
-      
-     
     }
 
     private void InitUi(IContainerBuilder builder) {
       builder.Register<AgentUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<GameUIModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      
+
       //ui
       builder.Register<UiModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       foreach (var uiLayer in uiLayers) {

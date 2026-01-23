@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: StructureParts
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: StructureParts
+  m_GUID: 092e7ba4497e44052afbbb69e0634900
+  m_SerializeEntries:
+  - m_GUID: 37fe4b0e05b7d447b832666bdaf1998d
+    m_Address: wallSolid
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructurePart
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bfc96c6bb5284d739b429f1dcfa6589
+    m_Address: wallDoorway
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructurePart
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5cf4e461747f4e2388ac881c1904cf8
+    m_Address: wallPassage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructurePart
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8c9866be20984ae3bb26a4eb0cf016e
+    m_Address: wallWindow
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructurePart
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: bd4ea13594c9b4e3a8571514caf8e16c, type: 2}
+    - {fileID: 11400000, guid: ef29be115e9b04f9a8fc3b10f7e5573b, type: 2}

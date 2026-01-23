@@ -7,6 +7,7 @@ namespace Content.Scripts.DebugPanel {
 
   public enum DebugCategory {
     Spawn,
+    Structure,
     Destroy,
     Environment,
     Events
@@ -15,7 +16,8 @@ namespace Content.Scripts.DebugPanel {
   public enum DebugActionType {
     Instant,                // executes immediately
     RequiresWorldPosition,  // requires world click
-    RequiresActor          // requires actor click
+    RequiresActor,          // requires actor click
+    RequiresStructure       // requires structure click
   }
 }
 

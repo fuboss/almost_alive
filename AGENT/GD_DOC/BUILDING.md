@@ -1,3 +1,71 @@
+## Architecture
+
+### Separation of Concerns (SOLID)
+
+**Data Layer** — ScriptableObjects и serializable классы:
+- `StructureDefinitionSO` — конфигурация структуры
+- `ModuleDefinitionSO` — конфигурация модуля
+- `ConstructionData` — requirements для строительства
+- `SlotDefinition`, enums
+
+**Runtime Layer** — MonoBehaviour'ы с данными (без логики):
+- `Structure` — построенная структура, хранит state и references
+- `UnfinishedStructure` — blueprint в процессе строительства
+- `Module` — установленный модуль
+- `Slot`, `WallSegment`, `EntryPoint` — runtime data classes
+
+**Services Layer** — DI сервисы с логикой:
+- `StructuresModule` — main coordinator, CRUD, queries
+- `StructurePlacementService` — terrain positioning, ghost preview
+- `StructureConstructionService` — building logic (walls, slots, supports)
+
+---
+
+## Construction Flow
+
+```
+1. Player selects StructureDefinitionSO, clicks position
+
+2. StructuresModule.PlaceBlueprint(def, position)
+   → PlacementService.CalculateStructurePosition()
+   → PlacementService.CreateGhostView() — transparent preview
+   → Creates UnfinishedStructure with ghost
+   → Registry<UnfinishedStructure>.Register()
+
+3. GOAP agents deliver resources & do work:
+   → DeliverResourceToStructure → inventory.AddItem()
+   → BuildStructure → unfinished.AddWork()
+
+4. When isReadyToComplete:
+   → StructuresModule.CompleteConstruction(unfinished)
+
+5. CompleteConstruction():
+   → Creates Structure GO
+   → ConstructionService.BuildStructure():
+      - SpawnFoundationView()
+      - CreateSlots()
+      - DetermineEntryPoints()
+      - GenerateWalls()
+      - GenerateSupports()
+      - SpawnEntryPoints()
+   → Destroys UnfinishedStructure + ghost
+   → Returns built Structure
+```
+
+---
+
+## ConstructionData vs RecipeData
+
+| | RecipeData | ConstructionData |
+|---|---|---|
+| Purpose | Crafting actors | Building structures |
+| Result | `resultActorKey` | implicit (structure knows itself) |
+| Interface | `IConstructionRequirements` | `IConstructionRequirements` |
+
+Оба реализуют общий интерфейс для работы с ресурсами и work progress.
+
+---
+
 # Building System — Smart Blueprints
 
 > Modular base building with autonomous agent construction.
@@ -269,6 +337,73 @@ Player places Structure → Foundation built → Slots available
 2. Add Structure system in parallel
 3. Player uses Structures, AI can use either
 4. Eventually deprecate CampLocation
+
+---
+
+## Wall System
+
+### Concept: Wall Segments per Edge
+
+Каждая сторона структуры делится на сегменты (по количеству ячеек вдоль этой стороны).
+
+```
+Структура 3x3:
+
+        North (3 segments)
+       ┌───┬───┬───┐
+       │0,2│1,2│2,2│
+ West  ├───┼───┼───┤  East
+ (3)   │0,1│1,1│2,1│  (3)
+       ├───┼───┼───┤
+       │0,0│1,0│2,0│
+       └───┴───┴───┘
+        South (3 segments)
+```
+
+### Wall Segment Types
+
+| Type | Description |
+|------|-------------|
+| Solid | Глухая стена |
+| Doorway | Проём для входа с terrain |
+| Passage | Проход между структурами (expansion) |
+| Window | Стена с окном (future) |
+
+### Automatic Wall Generation
+
+При spawn структуры:
+
+```
+1. Все segments создаются как Solid
+2. Для каждого Entry Point:
+   - Находим segment по позиции
+   - Меняем тип на Doorway
+3. Для expansion connections:
+   - Находим connecting segments
+   - Меняем тип на Passage
+```
+
+### Entry Point Detection
+
+```
+1. Scan terrain по периметру структуры
+2. Для каждой разрешённой стороны (entryDirections):
+   - Найти segment с минимальным gap до terrain
+   - Если gap < maxStairsHeight → создать EntryPoint
+3. Для каждого EntryPoint:
+   - Wall segment → Doorway
+   - Spawn stairs prefab
+   - Create NavMeshLink
+```
+
+### Wall Prefabs Required
+
+```
+WallPrefabs/
+├── Wall_Solid.prefab       — глухая стена (1 cell width × 3m height)
+├── Wall_Doorway.prefab     — стена с проёмом
+└── Wall_Passage.prefab     — арка/широкий проход (для expansion)
+```
 
 ---
 

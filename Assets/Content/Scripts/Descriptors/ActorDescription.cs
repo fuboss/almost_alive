@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Content.Scripts.Game {
   [RequireComponent(typeof(ActorId))]
   public class ActorDescription : SerializedMonoBehaviour, IActorDescription, ISelectableActor {
+    //addressable key
     public string actorKey;
 
     [SerializeField] private DescriptionData _descriptionData;

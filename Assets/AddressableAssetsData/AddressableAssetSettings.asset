@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: bd7b58e59c8b1456cb611f885cdcfec8
   m_currentHash:
     serializedVersion: 2
-    Hash: 640488e66d2df3ffb9546855b3a910fb
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -60,7 +60,10 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
+  - {fileID: 11400000, guid: f6dc2211300bf4ed2955049b33d6c3da, type: 2}
+  - {fileID: 11400000, guid: 2b900a9c821a44d3ba4df9cb6c334a74, type: 2}
   - {fileID: 11400000, guid: 4bc3ba8ad44b5401f95fdde0465921d3, type: 2}
+  - {fileID: 11400000, guid: d9fe3d8dac0ea47c0a4a1899bf61aba7, type: 2}
   - {fileID: 11400000, guid: 0b575a99f261d46ccaab58a4651964a6, type: 2}
   - {fileID: 11400000, guid: 6fb6b8c937ce14d37a395ae63c245a74, type: 2}
   - {fileID: 11400000, guid: fe28417865c74488aaffcd5a027609f1, type: 2}
@@ -105,6 +108,9 @@ MonoBehaviour:
     - default
     - Actors
     - CampSetups
+    - Structure
+    - StructurePart
+    - StructureDefinition
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: edc05e75803874a848adcc6dd2f2b7d1, type: 2}

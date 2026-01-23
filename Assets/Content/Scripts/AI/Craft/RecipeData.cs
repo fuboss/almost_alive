@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Content.Scripts.AI.GOAP;
+using Content.Scripts.Building.Data;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.AI.Craft {
   [Serializable]
-  public class RecipeData {
+  public class RecipeData : IConstructionRequirements {
     [Tooltip("ActorKey of the result prefab")] [ValueDropdown("ActorKeys")]
     public string resultActorKey;
 
@@ -26,6 +27,10 @@ namespace Content.Scripts.AI.Craft {
     public float workRequired = 0f;
 
     public List<RecipeRequiredResource> requiredResources => _requiredResources;
+
+    // IConstructionRequirements implementation
+    IReadOnlyList<RecipeRequiredResource> IConstructionRequirements.requiredResources => _requiredResources;
+    float IConstructionRequirements.workRequired => workRequired;
 
 #if UNITY_EDITOR
     private IEnumerable<string> ActorKeys() => GOAPEditorHelper.GetActorKeys();

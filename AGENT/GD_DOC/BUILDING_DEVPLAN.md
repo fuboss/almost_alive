@@ -2,11 +2,11 @@
 
 > Extracted from BUILDING.md for tracking implementation progress.
 
-## Status: 🟡 Phase 1
+## Status: 🟡 Phase 2.C (Test remaining)
 
 ---
 
-## Phase 1: Data Foundation ⬅️ CURRENT
+## Phase 1: Data Foundation ✅ DONE
 **Goal:** Core data structures, no runtime yet.
 
 - [x] 1.1 `StructureDefinitionSO` — scriptable object with footprint, foundationPrefab, slots[], foundationRecipe
@@ -17,14 +17,48 @@
 
 ---
 
-## Phase 2: Runtime Structure
-**Goal:** Structures exist in world, no construction yet.
+## Phase 2: Runtime Structure + Editor Tooling
 
-- [ ] 2.1 `Structure` (MonoBehaviour) — ref to SO, runtime slots[], state machine, HP
-- [ ] 2.2 `Slot` (class) — runtime state, assignedModuleDef, builtModule, priority, owner
-- [ ] 2.3 `Module` (MonoBehaviour) — ref to SO, owner, HP, CanUse()
-- [ ] 2.4 `StructureRegistry` — static Registry<Structure> pattern
-- [ ] 2.5 Test: spawn Structure via code, verify slots initialize
+### 2.A Editor Tooling ✅ DONE
+
+- [x] 2.A.1 `StructureFoundationBuilder.cs` — editor assembly helper
+- [x] 2.A.2 `StructureFoundationBuilderEditor.cs` — custom editor with buttons
+- [x] 2.A.3 Terrain Check Visualization
+- [x] 2.A.4 Slot visualization colors
+- [x] 2.A.5 `StructureDescription.cs` — prefab metadata component
+- [x] 2.A.6 `StructurePartDescription.cs` — wall prefab metadata
+- [x] 2.A.7 Save as Addressable Prefab workflow
+
+### 2.B Runtime Data Classes ✅ DONE
+
+- [x] 2.B.1 `WallSide` enum
+- [x] 2.B.2 `WallSegmentType` enum
+- [x] 2.B.3 `WallSegment` class
+- [x] 2.B.4 `EntryPoint` class
+- [x] 2.B.5 `BuildingConstants` static class
+- [x] 2.B.7 `Slot` class
+- [x] 2.B.8 `Module` MonoBehaviour
+
+### 2.C Architecture Refactor ✅ DONE
+**Goal:** SOLID decomposition — separate data from logic.
+
+#### Data Layer
+- [x] 2.C.1 `IConstructionRequirements` interface
+- [x] 2.C.2 `ConstructionData` class
+- [x] 2.C.3 Update `RecipeData` — implement IConstructionRequirements
+- [x] 2.C.4 Update `StructureDefinitionSO` — use ConstructionData
+
+#### Runtime Layer (refactored)
+- [x] 2.C.5 `Structure` (MonoBehaviour) — data-only
+- [x] 2.C.6 `UnfinishedStructure` (MonoBehaviour) — blueprint + progress
+
+#### Services Layer (DI)
+- [x] 2.C.7 `StructurePlacementService` — terrain, ghost
+- [x] 2.C.8 `StructureConstructionService` — building logic
+- [x] 2.C.9 `StructuresModule` — main coordinator
+- [x] 2.C.10 Register services in `GameScope`
+
+- [ ] 2.C.11 Test: full construction flow via services
 
 ---
 
@@ -33,19 +67,18 @@
 
 - [ ] 3.1 `StructurePlacementController` — placement mode, ghost preview, grid snap
 - [ ] 3.2 Placement Validation — terrain, obstacles, navmesh checks
-- [ ] 3.3 Placement Confirmation — spawn Structure in Blueprint state
+- [ ] 3.3 Placement Confirmation — calls StructuresModule.PlaceBlueprint()
 - [ ] 3.4 Input integration — ESC cancel, R rotate
 
 ---
 
-## Phase 4: Construction Flow
+## Phase 4: Construction Flow (GOAP)
 **Goal:** Agents build structures and modules.
 
-- [ ] 4.1 `StructureConstructionSite` — resource tracking, progress
-- [ ] 4.2 Resource Delivery — hauling to blueprint site
-- [ ] 4.3 Foundation Building — action_BuildFoundation, single builder
-- [ ] 4.4 Module Building — action_BuildModule, slot resources
-- [ ] 4.5 Beliefs & Goals — Structure_NeedsFoundation, Structure_NeedsModule, goal_BuildStructure
+- [ ] 4.1 Beliefs — UnfinishedStructure_NeedsResources, UnfinishedStructure_NeedsWork
+- [ ] 4.2 Actions — action_DeliverResourceToStructure, action_BuildStructure
+- [ ] 4.3 Goals — goal_BuildStructure
+- [ ] 4.4 Module Building — action_BuildModule after structure complete
 
 ---
 
@@ -112,10 +145,11 @@
 ## MVP Milestone
 
 Phases 1-4 = minimum playable:
-- Player places blueprint
-- Agents build foundation
-- Modules appear in slots
+- Player places blueprint (UnfinishedStructure with ghost)
+- Agents deliver resources
+- Agents do work
+- Structure completes (walls, slots, entries)
 
 ---
 
-*Last updated: Session with GD*
+*Last updated: Session with GD — Architecture Refactor*

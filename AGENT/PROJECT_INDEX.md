@@ -31,6 +31,7 @@
 | INVENTORY_CRAFT.md | Items, storage, recipes |
 | CAMP.md | Camp system (legacy) |
 | REFACTORING_IDEAS.md | Pending refactoring |
+| UNITY_CONVENTIONS.md | Unity folder restrictions, gotchas |
 
 ### Game Design Docs (`AGENT/GD_DOC/`)
 
@@ -60,7 +61,12 @@ Assets/Content/Scripts/AI/
 ### Building (NEW)
 ```
 Assets/Content/Scripts/Building/
-└── Data/               — StructureDefinitionSO, ModuleDefinitionSO, SlotDefinition
+├── Data/               — StructureDefinitionSO, ModuleDefinitionSO, ConstructionData, enums
+├── Editor/            — Custom Editors
+├── EditorUtilities/   — StructureFoundationBuilder
+├── Runtime/           — Structure, UnfinishedStructure, Slot, Module, WallSegment, EntryPoint
+├── Services/          — StructuresModule, PlacementService, ConstructionService
+└── BuildingConstants.cs
 ```
 
 ### Core

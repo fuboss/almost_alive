@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: BuildingDefinitions
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: BuildingDefinitions
+  m_GUID: a240180d5eeab4f439168116ebe228ca
+  m_SerializeEntries:
+  - m_GUID: 745409a69157142f2ac42b9a15bec38e
+    m_Address: shelter_small_definition
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructureDefinition
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 1d1c16c4ed5be4cc2896a42b9ec16980, type: 2}
+    - {fileID: 11400000, guid: 2ed81959594f84572ac432e5e0aa1664, type: 2}
