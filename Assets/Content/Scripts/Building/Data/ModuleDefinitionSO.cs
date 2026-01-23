@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Content.Scripts.AI;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;

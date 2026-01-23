@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Content.Scripts.AI;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
