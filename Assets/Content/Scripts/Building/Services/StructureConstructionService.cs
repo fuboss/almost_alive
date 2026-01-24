@@ -5,6 +5,7 @@ using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer;
+using NavMeshBuilder = Content.Scripts.Utility.NavMeshBuilder;
 
 namespace Content.Scripts.Building.Services {
   /// <summary>
@@ -24,7 +25,6 @@ namespace Content.Scripts.Building.Services {
       }
 
       // Order matters!
-      SpawnFoundationView(structure);
       CreateSlots(structure);
       
       var entryPoints = _placement.DetermineEntryPoints(definition, structure.transform.position, terrain);
@@ -34,26 +34,11 @@ namespace Content.Scripts.Building.Services {
       GenerateSupports(structure, terrain);
       SpawnEntryPoints(structure, terrain);
 
-      structure.GetComponentInChildren<NavMeshSurface>().BuildNavMesh();
+      structure.GetComponentInChildren<NavMeshBuilder>().Build();
       structure.SetState(StructureState.BUILT);
       Debug.Log($"[StructureConstructionService] Built structure: {definition.structureId}");
     }
-
-    #region Foundation
-
-    public void SpawnFoundationView(Structure structure) {
-      var definition = structure.definition;
-      if (definition?.foundationPrefab == null) return;
-
-      var view = Object.Instantiate(definition.foundationPrefab, structure.transform);
-      view.transform.localPosition = Vector3.zero;
-      view.transform.localRotation = Quaternion.identity;
-      view.name = "FoundationView";
-
-      structure.SetFoundationView(view);
-    }
-
-    #endregion
+    
 
     #region Slots
 

@@ -346,6 +346,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 639026734215657525}
+  - component: {fileID: 6759924791908324793}
   m_Layer: 0
   m_Name: floor
   m_TagString: Untagged
@@ -373,6 +374,19 @@ Transform:
   - {fileID: 6318229822095252148}
   m_Father: {fileID: 2000351500058136715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6759924791908324793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520032701964810416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc17a61e114497dbdd02e0c0e22c3ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Utility.NavMeshBuilder
+  _meshSurface: {fileID: 8478697012310782451}
 --- !u!1 &3595946681577276849
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,8 +630,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.74, y: 2.061458, z: 0.1}
-  m_Center: {x: 0.0071965586, y: 0.96839523, z: 0.023144284}
+  m_Size: {x: 2.74, y: 2.061458, z: 0.2}
+  m_Center: {x: 0.0071965586, y: 0.96839523, z: 0}
 --- !u!114 &8478697012310782451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,8 +647,8 @@ MonoBehaviour:
   m_SerializedVersion: 0
   m_AgentTypeID: 0
   m_CollectObjects: 2
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
+  m_Size: {x: 3.7104857, y: 3.7522702, z: 1}
+  m_Center: {x: -0.30743778, y: 1.3761351, z: 0}
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -648,7 +662,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: ff6aafa1559564bc6a27b887deef0ac4, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: d005261db22f44585b0b41dd06a6277d, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &4279243209128417257
 GameObject:

@@ -33,7 +33,7 @@ namespace Content.Scripts.DebugPanel.Actions {
         if (actor.GetComponent<Structure>() is { } structure) {
           var definition = _structuresModule.definitions.FirstOrDefault(d => d.structureId == actor.actorKey);
           structure.Initialize(definition, 100);
-          _structuresModule.OnStructureActorSpawned(actor);
+          structure.transform.position += Vector3.up * 0.35f;
         }
 
         return;
