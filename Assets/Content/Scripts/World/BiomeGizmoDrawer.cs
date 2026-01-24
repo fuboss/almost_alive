@@ -13,12 +13,20 @@ namespace Content.Scripts.Editor.World {
   public static class BiomeGizmoDrawer {
     private static WorldGeneratorConfigSO _config;
     private static Terrain _terrain;
+    private static GUIStyle _labelStyle;
+    private static double _lastDrawTime;
+    private const double DRAW_INTERVAL = 0.1; // 10 FPS max for gizmos
 
     static BiomeGizmoDrawer() {
       SceneView.duringSceneGui += OnSceneGUI;
     }
 
     private static void OnSceneGUI(SceneView sceneView) {
+      // Throttle drawing to reduce CPU load
+      var time = EditorApplication.timeSinceStartup;
+      if (time - _lastDrawTime < DRAW_INTERVAL) return;
+      _lastDrawTime = time;
+      
       // Find config if not cached
       if (_config == null) {
         _config = Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
@@ -38,6 +46,16 @@ namespace Content.Scripts.Editor.World {
       if (_config.drawCellCenters) {
         DrawCellCenters();
       }
+    }
+
+    private static GUIStyle GetLabelStyle() {
+      if (_labelStyle == null) {
+        _labelStyle = new GUIStyle(EditorStyles.boldLabel) {
+          alignment = TextAnchor.MiddleCenter,
+          normal = { textColor = Color.white }
+        };
+      }
+      return _labelStyle;
     }
 
     private static void DrawBiomeOverlay() {
@@ -97,13 +115,8 @@ namespace Content.Scripts.Editor.World {
         Handles.color = color;
         Handles.DrawSolidDisc(pos, Vector3.up, 3f);
 
-        // Draw label
-        var style = new GUIStyle(GUI.skin.label) {
-          alignment = TextAnchor.MiddleCenter,
-          fontStyle = FontStyle.Bold,
-          normal = { textColor = Color.white }
-        };
-        Handles.Label(pos + Vector3.up * 5f, cell.type.ToString(), style);
+        // Draw label with cached style
+        Handles.Label(pos + Vector3.up * 5f, cell.type.ToString(), GetLabelStyle());
       }
     }
 
@@ -120,6 +133,7 @@ namespace Content.Scripts.Editor.World {
     public static void ClearCache() {
       _config = null;
       _terrain = null;
+      _labelStyle = null;
     }
   }
 }

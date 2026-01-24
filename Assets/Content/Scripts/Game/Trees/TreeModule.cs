@@ -26,7 +26,7 @@ namespace Content.Scripts.Game.Trees {
     private void SpawnYieldWood(ChoppingProgress choppingProgress, IGoapAgentCore byAgent, int yield, string actorID) {
       var shift = Vector3.zero;
       for (int i = 0; i < yield; i++) {
-        if (!_creationModule.TrySpawnActor(actorID, choppingProgress.transform.position + shift,
+        if (!_creationModule.TrySpawnActorOnGround(actorID, choppingProgress.transform.position + shift,
               out var woodActor)) continue;
         shift = NextShift();
         byAgent.agentBrain.TryRemember(woodActor);

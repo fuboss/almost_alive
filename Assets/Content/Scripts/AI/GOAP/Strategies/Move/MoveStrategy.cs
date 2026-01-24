@@ -34,7 +34,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     public override bool canPerform => !complete;
 
     public override bool complete {
-      get => _aborted || _agent.navMeshAgent.remainingDistance <= 2f && !_agent.navMeshAgent.pathPending;
+      get => _aborted || _agent.navMeshAgent.remainingDistance <= 1f && !_agent.navMeshAgent.pathPending;
       internal set { }
     }
 

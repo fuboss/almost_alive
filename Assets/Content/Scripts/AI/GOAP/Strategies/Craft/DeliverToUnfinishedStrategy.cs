@@ -18,7 +18,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
     private IInventoryAgent _inventoryAgent;
-    private ICampAgent _campAgent;
     private UnfinishedActor _target;
     private bool _abort;
     private SimTimer _timer;
@@ -33,7 +32,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       _agent = agent;
       _transientAgent = agent as ITransientTargetAgent;
       _inventoryAgent = agent as IInventoryAgent;
-      _campAgent = agent as ICampAgent;
       duration = template.duration;
       _creationModule = template._creationModule;
     }
@@ -53,7 +51,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       complete = false;
       _abort = false;
       
-      if (_inventoryAgent == null || _campAgent == null) {
+      if (_inventoryAgent == null) {
         Debug.LogWarning("[DeliverUnfinished] Agent missing required interfaces");
         complete = true;
         return;
@@ -98,8 +96,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         return;
       }
 
-      var camp = _campAgent.camp;
-      _target = UnfinishedQuery.GetNeedingResources(camp);
+      _target = UnfinishedQuery.GetNeedingResources();
 
       if (_target == null) {
         Debug.Log("[DeliverUnfinished] No target needing resources");
@@ -143,7 +140,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
           }
         }
         else {
-          if (_creationModule.TrySpawnActor(slot.item.actorKey, _target.transform.position, out var newItem)) {
+          if (_creationModule.TrySpawnActorOnGround(slot.item.actorKey, _target.transform.position, out var newItem)) {
             newItem.GetStackData().current = remaining;
             if (targetInventory.TryPutItemInInventory(newItem, remaining)) {
               Debug.Log($"Delivered full stack of {tag} x {remaining}", targetInventory);

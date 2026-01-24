@@ -29,7 +29,21 @@ namespace Content.Scripts.AI.GOAP {
       };
     }
 
-    public bool TrySpawnActor(string actorKey, Vector3 position, out ActorDescription actor, ushort count = 1) {
+    
+    public bool TrySpawnActor(string actorKey, Vector3 position, out ActorDescription actor) {
+      actor = null;
+      var prefab = GetPrefab(actorKey);
+      if (prefab == null) {
+        Debug.LogError($"ActorCreationModule: Prefab not found for actorKey '{actorKey}'");
+        return false;
+      }
+      actor = _objectResolver.Instantiate(prefab, position, Quaternion.identity);
+      _objectResolver.Inject(actor.gameObject);
+
+      return true;
+    }
+    
+    public bool TrySpawnActorOnGround(string actorKey, Vector3 position, out ActorDescription actor, ushort count = 1) {
       actor = null;
       var prefab = GetPrefab(actorKey);
       if (prefab == null) {

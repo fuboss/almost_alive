@@ -1,16 +1,13 @@
 using System.Collections.Generic;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.Game;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityUtils;
 using VContainer;
 using VContainer.Unity;
 
 namespace Content.Scripts.AI.GOAP.Agent {
+  //todo: this module seems strange, maybe refactor later to CameraModule
   public class AgentContainerModule : ITickable, IStartable {
-    [Inject] private IAgentFactory _agentFactory;
     [Inject] private CameraModule _cameraModule;
 
     private readonly List<IGoapAgent> _agents = new();
@@ -42,29 +39,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     public void Tick() {
-      //input to spawn new agent(debug) -> move to separate input system later
-      if (Keyboard.current.enterKey.wasReleasedThisFrame) {
-        var randCamp = Registry<CampLocation>.GetAll().Random();
-        var spawnPos = randCamp != null
-          ? randCamp.transform.position + Random.onUnitSphere * 5 + Vector3.up * 3
-          : Vector3.zero + Random.onUnitSphere * 5;
-        SpawnNewAgent(spawnPos);
-      }
-
       //todo move this into a separate system
       foreach (var goapAgent in _agents) {
-        if (goapAgent == null) continue;
-        goapAgent.Tick();
+        goapAgent?.Tick();
       }
     }
-
-    private void SpawnNewAgent(Vector3 position) {
-      if (!Physics.Raycast(position + Vector3.up * 100, Vector3.down, out RaycastHit hit)) return;
-
-      var instance = _agentFactory.Spawn(hit.point);
-      Add(instance);
-    }
-  
 
     public void Start() {
      

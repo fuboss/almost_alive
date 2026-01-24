@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Content.Scripts.Building.Runtime;
+using Content.Scripts.Descriptors.Tags;
 using Sirenix.OdinInspector;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -100,7 +101,7 @@ namespace Content.Scripts.Building.Data {
           
           if (prefab == null) continue;
           
-          var desc = prefab.GetComponent<StructureDescription>();
+          var desc = prefab.GetComponent<StructureTag>();
           if (desc == null) continue;
 
           var footprintMatch = desc.footprint == footprint;
@@ -118,7 +119,7 @@ namespace Content.Scripts.Building.Data {
     private bool ValidateFoundationPrefab(GameObject prefab) {
       if (prefab == null) return true;
       
-      var desc = prefab.GetComponent<StructureDescription>();
+      var desc = prefab.GetComponent<StructureTag>();
       if (desc == null) return false;
       
       return desc.footprint == footprint;
@@ -127,7 +128,7 @@ namespace Content.Scripts.Building.Data {
     private void OnFoundationPrefabChanged() {
       if (foundationPrefab == null) return;
       
-      var desc = foundationPrefab.GetComponent<StructureDescription>();
+      var desc = foundationPrefab.GetComponent<StructureTag>();
       if (desc == null) return;
 
       if (desc.footprint == footprint && (slots == null || slots.Length == 0)) {
@@ -196,7 +197,7 @@ namespace Content.Scripts.Building.Data {
         return;
       }
       
-      var desc = foundationPrefab.GetComponent<StructureDescription>();
+      var desc = foundationPrefab.GetComponent<StructureTag>();
       if (desc == null) {
         Debug.LogError($"[{name}] foundationPrefab has no StructureDescription component!", this);
         return;
@@ -240,7 +241,7 @@ namespace Content.Scripts.Building.Data {
     [Button("Copy Slots from Prefab"), PropertyOrder(-1)]
     [ShowIf("@foundationPrefab != null && foundationPrefab.GetComponent<Content.Scripts.Building.Runtime.StructureDescription>() != null")]
     private void CopySlotsFromPrefab() {
-      var desc = foundationPrefab.GetComponent<StructureDescription>();
+      var desc = foundationPrefab.GetComponent<StructureTag>();
       if (desc == null || desc.slots == null) return;
 
       footprint = desc.footprint;

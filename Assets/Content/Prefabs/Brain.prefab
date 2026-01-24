@@ -136,26 +136,6 @@ MonoBehaviour:
     - Name: goalTemplates
       Entry: 6
       Data: 
-    - Name: beliefs
-      Entry: 7
-      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Content.Scripts.AI.GOAP.Beliefs.AgentBelief,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
   availableFeatures:
   - Common_FeatureSet
   - Hunger_FeatureSet
@@ -163,7 +143,6 @@ MonoBehaviour:
   - Toilet_FeatureSet
   - Hauling_FeatureSet
   - WoodCutting_FeatureSet
-  - Camp_FeatureSet
   - Craft_FeatureSet
   _memoryConsolidation:
     confidenceDecayRate: 0.99
@@ -174,6 +153,17 @@ MonoBehaviour:
     reinforcementRadius: 5
   _interactSensor: {fileID: 8430148722207983948}
   _visionSensor: {fileID: 5127145853041075914}
+  _stuckDetector:
+    stuckThreshold: 2
+    minMovement: 0.3
+    replanCooldown: 3
+  _interruptionManager:
+    _checkInterval: 0.5
+    _sources: []
+  _planStackMaxDepth: 3
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &8214782044528235277
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,10 +45,10 @@ namespace Content.Scripts.AI.Craft {
     }
 
     /// <summary>Get all unlocked camp recipes sorted by priority (highest first).</summary>
-    public List<RecipeSO> GetUnlockedCampRecipes(RecipeModule recipeModule) {
+    public List<RecipeSO> GetUnlockedRecipes(RecipeModule recipeModule) {
       return recipeModule.all
-        .Where(r => r.isCampRecipe && IsUnlocked(r))
-        .OrderByDescending(r => r.campBuildPriority)
+        .Where(IsUnlocked)
+        .OrderByDescending(r => r.buildPriority)
         .ToList();
     }
   }

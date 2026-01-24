@@ -148,7 +148,7 @@ namespace Content.Scripts.World {
 
       // Spawn saved actors
       foreach (var actorData in data.actors) {
-        if (_actorCreation.TrySpawnActor(actorData.actorKey, actorData.position, out var actor, (ushort)actorData.stackCount)) {
+        if (_actorCreation.TrySpawnActorOnGround(actorData.actorKey, actorData.position, out var actor, (ushort)actorData.stackCount)) {
           actor.transform.rotation = actorData.rotation;
           actor.transform.localScale = actorData.scale;
         }

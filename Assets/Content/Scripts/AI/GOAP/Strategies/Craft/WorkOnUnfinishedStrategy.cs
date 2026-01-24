@@ -19,7 +19,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
 
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
-    private ICampAgent _campAgent;
     private IWorkAgent _workAgent;
     private UnfinishedActor _target;
     private SimTimer _timer;
@@ -31,8 +30,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private WorkOnUnfinishedStrategy(IGoapAgentCore agent, WorkOnUnfinishedStrategy template) {
       _agent = agent;
       _transientAgent = agent as ITransientTargetAgent;
-      _campAgent = agent as ICampAgent;
-      _workAgent = agent as IWorkAgent;
+      _workAgent = (IWorkAgent)agent;
       workRate = template.workRate;
       duration = template.duration;
     }
@@ -47,12 +45,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     public override void OnStart() {
       complete = false;
       _abort = false;
-      
-      if (_campAgent == null) {
-        Debug.LogWarning("[WorkUnfinished] Agent missing ICampAgent");
-        complete = true;
-        return;
-      }
       
       FindTarget();
       InitTimer();
@@ -87,11 +79,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         return;
       }
 
-      var camp = _campAgent.camp;
-      _target = UnfinishedQuery.GetNeedingWork(camp);
+      _target = UnfinishedQuery.GetNeedingWork();
 
       if (_target == null) {
-        _target = UnfinishedQuery.GetReadyToComplete(camp);
+        _target = UnfinishedQuery.GetReadyToComplete();
       }
 
       if (_target == null) {

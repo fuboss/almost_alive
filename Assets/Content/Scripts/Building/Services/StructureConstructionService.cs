@@ -34,7 +34,7 @@ namespace Content.Scripts.Building.Services {
       GenerateSupports(structure, terrain);
       SpawnEntryPoints(structure, terrain);
 
-      structure.SetState(StructureState.Built);
+      structure.SetState(StructureState.BUILT);
       Debug.Log($"[StructureConstructionService] Built structure: {definition.structureId}");
     }
 

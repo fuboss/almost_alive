@@ -11,8 +11,7 @@ namespace Content.Scripts.AI.Craft {
     /// <summary>Unique recipe ID (asset name).</summary>
     public string recipeId => name;
 
-    public bool isCampRecipe;
-    [Range(0, 100)] public int campBuildPriority = 0;
+    [Range(0, 100)] public int buildPriority = 0;
     public RecipeData recipe => data;
 
 #if UNITY_EDITOR

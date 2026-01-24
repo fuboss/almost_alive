@@ -1,32 +1,37 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Building.Runtime;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Content.Scripts.Game.Storage;
 using Sirenix.OdinInspector;
-using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
-  [Serializable, TypeInfoBox("True when camp has active unfinished actor.")]
+  //todo: remove CAMP usages, use structure-based queries instead
+
+  [Serializable, TypeInfoBox("True when has active unfinished actor.")]
   public class HasActiveUnfinishedBelief : AgentBelief {
+    public bool inverse;
+
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
-      return () => UnfinishedQuery.HasActiveUnfinished(campAgent.camp);
+      return () => {
+        var result = UnfinishedQuery.HasActiveUnfinished();
+        return inverse ? !result : result;
+      };
     }
 
-    public override AgentBelief Copy() => new HasActiveUnfinishedBelief { name = name };
+    public override AgentBelief Copy() => new HasActiveUnfinishedBelief { name = name, inverse = inverse };
   }
 
   [Serializable, TypeInfoBox("True when unfinished needs resources.")]
   public class UnfinishedNeedsResourcesBelief : AgentBelief {
     public bool inverse;
+
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => inverse;
       return () => {
-        var result = UnfinishedQuery.GetNeedingResources(campAgent.camp) != null;
+        var result = UnfinishedQuery.GetNeedingResources() != null;
         return !inverse ? result : !result;
       };
     }
@@ -39,9 +44,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
     public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => inverse;
       return () => {
-        var unfinished = UnfinishedQuery.GetNeedingWork(campAgent.camp);
+        var unfinished = UnfinishedQuery.GetNeedingWork();
         var result = unfinished != null;
         return !inverse ? result : !result;
       };
@@ -52,224 +56,164 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
 
   [Serializable, TypeInfoBox("True when unfinished is ready to complete (has resources + work done).")]
   public class UnfinishedReadyToCompleteBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
-      return () => UnfinishedQuery.GetReadyToComplete(campAgent.camp) != null;
-    }
-
-    public override AgentBelief Copy() => new UnfinishedReadyToCompleteBelief { name = name };
-  }
-
-  [Serializable, TypeInfoBox("True when agent can deliver craft resources (has them in storages).")]
-  public class CanDeliverFromStorageToUnfinishedBelief : CanDeliverToUnfinishedBelief {
-    protected override bool Search(IGoapAgentCore agent, ICampAgent campAgent, IInventoryAgent invAgent, UnfinishedActor target) {
-      var needs = target.GetRemainingResources();
-      var campData = campAgent.campData;
-      if (campData == null || !campData.hasCamp) return false;
-      
-      if (!deliverAllNeededTypes) {
-        foreach (var (tag, _) in needs) {
-          if (campData.GetResourceCount(tag) >= countThreshold) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      foreach (var (tag, remaining) in needs) {
-        if (campData.GetResourceCount(tag) < remaining) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    public override AgentBelief Copy() => new CanDeliverFromStorageToUnfinishedBelief {
-      name = name,
-      countThreshold = countThreshold
-    };
-  }
-
-  [Serializable, TypeInfoBox("True when agent can deliver craft resources (has them in inventory).")]
-  public class CanDeliverToUnfinishedBelief : AgentBelief {
-    public int countThreshold = 1;
-    public bool deliverAllNeededTypes = false;
+    public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
-      if (agent is not IInventoryAgent invAgent) return () => false;
-      
       return () => {
-        var target = UnfinishedQuery.GetNeedingResources(campAgent.camp);
-        return target != null && Search(agent, campAgent, invAgent, target);
+        var result = UnfinishedQuery.GetReadyToComplete() != null;
+        return inverse ? !result : result;
       };
     }
 
-    protected virtual bool Search(IGoapAgentCore agent, ICampAgent campAgent, IInventoryAgent invAgent, UnfinishedActor target) {
-      var needs = target.GetRemainingResources();
-      if (!deliverAllNeededTypes) {
-        foreach (var (tag, _) in needs) {
-          if (invAgent.inventory.GetItemCount(tag) >= countThreshold) {
-            return true;
-          }
-        }
-      }
-      else {
-        var left = needs.ToDictionary(n => n.tag, n => n.remaining);
-        Dictionary<string, int> found = new();
+    public override AgentBelief Copy() => new UnfinishedReadyToCompleteBelief { name = name, inverse = inverse };
+  }
 
-        foreach (var leftKey in left.Keys) {
-          var countInInventory = invAgent.inventory.GetItemCount(leftKey);
-          found[leftKey] = countInInventory;
-        }
+  [Serializable, TypeInfoBox("True when agent's inventory has at least one resource needed by unfinished.")]
+  public class InventoryHasResourcesForUnfinishedBelief : AgentBelief {
+    public bool inverse;
 
-        bool allFulfilled = true;
-        foreach (var (tag, remaining) in left) {
-          if (found[tag] < remaining) {
-            allFulfilled = false;
-            break;
-          }
-        }
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      if (agent is not IInventoryAgent invAgent) return () => false;
 
-        return allFulfilled;
+      return () => {
+        var target = UnfinishedQuery.GetNeedingResources();
+        if (target == null) return false;
+
+        var needs = target.GetRemainingResources()
+          .Where(n => invAgent.inventory.GetItemCount(n.tag) > 0);
+        var result = needs.Any();
+        return inverse ? !result : result;
+      };
+    }
+
+    public override AgentBelief Copy() => new InventoryHasResourcesForUnfinishedBelief { name = name, inverse = inverse };
+  }
+
+  [Serializable, TypeInfoBox("True when camp storage has at least one resource needed by unfinished.")]
+  public class StorageHasResourcesForUnfinishedBelief : AgentBelief {
+    public bool inverse;
+
+    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
+      return () => {
+        var result = AnyStorageHasRequiredResources();
+        return inverse ? !result : result;
+      };
+    }
+
+    private static bool AnyStorageHasRequiredResources() {
+      var unfinished = UnfinishedQuery.GetNeedingResources();
+      if (unfinished == null) return false;
+      var needs = unfinished.GetRemainingResources();
+
+      var allStorages = ActorRegistry<StorageActor>.all;
+      foreach (var (tag, _) in needs) {
+        var hasInStorage = allStorages.Any(s => s.GetCountWithTag(tag) > 0);
+        if (hasInStorage) return true;
       }
 
       return false;
     }
 
-    public override AgentBelief Copy() => new CanDeliverToUnfinishedBelief {
-      name = name,
-      countThreshold = countThreshold
-    };
+    public override AgentBelief Copy() => new StorageHasResourcesForUnfinishedBelief { name = name, inverse = inverse };
   }
 
-  [Serializable, TypeInfoBox("True when agent's inventory has at least one resource needed by unfinished.")]
-  public class InventoryHasForUnfinishedBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
-      if (agent is not IInventoryAgent invAgent) return () => false;
-      
-      return () => {
-        var target = UnfinishedQuery.GetNeedingResources(campAgent.camp);
-        if (target == null) return false;
-
-        var needs = target.GetRemainingResources()
-          .Where(n => invAgent.inventory.GetItemCount(n.tag) > 0);
-        return needs.Any();
-      };
-    }
-
-    public override AgentBelief Copy() => new InventoryHasForUnfinishedBelief { name = name };
-  }
-
-  [Serializable, TypeInfoBox("True when camp storage has at least one resource needed by unfinished.")]
-  public class StorageHasForUnfinishedBelief : AgentBelief {
-    protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
-      
-      return () => {
-        var camp = campAgent.camp;
-        var target = UnfinishedQuery.GetNeedingResources(camp);
-        if (target == null) return false;
-
-        var campPos = camp.transform.position;
-        var needs = target.GetRemainingResources();
-
-        foreach (var (tag, _) in needs) {
-          var hasInStorage = ActorRegistry<StorageActor>.all
-            .Any(s => Vector3.Distance(s.transform.position, campPos) < 30f &&
-                      s.GetCountWithTag(tag) > 0);
-          if (hasInStorage) return true;
-        }
-
-        return false;
-      };
-    }
-
-    public override AgentBelief Copy() => new StorageHasForUnfinishedBelief { name = name };
-  }
-
-  [Serializable, TypeInfoBox("True when unfinished needs resources that must be gathered (not enough in inventory + storage).")]
+  [Serializable,
+   TypeInfoBox("True when unfinished needs resources that must be gathered (not enough in inventory + storage).")]
   public class NeedsGatherForUnfinishedBelief : AgentBelief {
+    public bool inverse;
+
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
       if (agent is not IInventoryAgent invAgent) return () => false;
-      
+
       return () => {
-        var camp = campAgent.camp;
-        var target = UnfinishedQuery.GetNeedingResources(camp);
-        if (target == null) return false;
-
-        var campPos = camp.transform.position;
-        var needs = target.GetRemainingResources();
-
-        foreach (var (tag, needed) in needs) {
-          var inInventory = invAgent.inventory.GetItemCount(tag);
-          var inStorage = GetStorageCount(campPos, tag);
-
-          if (inInventory + inStorage < needed) return true;
-        }
-
-        return false;
+        var result = IsNotEnoughResources(invAgent);
+        return inverse ? !result : result;
       };
     }
 
-    private int GetStorageCount(Vector3 campPos, string tag) {
+    private static bool IsNotEnoughResources(IInventoryAgent invAgent) {
+      var target = UnfinishedQuery.GetNeedingResources();
+      if (target == null) return false;
+
+      var needs = target.GetRemainingResources();
+      var allStorages = ActorRegistry<StorageActor>.all;
+      foreach (var (tag, needed) in needs) {
+        var inInventory = invAgent.inventory.GetItemCount(tag);
+        var inStorage = allStorages.Sum(s => s.GetCountWithTag(tag));
+
+        if (inInventory + inStorage < needed) return true;
+      }
+
+      return false;
+    }
+
+    private int GetItemCountInStorage(string tag) {
       return ActorRegistry<StorageActor>.all
-        .Where(s => Vector3.Distance(s.transform.position, campPos) < 30f)
         .Sum(s => s.GetCountWithTag(tag));
     }
 
-    public override AgentBelief Copy() => new NeedsGatherForUnfinishedBelief { name = name };
+    public override AgentBelief Copy() => new NeedsGatherForUnfinishedBelief { name = name, inverse = inverse };
   }
 
   [Serializable, TypeInfoBox("True when camp needs new unfinished (has empty spots and agent has unlocked recipes).")]
-  public class CampNeedsNewUnfinishedBelief : AgentBelief {
+  public class CanStartCraftingOnStructuresEmptySlotsBelief : AgentBelief {
+    public bool inverse;
+
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => false;
       if (agent is not IWorkAgent workAgent) return () => false;
-      
+
       return () => {
-        var camp = campAgent.camp;
-        if (camp?.setup == null) return false;
-
-        if (UnfinishedQuery.HasActiveUnfinished(camp)) return false;
-        if (camp.setup.allSpotsFilled) return false;
-
-        var campRecipes = workAgent.recipes.GetUnlockedCampRecipes(workAgent.recipeModule);
-
-        foreach (var recipe in campRecipes) {
-          var tags = workAgent.recipeModule.GetResultActorTags(recipe);
-          var tag = tags?.Length > 0 ? tags[0] : null;
-
-          if (!string.IsNullOrEmpty(tag)) {
-            if (camp.setup.GetSpotsNeedingTag(tag).Any()) return true;
-          }
-          else {
-            if (camp.setup.GetAnyEmptySpot() != null) return true;
-          }
-        }
-
-        return false;
+        var result = Check(workAgent);
+        return inverse ? !result : result;
       };
     }
 
-    public override AgentBelief Copy() => new CampNeedsNewUnfinishedBelief { name = name };
+    private static bool Check(IWorkAgent workAgent) {
+      if (UnfinishedQuery.HasActiveUnfinished()) return false;
+      var campRecipes = workAgent.recipes.GetUnlockedRecipes(workAgent.recipeModule);
+      //todo: optimize by caching
+      var allEmptySlots = Registry<Building.Runtime.Structure>
+        .GetAll()
+        .SelectMany(st => st.GetEmptySlots())
+        .Where(slot => !slot.isLocked)
+        .ToArray();
+
+      foreach (var recipe in campRecipes) {
+        var resultActorTags = workAgent.recipeModule.GetResultActorTags(recipe);
+
+        if (resultActorTags.Length > 0) {
+          foreach (var emptySlot in allEmptySlots) {
+            var accepts = emptySlot.IsAcceptingTags(resultActorTags);
+            if (accepts) return true;
+          }
+        }
+        else {
+          if (allEmptySlots.Length > 0) return true;
+        }
+      }
+
+      return false;
+    }
+
+    public override AgentBelief Copy() => new CanStartCraftingOnStructuresEmptySlotsBelief
+      { name = name, inverse = inverse };
   }
 
   [Serializable, TypeInfoBox("True when agent has any unlocked hand-craftable recipe (ignores resources).")]
   public class HasHandCraftableRecipeBelief : AgentBelief {
+    public bool inverse;
+
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       if (agent is not IWorkAgent workAgent) return () => false;
-      
+
       return () => {
         var handRecipes = workAgent.recipeModule.GetHandCraftable();
-        return handRecipes.Any(r => workAgent.recipes.IsUnlocked(r));
+        var result = handRecipes.Any(r => workAgent.recipes.IsUnlocked(r));
+        return inverse ? !result : result;
       };
     }
 
-    public override AgentBelief Copy() => new HasHandCraftableRecipeBelief { name = name };
+    public override AgentBelief Copy() => new HasHandCraftableRecipeBelief { name = name, inverse = inverse };
   }
 
   [Serializable, TypeInfoBox("True when can remember any craft resource needed by unfinished.")]
@@ -277,21 +221,27 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
     public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      if (agent is not ICampAgent campAgent) return () => inverse;
-      
       return () => {
-        var targetUnfinished = UnfinishedQuery.GetNeedingResources(campAgent.camp);
-        if (targetUnfinished == null) return inverse;
+        var allUnfinished = UnfinishedQuery.GetAllNeedingResources().ToArray();
+        if (allUnfinished.Length == 0) return inverse;
 
-        var inMemory = targetUnfinished.GetRemainingResources().Select(n => n.tag)
-          .SelectMany(tag => agent.memory.GetWithAnyTags(new[] { tag })).ToArray();
-        var check = inMemory.Any();
-        var result = inverse ? !check : check;
+        var found = false;
+        foreach (var unfinishedActor in allUnfinished) {
+          var remainingResourcesTags = unfinishedActor
+            .GetRemainingResources()
+            .Select(r => r.tag)
+            .ToArray();
+          if (agent.memory.GetWithAnyTags(remainingResourcesTags).Length <= 0) continue;
+          found = true;
+          break;
+        }
+
+        var result = inverse ? !found : found;
 
         return result;
       };
     }
 
-    public override AgentBelief Copy() => new MemoryHasCraftResourceBelief { name = name };
+    public override AgentBelief Copy() => new MemoryHasCraftResourceBelief { name = name, inverse = inverse };
   }
 }

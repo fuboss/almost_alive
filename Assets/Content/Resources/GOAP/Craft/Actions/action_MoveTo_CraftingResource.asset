@@ -39,6 +39,8 @@ MonoBehaviour:
       data:
         targetFromMemory:
           searchMode: 0
+          useNavMeshDistance: 1
+          filterUnreachable: 1
           requiredTags:
           - RESOURCE
         updateDestinationContinuously: 0

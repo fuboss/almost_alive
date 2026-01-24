@@ -15,10 +15,12 @@ namespace Content.Scripts.AI.Navigation {
     /// Get NavMesh path cost (total distance) to target.
     /// Returns float.MaxValue if unreachable.
     /// </summary>
+    //todo: pretty heavy method. Improve perfomance
     public static float GetPathCost(NavMeshAgent agent, Vector3 target) {
       if (agent == null) return float.MaxValue;
 
       // Sample target position to NavMesh
+      //todo: use specified area mask!
       if (!NavMesh.SamplePosition(target, out var hit, 2f, NavMesh.AllAreas)) {
         return float.MaxValue;
       }

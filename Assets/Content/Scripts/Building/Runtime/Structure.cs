@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Game;
@@ -9,11 +10,11 @@ namespace Content.Scripts.Building.Runtime {
   /// Structure state machine.
   /// </summary>
   public enum StructureState {
-    Blueprint,          // placed, awaiting construction
-    UnderConstruction,  // being built
-    Built,              // functional
-    Damaged,            // needs repair
-    Destroyed           // gone
+    BLUEPRINT, // placed, awaiting construction
+    UNDER_CONSTRUCTION, // being built
+    BUILT, // functional
+    DAMAGED, // needs repair
+    DESTROYED // gone
   }
 
   /// <summary>
@@ -21,34 +22,25 @@ namespace Content.Scripts.Building.Runtime {
   /// Data-only — all logic handled by services.
   /// </summary>
   public class Structure : MonoBehaviour {
-    [Title("Runtime State")]
-    [ShowInInspector, ReadOnly] 
+    [Title("Runtime State")] [ShowInInspector, ReadOnly]
     private StructureDefinitionSO _definition;
-    
-    [ShowInInspector, ReadOnly] 
-    private StructureState _state = StructureState.Blueprint;
-    
-    [ShowInInspector, ReadOnly] 
-    private float _hp;
-    
-    [ShowInInspector, ReadOnly] 
-    private float _maxHp = 100f;
 
-    [Title("Runtime Data")]
-    [ShowInInspector, ReadOnly] 
+    [ShowInInspector, ReadOnly] private StructureState _state = StructureState.BLUEPRINT;
+
+    [ShowInInspector, ReadOnly] private float _hp;
+
+    [ShowInInspector, ReadOnly] private float _maxHp = 100f;
+
+    [Title("Runtime Data")] [ShowInInspector, ReadOnly]
     private readonly List<Slot> _slots = new();
-    
-    [ShowInInspector, ReadOnly] 
-    private readonly List<WallSegment> _wallSegments = new();
-    
-    [ShowInInspector, ReadOnly] 
-    private readonly List<EntryPoint> _entryPoints = new();
-    
-    [ShowInInspector, ReadOnly] 
-    private readonly List<GameObject> _supports = new();
 
-    [ShowInInspector, ReadOnly]
-    private GameObject _foundationView;
+    [ShowInInspector, ReadOnly] private readonly List<WallSegment> _wallSegments = new();
+
+    [ShowInInspector, ReadOnly] private readonly List<EntryPoint> _entryPoints = new();
+
+    [ShowInInspector, ReadOnly] private readonly List<GameObject> _supports = new();
+
+    [ShowInInspector, ReadOnly] private GameObject _foundationView;
 
     #region Properties
 
@@ -57,14 +49,14 @@ namespace Content.Scripts.Building.Runtime {
     public float hp => _hp;
     public float maxHp => _maxHp;
     public bool isDamaged => _hp < _maxHp;
-    public bool isDestroyed => _state == StructureState.Destroyed;
-    
+    public bool isDestroyed => _state == StructureState.DESTROYED;
+
     public IReadOnlyList<Slot> slots => _slots;
     public IReadOnlyList<WallSegment> wallSegments => _wallSegments;
     public IReadOnlyList<EntryPoint> entryPoints => _entryPoints;
     public IReadOnlyList<GameObject> supports => _supports;
     public GameObject foundationView => _foundationView;
-    
+
     public Vector2Int footprint => _definition != null ? _definition.footprint : Vector2Int.one;
 
     // Mutable lists for services to populate
@@ -74,9 +66,7 @@ namespace Content.Scripts.Building.Runtime {
     public List<GameObject> supportsInternal => _supports;
 
     #endregion
-
-    #region Lifecycle
-
+    
     private void OnEnable() {
       Registry<Structure>.Register(this);
     }
@@ -85,15 +75,19 @@ namespace Content.Scripts.Building.Runtime {
       Registry<Structure>.Unregister(this);
     }
 
-    #endregion
+    private void Start() {
+      if (_definition == null) {
+        Debug.LogError($"[Structure] wasn't initialized! {name}", this);
+        enabled = false;
+      }
+    }
 
-    #region Setters (for services)
 
     public void Initialize(StructureDefinitionSO definition, float maxHp = 100f) {
       _definition = definition;
       _maxHp = maxHp;
       _hp = maxHp;
-      _state = StructureState.Blueprint;
+      _state = StructureState.BLUEPRINT;
     }
 
     public void SetFoundationView(GameObject view) {
@@ -106,26 +100,22 @@ namespace Content.Scripts.Building.Runtime {
 
     public void SetHp(float value) {
       _hp = Mathf.Clamp(value, 0, _maxHp);
-      
+
       if (_hp <= 0) {
-        _state = StructureState.Destroyed;
+        _state = StructureState.DESTROYED;
       }
-      else if (_hp < _maxHp && _state == StructureState.Built) {
-        _state = StructureState.Damaged;
+      else if (_hp < _maxHp && _state == StructureState.BUILT) {
+        _state = StructureState.DAMAGED;
       }
-      else if (_hp >= _maxHp && _state == StructureState.Damaged) {
-        _state = StructureState.Built;
+      else if (_hp >= _maxHp && _state == StructureState.DAMAGED) {
+        _state = StructureState.BUILT;
       }
     }
 
     public void ModifyHp(float delta) {
       SetHp(_hp + delta);
     }
-
-    #endregion
-
-    #region Queries
-
+    
     public Slot GetSlot(string slotId) {
       return _slots.Find(s => s.slotId == slotId);
     }
@@ -143,11 +133,7 @@ namespace Content.Scripts.Building.Runtime {
     public WallSegment GetWallSegment(WallSide side, int index) {
       return _wallSegments.Find(w => w.side == side && w.index == index);
     }
-
-    #endregion
-
-    #region Cleanup
-
+    
     private void OnDestroy() {
       // Cleanup entry points
       foreach (var entry in _entryPoints) {
@@ -169,7 +155,5 @@ namespace Content.Scripts.Building.Runtime {
         Destroy(_foundationView);
       }
     }
-
-    #endregion
   }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.EditorUtilities;
 using Content.Scripts.Building.Runtime;
+using Content.Scripts.Descriptors.Tags;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -224,7 +225,7 @@ namespace Content.Scripts.Building.Editor {
       }
 
       // Add StructureDescription with metadata
-      var description = tempGO.AddComponent<StructureDescription>();
+      var description = tempGO.AddComponent<StructureTag>();
       description.footprint = _builder.footprint;
       description.entryDirections = _builder.entryDirections;
       description.slotCount = _builder.slots.Count;

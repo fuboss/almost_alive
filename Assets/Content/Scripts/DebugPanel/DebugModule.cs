@@ -208,7 +208,6 @@ namespace Content.Scripts.DebugPanel {
     private void RegisterDefaultActions() {
       // Destroy actions
       _registry.Register(new Actions.DestroyActorAction(_actorDestruction));
-      _registry.Register(new Actions.DestroyStructureAction(_structuresModule));
 
       // Environment actions
       _registry.Register(new Actions.SetTimeAction(_simTime, 6f, "Set Time to Dawn (06:00)"));

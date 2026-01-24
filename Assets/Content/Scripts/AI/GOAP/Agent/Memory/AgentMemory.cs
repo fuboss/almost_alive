@@ -47,14 +47,14 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
     }
 
     /// <summary>O(1) get snapshot by target actor.</summary>
-    public bool TryGetByTarget(ActorDescription target, out MemorySnapshot snapshot) {
+    public bool TryRecallByTarget(ActorDescription target, out MemorySnapshot snapshot) {
       snapshot = null;
       if (target == null) return false;
       return _targetIndex.TryGetValue(target, out snapshot);
     }
 
     /// <summary>O(1) get snapshot by target actor.</summary>
-    public MemorySnapshot GetByTarget(ActorDescription target) {
+    public MemorySnapshot RecallTarget(ActorDescription target) {
       if (target == null) return null;
       return _targetIndex.GetValueOrDefault(target);
     }
@@ -75,7 +75,7 @@ namespace Content.Scripts.AI.GOAP.Agent.Memory {
 
       return RememberResult.NewMemory;
     }
-
+    
     public bool Recall(Func<MemorySnapshot, bool> predicate, out MemorySnapshot result) {
       result = default;
       if (predicate == null) return false;

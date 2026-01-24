@@ -39,12 +39,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2ba734edcc3ff4a098d413e55ebef477
-    m_Address: Assets/Content/Prefabs/Actors/CampLocation.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Actors
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5a490ce0eb548466d8cbc8ef6daba1ac
     m_Address: restPoint
     m_ReadOnly: 0
@@ -95,6 +89,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bbc9b43428faa4345acf0beccad53686
     m_Address: toiletSpot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dddf1773dfc1e44e1823a0b3cc7e37fd
+    m_Address: Assets/Content/Prefabs/Actors/unfinished_structure.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - Actors

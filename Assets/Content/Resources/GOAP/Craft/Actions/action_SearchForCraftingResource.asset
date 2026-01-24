@@ -43,6 +43,8 @@ MonoBehaviour:
         debugWanderAroundCenter: 1
         targetFromMemory:
           searchMode: 0
+          useNavMeshDistance: 1
+          filterUnreachable: 1
           requiredTags:
           - RESOURCE
         lookupForCountInMemory: 1

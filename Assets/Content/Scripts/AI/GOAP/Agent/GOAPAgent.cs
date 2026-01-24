@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
+using Content.Scripts.Building.Runtime;
+using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Work;
@@ -14,7 +17,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [Inject] private SimulationLoop _simLoop;
     [Inject] private SimulationTimeController _simTime;
     [Inject] private RecipeModule _recipeModule;
-    [Inject] private CampModule _campModule;
+    [Inject] private StructuresModule _structuresModule;
+    [Inject] private AgentContainerModule _agentContainerModule;
 
     [SerializeField] private AgentStatSetSO _defaultStatSet;
     [SerializeField] private AgentBrain _agentBrain;
@@ -29,17 +33,23 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [FoldoutGroup("Progression")] [SerializeField]
     private AgentRecipes _recipes = new();
 
-    [ShowInInspector, ReadOnly] private ActorDescription _transientTarget;
-    [ShowInInspector, ReadOnly] private float _baseNavSpeed;
+    [FoldoutGroup("Debug")] [ShowInInspector, ReadOnly]
+    private ActorDescription _transientTarget;
+
+    [ShowInInspector, ReadOnly] [FoldoutGroup("Debug")]
+    private float _baseNavSpeed;
+
+    [ShowInInspector, ReadOnly] [FoldoutGroup("Debug")]
+    private float _baseAcceleration;
 
     public int tickPriority => 0;
 
     // IGoapAgentCore - concrete access
     public AgentBrain brain => _agentBrain;
-    
+
     // IGoapAgentCore - interface implementation
     IAgentBrain IGoapAgentCore.agentBrain => _agentBrain;
-    
+
     public NavMeshAgent navMeshAgent { get; private set; }
     public AgentBody body => _agentBody;
     public AgentStatSetSO defaultStatSet => _defaultStatSet;
@@ -72,10 +82,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _experience.AddXP(amount);
     }
 
-    // ICampAgent
-    public CampLocation camp => brain.memory.persistentMemory.Recall<CampLocation>(CampKeys.PERSONAL_CAMP);
-    public AgentCampData campData => _campModule?.GetAgentCampData(this);
-
     // IGoapAgentCore
     public void StopAndCleanPath() {
       navMeshAgent.ResetPath();
@@ -85,16 +91,19 @@ namespace Content.Scripts.AI.GOAP.Agent {
     private void Awake() {
       RefreshLinks();
       _baseNavSpeed = navMeshAgent.speed;
+      _baseAcceleration = navMeshAgent.acceleration;
     }
 
     private void OnEnable() {
       _simLoop?.Register(this);
       if (_simTime != null) _simTime.OnSpeedChanged += OnSimSpeedChanged;
+      _agentContainerModule.Add(this);
     }
 
     private void OnDisable() {
       _simLoop?.Unregister(this);
       if (_simTime != null) _simTime.OnSpeedChanged -= OnSimSpeedChanged;
+      _agentContainerModule?.Remove(this);
     }
 
     public void Tick() {
@@ -108,6 +117,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void OnSimSpeedChanged(SimSpeed speed) {
       var scale = _simTime.timeScale;
+      navMeshAgent.acceleration = _baseAcceleration * scale;
       navMeshAgent.speed = _baseNavSpeed * scale;
 
       var animController = _agentBody?.animationController;
@@ -161,6 +171,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var angle = Vector3.SignedAngle(animController.transform.forward, velDir, Vector3.up);
       var normalized = angle / 360f + 0.5f;
       return Mathf.Clamp01(normalized);
+    }
+
+    public IEnumerable<Structure> GetAvailableStructures() {
+      return _structuresModule.GetByState(StructureState.BUILT);
     }
   }
 }

@@ -2,7 +2,7 @@
 
 > Extracted from BUILDING.md for tracking implementation progress.
 
-## Status: 🟡 Phase 2.C (Test remaining)
+## Status: 🟡 Phase 4.5 (Action Assets needed)
 
 ---
 
@@ -58,12 +58,13 @@
 - [x] 2.C.9 `StructuresModule` — main coordinator
 - [x] 2.C.10 Register services in `GameScope`
 
-- [ ] 2.C.11 Test: full construction flow via services
+- [x] 2.C.11 Test: full construction flow via services
 
 ---
 
-## Phase 3: Placement System
-**Goal:** Player can place structure blueprints.
+## Phase 3: Placement System (DEFERRED)
+**Goal:** Player can place structure blueprints via UI.
+**Note:** Using DebugPanel for now.
 
 - [ ] 3.1 `StructurePlacementController` — placement mode, ghost preview, grid snap
 - [ ] 3.2 Placement Validation — terrain, obstacles, navmesh checks
@@ -72,13 +73,51 @@
 
 ---
 
-## Phase 4: Construction Flow (GOAP)
-**Goal:** Agents build structures and modules.
+## Phase 4: Construction Flow (GOAP) ⬅️ CURRENT
+**Goal:** Agents build structures autonomously.
 
-- [ ] 4.1 Beliefs — UnfinishedStructure_NeedsResources, UnfinishedStructure_NeedsWork
-- [ ] 4.2 Actions — action_DeliverResourceToStructure, action_BuildStructure
-- [ ] 4.3 Goals — goal_BuildStructure
-- [ ] 4.4 Module Building — action_BuildModule after structure complete
+### 4.0 Deprecate Camp System
+- [ ] Mark `AI/Camp/` as deprecated
+- [ ] Mark `AI/GOAP/Beliefs/Camp/` as deprecated
+- [ ] Mark `AI/GOAP/Strategies/Camp/` as deprecated
+
+### 4.1 Query Helpers
+- [x] `UnfinishedStructureQuery.cs` — static query helpers
+
+### 4.2 Agent Interface
+- [x] `IBuilderAgent` interface
+- [x] Add to `GOAPAgent`
+
+### 4.3 Beliefs
+- [x] `UnfinishedStructureNeedsResourcesBelief`
+- [x] `UnfinishedStructureNeedsWorkBelief`
+- [x] `UnfinishedStructureReadyToCompleteBelief`
+- [x] `AgentHasResourceForStructureBelief`
+- [x] `NoUnfinishedStructuresBelief`
+
+### 4.4 Strategies
+- [x] `DeliverToStructureStrategy` — delivers resources to nearest UnfinishedStructure
+- [x] `WorkOnStructureStrategy` — works on structure, completes when ready
+- [x] `MoveToStructureStrategy` — moves to nearest structure
+
+### 4.5 Action Assets (TODO)
+- [ ] Create `action_DeliverToStructure.asset`
+- [ ] Create `action_WorkOnStructure.asset`
+- [ ] Create `action_GatherForStructure.asset` (gather specific resource)
+
+### 4.6 Goal Assets (TODO)
+- [ ] Create `goal_BuildStructure.asset`
+
+### 4.7 Feature Set (TODO)
+- [ ] Create `Structure_FeatureSet.asset` with beliefs, actions, goals
+- [ ] Add to agent's feature sets
+
+### 4.8 Test
+- [ ] Place structure via DebugPanel
+- [ ] Verify agent gathers resources
+- [ ] Verify agent delivers to structure
+- [ ] Verify agent works on structure
+- [ ] Verify structure completes
 
 ---
 

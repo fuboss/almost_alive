@@ -7,6 +7,10 @@ namespace Content.Scripts.World.Biomes {
   /// Runtime biome map generated from Voronoi diagram.
   /// Uses noise-distorted distances for organic, wavy borders.
   /// </summary>
+  // TODO: Add serialization support for DevPreloadWorld
+  // - Create SerializedBiomeMap struct with cells data, bounds, blendDistance, noiseOffset
+  // - Add ToSerialized() and static FromSerialized() methods
+  // - This will allow runtime biome queries (GetBiomeAt) when loading from preload
   public class BiomeMap {
     private readonly List<BiomeCell> _cells = new();
     private readonly Dictionary<BiomeType, BiomeSO> _biomeData = new();

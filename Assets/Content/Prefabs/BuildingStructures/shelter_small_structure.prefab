@@ -141,7 +141,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8069789731018426416}
+  - component: {fileID: -7096831068167797688}
+  - component: {fileID: -63027727697791003}
   - component: {fileID: 803217959777994555}
+  - component: {fileID: 6258077557419813979}
   m_Layer: 0
   m_Name: shelter_small_structure
   m_TagString: Untagged
@@ -158,13 +161,56 @@ Transform:
   m_GameObject: {fileID: 1073985730204244942}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 9.45, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2000351500058136715}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7096831068167797688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073985730204244942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64cfb1c11cc840a588d89118ffe16498, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorId
+--- !u!114 &-63027727697791003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073985730204244942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 932280e9b8694fa7a79e28802909c547, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.ActorDescription
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  actorKey: shelter_small_structure
+  _descriptionData:
+    tags:
+    - STRUCTURE
+    rememberDuration: 300
+    onUseAddStats: []
+    onUseAddStatPerTick: []
+  isSelectable: 1
+  _tagDefinitions:
+  - {fileID: 803217959777994555}
 --- !u!114 &803217959777994555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,6 +223,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84c0bbbc29ea4036993deb23110e734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.StructureDescription
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
   footprint: {x: 3, y: 3}
   entryDirections: -1
   slotCount: 8
@@ -237,6 +292,18 @@ MonoBehaviour:
     acceptedModuleTags: []
     isInterior: 1
     startsLocked: 0
+--- !u!114 &6258077557419813979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1073985730204244942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32c10ed9ded147528adb09dcbb09f6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.Structure
 --- !u!1 &1409485588256720549
 GameObject:
   m_ObjectHideFlags: 0

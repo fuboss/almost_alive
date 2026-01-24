@@ -31,7 +31,6 @@ MonoBehaviour:
     - Transfient_IsCraftResource
     effects:
     - Craft_Unfinished_Can_Deliver
-    - Craft_Unfinished_Can_DeliverAll
   references:
     version: 2
     RefIds:

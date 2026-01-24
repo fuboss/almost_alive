@@ -22,13 +22,12 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   belief:
-    rid: 365113007176679829
+    rid: 365113165708525829
   references:
     version: 2
     RefIds:
-    - rid: 365113007176679829
-      type: {class: CanDeliverFromStorageToUnfinishedBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Craft, asm: Assembly-CSharp}
+    - rid: 365113165708525829
+      type: {class: StorageHasResourcesForUnfinishedBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Craft, asm: Assembly-CSharp}
       data:
         name: Craft_Unfinished_Can_DeliverFromStorages
-        countThreshold: 1
-        deliverAllNeededTypes: 0
+        inverse: 0

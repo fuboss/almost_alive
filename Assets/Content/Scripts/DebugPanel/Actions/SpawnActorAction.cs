@@ -17,7 +17,7 @@ namespace Content.Scripts.DebugPanel.Actions {
     public DebugActionType actionType => DebugActionType.RequiresWorldPosition;
 
     public void Execute(DebugActionContext context) {
-      if (_actorCreation.TrySpawnActor(_actorKey, context.worldPosition, out var actor)) {
+      if (_actorCreation.TrySpawnActorOnGround(_actorKey, context.worldPosition, out var actor)) {
         Debug.Log($"[DebugAction] Spawned {displayName} at {context.worldPosition}");
       } else {
         Debug.LogError($"[DebugAction] Failed to spawn {displayName}");

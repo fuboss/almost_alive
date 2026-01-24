@@ -1,3 +1,14 @@
+### DebugPanel (NEW)
+```
+Assets/Content/Scripts/DebugPanel/
+├── Actions/           — SpawnActorAction, SpawnStructureAction, DestroyActorAction, etc.
+├── DebugModule.cs     — Main controller, action registry, input handling
+├── DebugPanelUI.cs    — UI building, category dropdowns
+├── DebugActionRegistry.cs — Action storage by category
+├── DebugEnums.cs      — DebugState, DebugCategory, DebugActionType
+└── IDebugAction.cs    — Action interface
+```
+
 # Project Index
 
 > Последнее обновление: 2025-01-23
@@ -51,8 +62,10 @@
 ```
 Assets/Content/Scripts/AI/
 ├── GOAP/               — GOAP система (агенты, действия, цели, планировщик)
+│   ├── Beliefs/Structure/  — Structure beliefs (NEW)
+│   └── Strategies/Structure/ — Structure strategies (NEW)
 ├── Animals/            — AI животных
-├── Camp/               — Логика лагеря (legacy)
+├── Camp/               — Логика лагеря (DEPRECATED)
 ├── Craft/              — Система крафта (AI часть)
 ├── Navigation/         — Навигация
 └── Utility/            — AI утилиты

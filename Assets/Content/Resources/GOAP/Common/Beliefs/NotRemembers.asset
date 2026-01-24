@@ -22,126 +22,182 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365113007176680178
-  - rid: 365113007176680179
-  - rid: 365113007176680180
-  - rid: 365113007176680181
-  - rid: 365113007176680182
-  - rid: 365113007176680183
-  - rid: 365113007176680184
-  - rid: 365113007176680185
-  - rid: 365113007176680186
-  - rid: 365113007176680187
-  - rid: 365113007176680188
-  - rid: 365113007176680189
-  - rid: 365113007176680190
-  - rid: 365113007176680191
-  - rid: 365113007176680192
+  - rid: 365113165708525809
+  - rid: 365113165708525810
+  - rid: 365113165708525811
+  - rid: 365113165708525812
+  - rid: 365113165708525813
+  - rid: 365113165708525814
+  - rid: 365113165708525815
+  - rid: 365113165708525816
+  - rid: 365113165708525817
+  - rid: 365113165708525818
+  - rid: 365113165708525819
+  - rid: 365113165708525820
+  - rid: 365113165708525821
+  - rid: 365113165708525822
+  - rid: 365113165708525823
+  - rid: 365113165708525824
   references:
     version: 2
     RefIds:
-    - rid: 365113007176680178
+    - rid: 365113165708525809
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/FOOD
         tags:
         - FOOD
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680179
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525810
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/REST
         tags:
         - REST
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680180
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525811
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/TOILET
         tags:
         - TOILET
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680181
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525812
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/SOCIAL
         tags:
         - SOCIAL
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680182
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525813
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/AGENT
         tags:
         - AGENT
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680183
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525814
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/STORAGE
         tags:
         - STORAGE
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680184
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525815
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/TREE
         tags:
         - TREE
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680185
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525816
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/RESOURCE
         tags:
         - RESOURCE
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680186
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525817
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/WOOD
         tags:
         - WOOD
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680187
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525818
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/STONE
         tags:
         - STONE
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680188
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525819
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/ITEM
         tags:
         - ITEM
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680189
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525820
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/BED
         tags:
         - BED
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680190
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525821
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/FIREPLACE
         tags:
         - FIREPLACE
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680191
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525822
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/WORKBENCH
         tags:
         - WORKBENCH
+        checkDistance: 0
         minCount: 1
-    - rid: 365113007176680192
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525823
       type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
       data:
         name: NotRemembers/UNFINISHED
         tags:
         - UNFINISHED
+        checkDistance: 0
         minCount: 1
+        maxDistance: 20
+        inverse: 1
+    - rid: 365113165708525824
+      type: {class: HasNoInMemoryBelief, ns: Content.Scripts.AI.GOAP.Beliefs.Memory, asm: Assembly-CSharp}
+      data:
+        name: NotRemembers/STRUCTURE
+        tags:
+        - STRUCTURE
+        checkDistance: 0
+        minCount: 1
+        maxDistance: 20
+        inverse: 1

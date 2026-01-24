@@ -1,198 +1,178 @@
 using System;
-using System.Linq;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.Game;
+using Content.Scripts.Building.Runtime;
 using Content.Scripts.Game.Craft;
 using UnityEngine;
 using VContainer;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Craft {
-  /// <summary>
-  /// Places a new unfinished actor at an empty camp spot.
-  /// Selects highest-priority recipe that has an available spot.
-  /// Does NOT require resources - just creates the blueprint.
-  /// </summary>
-  [Serializable]
-  public class PlaceUnfinishedStrategy : AgentStrategy {
-    [Inject] private RecipeModule _recipeModule;
-    [Inject] private ActorCreationModule _actorCreation;
-    [Inject] private IObjectResolver _resolver;
-
-    private IGoapAgentCore _agent;
-    private ITransientTargetAgent _transientAgent;
-    private ICampAgent _campAgent;
-    private IWorkAgent _workAgent;
-    private CampLocation _camp;
-    private CampSpot _targetSpot;
-    private RecipeSO _selectedRecipe;
-    private PlaceState _state;
-
-    private const string UNFINISHED_KEY = "unfinished";
-
-    public PlaceUnfinishedStrategy() {
-    }
-
-    private PlaceUnfinishedStrategy(IGoapAgentCore agent, PlaceUnfinishedStrategy template) {
-      _agent = agent;
-      _transientAgent = agent as ITransientTargetAgent;
-      _campAgent = agent as ICampAgent;
-      _workAgent = agent as IWorkAgent;
-      _recipeModule = template._recipeModule;
-      _actorCreation = template._actorCreation;
-      _resolver = template._resolver;
-    }
-
-    public override bool canPerform => _recipeModule != null && _actorCreation != null;
-    public override bool complete { get; internal set; }
-
-    public override IActionStrategy Create(IGoapAgentCore agent) {
-      return new PlaceUnfinishedStrategy(agent, this);
-    }
-
-    public override void OnStart() {
-      complete = false;
-      _state = PlaceState.Selecting;
-      
-      if (_campAgent == null || _workAgent == null) {
-        Debug.LogWarning("[PlaceUnfinished] Agent missing required interfaces");
-        _state = PlaceState.Done;
-        return;
-      }
-      
-      SelectRecipeAndSpot();
-    }
-
-    public override void OnUpdate(float deltaTime) {
-      switch (_state) {
-        case PlaceState.Selecting:
-          break;
-        case PlaceState.Moving:
-          UpdateMoving();
-          break;
-        case PlaceState.Placing:
-          PlaceUnfinished();
-          break;
-        case PlaceState.Done:
-          complete = true;
-          break;
-      }
-    }
-
-    private void SelectRecipeAndSpot() {
-      _camp = _campAgent.camp;
-      if (_camp?.setup == null) {
-        Debug.LogWarning("[PlaceUnfinished] No camp or setup");
-        _state = PlaceState.Done;
-        return;
-      }
-
-      if (UnfinishedQuery.HasActiveUnfinished(_camp)) {
-        Debug.Log("[PlaceUnfinished] Already has active unfinished");
-        _state = PlaceState.Done;
-        return;
-      }
-
-      var campRecipes = _workAgent.recipes.GetUnlockedCampRecipes(_recipeModule);
-      var alreadyBuilt = _camp.setup.GetOccupiedSpots().Select(s => s.builtActor.actorKey).ToArray();
-      foreach (var recipe in campRecipes) {
-        if (alreadyBuilt.Contains(recipe.recipe.resultActorKey)) {
-          continue;
-        }
-
-        var spot = FindSpotForRecipe(recipe);
-        if (spot == null) continue;
-
-        _selectedRecipe = recipe;
-        _targetSpot = spot;
-        break;
-      }
-
-      if (_selectedRecipe == null || _targetSpot == null) {
-        Debug.Log("[PlaceUnfinished] No available recipe or spot");
-        _state = PlaceState.Done;
-        return;
-      }
-
-      Debug.Log($"[PlaceUnfinished] Selected {_selectedRecipe.recipeId} at {_targetSpot.name}");
-      _state = PlaceState.Moving;
-      _agent.navMeshAgent.SetDestination(_targetSpot.position);
-    }
-
-    private CampSpot FindSpotForRecipe(RecipeSO recipe) {
-      var tags = _recipeModule.GetResultActorTags(recipe);
-      var tag = tags?.Length > 0 ? tags[0] : null;
-
-      if (!string.IsNullOrEmpty(tag)) {
-        var preferred = _camp.setup.GetSpotsNeedingTag(tag).FirstOrDefault();
-        if (preferred != null) return preferred;
-      }
-
-      return _camp.setup.GetAnyEmptySpot();
-    }
-
-    private void UpdateMoving() {
-      if (_targetSpot == null || !_targetSpot.isEmpty) {
-        SelectRecipeAndSpot();
-        return;
-      }
-
-      var nav = _agent.navMeshAgent;
-      if (nav.pathPending) return;
-
-      if (nav.remainingDistance <= 2f) {
-        _state = PlaceState.Placing;
-      }
-    }
-
-    private void PlaceUnfinished() {
-      _agent.navMeshAgent.ResetPath();
-
-      if (!_actorCreation.TrySpawnActor(UNFINISHED_KEY, _targetSpot.position, out var actor)) {
-        Debug.LogError("[PlaceUnfinished] Failed to spawn unfinished prefab");
-        _state = PlaceState.Done;
-        return;
-      }
-
-      var unfinished = actor.GetComponent<UnfinishedActor>();
-      if (unfinished == null) {
-        Debug.LogError("[PlaceUnfinished] Prefab missing UnfinishedActor component!");
-        UnityEngine.Object.Destroy(actor.gameObject);
-        _state = PlaceState.Done;
-        return;
-      }
-
-      unfinished.Initialize(_selectedRecipe, _targetSpot);
-
-      actor.transform.SetParent(_targetSpot.transform);
-      actor.transform.localPosition = Vector3.zero;
-
-      if (_transientAgent != null) {
-        _transientAgent.transientTarget = unfinished.actor;
-      }
-      _agent.agentBrain.TryRemember(unfinished.actor);
-
-      Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
-      _state = PlaceState.Done;
-    }
-
-    public override void OnStop() {
-      _agent?.navMeshAgent?.ResetPath();
-      if (_transientAgent != null) {
-        _transientAgent.transientTarget = null;
-      }
-      _targetSpot = null;
-      _selectedRecipe = null;
-      _camp = null;
-    }
-
-    private enum PlaceState {
-      Selecting,
-      Moving,
-      Placing,
-      Done
-    }
-  }
+  // /// <summary>
+  // /// Places a new unfinished actor at an empty camp spot.
+  // /// Selects highest-priority recipe that has an available spot.
+  // /// Does NOT require resources - just creates the blueprint.
+  // /// </summary>
+  // [Serializable]
+  // public class PlaceUnfinishedStrategy : AgentStrategy {
+  //   [Inject] private RecipeModule _recipeModule;
+  //   [Inject] private ActorCreationModule _actorCreation;
+  //   [Inject] private IObjectResolver _resolver;
+  //
+  //   private IGoapAgentCore _agent;
+  //   private ITransientTargetAgent _transientAgent;
+  //   private IWorkAgent _workAgent;
+  //   private RecipeSO _selectedRecipe;
+  //   private PlaceState _state;
+  //
+  //   private const string UNFINISHED_KEY = "unfinished";
+  //
+  //   public PlaceUnfinishedStrategy() {
+  //   }
+  //
+  //   private PlaceUnfinishedStrategy(IGoapAgentCore agent, PlaceUnfinishedStrategy template) {
+  //     _agent = agent;
+  //     _transientAgent = (ITransientTargetAgent)agent;
+  //     _workAgent = (IWorkAgent)agent;
+  //     _recipeModule = template._recipeModule;
+  //     _actorCreation = template._actorCreation;
+  //     _resolver = template._resolver;
+  //   }
+  //
+  //   public override bool canPerform => _recipeModule != null && _actorCreation != null;
+  //   public override bool complete { get; internal set; }
+  //
+  //   public override IActionStrategy Create(IGoapAgentCore agent) {
+  //     return new PlaceUnfinishedStrategy(agent, this);
+  //   }
+  //
+  //   public override void OnStart() {
+  //     complete = false;
+  //     _state = PlaceState.Moving;
+  //     
+  //     if (_workAgent == null) {
+  //       Debug.LogWarning("[PlaceUnfinished] Agent missing required interfaces");
+  //       _state = PlaceState.Done;
+  //       return;
+  //     }
+  //     
+  //     SelectRecipeAndSpot();
+  //   }
+  //
+  //   public override void OnUpdate(float deltaTime) {
+  //     switch (_state) {
+  //       case PlaceState.Moving:
+  //         UpdateMoving();
+  //         break;
+  //       case PlaceState.Placing:
+  //         PlaceUnfinished();
+  //         break;
+  //       case PlaceState.Done:
+  //         complete = true;
+  //         break;
+  //     }
+  //   }
+  //
+  //   private void SelectRecipeAndSpot() {
+  //     if (UnfinishedQuery.HasActiveUnfinished()) {
+  //       Debug.Log("[PlaceUnfinished] Already has active unfinished");
+  //       _state = PlaceState.Done;
+  //       return;
+  //     }
+  //
+  //     var campRecipes = _workAgent.recipes.GetUnlockedRecipes(_recipeModule);
+  //     var alreadyBuilt = _camp.setup.GetOccupiedSpots().Select(s => s.builtActor.actorKey).ToArray();
+  //     foreach (var recipe in campRecipes) {
+  //       if (alreadyBuilt.Contains(recipe.recipe.resultActorKey)) {
+  //         continue;
+  //       }
+  //
+  //       var spot = FindSpotForRecipe(recipe);
+  //       if (spot == null) continue;
+  //
+  //       _selectedRecipe = recipe;
+  //       _targetSpot = spot;
+  //       break;
+  //     }
+  //
+  //     if (_selectedRecipe == null || _targetSpot == null) {
+  //       Debug.Log("[PlaceUnfinished] No available recipe or spot");
+  //       _state = PlaceState.Done;
+  //       return;
+  //     }
+  //
+  //     Debug.Log($"[PlaceUnfinished] Selected {_selectedRecipe.recipeId} at {_targetSpot.name}");
+  //     _state = PlaceState.Moving;
+  //     _agent.navMeshAgent.SetDestination(_targetSpot.position);
+  //   }
+  //
+  //   private Slot FindSpotForRecipe(RecipeSO recipe) {
+  //     var tags = _recipeModule.GetResultActorTags(recipe);
+  //     var tag = tags?.Length > 0 ? tags[0] : null;
+  //
+  //     if (!string.IsNullOrEmpty(tag)) {
+  //       var preferred = _camp.setup.GetSpotsNeedingTag(tag).FirstOrDefault();
+  //       if (preferred != null) return preferred;
+  //     }
+  //
+  //     return _camp.setup.GetAnyEmptySpot();
+  //   }
+  //
+  //   private void UpdateMoving() {
+  //     if (_targetSpot == null || !_targetSpot.isEmpty) {
+  //       SelectRecipeAndSpot();
+  //       return;
+  //     }
+  //
+  //     var nav = _agent.navMeshAgent;
+  //     if (nav.pathPending) return;
+  //
+  //     if (nav.remainingDistance <= 2f) {
+  //       _state = PlaceState.Placing;
+  //     }
+  //   }
+  //
+  //   private void PlaceUnfinished() {
+  //     _agent.navMeshAgent.ResetPath();
+  //
+  //     if (!_actorCreation.TrySpawnActorOnGround(UNFINISHED_KEY, _targetSpot.position, out var actor)) {
+  //       Debug.LogError("[PlaceUnfinished] Failed to spawn unfinished prefab");
+  //       _state = PlaceState.Done;
+  //       return;
+  //     }
+  //
+  //     var unfinished = actor.GetComponent<UnfinishedActor>();
+  //     if (unfinished == null) {
+  //       Debug.LogError("[PlaceUnfinished] Prefab missing UnfinishedActor component!");
+  //       UnityEngine.Object.Destroy(actor.gameObject);
+  //       _state = PlaceState.Done;
+  //       return;
+  //     }
+  //
+  //     unfinished.Initialize(_selectedRecipe, _targetSpot);
+  //
+  //     actor.transform.SetParent(_targetSpot.transform);
+  //     actor.transform.localPosition = Vector3.zero;
+  //
+  //     if (_transientAgent != null) {
+  //       _transientAgent.transientTarget = unfinished.actor;
+  //     }
+  //     _agent.agentBrain.TryRemember(unfinished.actor);
+  //
+  //     Debug.Log($"[PlaceUnfinished] Placed for {_selectedRecipe.recipeId}");
+  //     _state = PlaceState.Done;
+  //   }
+  //
+  //   public override void OnStop() {
+  //     _agent.StopAndCleanPath();
+  //     _transientAgent.transientTarget = null;
+  //     _selectedRecipe = null;
+  //   }
+  //
+  //   private enum PlaceState {
+  //     Moving,
+  //     Placing,
+  //     Done
+  //   }
+  // }
 }

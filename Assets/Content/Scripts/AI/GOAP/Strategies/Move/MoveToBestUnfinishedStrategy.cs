@@ -4,6 +4,7 @@ using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Content.Scripts.Game.Storage;
 using UnityEngine;
@@ -18,38 +19,34 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     }
 
     protected override MemorySnapshot GetTargetMemory() {
-      if (_agent is not ICampAgent campAgent) return null;
+      var unfinished = ActorRegistry<UnfinishedActor>.all.FirstOrDefault();
+      if (unfinished != null) {
+        return _agent.memory.RecallTarget(unfinished.actor);
+      }
+
+      return null;
       if (_agent is not IInventoryAgent inv) return null;
+      //todo: move this part into a separate strategy class
       
-      var camp = campAgent.camp;
-      var target = UnfinishedQuery.GetAllAtCamp(camp).FirstOrDefault();
-      if (target != null) {
-        if (_agent.memory.Recall(ms => ms.target != null && ms.target.gameObject == target.gameObject, out var snapshot)) {
-          return snapshot;
-        }
-      }
-      else {
-        Debug.LogError("MoveToBestUnfinishedStrategy: No unfinished tasks found at camp", camp);
-      }
-
-      var slotWithHaulableItem =
-        inv.inventory.occupiedSlots.Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM)).ToArray();
-
-      MemorySnapshot mem = null;
-      foreach (var slot in slotWithHaulableItem) {
-        var snapshot = targetFromMemory?.GetNearest(_agent, ms => {
-          if (ms.target == null) return false;
-          var storageComp = ms.target.GetComponent<StorageActor>();
-          return storageComp != null && !storageComp.isFull && storageComp.CanDeposit(slot.item);
-        });
-        if (snapshot == null) {
-          continue;
-        }
-
-        mem = snapshot;
-      }
-
-      return mem;
+      // var slotWithHaulableItem = inv.inventory.occupiedSlots
+      //   .Where(s => s.item.descriptionData.tags.Contains(Tag.ITEM))
+      //   .ToArray();
+      //
+      // MemorySnapshot mem = null;
+      // foreach (var slot in slotWithHaulableItem) {
+      //   var snapshot = targetFromMemory?.GetNearest(_agent, ms => {
+      //     if (ms.target == null) return false;
+      //     var storageComp = ms.target.GetComponent<StorageActor>();
+      //     return storageComp != null && !storageComp.isFull && storageComp.CanDeposit(slot.item);
+      //   });
+      //   if (snapshot == null) {
+      //     continue;
+      //   }
+      //
+      //   mem = snapshot;
+      // }
+      //
+      // return mem;
     }
 
     public override IActionStrategy Create(IGoapAgentCore agent) {

@@ -58,6 +58,7 @@ namespace Content.Scripts.Building.Services {
       // Disable colliders on ghost
       DisableColliders(ghost);
 
+      Debug.Log($"[StructurePlacementService] Created ghost view for {definition.structureId}", ghost);
       return ghost;
     }
 

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
@@ -17,7 +16,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
       if (agent is not ITransientTargetAgent targetAgent) {
         return () => inverse;
       }
-      
+
       return () => {
         if (tags == null) {
           Debug.LogError($"{GetType().Name} has null tags array");
@@ -44,26 +43,27 @@ namespace Content.Scripts.AI.GOAP.Beliefs.TransientTarget {
     public bool inverse;
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
-      // Requires multiple interfaces
-      if (agent is not ITransientTargetAgent targetAgent) return () => inverse;
-      if (agent is not ICampAgent campAgent) return () => inverse;
-      if (agent is not IWorkAgent workAgent) return () => inverse;
-      
+      if (agent is not (ITransientTargetAgent targetAgent and IWorkAgent workAgent)) return () => inverse;
+
       return () => {
         var transient = targetAgent.transientTarget;
         if (transient == null) return inverse;
-        var check = GetCraftingNeeds(agent, campAgent, workAgent, transient);
+        var check = GetCraftingNeeds(workAgent, transient);
         return !inverse ? check : !check;
       };
     }
 
-    private static bool GetCraftingNeeds(IGoapAgentCore agent, ICampAgent campAgent, IWorkAgent workAgent, ActorDescription transient) {
-      var camp = campAgent.camp;
-      var unfinishedTarget = UnfinishedQuery.GetNeedingResources(camp);
-      if (unfinishedTarget != null) {
-        var needs = unfinishedTarget.GetRemainingResources();
-        var check = transient.HasAnyTags(needs.Select(n => n.tag).ToArray());
-        return check;
+    private static bool GetCraftingNeeds(IWorkAgent workAgent, ActorDescription transient) {
+      var allUnfinished = UnfinishedQuery.GetAllNeedingResources().ToArray();
+      if (allUnfinished.Length == 0) return false;
+
+      foreach (var unfinishedActor in allUnfinished) {
+        var remainingResourcesTags = unfinishedActor
+          .GetRemainingResources()
+          .Select(r => r.tag)
+          .ToArray();
+        if (!transient.HasAnyTags(remainingResourcesTags)) continue;
+        return true;
       }
 
       string[] resourcesTags = workAgent.recipeModule.GetResourcesTagsForAvailableRecipes(workAgent);

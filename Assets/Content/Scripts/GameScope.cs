@@ -55,12 +55,11 @@ namespace Content.Scripts {
       builder.RegisterEntryPoint<WorkAssignmentModule>().AsSelf();
 
       builder.Register<GoapPlanFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
-      builder.Register<AgentFactory>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
       builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
-      builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      //builder.Register<CampModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<RecipeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
       // Building

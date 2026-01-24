@@ -22,23 +22,5 @@ namespace Content.Scripts.DebugPanel.Actions {
     }
   }
   
-  public class DestroyStructureAction : IDebugAction {
-    private readonly StructuresModule _structuresModule;
-
-    public DestroyStructureAction(StructuresModule structuresModule) {
-      _structuresModule = structuresModule;
-    }
-
-    public string displayName => "Destroy Structure";
-    public DebugCategory category => DebugCategory.Destroy;
-    public DebugActionType actionType => DebugActionType.RequiresStructure;
-
-    public void Execute(DebugActionContext context) {
-      if (context.targetStructure == null) return;
-      
-      Debug.Log($"[DebugAction] Destroying {context.targetStructure.name}");
-      _structuresModule.DestroyStructure(context.targetStructure);
-    }
-  }
 }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
@@ -20,25 +21,23 @@ namespace Content.Scripts.Game.Craft {
   [RequireComponent(typeof(ActorDescription))]
   [RequireComponent(typeof(ActorInventory))]
   public class UnfinishedActor : MonoBehaviour, IProgressProvider {
-    [ShowInInspector, ReadOnly] private RecipeSO _recipe;
-    [ShowInInspector, ReadOnly, Range(0,1f)] private float _workProgress;
-    [ShowInInspector, ReadOnly] private CampSpot _assignedSpot;
+    [ShowInInspector, ReadOnly] protected RecipeSO _recipe;
+    [ShowInInspector, ReadOnly, Range(0,1f)] protected float _workProgress;
     
-    [Inject] private ActorCreationModule _actorCreation;
+    [Inject] protected ActorCreationModule _actorCreation;
 
-    private ActorDescription _description;
-    private ActorInventory _inventory;
+    protected ActorDescription _description;
+    protected ActorInventory _inventory;
 
     public RecipeSO recipe => _recipe;
     public ActorDescription actor => _description;
     public ActorInventory inventory => _inventory;
-    [ShowInInspector] public CampSpot assignedSpot => _assignedSpot;
     
     public float workProgress => _workProgress;
     public float workRequired => _recipe?.recipe.workRequired ?? 0f;
     public float workRatio => workRequired > 0f ? Mathf.Clamp01(_workProgress / workRequired) : 1f;
     public bool workComplete => _workProgress >= workRequired;
-    
+    float IProgressProvider.progress => workRatio;
     [ShowInInspector]public bool hasAllResources => CheckAllResourcesDelivered();
     public bool isReadyToComplete => hasAllResources && workComplete;
 
@@ -56,23 +55,21 @@ namespace Content.Scripts.Game.Craft {
     }
 
     /// <summary>Initialize with recipe.</summary>
-    public void Initialize(RecipeSO recipe, CampSpot spot = null) {
+    public void Initialize(RecipeSO recipe) {
       _recipe = recipe;
-      _assignedSpot = spot;
       _workProgress = 0f;
-      Debug.Log($"[Unfinished] Initialized for {recipe.recipeId}" + (spot != null ? $" at {spot.name}" : ""));
     }
 
     /// <summary>Add work progress. Returns true if work is complete.</summary>
-    public bool AddWork(float amount) {
+    public virtual bool AddWork(float amount) {
       if (amount <= 0f) return workComplete;
       _workProgress = Mathf.Min(_workProgress + amount, workRequired);
       return workComplete;
     }
 
     /// <summary>Get remaining resource count for specific tag.</summary>
-    public int GetRemainingResourceCount(string tag) {
-      var required = _recipe.recipe.requiredResources
+    public virtual int GetRemainingResourceCount(string tag) {
+      var required = requiredResources
         .Where(r => r.tag == tag)
         .Sum(r => r.count);
       var have = _inventory.GetItemCount(tag);
@@ -80,28 +77,31 @@ namespace Content.Scripts.Game.Craft {
     }
 
     /// <summary>Get all remaining resource requirements.</summary>
-    public (string tag, int remaining)[] GetRemainingResources() {
-      return _recipe.recipe.requiredResources
+    public virtual (string tag, int remaining)[] GetRemainingResources() {
+      return requiredResources
         .Select(r => (r.tag, GetRemainingResourceCount(r.tag)))
         .Where(x => x.Item2 > 0)
         .ToArray();
     }
 
     /// <summary>Check if all required resources have been delivered.</summary>
-    public bool CheckAllResourcesDelivered() {
+    public virtual bool CheckAllResourcesDelivered() {
       if (_recipe == null) return false;
-      foreach (var req in _recipe.recipe.requiredResources) {
+      foreach (var req in requiredResources) {
         if (GetRemainingResourceCount(req.tag) > 0) return false;
       }
 
       return true;
     }
 
+    protected virtual IReadOnlyList<RecipeRequiredResource> requiredResources
+      => _recipe.recipe.requiredResources;
+
     /// <summary>
     /// Try to complete. Spawns result actor and destroys this.
     /// Returns spawned actor or null on failure.
     /// </summary>
-    public ActorDescription TryComplete() {
+    public virtual ActorDescription TryComplete() {
       if (!isReadyToComplete) {
         Debug.LogWarning($"[Unfinished] Cannot complete - resources: {hasAllResources}, work: {workComplete}");
         return null;
@@ -112,15 +112,11 @@ namespace Content.Scripts.Game.Craft {
         return null;
       }
 
-      var pos = _assignedSpot != null ? _assignedSpot.position : transform.position;
+      var pos = transform.position;
       
-      if (!_actorCreation.TrySpawnActor(_recipe.recipe.resultActorKey, pos, out var result, _recipe.recipe.outputCount)) {
+      if (!_actorCreation.TrySpawnActorOnGround(_recipe.recipe.resultActorKey, pos, out var result, _recipe.recipe.outputCount)) {
         Debug.LogError($"[Unfinished] Failed to spawn {_recipe.recipe.resultActorKey}");
         return null;
-      }
-
-      if (_assignedSpot != null) {
-        _assignedSpot.SetBuiltActor(result);
       }
 
       Debug.Log($"[Unfinished] Completed! Spawned {result.actorKey}");
@@ -128,7 +124,5 @@ namespace Content.Scripts.Game.Craft {
       
       return result;
     }
-
-    float IProgressProvider.progress => workRatio;
   }
 }

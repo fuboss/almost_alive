@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.Runtime;
@@ -19,14 +20,14 @@ namespace Content.Scripts.Building.Services {
     [Inject] private IObjectResolver _resolver;
     [Inject] private StructurePlacementService _placement;
     [Inject] private StructureConstructionService _construction;
+    [Inject] private ActorCreationModule _actorCreationModule;
+    [Inject] private ActorDestructionModule _actorDestructionModule;
 
     private readonly List<StructureDefinitionSO> _definitions = new();
     private Terrain _terrain;
 
     public bool isInitialized { get; private set; }
     public IReadOnlyList<StructureDefinitionSO> definitions => _definitions;
-
-    #region Lifecycle
 
     void IInitializable.Initialize() {
       _terrain = Terrain.activeTerrain;
@@ -43,14 +44,11 @@ namespace Content.Scripts.Building.Services {
       _definitions.Clear();
     }
 
-    #endregion
-
-    #region Blueprint Placement
 
     /// <summary>
     /// Place a structure blueprint (UnfinishedStructure with ghost preview).
     /// </summary>
-    public UnfinishedStructure PlaceBlueprint(StructureDefinitionSO definition, Vector3 targetPosition) {
+    public UnfinishedStructureActor PlaceBlueprint(StructureDefinitionSO definition, Vector3 targetPosition) {
       if (definition == null) {
         Debug.LogError("[StructuresModule] Cannot place blueprint: definition is null");
         return null;
@@ -59,24 +57,27 @@ namespace Content.Scripts.Building.Services {
       // Calculate position on terrain
       var position = _placement.CalculateStructurePosition(targetPosition, definition.footprint, _terrain);
 
-      // Create UnfinishedStructure GO
-      var go = new GameObject($"UnfinishedStructure_{definition.structureId}");
-      go.transform.position = position;
 
-      // Add required components
-      go.AddComponent<ActorInventory>();
-      var unfinished = go.AddComponent<UnfinishedStructure>();
+      if (!_actorCreationModule.TrySpawnActor("unfinished_structure", position,
+            out var unfinishedStructureDescription)) {
+        Debug.LogError($"[StructuresModule] Failed to spawn UnfinishedStructure actor for {definition.structureId}");
+        return null;
+      }
 
-      // Inject dependencies
-      _resolver.Inject(go);
+      var unfinished = unfinishedStructureDescription.GetComponent<UnfinishedStructureActor>();
+      if (unfinished == null) {
+        Debug.LogError(
+          $"[StructuresModule] Failed to get UnfinishedStructureActor from actor {unfinishedStructureDescription.name}");
+        _actorDestructionModule.DestroyActor(unfinishedStructureDescription);
+        return null;
+      }
 
-      // Initialize
       unfinished.Initialize(definition);
 
-      // Create ghost preview
+      //todo: rework this. Ghost is should be a regular view of UnfinishedStructureActor
       var ghost = _placement.CreateGhostView(definition, position);
       if (ghost != null) {
-        ghost.transform.SetParent(go.transform);
+        ghost.transform.SetParent(unfinishedStructureDescription.transform);
         unfinished.SetGhostView(ghost);
       }
 
@@ -84,68 +85,12 @@ namespace Content.Scripts.Building.Services {
       return unfinished;
     }
 
-    #endregion
-
-    #region Construction Completion
-
-    /// <summary>
-    /// Complete construction — convert UnfinishedStructure to built Structure.
-    /// </summary>
-    public Structure CompleteConstruction(UnfinishedStructure unfinished) {
-      if (unfinished == null) {
-        Debug.LogError("[StructuresModule] Cannot complete: unfinished is null");
-        return null;
-      }
-
-      if (!unfinished.isReadyToComplete) {
-        Debug.LogWarning(
-          $"[StructuresModule] Cannot complete: not ready (resources: {unfinished.hasAllResources}, work: {unfinished.workComplete})");
-        return null;
-      }
-
-      var definition = unfinished.definition;
-      var position = unfinished.transform.position;
-
-      // Create Structure GO
-      var go = new GameObject($"Structure_{definition.structureId}");
-      go.transform.position = position;
-
-      var structure = go.AddComponent<Structure>();
-      _resolver.Inject(go);
-
-      // Initialize structure data
-      structure.Initialize(definition);
-
-      // Build all components
-      _construction.BuildStructure(structure, _terrain);
-
-      // Destroy unfinished (ghost cleanup handled in OnDestroy)
-      UnityEngine.Object.Destroy(unfinished.gameObject);
-
-      Debug.Log($"[StructuresModule] Completed construction: {definition.structureId}");
-      return structure;
-    }
-
-    #endregion
-
-    #region Destruction
-
-    /// <summary>
-    /// Destroy a structure.
-    /// </summary>
-    public void DestroyStructure(Structure structure) {
+    public void OnStructureActorSpawned(ActorDescription actor) {
+      var structure = actor.GetComponent<Structure>();
       if (structure == null) return;
 
-      Debug.Log($"[StructuresModule] Destroying structure: {structure.definition?.structureId}");
-      UnityEngine.Object.Destroy(structure.gameObject);
-    }
-
-    #endregion
-
-    #region Queries
-
-    public StructureDefinitionSO GetDefinition(string structureId) {
-      return _definitions.FirstOrDefault(d => d.structureId == structureId);
+      // Build walls, slots, entries
+      _construction.BuildStructure(structure, _terrain);
     }
 
     public IEnumerable<Structure> GetAll() {
@@ -158,33 +103,12 @@ namespace Content.Scripts.Building.Services {
       }
     }
 
-    public IEnumerable<UnfinishedStructure> GetUnfinished() {
-      return Registry<UnfinishedStructure>.GetAll();
-    }
-
-    public IEnumerable<UnfinishedStructure> GetUnfinishedNeedingResources() {
-      foreach (UnfinishedStructure u in Registry<UnfinishedStructure>.GetAll()) {
-        if (!u.hasAllResources) yield return u;
-      }
-    }
-
-    public IEnumerable<UnfinishedStructure> GetUnfinishedNeedingWork() {
-      foreach (UnfinishedStructure u in Registry<UnfinishedStructure>.GetAll()) {
-        if (u.hasAllResources && !u.workComplete) yield return u;
-      }
-    }
-
-    public IEnumerable<UnfinishedStructure> GetUnfinishedReadyToComplete() {
-      foreach (UnfinishedStructure u in Registry<UnfinishedStructure>.GetAll()) {
-        if (u.isReadyToComplete) yield return u;
-      }
-    }
 
     public Structure GetNearestWithEmptySlot(Vector3 position, SlotType slotType) {
       Structure nearest = null;
       var minDist = float.MaxValue;
 
-      foreach (var structure in GetByState(StructureState.Built)) {
+      foreach (var structure in GetByState(StructureState.BUILT)) {
         var emptySlot = structure.GetEmptySlot(slotType);
         if (emptySlot == null) continue;
 
@@ -198,14 +122,8 @@ namespace Content.Scripts.Building.Services {
       return nearest;
     }
 
-    #endregion
-
-    #region Wall Management (delegated to construction service)
-
     public void SetWallSegmentType(Structure structure, WallSide side, int index, WallSegmentType newType) {
       _construction.SetWallSegmentType(structure, side, index, newType);
     }
-
-    #endregion
   }
 }

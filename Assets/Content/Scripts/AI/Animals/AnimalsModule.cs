@@ -149,7 +149,7 @@ namespace Content.Scripts.AI.Animals {
         var offset = Random.insideUnitSphere * radius;
         offset.y = 0;
         var spawnPos = position + offset;
-        if (!_actorCreation.TrySpawnActor(animalActorKey, spawnPos, out var animalDescriptor)) continue;
+        if (!_actorCreation.TrySpawnActorOnGround(animalActorKey, spawnPos, out var animalDescriptor)) continue;
 
         animalDescriptor.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360f), 0);
         var animal = animalDescriptor.GetComponent<IGoapAnimalAgent>();
