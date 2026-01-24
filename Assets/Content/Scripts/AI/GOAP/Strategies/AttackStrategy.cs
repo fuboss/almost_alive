@@ -7,7 +7,7 @@ using Content.Scripts.Core.Simulation;
 namespace Content.Scripts.AI.GOAP.Strategies {
   [Serializable]
   public class AttackStrategy : AgentStrategy {
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private SimTimer _timer;
 
     public AttackStrategy() {

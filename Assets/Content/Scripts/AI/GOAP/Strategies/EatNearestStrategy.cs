@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     public float consumeDuration = 4f;
     
     private IGoapAgentCore _agent;
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private MemorySearcher _searcher;
     private SimTimer _timer;
 

@@ -81,10 +81,10 @@ namespace Content.Scripts.AI.GOAP.Agent {
         navMeshAgent.speed = _baseSpeed * scale;
       }
 
-      var animController = _agentBody?.animationController;
-      if (animController != null && animController.animator != null) {
-        animController.animator.speed = scale;
-      }
+      // var animController = _agentBody?.animationController;
+      // if (animController != null && animController.animator != null) {
+      //   animController.animator.speed = scale;
+      // }
     }
 
     private void UpdateAnimation() {
@@ -92,7 +92,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (animController == null || navMeshAgent == null) return;
 
       var speedNorm = navMeshAgent.velocity.magnitude / _baseSpeed;
-      animController.SetParams(speedNorm, 0.5f, speedNorm < 0.05f);
+      //animController.SetParams(speedNorm, 0.5f, speedNorm < 0.05f);
     }
 
     private void OnValidate() {

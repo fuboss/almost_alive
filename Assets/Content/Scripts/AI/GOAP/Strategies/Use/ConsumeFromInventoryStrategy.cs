@@ -18,7 +18,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Use {
     
     private IGoapAgentCore _agent;
     private IInventoryAgent _inventoryAgent;
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private SimTimer _timer;
     private InventorySlot _slot;
 

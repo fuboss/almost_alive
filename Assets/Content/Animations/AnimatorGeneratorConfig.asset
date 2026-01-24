@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c85481c5553c4428804477cec0cc3c6, type: 3}
+  m_Name: AnimatorGeneratorConfig
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::Content.Scripts.Editor.AnimatorGenerator.AnimatorGeneratorConfig
+  preset: 1
+  transitionMultiplier: 1
+  exitTimeMultiplier: 1
+  baseTransitionDuration: 0.15
+  useWriteDefaults: 1
+  layers:
+  - layerName: Base
+    enabled: 1
+    weight: 1
+    transitionOverride: -1
+    isAdditive: 0
+  - layerName: Combat
+    enabled: 1
+    weight: 1
+    transitionOverride: -1
+    isAdditive: 0
+  - layerName: UpperBody
+    enabled: 1
+    weight: 1
+    transitionOverride: -1
+    isAdditive: 0
+  - layerName: Additive
+    enabled: 1
+    weight: 0.5
+    transitionOverride: -1
+    isAdditive: 1
+  attackTransitionDuration: 0.08
+  blockReactionTime: 0.05
+  comboWindow: 1.5
+  idleToMoveThreshold: 0.01
+  locomotionBlendDuration: 0.15

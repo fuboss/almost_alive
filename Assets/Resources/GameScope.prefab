@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.GameScope
   parentReference:
     TypeName: 
-  autoRun: 0
+  autoRun: 1
   autoInjectGameObjects: []
   agentsRoot: {fileID: 7612967794376563868, guid: 34eec65e4cecb45b19adb2df4bb02b19, type: 3}
   agentPrefab: {fileID: 777123925879179789, guid: eb09877c1ffca49229229b188da07636, type: 3}

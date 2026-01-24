@@ -25,7 +25,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private IGoapAgentCore _agent;
     private IInventoryAgent _inventoryAgent;
     private ITransientTargetAgent _transientAgent;
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private int _collectedCount;
     private MemorySnapshot _currentTarget;
     private SimTimer _pickupTimer;

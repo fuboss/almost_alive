@@ -12,7 +12,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private List<AgentStat> _stats = new();
 
     [FoldoutGroup("Components")]
-    [SerializeField] private AnimationController _animationController;
+    [SerializeField] private UniversalAnimationController _animationController;
     
     [FoldoutGroup("Components")]
     [SerializeField] private Rigidbody _rigidbody;
@@ -20,7 +20,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [ShowInInspector] private Dictionary<StatType, float> _perTickDelta = new();
     public IReadOnlyDictionary<StatType, float> perTickDelta => _perTickDelta;
 
-    public AnimationController animationController => _animationController;
+    public UniversalAnimationController animationController => _animationController;
     public new Rigidbody rigidbody => _rigidbody;
 
     private IGoapAgentCore _agent;
@@ -35,7 +35,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     private void RefreshLinks() {
       if (_animationController == null) 
-        _animationController = GetComponentInChildren<AnimationController>();
+        _animationController = GetComponentInChildren<UniversalAnimationController>();
       if (_rigidbody == null) 
         _rigidbody = GetComponentInParent<Rigidbody>();
     }

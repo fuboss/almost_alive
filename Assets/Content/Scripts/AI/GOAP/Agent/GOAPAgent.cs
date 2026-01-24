@@ -122,8 +122,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       navMeshAgent.speed = _baseNavSpeed * scale;
 
       var animController = _agentBody?.animationController;
-      if (animController != null && animController.animator != null) {
-        animController.animator.speed = scale;
+      if (animController?.Animator != null) {
+        animController.Animator.speed = scale;
       }
     }
 
@@ -133,7 +133,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       var maxSpeed = _baseNavSpeed * _sprintSpeedModifier;
       var speedNorm = navMeshAgent.velocity.magnitude / maxSpeed;
-      animController.SetParams(speedNorm, GetRotation(), speedNorm < 0.05f);
+      animController.SetLocomotion(speedNorm);
     }
 
     private void OnValidate() {
@@ -170,20 +170,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       // Debug.LogError($"{name}Inventory added item:{slot.item?.name} count:{slot.count}", slot.item);
     }
 
-    private float GetRotation() {
-      var vel = navMeshAgent.velocity;
-      if (vel.sqrMagnitude < 0.0001f) return 0.5f;
-
-      var velDir = new Vector3(vel.x, 0f, vel.z).normalized;
-      if (velDir == Vector3.zero) return 0.5f;
-
-      var animController = _agentBody?.animationController;
-      if (animController == null) return 0.5f;
-
-      var angle = Vector3.SignedAngle(animController.transform.forward, velDir, Vector3.up);
-      var normalized = angle / 360f + 0.5f;
-      return Mathf.Clamp01(normalized);
-    }
 
     public IEnumerable<Structure> GetAvailableStructures() {
       return _structuresModule.GetByState(StructureState.BUILT);

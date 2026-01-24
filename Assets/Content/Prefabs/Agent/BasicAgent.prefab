@@ -621,7 +621,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3521155888649223776}
-  - component: {fileID: 2154383295327905082}
   - component: {fileID: 7452301355623674139}
   m_Layer: 6
   m_Name: Body
@@ -647,18 +646,6 @@ Transform:
   - {fileID: 7383407489700909532}
   m_Father: {fileID: 2179949752209691751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2154383295327905082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5785814355086398748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3e73646ec5414cbb6cf8529dc363cd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Animation.AgentAnimationController
 --- !u!114 &7452301355623674139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -753,7 +740,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  _animationController: {fileID: 2154383295327905082}
+  _animationController: {fileID: 0}
   _rigidbody: {fileID: 3385872056700084885}
 --- !u!1001 &226242912564321317
 PrefabInstance:
@@ -896,6 +883,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3521155888649223776}
     m_Modifications:
+    - target: {fileID: 639290127664333328, guid: 848076de366594559a925394e77eff58, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 3a0d3e7f1310e4e238d249d8f27da961, type: 2}
     - target: {fileID: 7211122655040915647, guid: 848076de366594559a925394e77eff58, type: 3}
       propertyPath: m_Name
       value: Ranger

@@ -17,7 +17,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
 
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private ChoppingProgress _choppingProgress;
 
     public override IActionStrategy Create(IGoapAgentCore agent) {
@@ -76,6 +76,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     }
 
     public override void OnStop() {
+      _animations?.StopWork();
       _choppingProgress = null;
     }
 

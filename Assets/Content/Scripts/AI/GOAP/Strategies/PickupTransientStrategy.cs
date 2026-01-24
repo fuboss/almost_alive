@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Strategies {
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
     private IInventoryAgent _inventoryAgent;
-    private AnimationController _animations;
+    private UniversalAnimationController _animations;
     private SimTimer _timer;
 
     public override IActionStrategy Create(IGoapAgentCore agent) {
