@@ -3,6 +3,7 @@ namespace Content.Scripts.Building.Data {
     Sleeping,    // beds, bedrolls
     Production,  // workbenches, forges
     Storage,     // chests, shelves
-    Utility      // heaters, lights, misc
+    Utility,      // heaters, lights, misc,
+    Entertainment // fireplaces, tables, chairs
   }
 }

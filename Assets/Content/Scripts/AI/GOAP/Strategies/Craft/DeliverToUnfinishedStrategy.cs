@@ -14,7 +14,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
     private IInventoryAgent _inventoryAgent;
-    private UnfinishedActor _target;
+    private IUnfinishedActor _target;
     private bool _abort;
     private SimTimer _timer;
 
@@ -84,10 +84,10 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     protected void FindTarget() {
-      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
+      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActorBase>();
       if (unfinishedActor != null) {
         _target = unfinishedActor;
-        _agent.navMeshAgent.SetDestination(_target.transform.position);
+        _agent.navMeshAgent.SetDestination(_target.actor.transform.position);
         return;
       }
 

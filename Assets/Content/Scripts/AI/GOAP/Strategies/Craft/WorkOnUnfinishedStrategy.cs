@@ -20,7 +20,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private IGoapAgentCore _agent;
     private ITransientTargetAgent _transientAgent;
     private IWorkAgent _workAgent;
-    private UnfinishedActor _target;
+    private IUnfinishedActor _target;
     private SimTimer _timer;
     private bool _abort;
 
@@ -71,11 +71,11 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     }
 
     private void FindTarget() {
-      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
+      var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActorBase>();
       if (unfinishedActor != null) {
         _target = unfinishedActor;
-        Debug.Log($"[WorkUnfinished] Using transient target {_target.name}");
-        _agent.navMeshAgent.SetDestination(_target.transform.position);
+        Debug.Log($"[WorkUnfinished] Using transient target {_target.actor.name}");
+        _agent.navMeshAgent.SetDestination(_target.actor.transform.position);
         return;
       }
 
@@ -91,8 +91,8 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
         return;
       }
 
-      Debug.Log($"[WorkUnfinished] Found {_target.recipe.recipeId}");
-      _agent.navMeshAgent.SetDestination(_target.transform.position);
+      Debug.Log($"[WorkUnfinished] Found {_target.actor.name}");
+      _agent.navMeshAgent.SetDestination(_target.actor.transform.position);
     }
 
     private void UpdateWorking(float deltaTime) {

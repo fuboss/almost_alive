@@ -35,7 +35,7 @@ namespace Content.Scripts.Ui.Layers.WorldSpaceUI {
       _widgets.Add(widget);
     }
 
-    public void UnregisterWidgetsWithActor(UnfinishedActor actor) {
+    public void UnregisterWidgetsWithActor(UnfinishedActorBase actor) {
       foreach (var widget in _widgets.Where(w => w.target == actor.transform).ToArray()) {
         UnregisterWidget(widget);
       }

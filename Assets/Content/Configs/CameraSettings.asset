@@ -47,7 +47,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   zoomSpeed: 3.38
-  zoomSmoothing: 0.01
+  zoomSmoothing: 1
   basePanSpeed: 52.5
   panSpeedByZoomCurve:
     serializedVersion: 2
@@ -73,7 +73,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  panSmoothing: 0.01
+  panSmoothing: 1
   enableEdgePanning: 0
   edgePanSpeed: 15
   edgeThreshold: 0.05
@@ -84,6 +84,6 @@ MonoBehaviour:
   worldBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 50, y: 25, z: 50}
-  followSmoothing: 0.029
+  followSmoothing: 1
   followHeightOffset: 5
   showDebugGizmos: 1

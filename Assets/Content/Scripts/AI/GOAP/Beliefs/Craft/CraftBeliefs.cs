@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.Building.Runtime;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
-using Content.Scripts.Game.Storage;
 using Sirenix.OdinInspector;
 
 namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
@@ -76,12 +73,7 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
       if (agent is not IInventoryAgent invAgent) return () => false;
 
       return () => {
-        var target = UnfinishedQuery.GetNeedingResources();
-        if (target == null) return false;
-
-        var needs = target.GetRemainingResources()
-          .Where(n => invAgent.inventory.GetItemCount(n.tag) > 0);
-        var result = needs.Any();
+        var result = UnfinishedQuery.InventoryHasAnyNeeded(invAgent.inventory);
         return inverse ? !result : result;
       };
     }
@@ -95,24 +87,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => {
-        var result = AnyStorageHasRequiredResources();
+        var result = UnfinishedQuery.StorageHasAnyNeeded();
         return inverse ? !result : result;
       };
     }
 
-    private static bool AnyStorageHasRequiredResources() {
-      var unfinished = UnfinishedQuery.GetNeedingResources();
-      if (unfinished == null) return false;
-      var needs = unfinished.GetRemainingResources();
-
-      var allStorages = ActorRegistry<StorageActor>.all;
-      foreach (var (tag, _) in needs) {
-        var hasInStorage = allStorages.Any(s => s.GetCountWithTag(tag) > 0);
-        if (hasInStorage) return true;
-      }
-
-      return false;
-    }
 
     public override AgentBelief Copy() => new StorageHasResourcesForUnfinishedBelief { name = name, inverse = inverse };
   }
@@ -126,31 +105,11 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
       if (agent is not IInventoryAgent invAgent) return () => false;
 
       return () => {
-        var result = IsNotEnoughResources(invAgent);
+        var result = UnfinishedQuery.NeedsGathering(invAgent.inventory);
         return inverse ? !result : result;
       };
     }
 
-    private static bool IsNotEnoughResources(IInventoryAgent invAgent) {
-      var target = UnfinishedQuery.GetNeedingResources();
-      if (target == null) return false;
-
-      var needs = target.GetRemainingResources();
-      var allStorages = ActorRegistry<StorageActor>.all;
-      foreach (var (tag, needed) in needs) {
-        var inInventory = invAgent.inventory.GetItemCount(tag);
-        var inStorage = allStorages.Sum(s => s.GetCountWithTag(tag));
-
-        if (inInventory + inStorage < needed) return true;
-      }
-
-      return false;
-    }
-
-    private int GetItemCountInStorage(string tag) {
-      return ActorRegistry<StorageActor>.all
-        .Sum(s => s.GetCountWithTag(tag));
-    }
 
     public override AgentBelief Copy() => new NeedsGatherForUnfinishedBelief { name = name, inverse = inverse };
   }
@@ -222,23 +181,8 @@ namespace Content.Scripts.AI.GOAP.Beliefs.Craft {
 
     protected override Func<bool> GetCondition(IGoapAgentCore agent) {
       return () => {
-        var allUnfinished = UnfinishedQuery.GetAllNeedingResources().ToArray();
-        if (allUnfinished.Length == 0) return inverse;
-
-        var found = false;
-        foreach (var unfinishedActor in allUnfinished) {
-          var remainingResourcesTags = unfinishedActor
-            .GetRemainingResources()
-            .Select(r => r.tag)
-            .ToArray();
-          if (agent.memory.GetWithAnyTags(remainingResourcesTags).Length <= 0) continue;
-          found = true;
-          break;
-        }
-
-        var result = inverse ? !found : found;
-
-        return result;
+        var result = UnfinishedQuery.MemoryHasAnyNeeded(agent.memory);
+        return inverse ? !result : result;
       };
     }
 

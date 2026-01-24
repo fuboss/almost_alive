@@ -1,45 +1,111 @@
 using System.Collections.Generic;
 using System.Linq;
-using Content.Scripts.AI.Camp;
-using UnityEngine;
+using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.GOAP.Agent.Memory;
+using Content.Scripts.Game.Storage;
 
 namespace Content.Scripts.Game.Craft {
-  /// <summary>
-  /// Static query helpers for finding unfinished actors.
-  /// </summary>
   public static class UnfinishedQuery {
-    /// <summary>Find unfinished that needs specific resource.</summary>
-    public static UnfinishedActor GetNeedingResource(string tag) {
-      return ActorRegistry<UnfinishedActor>.all
+
+    public static bool HasActiveUnfinished() {
+      return ActorRegistry<UnfinishedActorBase>.count > 0;
+    }
+
+    public static IUnfinishedActor GetNeedingResource(string tag) {
+      return ActorRegistry<UnfinishedActorBase>.all
         .FirstOrDefault(u => u.GetRemainingResourceCount(tag) > 0);
     }
 
-    /// <summary>Find unfinished that needs any resources.</summary>
-    public static UnfinishedActor GetNeedingResources() {
-      return ActorRegistry<UnfinishedActor>.all
+    public static IUnfinishedActor GetNeedingResources() {
+      return ActorRegistry<UnfinishedActorBase>.all
         .FirstOrDefault(u => !u.hasAllResources);
     }
 
-    public static IEnumerable<UnfinishedActor> GetAllNeedingResources() {
-      return ActorRegistry<UnfinishedActor>.all
+    public static IEnumerable<IUnfinishedActor> GetAllNeedingResources() {
+      return ActorRegistry<UnfinishedActorBase>.all
         .Where(u => !u.hasAllResources);
     }
 
-    /// <summary>Find unfinished that needs work.</summary>
-    public static UnfinishedActor GetNeedingWork() {
-      return ActorRegistry<UnfinishedActor>.all
+    public static IUnfinishedActor GetNeedingWork() {
+      return ActorRegistry<UnfinishedActorBase>.all
         .FirstOrDefault(u => u.hasAllResources && !u.workComplete);
     }
 
-    /// <summary>Find unfinished that is ready to complete.</summary>
-    public static UnfinishedActor GetReadyToComplete() {
-      return ActorRegistry<UnfinishedActor>.all
+    public static IUnfinishedActor GetReadyToComplete() {
+      return ActorRegistry<UnfinishedActorBase>.all
         .FirstOrDefault(u => u.isReadyToComplete);
     }
 
+    public static HashSet<string> GetAllRequiredResourceTags() {
+      var tags = new HashSet<string>();
+      foreach (var unfinished in GetAllNeedingResources()) {
+        var remaining = unfinished.GetRemainingResources();
+        if (remaining == null) continue;
+        foreach (var (tag, _) in remaining) {
+          tags.Add(tag);
+        }
+      }
+      return tags;
+    }
 
-    public static bool HasActiveUnfinished() {
-      return ActorRegistry<UnfinishedActor>.count > 0;
+    public static bool IsResourceNeeded(string tag) {
+      return GetNeedingResource(tag) != null;
+    }
+
+    public static bool InventoryHasAnyNeeded(ActorInventory inventory) {
+      var target = GetNeedingResources();
+      if (target == null) return false;
+
+      var needs = target.GetRemainingResources();
+      if (needs == null) return false;
+
+      foreach (var (tag, _) in needs) {
+        if (inventory.GetItemCount(tag) > 0) return true;
+      }
+      return false;
+    }
+
+    public static bool StorageHasAnyNeeded() {
+      var target = GetNeedingResources();
+      if (target == null) return false;
+
+      var needs = target.GetRemainingResources();
+      if (needs == null) return false;
+
+      var allStorages = ActorRegistry<StorageActor>.all;
+      foreach (var (tag, _) in needs) {
+        foreach (var storage in allStorages) {
+          if (storage.GetCountWithTag(tag) > 0) return true;
+        }
+      }
+      return false;
+    }
+
+    public static bool NeedsGathering(ActorInventory inventory) {
+      var target = GetNeedingResources();
+      if (target == null) return false;
+
+      var needs = target.GetRemainingResources();
+      if (needs == null) return false;
+
+      var allStorages = ActorRegistry<StorageActor>.all;
+      foreach (var (tag, needed) in needs) {
+        var inInventory = inventory.GetItemCount(tag);
+        var inStorage = allStorages.Sum(s => s.GetCountWithTag(tag));
+        if (inInventory + inStorage < needed) return true;
+      }
+      return false;
+    }
+
+    public static bool MemoryHasAnyNeeded(AgentMemory memory) {
+      foreach (var unfinished in GetAllNeedingResources()) {
+        var remaining = unfinished.GetRemainingResources();
+        if (remaining == null) continue;
+
+        var tags = remaining.Select(r => r.tag).ToArray();
+        if (memory.GetWithAnyTags(tags).Length > 0) return true;
+      }
+      return false;
     }
   }
 }
