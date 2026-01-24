@@ -1,14 +1,13 @@
 using Content.Scripts.AI.Animals;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
-using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.AI.GOAP.Planning;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Environment;
 using Content.Scripts.Core.Simulation;
-using Content.Scripts.Game;
+using Content.Scripts.Game.Camera;
+using Content.Scripts.Game.Camera.Settings;
 using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Interaction;
 using Content.Scripts.Game.Trees;
@@ -25,6 +24,7 @@ namespace Content.Scripts {
     public CinemachineTargetGroup agentsRoot;
     public GOAPAgent agentPrefab;
     public CinemachineCamera cameraPrefab;
+    public CameraSettingsSO cameraSettings;
     public EnvironmentSetupSO environmentSetup;
     public UILayer[] uiLayers;
 
@@ -75,6 +75,7 @@ namespace Content.Scripts {
 
       builder.RegisterComponentInNewPrefab(agentsRoot, Lifetime.Scoped).AsSelf();
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
+      builder.RegisterInstance(cameraSettings).AsSelf();
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<DebugPanel.DebugModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 

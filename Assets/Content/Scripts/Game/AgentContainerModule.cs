@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Content.Scripts.AI.GOAP.Agent.Camera;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Camera;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -24,7 +24,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _agentDescriptions[instance] = instance.gameObject.GetComponent<IActorDescription>();
       Debug.Log($"[AgentContainerModule] Agent added to container. Total agents: {_agents.Count}",
         instance.gameObject);
-      _cameraModule.AddToCameraGroup(instance);
+      //_cameraModule.AddToCameraGroup(instance);
     }
 
     public void Remove(IGoapAgent instance) {

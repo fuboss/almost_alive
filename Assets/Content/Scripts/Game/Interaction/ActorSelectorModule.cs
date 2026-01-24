@@ -93,7 +93,7 @@ namespace Content.Scripts.Game.Interaction {
     }
 
     private IGoapAgent RaycastAgentUnderMouse() {
-      var ray = Camera.main!.ScreenPointToRay(Mouse.current.position.ReadValue());
+      var ray = UnityEngine.Camera.main!.ScreenPointToRay(Mouse.current.position.ReadValue());
       var count = Physics.RaycastNonAlloc(ray, _raycastResult);
       if (count <= 0) {
         return null;
