@@ -42,7 +42,6 @@ MonoBehaviour:
   compositeBeliefs: []
   actionDatas:
   - {fileID: 11400000, guid: 1ba4c10c12cc149f2974c0d0c6714f34, type: 2}
-  - {fileID: 11400000, guid: a26f517c0a1094369b4290e4caac1d17, type: 2}
   - {fileID: 11400000, guid: 1525a3f1ada694125bd02ddc305aee45, type: 2}
   - {fileID: 11400000, guid: f501ff01340bf4258b87f86e5e1125d7, type: 2}
   - {fileID: 11400000, guid: f68261631d6df4106b41ec9b4f3ca677, type: 2}

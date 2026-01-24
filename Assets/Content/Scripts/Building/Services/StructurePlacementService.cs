@@ -18,6 +18,7 @@ namespace Content.Scripts.Building.Services {
       if (terrain == null) return targetPos;
 
       var maxHeight = GetMaxTerrainHeight(targetPos, footprint, terrain);
+     
       return new Vector3(targetPos.x, maxHeight, targetPos.z);
     }
 
@@ -37,7 +38,7 @@ namespace Content.Scripts.Building.Services {
           maxHeight = Mathf.Max(maxHeight, height);
         }
       }
-
+      maxHeight += 0.5f;
       return maxHeight;
     }
 
@@ -124,7 +125,7 @@ namespace Content.Scripts.Building.Services {
       var bestTerrainY = 0f;
       var bestPosition = Vector3.zero;
 
-      for (var i = 0; i < segmentCount; i++) {
+      for (var i = 1; i < segmentCount; i++) {
         var checkPos = GetOutsidePosition(side, i, origin, cellSize, definition.footprint);
         var terrainY = terrain.SampleHeight(checkPos) + terrain.transform.position.y;
         var gap = structureY - terrainY;

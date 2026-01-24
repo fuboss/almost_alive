@@ -8,6 +8,7 @@ namespace Content.Scripts.DebugPanel {
   public enum DebugCategory {
     Spawn,
     Structure,
+    SpawnTemplates,
     Destroy,
     Environment,
     Events

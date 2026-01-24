@@ -28,6 +28,8 @@ namespace Content.Scripts.Building.Runtime {
 
     public StructureDefinitionSO definition => _definition;
     public ConstructionData constructionData => _definition?.constructionData;
+
+    public override float workRequired => constructionData?.workRequired??100;
     public GameObject ghostView => _ghostView;
 
     public void Initialize(StructureDefinitionSO definition) {
@@ -53,11 +55,11 @@ namespace Content.Scripts.Building.Runtime {
       }
 
       
-      if (!_actorCreation.TrySpawnActor(_recipe.recipe.resultActorKey, transform.position, out var result)) {
-        Debug.LogError($"[UnfinishedStructure] Failed to spawn {_recipe.recipe.resultActorKey}");
+      if (!_actorCreation.TrySpawnActor(definition.structureId, transform.position, out var result)) {
+        Debug.LogError($"[UnfinishedStructure] Failed to spawn {definition.structureId}");
         return null;
       }
-      var structure = actor.GetComponent<Structure>();
+      var structure = result.GetComponent<Structure>();
       if (structure == null) {
         return null;
       }
@@ -90,7 +92,10 @@ namespace Content.Scripts.Building.Runtime {
     /// Check if all required resources have been delivered.
     /// </summary>
     public override bool CheckAllResourcesDelivered() {
-      return constructionData != null && base.CheckAllResourcesDelivered();
+      bool result = constructionData != null && base.CheckAllResourcesDelivered();
+      hasAllResources = result;
+
+      return result;
     }
 
     private void OnDestroy() {

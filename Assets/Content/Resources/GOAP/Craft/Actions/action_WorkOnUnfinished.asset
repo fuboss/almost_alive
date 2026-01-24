@@ -23,13 +23,12 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_WorkOnUnfinished
-    cost: 3
+    cost: 2
     benefit: 4
     strategy:
       rid: 365113007176680255
     preconditions:
     - Craft_Unfinished_Needs_Work
-    - Craft_Unfinished_Has
     - Transient_Is/UNFINISHED
     - Craft_Unfinished_NoNeeds_Resources
     effects:

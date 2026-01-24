@@ -29,7 +29,7 @@ namespace Content.Scripts.Game.Trees {
         if (!_creationModule.TrySpawnActorOnGround(actorID, choppingProgress.transform.position + shift,
               out var woodActor)) continue;
         shift = NextShift();
-        byAgent.agentBrain.TryRemember(woodActor);
+        byAgent.agentBrain.TryRemember(woodActor, out var _);
       }
     }
 

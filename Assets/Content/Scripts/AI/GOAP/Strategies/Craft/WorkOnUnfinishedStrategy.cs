@@ -74,7 +74,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
       if (unfinishedActor != null) {
         _target = unfinishedActor;
-        Debug.Log($"[WorkUnfinished] Using transient target {_target.recipe.recipeId}");
+        Debug.Log($"[WorkUnfinished] Using transient target {_target.name}");
         _agent.navMeshAgent.SetDestination(_target.transform.position);
         return;
       }
@@ -117,7 +117,7 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
     private void TryComplete() {
       var result = _target.TryComplete();
       if (result != null) {
-        _workAgent?.AddExperience(10);
+        _workAgent?.AddExperience(60); //todo move this to another place
         Debug.Log($"[WorkUnfinished] Completed {result.actorKey}!");
       }
 

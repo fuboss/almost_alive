@@ -28,19 +28,28 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [Required] [SerializeField] protected AgentMemory _memory = new();
     [Required] [SerializeField] protected MemoryConsolidationModule _memoryConsolidation = new();
 
-    [Header("Sensors")]
-    [SerializeField] protected InteractionSensor _interactSensor;
+    [Header("Sensors")] [SerializeField] protected InteractionSensor _interactSensor;
     [SerializeField] protected VisionSensor _visionSensor;
 
-    [Header("Navigation")]
-    [SerializeField] protected AgentStuckDetector _stuckDetector = new();
+    [Header("Navigation")] [SerializeField]
+    protected AgentStuckDetector _stuckDetector = new();
 
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<AgentAction> actions;
     [FoldoutGroup("Debug")] [ReadOnly] public HashSet<GoalTemplate> goalTemplates;
     [FoldoutGroup("Debug")] [ReadOnly] protected ActionPlan _actionPlan;
     [FoldoutGroup("Debug")] [ReadOnly] protected AgentAction _currentAction;
     [FoldoutGroup("Debug")] [ReadOnly] protected AgentGoal _currentGoal;
-    [FoldoutGroup("Debug")] [SerializeField] protected ActionHistoryTracker _actionHistory = new();
+
+    [FoldoutGroup("Debug")] [SerializeField]
+    protected ActionHistoryTracker _actionHistory = new();
+
+    [FoldoutGroup("Debug")] [SerializeField]
+    protected PlanLoopDetector _planLoopDetector = new();
+
+    [FoldoutGroup("Debug")] [SerializeField]
+    protected bool _debugPlanning;
+
+    public bool debugPlanning => _debugPlanning;
 
     public Dictionary<string, AgentBelief> beliefs { get; protected set; }
 
@@ -87,6 +96,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _interactSensor.OnActorEntered += HandleInteractionSensor;
         _interactSensor.OnActorExited += HandleInteractionSensor;
       }
+
       if (_visionSensor != null) {
         _visionSensor.OnActorEntered += HandleVisibilityStart;
         _visionSensor.OnActorExited += HandleVisibilityEnd;
@@ -98,6 +108,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         _interactSensor.OnActorEntered -= HandleInteractionSensor;
         _interactSensor.OnActorExited -= HandleInteractionSensor;
       }
+
       if (_visionSensor != null) {
         _visionSensor.OnActorEntered -= HandleVisibilityStart;
         _visionSensor.OnActorExited -= HandleVisibilityEnd;
@@ -112,6 +123,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       ExecutePlanning();
       ExecuteMemory(deltaTime);
       ExecuteSensors(deltaTime);
+      _planLoopDetector.PurgeExpiredBlocks();
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -158,6 +170,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     protected virtual void HandleStuck() {
       Debug.LogWarning($"[Brain] Agent stuck! Clearing plan. Action: {_currentAction?.name}", this);
 
+      OnPlanFailed();
       _currentAction?.OnStop();
       ClearPlan(rememberGoal: false);
 
@@ -181,15 +194,18 @@ namespace Content.Scripts.AI.GOAP.Agent {
       _memory.PurgeExpired();
     }
 
-    protected virtual void HandleVisibilityEnd(ActorDescription actor) { }
-
-    protected virtual void HandleVisibilityStart(ActorDescription visibleActor) {
-      TryRemember(visibleActor);
+    protected virtual void HandleVisibilityEnd(ActorDescription actor) {
     }
 
-    protected virtual void HandleInteractionSensor(ActorDescription actor) { }
+    protected virtual void HandleVisibilityStart(ActorDescription visibleActor) {
+      TryRemember(visibleActor, out var _);
+    }
 
-    public void TryRemember(ActorDescription visibleActor) {
+    protected virtual void HandleInteractionSensor(ActorDescription actor) {
+    }
+
+    public void TryRemember(ActorDescription visibleActor, out MemorySnapshot unknown) {
+      unknown = null;
       var snapshot = MemorySnapshotBuilder.Create()
         .WithCreationTime(DateTime.Now)
         .With(visibleActor.descriptionData)
@@ -202,6 +218,8 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var result = _memory.TryRemember(snapshot);
       if (result == AgentMemory.RememberResult.UpdatedMemory)
         _memoryConsolidation.ReinforceMemory(snapshot);
+      if (result != AgentMemory.RememberResult.Failed)
+        unknown = snapshot;
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -242,6 +260,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
       }
       else {
         Debug.Log($"[Brain] {_currentAction.name} Preconditions not met, clearing plan", this);
+        OnPlanFailed();
         ClearPlan(rememberGoal: true);
         return false;
       }
@@ -264,6 +283,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (_currentGoal != null) {
         goalsToCheck = new HashSet<AgentGoal>(availableGoals.Where(g => g.isUrgent || g.Priority > priorityLevel));
       }
+
+      // Filter out goals that are blocked due to repeated plan failures
+      goalsToCheck.RemoveWhere(g => _planLoopDetector.IsGoalBlocked(g.Name));
 
       return _gPlanner.Plan(_agent, goalsToCheck, _lastGoal);
     }
@@ -289,8 +311,29 @@ namespace Content.Scripts.AI.GOAP.Agent {
       var allActionsComplete = _actionPlan.actions.Count == 0;
       if (allActionsComplete) {
         Debug.Log($"[Brain] Plan {_actionPlan.agentGoal.Name} complete", this);
+        OnPlanSucceeded();
         ClearPlan(rememberGoal: true);
       }
+    }
+
+    protected void OnPlanFailed() {
+      if (_actionPlan == null) return;
+
+      var signature = _planLoopDetector.GetPlanSignature(
+        _actionPlan.agentGoal.Name,
+        _actionPlan.GetAllActionNames());
+
+      _planLoopDetector.OnPlanFailed(signature);
+    }
+
+    protected void OnPlanSucceeded() {
+      if (_actionPlan == null) return;
+
+      var signature = _planLoopDetector.GetPlanSignature(
+        _actionPlan.agentGoal.Name,
+        _actionPlan.GetAllActionNames());
+
+      _planLoopDetector.OnPlanSucceeded(signature);
     }
 
     protected void ClearPlan(bool rememberGoal) {

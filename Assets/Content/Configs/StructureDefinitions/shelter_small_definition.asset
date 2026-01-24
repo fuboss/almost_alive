@@ -21,12 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  structureId: shelter_small_definition
+  structureId: shelter_small_structure
   footprint: {x: 3, y: 3}
   foundationPrefab: {fileID: 1073985730204244942, guid: 34383844bf42d46bcb9378ecc19ba077, type: 3}
   constructionData:
-    _requiredResources: []
-    workRequired: 10
+    _requiredResources:
+    - tag: WOOD
+      count: 1
+    workRequired: 20
   slots:
   - slotId: slot_0_0
     type: 0

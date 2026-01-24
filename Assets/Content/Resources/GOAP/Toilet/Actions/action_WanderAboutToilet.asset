@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_WanderAboutToilet
     cost: 2
+    benefit: 1
     strategy:
       rid: 365112727136371074
     preconditions:
@@ -40,10 +41,12 @@ MonoBehaviour:
       data:
         visitPointsMinMax: {x: 1, y: 4}
         navMeshSamples: 5
-        defaultWanderRadius: 10
-        debugWanderAroundCenter: 1
+        defaultWanderRadius: 40
+        debugWanderAroundCenter: 0
         targetFromMemory:
           searchMode: 0
+          useNavMeshDistance: 1
+          filterUnreachable: 1
           requiredTags:
           - TOILET
         lookupForCountInMemory: 1

@@ -26,7 +26,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
     // Core methods
     AgentBelief Get(string beliefName);
     void Tick(float deltaTime);
-    void TryRemember(ActorDescription visibleActor);
+    void TryRemember(ActorDescription visibleActor, out MemorySnapshot snapshot);
 
     // Sensors
     InteractionSensor interactSensor { get; }
@@ -34,5 +34,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     // Debug/History
     ActionHistoryTracker actionHistory { get; }
+    bool debugPlanning { get; }
   }
 }

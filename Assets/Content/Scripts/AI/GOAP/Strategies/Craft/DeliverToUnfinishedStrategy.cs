@@ -1,14 +1,10 @@
 using System;
-using System.Linq;
-using Content.Scripts.AI.Camp;
 using Content.Scripts.AI.GOAP.Actions;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Core.Simulation;
-using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using UnityEngine;
 using VContainer;
-using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Strategies.Craft {
   [Serializable]
@@ -91,7 +87,6 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       var unfinishedActor = _transientAgent?.transientTarget?.GetComponent<UnfinishedActor>();
       if (unfinishedActor != null) {
         _target = unfinishedActor;
-        Debug.Log($"[DeliverUnfinished] Using transient target {_target.recipe.recipeId}");
         _agent.navMeshAgent.SetDestination(_target.transform.position);
         return;
       }
@@ -111,55 +106,17 @@ namespace Content.Scripts.AI.GOAP.Strategies.Craft {
       }
 
       var needs = _target.GetRemainingResources();
+      var sourceInventory = _inventoryAgent.inventory;
       var targetInventory = _target.inventory;
-      int delivered = 0;
+      var totalDelivered = 0;
 
-      Debug.Log(
-        $"Start delivering to {_target.name}. Required{string.Join(",", needs.Select(n => $"{n.tag}x{n.remaining}"))}",
-        _target);
       foreach (var (tag, remaining) in needs) {
-        if (!_inventoryAgent.inventory.TryGetSlotWithItemTags(new[] { tag }, out var slot)) {
-          Debug.Log($"agent has no item with tag {tag}", _inventoryAgent.inventory);
-          continue;
-        }
-        
-        var count = slot.count;
-        if (count <= remaining) {
-          if (slot.Release(out var depositActor)) {
-            if (targetInventory.TryPutItemInInventory(depositActor)) {
-              Debug.Log($"Delivered full stack of {tag}", targetInventory);
-              delivered += depositActor.GetStackData().current;
-            }
-            else {
-              Debug.LogError($"Failed to deliver full stack of {tag} to target, destroying spawned item");
-              Object.Destroy(depositActor.gameObject);
-            }
-          }
-          else {
-            Debug.LogError($"Failed to release item from agent inventory for delivery. from slot {slot.index}");
-          }
-        }
-        else {
-          if (_creationModule.TrySpawnActorOnGround(slot.item.actorKey, _target.transform.position, out var newItem)) {
-            newItem.GetStackData().current = remaining;
-            if (targetInventory.TryPutItemInInventory(newItem, remaining)) {
-              Debug.Log($"Delivered full stack of {tag} x {remaining}", targetInventory);
-            }
-            else {
-              Debug.LogError($"Failed to deliver full stack of {tag} to target, destroying spawned item", _target);
-              Object.Destroy(newItem.gameObject);
-            }
-          }
-          else {
-            Debug.LogError($"Failed to spawn newItem '{slot.item.actorKey}' for delivery");
-          }
-
-          slot.RemoveCount(remaining);
-          delivered += remaining;
-        }
+        var delivered = sourceInventory.TransferTo(targetInventory, tag, remaining, _creationModule);
+        totalDelivered += delivered;
       }
 
-      Debug.Log($"Delivered total of {delivered} items to {_target.name}");
+      _target.CheckAllResourcesDelivered();
+      Debug.Log($"[DeliverUnfinished] Delivered {totalDelivered} items to {_target.name}");
     }
 
     public override void OnStop() {

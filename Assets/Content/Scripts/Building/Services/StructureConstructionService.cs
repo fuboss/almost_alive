@@ -34,6 +34,7 @@ namespace Content.Scripts.Building.Services {
       GenerateSupports(structure, terrain);
       SpawnEntryPoints(structure, terrain);
 
+      structure.GetComponentInChildren<NavMeshSurface>().BuildNavMesh();
       structure.SetState(StructureState.BUILT);
       Debug.Log($"[StructureConstructionService] Built structure: {definition.structureId}");
     }
@@ -71,7 +72,7 @@ namespace Content.Scripts.Building.Services {
     #region Walls
 
     public void GenerateWalls(Structure structure) {
-      structure.wallSegmentsInternal.Clear();
+      structure.wallSegmentsData.Clear();
       var definition = structure.definition;
       if (definition == null) return;
 
@@ -97,7 +98,7 @@ namespace Content.Scripts.Building.Services {
 
     private void CreateWallsForSide(Structure structure, WallSide side, int count) {
       for (var i = 0; i < count; i++) {
-        structure.wallSegmentsInternal.Add(new WallSegment(side, i, WallSegmentType.Solid));
+        structure.wallSegmentsData.Add(new WallSegment(side, i, WallSegmentType.Solid));
       }
     }
 
@@ -162,7 +163,7 @@ namespace Content.Scripts.Building.Services {
 
     private void SpawnSupport(Structure structure, Vector3 cellCenter, float terrainY, float height, GameObject prefab) {
       var support = Object.Instantiate(prefab, structure.transform);
-      support.transform.position = new Vector3(cellCenter.x, terrainY, cellCenter.z);
+      support.transform.position = new Vector3(cellCenter.x, terrainY + height/2, cellCenter.z);
       support.name = $"Support_{structure.supportsInternal.Count}";
 
       // Scale Y to match gap
@@ -194,15 +195,15 @@ namespace Content.Scripts.Building.Services {
       var terrainY = structureY - entry.stairsHeight;
 
       entry.stairsInstance = Object.Instantiate(definition.stairsPrefab, structure.transform);
-      entry.stairsInstance.transform.position = new Vector3(entry.stairsPosition.x, terrainY, entry.stairsPosition.z);
+      entry.stairsInstance.transform.position = new Vector3(entry.stairsPosition.x, structureY, entry.stairsPosition.z);
       entry.stairsInstance.name = $"Stairs_{entry.side}_{entry.segmentIndex}";
 
       // Rotate to face inward
       var rotation = entry.side switch {
-        WallSide.North => Quaternion.Euler(0, 180, 0),
-        WallSide.South => Quaternion.Euler(0, 0, 0),
-        WallSide.East => Quaternion.Euler(0, -90, 0),
-        WallSide.West => Quaternion.Euler(0, 90, 0),
+        WallSide.North => Quaternion.Euler(0, 0, 0),
+        WallSide.South => Quaternion.Euler(0, 180, 0),
+        WallSide.East => Quaternion.Euler(0, 90, 0),
+        WallSide.West => Quaternion.Euler(0, -90, 0),
         _ => Quaternion.identity
       };
       entry.stairsInstance.transform.rotation = rotation;

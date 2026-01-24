@@ -78,8 +78,8 @@ MonoBehaviour:
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: 45339c168e285481e809a228935e8b23, type: 2}
-    placement: 1
+  - rule: {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
+    placement: 0
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0

@@ -31,7 +31,6 @@ MonoBehaviour:
     - Craft_Unfinished_Has
     effects:
     - Transient_Is/UNFINISHED
-    - HasTransientTarget
   references:
     version: 2
     RefIds:

@@ -239,7 +239,7 @@ namespace Content.Scripts.Building.Data {
     }
 
     [Button("Copy Slots from Prefab"), PropertyOrder(-1)]
-    [ShowIf("@foundationPrefab != null && foundationPrefab.GetComponent<Content.Scripts.Building.Runtime.StructureDescription>() != null")]
+    // [ShowIf("@foundationPrefab != null && foundationPrefab.GetComponent<Content.Scripts.Building.Runtime.StructureDescription>() != null")]
     private void CopySlotsFromPrefab() {
       var desc = foundationPrefab.GetComponent<StructureTag>();
       if (desc == null || desc.slots == null) return;

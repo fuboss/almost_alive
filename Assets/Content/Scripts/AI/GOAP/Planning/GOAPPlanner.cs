@@ -60,13 +60,21 @@ namespace Content.Scripts.AI.GOAP.Planning {
       var visitedEffects = new HashSet<string>();
 
       // Backward chaining: find actions that satisfy required effects
+      var stepIndex = 0;
+      var debug = agent.agentBrain.debugPlanning;
+      
       while (requiredEffects.Count > 0) {
-        var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b);
+        stepIndex++;
+        
+        var bestAction = FindBestAction(requiredEffects, availableActions, visitedEffects, b, debug);
 
         if (bestAction == null) {
-          b.AppendLine(
-            $" - <b>[Failed to find action to resolve effects: {string.Join(",", requiredEffects.Select(e => e.name))}; </b>]\n");
+          b.AppendLine($"[Step {stepIndex}] FAILED - no action for: {string.Join(", ", requiredEffects.Select(e => e.name))}");
           return null;
+        }
+
+        if (debug) {
+          Debug.Log($"[GOAP {stepIndex}] {bestAction.name} → covers [{string.Join(", ", bestAction.effects.Where(e => requiredEffects.Any(r => r.name == e.name)).Select(e => e.name))}]");
         }
 
         plan.Add(bestAction);
@@ -74,12 +82,10 @@ namespace Content.Scripts.AI.GOAP.Planning {
         totalBenefit += bestAction.benefit;
         availableActions.Remove(bestAction);
 
-        // Mark effects as visited
         foreach (var effect in bestAction.effects) {
           visitedEffects.Add(effect.name);
         }
 
-        // Update required effects
         requiredEffects.ExceptWith(bestAction.effects);
 
         // Add preconditions that aren't already satisfied
@@ -88,19 +94,20 @@ namespace Content.Scripts.AI.GOAP.Planning {
             requiredEffects.Add(pre);
           }
         }
-
-        b.Append($"→ <b>{bestAction.name}</b>");
       }
 
       if (plan.Count == 0) {
-        b.AppendLine(
-          $" - Failed to build Plan. notCovered effects: {string.Join("", $"[{requiredEffects.Select(e => e.name)}]")}; ");
         return null;
       }
 
       // Reverse to get execution order (we built it backwards)
       plan.Reverse();
       var actionStack = new Stack<AgentAction>(plan.AsEnumerable().Reverse());
+      
+      if (debug) {
+        Debug.Log($"[GOAP] Plan: {string.Join(" → ", actionStack.Select(a => a.name))}");
+      }
+      
       var newPlan = new ActionPlan(goal, actionStack, totalCost, totalBenefit);
       return newPlan;
     }
@@ -109,9 +116,11 @@ namespace Content.Scripts.AI.GOAP.Planning {
       HashSet<AgentBelief> requiredEffects,
       HashSet<AgentAction> availableActions,
       HashSet<string> visitedEffects,
-      StringBuilder b) {
+      StringBuilder b,
+      bool debug) {
       AgentAction best = null;
       var bestScore = float.MinValue;
+      var candidates = new List<(AgentAction action, float score, int count, int dependencyPenalty)>();
 
       foreach (var action in availableActions) {
         var providesRequired = action.effects.Where(e =>
@@ -122,11 +131,29 @@ namespace Content.Scripts.AI.GOAP.Planning {
         var allEffectsVisited = action.effects.All(e => visitedEffects.Contains(e.name));
         if (allEffectsVisited) continue;
 
-        var score = action.score * count * 10;
+        // Penalty for actions that depend on effects already in visitedEffects
+        // These actions need results from actions already in plan, so they should execute AFTER them
+        // In backward chaining, "execute after" means "select earlier"
+        // So we BOOST score for actions that have preconditions in visitedEffects
+        var dependsOnVisited = action.preconditions.Count(p => visitedEffects.Contains(p.name));
+        
+        // Prioritize actions that cover MORE required effects (count^2 gives exponential weight)
+        // Base score from action is secondary
+        var score = count * count * 50 + action.score * 5 + dependsOnVisited * 100;
+        candidates.Add((action, score, count, dependsOnVisited));
+        
         if (score > bestScore) {
           bestScore = score;
           best = action;
         }
+      }
+
+      // Debug log candidates when multiple options exist
+      if (debug && candidates.Count > 1) {
+        var candidatesStr = string.Join(", ", candidates
+          .OrderByDescending(c => c.score)
+          .Select(c => $"{c.action.name}:{c.score:F0}"));
+        Debug.Log($"[GOAP] Candidates: {candidatesStr}");
       }
 
       return best;

@@ -41,9 +41,11 @@ MonoBehaviour:
         visitPointsMinMax: {x: 2, y: 5}
         navMeshSamples: 5
         defaultWanderRadius: 10
-        debugWanderAroundCenter: 1
+        debugWanderAroundCenter: 0
         targetFromMemory:
           searchMode: 0
+          useNavMeshDistance: 1
+          filterUnreachable: 1
           requiredTags:
           - STORAGE
         lookupForCountInMemory: 1

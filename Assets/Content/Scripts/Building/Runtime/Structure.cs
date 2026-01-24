@@ -61,7 +61,7 @@ namespace Content.Scripts.Building.Runtime {
 
     // Mutable lists for services to populate
     public List<Slot> slotsInternal => _slots;
-    public List<WallSegment> wallSegmentsInternal => _wallSegments;
+    public List<WallSegment> wallSegmentsData => _wallSegments;
     public List<EntryPoint> entryPointsInternal => _entryPoints;
     public List<GameObject> supportsInternal => _supports;
 
@@ -77,13 +77,14 @@ namespace Content.Scripts.Building.Runtime {
 
     private void Start() {
       if (_definition == null) {
-        Debug.LogError($"[Structure] wasn't initialized! {name}", this);
+        Debug.LogError($"[Structure]Start wasn't initialized! {name}", this);
         enabled = false;
       }
     }
 
 
     public void Initialize(StructureDefinitionSO definition, float maxHp = 100f) {
+      Debug.LogError($"[Structure]initialized! {name}", this);
       _definition = definition;
       _maxHp = maxHp;
       _hp = maxHp;

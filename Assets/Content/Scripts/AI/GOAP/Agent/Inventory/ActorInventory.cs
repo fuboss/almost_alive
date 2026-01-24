@@ -4,11 +4,16 @@ using System.Linq;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   public class ActorInventory : SerializedMonoBehaviour {
     [SerializeField] private List<InventorySlot> _slots = new();
     public int slotCount => _slots.Count;
+
+    public event Action<InventorySlot> OnItemAdded;
+    public event Action<InventorySlot> OnItemRemoved;
+    public event Action OnInventoryChanged;
 
     public IEnumerable<InventorySlot> occupiedSlots {
       get {
@@ -84,6 +89,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       // No stackable slot found, try empty slot
       var freeSlot = FirstFreeSlot();
+      Debug.Log($"[{GetType().Name}] Trying to put item '{target.actorKey}' in free slot {freeSlot?.index}", this);
       return freeSlot != null && freeSlot.Put(target);
     }
 
@@ -130,6 +136,73 @@ namespace Content.Scripts.AI.GOAP.Agent {
     /// <summary>Get total count of items with specific tag.</summary>
     public int GetItemCount(string tag) {
       return GetTotalCountWithTags(new[] { tag });
+    }
+
+    internal void NotifyItemAdded(InventorySlot slot) {
+      OnItemAdded?.Invoke(slot);
+      OnInventoryChanged?.Invoke();
+    }
+
+    internal void NotifyItemRemoved(InventorySlot slot) {
+      OnItemRemoved?.Invoke(slot);
+      OnInventoryChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Transfer items with specified tag to another inventory.
+    /// Handles full stack transfer and partial stack splitting.
+    /// </summary>
+    /// <param name="target">Target inventory to transfer to</param>
+    /// <param name="tag">Tag to match items</param>
+    /// <param name="maxCount">Maximum count to transfer</param>
+    /// <param name="spawner">Required for partial stack splitting</param>
+    /// <returns>Actual count transferred</returns>
+    public int TransferTo(ActorInventory target, string tag, int maxCount, ActorCreationModule spawner = null) {
+      if (target == null || maxCount <= 0) return 0;
+
+      if (!TryGetSlotWithItemTags(new[] { tag }, out var slot)) return 0;
+
+      var available = slot.count;
+      var toTransfer = Mathf.Min(available, maxCount);
+
+      // Full stack transfer
+      if (toTransfer >= available) {
+        if (!slot.Release(out var item)) return 0;
+        
+        if (target.TryPutItemInInventory(item)) {
+          Debug.Log($"[Inventory] Transferred {toTransfer}x {tag}", this);
+          return toTransfer;
+        }
+        
+        // Failed - return item back
+        slot.Put(item);
+        return 0;
+      }
+
+      // Partial transfer - need to spawn new item
+      if (spawner == null) {
+        Debug.LogError("[Inventory] Spawner required for partial stack transfer");
+        return 0;
+      }
+
+      if (!spawner.TrySpawnActorOnGround(slot.item.actorKey, target.transform.position, out var newItem)) {
+        Debug.LogError($"[Inventory] Failed to spawn item for partial transfer");
+        return 0;
+      }
+
+      var stackData = newItem.GetStackData();
+      if (stackData != null) stackData.current = toTransfer;
+
+      if (target.TryPutItemInInventory(newItem, toTransfer)) {
+        slot.RemoveCount(toTransfer);
+        Debug.Log($"[Inventory] Transferred {toTransfer}x {tag} (partial)", this);
+        return toTransfer;
+      }
+
+      // Failed - destroy spawned item
+      Debug.LogError($"clearing slot and destroying item, {newItem.name}", newItem);
+      Destroy(newItem.gameObject);
+      return 0;
     }
   }
 

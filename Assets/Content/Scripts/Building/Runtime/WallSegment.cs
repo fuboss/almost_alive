@@ -23,7 +23,7 @@ namespace Content.Scripts.Building.Runtime {
     /// </summary>
     public Vector3 GetLocalPosition(Vector2Int footprint) {
       var cellSize = BuildingConstants.CellSize;
-      var halfWall = BuildingConstants.WallHeight * 0.5f;
+      var halfWall = 0f;
 
       return side switch {
         // North wall: along +Z edge

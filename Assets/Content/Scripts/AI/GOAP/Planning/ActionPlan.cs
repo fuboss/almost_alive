@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Content.Scripts.AI.GOAP.Planning {
   public class ActionPlan {
+    private readonly List<string> _originalActionNames;
+
     public ActionPlan(AgentGoal goal, Stack<AgentAction> actions, float totalCost, float totalBenefit = 0f) {
       agentGoal = goal;
       this.actions = actions;
@@ -13,6 +15,7 @@ namespace Content.Scripts.AI.GOAP.Planning {
       this.totalBenefit = totalBenefit;
       totalActions = actions.Count;
       initialCost = totalCost;
+      _originalActionNames = actions.Select(a => a.name).ToList();
     }
 
     public AgentGoal agentGoal { get; }
@@ -38,5 +41,10 @@ namespace Content.Scripts.AI.GOAP.Planning {
     public void MarkActionComplete() {
       completedActions++;
     }
+
+    /// <summary>
+    /// Returns the original action names in execution order (for plan signature tracking).
+    /// </summary>
+    public IEnumerable<string> GetAllActionNames() => _originalActionNames;
   }
 }

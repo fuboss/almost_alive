@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Decay;
 using UnityEngine;
@@ -16,9 +17,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public bool isStackable => stackData != null && stackData.max > 1;
     public int count => stackData?.current ?? (item != null ? 1 : 0);
-    public bool isOccupied => item != null;
+    public bool isOccupied => item != null || count > 0;
     public bool hasSpaceInStack => isStackable && stackData.current < stackData.max;
     public int spaceInStack => isStackable ? stackData.max - stackData.current : 0;
+
+    public ActorInventory inventory => _inventory;
 
     /// <summary>
     /// Check if this slot can stack with given item.
@@ -55,12 +58,15 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       var toAdd = Mathf.Min(addCount, spaceInStack);
       stackData.current += toAdd;
+      
+      // if (other.GetComponentInParent<ActorInventory>() == null) {
+      //   Debug.LogError($"going to destroy fod item after stacking {other.name} ",
+      //   other.transform.parent);
+      //   DecayableActor.RemoveFrom(other.gameObject);
+      //   UnityEngine.Object.Destroy(other.gameObject);
+      // }
 
-      // Destroy the added item since we're stacking
-      DecayableActor.RemoveFrom(other.gameObject);
-      UnityEngine.Object.Destroy(other.gameObject);
-
-      Debug.Log($"[Inventory] Stacked +{toAdd} to slot {index}, total: {stackData.current}", _root);
+      _inventory.NotifyItemAdded(this);
       return true;
     }
 
@@ -74,10 +80,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
       item = actorDescription;
       stackData = item.GetStackData() ?? new StackData { max = 1, current = 1 };
 
-      // Ensure current is at least 1
       if (stackData.current < 1) stackData.current = 1;
 
-      Debug.Log($"[Inventory] {actorDescription.name} put in slot {index}", _root);
+      _inventory.NotifyItemAdded(this);
       return true;
     }
 
@@ -89,13 +94,6 @@ namespace Content.Scripts.AI.GOAP.Agent {
       actorDescription = null;
       if (!isOccupied) return false;
 
-      // If stacked, decrease count
-      if (isStackable && stackData.current > 1) {
-        // TODO: Need prefab reference to spawn new instance
-        // For now, release entire stack
-        Debug.LogWarning($"[Inventory] Releasing entire stack of {stackData.current} items");
-      }
-
       actorDescription = item;
       item.transform.SetParent(null, true);
       item.gameObject.SetActive(true);
@@ -106,32 +104,11 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
       DecayableActor.AttachTo(actorDescription.gameObject);
 
-      var releasedName = item.name;
       item = null;
       stackData = null;
 
-      Debug.Log($"[Inventory] Slot {index} released: {releasedName}", _root);
+      _inventory.NotifyItemRemoved(this);
       return true;
-    }
-
-    /// <summary>
-    /// Release single item from stack. Returns null if need to spawn copy.
-    /// </summary>
-    public bool ReleaseSingle(out ActorDescription actorDescription, Vector3? dropPosition = null) {
-      actorDescription = null;
-      if (!isOccupied) return false;
-
-      if (!isStackable || stackData.current <= 1) {
-        return Release(out actorDescription, dropPosition);
-      }
-
-      // Has multiple - decrease count but keep slot occupied
-      stackData.current--;
-      Debug.Log($"[Inventory] Released 1 from stack, remaining: {stackData.current}");
-
-      // Cannot return actual item - would need to spawn copy
-      // Return null to indicate caller needs to handle spawning
-      return false;
     }
 
     /// <summary>
@@ -145,19 +122,51 @@ namespace Content.Scripts.AI.GOAP.Agent {
         if (stackData.current <= 0) {
           ClearSlot();
         }
+        else {
+          _inventory.NotifyItemRemoved(this);
+        }
       }
       else {
         ClearSlot();
       }
     }
 
+    /// <summary>
+    /// Split count from stack, spawning a new item.
+    /// </summary>
+    /// <param name="count">How many to split off</param>
+    /// <param name="spawner">Required to create new item instance</param>
+    /// <param name="splitItem">The newly created item with specified count</param>
+    /// <returns>True if split successful</returns>
+    public bool TrySplit(int count, ActorCreationModule spawner, out ActorDescription splitItem) {
+      splitItem = null;
+      if (!isOccupied || count <= 0 || spawner == null) return false;
+      if (stackData == null || stackData.current <= count) return false;
+
+      if (!spawner.TrySpawnActorOnGround(item.actorKey, _root.position, out splitItem)) {
+        return false;
+      }
+
+      var newStackData = splitItem.GetStackData();
+      if (newStackData != null) newStackData.current = count;
+
+      stackData.current -= count;
+      _inventory.NotifyItemRemoved(this);
+      return true;
+    }
+
     internal void ClearSlot() {
+      var hadItem = item != null;
       if (item != null) {
+        Debug.LogError($"clearing slot and destroying item, {item.name}", item);
         DecayableActor.RemoveFrom(item.gameObject);
         UnityEngine.Object.Destroy(item.gameObject);
       }
+
       item = null;
       stackData = null;
+
+      if (hadItem) _inventory.NotifyItemRemoved(this);
     }
 
     public void SetReferences(ActorInventory actorInventory, Transform slot) {

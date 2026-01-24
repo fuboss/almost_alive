@@ -1,4 +1,5 @@
 using System.Linq;
+using Content.Scripts.AI;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Simulation;
@@ -231,7 +232,7 @@ namespace Content.Scripts.DebugPanel {
         var actorDesc = prefab;
         if (actorDesc == null) continue;
         var displayName = $"Spawn {actorDesc.actorKey}";
-        _registry.Register(new Actions.SpawnActorAction(_actorCreation, actorDesc.actorKey, displayName));
+        _registry.Register(new Actions.SpawnActorAction(_actorCreation,_structuresModule, actorDesc.actorKey, displayName));
         count++;
       }
 
@@ -259,6 +260,29 @@ namespace Content.Scripts.DebugPanel {
       if (count > 0) {
         Debug.Log($"[DebugModule] Registered {count} structure actions");
       }
+
+      TryRegisterSpawnTemplates();
+    }
+
+    private void TryRegisterSpawnTemplates() {
+      if (!_structuresModule.isInitialized || !_actorCreation.IsInitialized) {
+        return;
+      }
+
+      var firstStructure = _structuresModule.definitions?.FirstOrDefault();
+      var firstActor = _actorCreation.allPrefabs?.FirstOrDefault(p=>p.GetDefinition(Tag.AGENT));
+
+      if (firstStructure == null || firstActor == null) return;
+
+      var displayName = $"Structure + Agent ({firstStructure.structureId} + {firstActor.actorKey})";
+      _registry.Register(new Actions.SpawnStructureWithAgentAction(
+        _structuresModule,
+        _actorCreation,
+        firstStructure,
+        firstActor.actorKey,
+        displayName));
+
+      Debug.Log($"[DebugModule] Registered SpawnTemplates action: {displayName}");
     }
   }
 }

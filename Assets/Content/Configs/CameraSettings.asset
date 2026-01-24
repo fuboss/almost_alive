@@ -21,7 +21,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  heightRange: {x: 1, y: 50}
+  heightRange: {x: 1.5, y: 40.14653}
   zoomToPitchCurve:
     serializedVersion: 2
     m_Curve:
@@ -46,9 +46,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  zoomSpeed: 5
-  zoomSmoothing: 0.15
-  basePanSpeed: 50
+  zoomSpeed: 3.38
+  zoomSmoothing: 0.01
+  basePanSpeed: 52.5
   panSpeedByZoomCurve:
     serializedVersion: 2
     m_Curve:
@@ -73,7 +73,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  panSmoothing: 0.1
+  panSmoothing: 0.01
   enableEdgePanning: 0
   edgePanSpeed: 15
   edgeThreshold: 0.05
@@ -84,6 +84,6 @@ MonoBehaviour:
   worldBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 50, y: 25, z: 50}
-  followSmoothing: 0.2
+  followSmoothing: 0.029
   followHeightOffset: 5
   showDebugGizmos: 1

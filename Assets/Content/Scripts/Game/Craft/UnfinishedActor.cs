@@ -9,11 +9,11 @@ using UnityEngine;
 using VContainer;
 
 namespace Content.Scripts.Game.Craft {
-  
   public interface IProgressProvider {
     float progress { get; }
     ActorDescription actor { get; }
   }
+
   /// <summary>
   /// Unfinished actor - intermediate state during crafting/building.
   /// Stores recipe reference, required resources inventory, and work progress.
@@ -22,8 +22,10 @@ namespace Content.Scripts.Game.Craft {
   [RequireComponent(typeof(ActorInventory))]
   public class UnfinishedActor : MonoBehaviour, IProgressProvider {
     [ShowInInspector, ReadOnly] protected RecipeSO _recipe;
-    [ShowInInspector, ReadOnly, Range(0,1f)] protected float _workProgress;
-    
+
+    [ShowInInspector, ReadOnly, Range(0, 1f)]
+    protected float _workProgress;
+
     [Inject] protected ActorCreationModule _actorCreation;
 
     protected ActorDescription _description;
@@ -32,13 +34,13 @@ namespace Content.Scripts.Game.Craft {
     public RecipeSO recipe => _recipe;
     public ActorDescription actor => _description;
     public ActorInventory inventory => _inventory;
-    
+
     public float workProgress => _workProgress;
-    public float workRequired => _recipe?.recipe.workRequired ?? 0f;
+    public virtual float workRequired => _recipe?.recipe.workRequired ?? 0f;
     public float workRatio => workRequired > 0f ? Mathf.Clamp01(_workProgress / workRequired) : 1f;
     public bool workComplete => _workProgress >= workRequired;
-    float IProgressProvider.progress => workRatio;
-    [ShowInInspector]public bool hasAllResources => CheckAllResourcesDelivered();
+    public virtual float progress => workRatio;
+    [ShowInInspector] public bool hasAllResources { get; protected set; }
     public bool isReadyToComplete => hasAllResources && workComplete;
 
     private void Awake() {
@@ -60,6 +62,18 @@ namespace Content.Scripts.Game.Craft {
       _workProgress = 0f;
     }
 
+    /// <summary>Check if all required resources have been delivered.</summary>
+    public virtual bool CheckAllResourcesDelivered() {
+      if (requiredResources == null) return true;
+      foreach (var req in requiredResources) {
+        var remaining = GetRemainingResourceCount(req.tag);
+        if (remaining > 0) return false;
+      }
+
+      return true;
+    }
+
+    
     /// <summary>Add work progress. Returns true if work is complete.</summary>
     public virtual bool AddWork(float amount) {
       if (amount <= 0f) return workComplete;
@@ -78,24 +92,15 @@ namespace Content.Scripts.Game.Craft {
 
     /// <summary>Get all remaining resource requirements.</summary>
     public virtual (string tag, int remaining)[] GetRemainingResources() {
-      return requiredResources
+      return requiredResources?
         .Select(r => (r.tag, GetRemainingResourceCount(r.tag)))
         .Where(x => x.Item2 > 0)
         .ToArray();
     }
 
-    /// <summary>Check if all required resources have been delivered.</summary>
-    public virtual bool CheckAllResourcesDelivered() {
-      if (_recipe == null) return false;
-      foreach (var req in requiredResources) {
-        if (GetRemainingResourceCount(req.tag) > 0) return false;
-      }
-
-      return true;
-    }
-
+   
     protected virtual IReadOnlyList<RecipeRequiredResource> requiredResources
-      => _recipe.recipe.requiredResources;
+      => _recipe?.recipe.requiredResources;
 
     /// <summary>
     /// Try to complete. Spawns result actor and destroys this.
@@ -113,15 +118,16 @@ namespace Content.Scripts.Game.Craft {
       }
 
       var pos = transform.position;
-      
-      if (!_actorCreation.TrySpawnActorOnGround(_recipe.recipe.resultActorKey, pos, out var result, _recipe.recipe.outputCount)) {
+
+      if (!_actorCreation.TrySpawnActorOnGround(_recipe.recipe.resultActorKey, pos, out var result,
+            _recipe.recipe.outputCount)) {
         Debug.LogError($"[Unfinished] Failed to spawn {_recipe.recipe.resultActorKey}");
         return null;
       }
 
       Debug.Log($"[Unfinished] Completed! Spawned {result.actorKey}");
       Destroy(gameObject);
-      
+
       return result;
     }
   }

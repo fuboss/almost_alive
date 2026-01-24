@@ -24,6 +24,7 @@ MonoBehaviour:
   data:
     name: action_WanderAround
     cost: 1
+    benefit: 1
     strategy:
       rid: 365112727136371069
     preconditions: []
@@ -39,4 +40,4 @@ MonoBehaviour:
         visitPointsMinMax: {x: 1, y: 2}
         navMeshSamples: 5
         defaultWanderRadius: 15
-        debugWanderAroundCenter: 1
+        debugWanderAroundCenter: 0

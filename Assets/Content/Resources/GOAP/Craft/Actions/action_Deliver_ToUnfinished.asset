@@ -23,20 +23,17 @@ MonoBehaviour:
     SerializationNodes: []
   data:
     name: action_Deliver_ToUnfinished
-    cost: 2
-    benefit: 1.5
+    cost: 1
+    benefit: 1
     strategy:
       rid: 365113007176680161
     preconditions:
     - Transient_Is/UNFINISHED
-    - Craft_Unfinished_Has
     - Craft_Unfinished_Can_Deliver
     - Craft_Unfinished_Needs_Resources
-    - HasTransientTarget
     effects:
     - Craft_Unfinished_NoNeeds_Resources
     - Craft_Unfinished_Needs_Work
-    - Transient_Is/UNFINISHED
   references:
     version: 2
     RefIds:

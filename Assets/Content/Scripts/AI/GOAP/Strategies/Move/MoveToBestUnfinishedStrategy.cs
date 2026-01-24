@@ -21,7 +21,13 @@ namespace Content.Scripts.AI.GOAP.Strategies.Move {
     protected override MemorySnapshot GetTargetMemory() {
       var unfinished = ActorRegistry<UnfinishedActor>.all.FirstOrDefault();
       if (unfinished != null) {
-        return _agent.memory.RecallTarget(unfinished.actor);
+        //force recall to update memory
+        var snampshot = _agent.memory.RecallTarget(unfinished.actor);
+        if (snampshot == null) {
+          _agent.agentBrain.TryRemember(unfinished.actor, out var snapshot);
+          return snapshot;
+        }
+        return snampshot;
       }
 
       return null;

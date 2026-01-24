@@ -7,6 +7,7 @@ using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Work;
 using Sirenix.OdinInspector;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.AI;
 using VContainer;
@@ -61,7 +62,7 @@ namespace Content.Scripts.AI.GOAP.Agent {
         if (_transientTarget == value) return;
         _transientTarget = value;
         var nameOf = _transientTarget?.name ?? "NULL";
-        Debug.Log($"Agent new target {nameOf}", transientTarget);
+        //Debug.Log($"Agent new target {nameOf}", transientTarget);
       }
     }
 
@@ -156,6 +157,17 @@ namespace Content.Scripts.AI.GOAP.Agent {
       if (_simTime != null) {
         OnSimSpeedChanged(_simTime.currentSpeed);
       }
+
+      _inventory.OnItemAdded += OnInventoryAdd;
+      _inventory.OnItemRemoved += OnInventoryRemoved;
+    }
+
+    private void OnInventoryRemoved(InventorySlot slot) {
+      // Debug.LogError($"{name}Inventory removed item {slot.item?.name} count:{slot.count}", slot.inventory);
+    }
+
+    private void OnInventoryAdd(InventorySlot slot) {
+      // Debug.LogError($"{name}Inventory added item:{slot.item?.name} count:{slot.count}", slot.item);
     }
 
     private float GetRotation() {

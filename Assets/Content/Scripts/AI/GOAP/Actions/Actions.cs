@@ -35,7 +35,7 @@ namespace Content.Scripts.AI.GOAP.Actions {
       => preconditions.All(precondition => {
         var result = precondition.Evaluate(agent);
         if (!result)
-          Debug.LogError(
+          Debug.LogWarning(
             $"<b>{name}</b> precondition: <b>{precondition.name}</b>({precondition.GetType().Name}) failed",
             agent.agentBrain as UnityEngine.Object);
         return result;

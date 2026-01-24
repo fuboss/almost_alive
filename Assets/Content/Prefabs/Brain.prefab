@@ -122,20 +122,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.AI.GOAP.Agent.AgentBrain
   serializationData:
-    SerializedFormat: 2
-    SerializedBytes: 
+    SerializedFormat: 0
+    SerializedBytes: 2d010700000061006300740069006f006e0073002d010d00000067006f0061006c00540065006d0070006c006100740065007300
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes:
-    - Name: actions
-      Entry: 6
-      Data: 
-    - Name: goalTemplates
-      Entry: 6
-      Data: 
+    SerializationNodes: []
   availableFeatures:
   - Common_FeatureSet
   - Hunger_FeatureSet
@@ -157,6 +151,10 @@ MonoBehaviour:
     stuckThreshold: 2
     minMovement: 0.3
     replanCooldown: 3
+  _planLoopDetector:
+    _maxConsecutiveFailures: 3
+    _blockDuration: 5
+  _debugPlanning: 0
   _interruptionManager:
     _checkInterval: 0.5
     _sources: []
