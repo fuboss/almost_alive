@@ -29,6 +29,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1f8169b137eba4566a751cf4e8f06924, type: 2}
   - {fileID: 11400000, guid: 47df6b369491f4bdf8f1d85eb09be8c7, type: 2}
   - {fileID: 11400000, guid: 446dd306195c04413b4e19ab102daef3, type: 2}
+  - {fileID: 11400000, guid: ef89d824c505a438bb28c02b5915a467, type: 2}
   - {fileID: 11400000, guid: 5a9697afbc23042c49f3e7bb476f1cc7, type: 2}
   - {fileID: 11400000, guid: 3cea254cf15384bd69081ef7e44fa5ee, type: 2}
   - {fileID: 11400000, guid: 7544037b80afa40e49b1216b91445e5f, type: 2}
@@ -41,6 +42,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 451147614b3b14769b8b6c57c8d0ab95, type: 2}
   compositeBeliefs: []
   actionDatas:
+  - {fileID: 11400000, guid: 3a101843b14834b5cabdc1fb051a3c02, type: 2}
   - {fileID: 11400000, guid: 1ba4c10c12cc149f2974c0d0c6714f34, type: 2}
   - {fileID: 11400000, guid: 1525a3f1ada694125bd02ddc305aee45, type: 2}
   - {fileID: 11400000, guid: f501ff01340bf4258b87f86e5e1125d7, type: 2}

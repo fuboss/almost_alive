@@ -12,6 +12,7 @@ namespace Content.Scripts.Building.Services {
   public class ModulePlacementService {
     [Inject] private ActorCreationModule _actorCreation;
     [Inject] private IObjectResolver _resolver;
+    [Inject] private BuildingManagerConfigSO _config;
 
     #region Assignment (creates UnfinishedModuleActor)
 

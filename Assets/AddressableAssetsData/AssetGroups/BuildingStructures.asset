@@ -22,6 +22,13 @@ MonoBehaviour:
     - Actors
     - Structure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a714bfc3061124af5bfcee3eb9ba9cdb
+    m_Address: littleCamp_structure
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    - Structure
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
   m_SchemaSet:

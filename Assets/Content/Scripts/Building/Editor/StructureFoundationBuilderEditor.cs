@@ -4,22 +4,170 @@ using System.IO;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.EditorUtilities;
 using Content.Scripts.Descriptors.Tags;
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
 
 namespace Content.Scripts.Building.Editor {
   [CustomEditor(typeof(StructureFoundationBuilder))]
-  public class StructureFoundationBuilderEditor : UnityEditor.Editor {
+  public class StructureFoundationBuilderEditor : OdinEditor {
     private const string PrefabsPath = "Assets/Content/Prefabs/BuildingStructures";
-    private const string AddressableGroupName = "BuildingStructures";  // addressable group
+    private const string AddressableGroupName = "BuildingStructures";
     private const string StructureLabel = "Structure";
 
     private StructureFoundationBuilder _builder;
     private SlotType _createSlotsType = SlotType.Utility;
+    private SlotType _paintSlotType = SlotType.Utility;
+    private bool _paintMode;
+    private Vector2Int _hoveredCell = new(-1, -1);
 
-    private void OnEnable() {
+    private static readonly Color HoverColor = new(1f, 1f, 1f, 0.3f);
+    private static readonly Color HoverOccupiedColor = new(1f, 0.3f, 0.3f, 0.3f);
+
+    protected override void OnEnable() {
+      base.OnEnable();
       _builder = (StructureFoundationBuilder)target;
+      SceneView.duringSceneGui += OnSceneGUI;
+    }
+
+    protected override void OnDisable() {
+      base.OnDisable();
+      SceneView.duringSceneGui -= OnSceneGUI;
+    }
+
+    private void OnSceneGUI(SceneView sceneView) {
+      if (_builder == null || !_paintMode) return;
+
+      HandleUtility.AddDefaultControl(GUIUtility.GetControlID(FocusType.Passive));
+
+      var e = Event.current;
+      var ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+
+      var groundPlane = new Plane(Vector3.up, _builder.transform.position);
+      if (!groundPlane.Raycast(ray, out var distance)) return;
+
+      var hitPoint = ray.GetPoint(distance);
+      var cell = _builder.WorldToCell(hitPoint);
+
+      _hoveredCell = _builder.IsCellInBounds(cell.x, cell.y) ? cell : new Vector2Int(-1, -1);
+
+      if (_hoveredCell.x >= 0) {
+        DrawCellHighlight(_hoveredCell);
+
+        if (e.type == EventType.MouseDown && e.button == 0) {
+          e.Use();
+          HandleCellClick(_hoveredCell, e.shift);
+        }
+        else if (e.type == EventType.MouseDown && e.button == 1) {
+          e.Use();
+          RemoveSlotAtCell(_hoveredCell);
+        }
+      }
+
+      HandleHotkeys(e);
+      DrawPaintModeOverlay();
+      sceneView.Repaint();
+    }
+
+    private void DrawCellHighlight(Vector2Int cell) {
+      var cellSize = World.Grid.WorldGrid.cellSize;
+      var cellMin = _builder.transform.position + new Vector3(cell.x * cellSize, 0.02f, cell.y * cellSize);
+      var cellMax = cellMin + new Vector3(cellSize, 0, cellSize);
+      var cellCenter = (cellMin + cellMax) * 0.5f;
+
+      var existingSlot = _builder.GetSlotAtCell(cell.x, cell.y);
+      var color = existingSlot != null ? HoverOccupiedColor : HoverColor;
+
+      Handles.color = color;
+      Handles.DrawSolidRectangleWithOutline(
+        new[] { cellMin, new Vector3(cellMax.x, cellMin.y, cellMin.z), cellMax, new Vector3(cellMin.x, cellMin.y, cellMax.z) },
+        color,
+        Color.white
+      );
+
+      if (existingSlot != null) {
+        Handles.Label(cellCenter + Vector3.up * 0.3f, $"[{existingSlot.type}]\nRight-click to remove", EditorStyles.whiteBoldLabel);
+      }
+      else {
+        Handles.Label(cellCenter + Vector3.up * 0.3f, $"Click to place {_paintSlotType}", EditorStyles.whiteBoldLabel);
+      }
+    }
+
+    private void HandleCellClick(Vector2Int cell, bool shiftHeld) {
+      var existingSlot = _builder.GetSlotAtCell(cell.x, cell.y);
+
+      if (shiftHeld && existingSlot != null) {
+        RemoveSlotAtCell(cell);
+      }
+      else if (existingSlot == null) {
+        AddSlotAtCell(cell);
+      }
+      else {
+        CycleSlotType(existingSlot);
+      }
+    }
+
+    private void AddSlotAtCell(Vector2Int cell) {
+      Undo.RecordObject(_builder, "Add Slot");
+      _builder.AddSlotAtCell(cell.x, cell.y, _paintSlotType);
+      EditorUtility.SetDirty(_builder);
+    }
+
+    private void RemoveSlotAtCell(Vector2Int cell) {
+      Undo.RecordObject(_builder, "Remove Slot");
+      if (_builder.RemoveSlotAtCell(cell.x, cell.y)) {
+        EditorUtility.SetDirty(_builder);
+      }
+    }
+
+    private void CycleSlotType(SlotDefinition slot) {
+      Undo.RecordObject(_builder, "Cycle Slot Type");
+      var values = System.Enum.GetValues(typeof(SlotType));
+      var index = System.Array.IndexOf(values, slot.type);
+      slot.type = (SlotType)values.GetValue((index + 1) % values.Length);
+      EditorUtility.SetDirty(_builder);
+    }
+
+    private void HandleHotkeys(Event e) {
+      if (e.type != EventType.KeyDown) return;
+
+      var handled = true;
+      switch (e.keyCode) {
+        case KeyCode.Alpha1: _paintSlotType = SlotType.Sleeping; break;
+        case KeyCode.Alpha2: _paintSlotType = SlotType.Production; break;
+        case KeyCode.Alpha3: _paintSlotType = SlotType.Storage; break;
+        case KeyCode.Alpha4: _paintSlotType = SlotType.Utility; break;
+        case KeyCode.Alpha5: _paintSlotType = SlotType.Entertainment; break;
+        case KeyCode.Escape: _paintMode = false; break;
+        default: handled = false; break;
+      }
+
+      if (handled) {
+        e.Use();
+        Repaint();
+      }
+    }
+
+    private void DrawPaintModeOverlay() {
+      Handles.BeginGUI();
+
+      var rect = new Rect(10, 10, 220, 120);
+      GUI.Box(rect, GUIContent.none, EditorStyles.helpBox);
+
+      GUILayout.BeginArea(new Rect(15, 15, 210, 110));
+      GUILayout.Label("🎨 Slot Paint Mode", EditorStyles.boldLabel);
+      GUILayout.Space(5);
+      GUILayout.Label($"Type: {_paintSlotType}", EditorStyles.label);
+      GUILayout.Label("LMB: Place | RMB/Shift+LMB: Remove", EditorStyles.miniLabel);
+      GUILayout.Label("1-5: Select type | Esc: Exit", EditorStyles.miniLabel);
+      GUILayout.Space(5);
+      if (GUILayout.Button("Exit Paint Mode", GUILayout.Height(20))) {
+        _paintMode = false;
+      }
+      GUILayout.EndArea();
+
+      Handles.EndGUI();
     }
 
     public override void OnInspectorGUI() {
@@ -28,6 +176,31 @@ namespace Content.Scripts.Building.Editor {
 
       EditorGUILayout.Space(10);
       EditorGUILayout.LabelField("Tools", EditorStyles.boldLabel);
+
+      // Paint Mode toggle
+      EditorGUILayout.BeginHorizontal();
+      
+      var paintModeStyle = new GUIStyle(GUI.skin.button);
+      if (_paintMode) {
+        GUI.backgroundColor = new Color(0.3f, 0.8f, 0.3f);
+        paintModeStyle.fontStyle = FontStyle.Bold;
+      }
+      
+      if (GUILayout.Button(_paintMode ? "🎨 Paint Mode ON" : "🎨 Paint Mode", paintModeStyle, GUILayout.Height(28))) {
+        _paintMode = !_paintMode;
+        SceneView.RepaintAll();
+      }
+      GUI.backgroundColor = Color.white;
+      
+      _paintSlotType = (SlotType)EditorGUILayout.EnumPopup(_paintSlotType, GUILayout.Width(100), GUILayout.Height(28));
+      
+      EditorGUILayout.EndHorizontal();
+
+      if (_paintMode) {
+        EditorGUILayout.HelpBox("Click cells in Scene view to place slots.\nShift+Click or Right-Click to remove.\nKeys 1-5 to select type. Esc to exit.", MessageType.Info);
+      }
+
+      EditorGUILayout.Space(5);
 
       // Row 1: Snap + Add Slot
       EditorGUILayout.BeginHorizontal();

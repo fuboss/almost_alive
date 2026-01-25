@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 311344726571638031}
   - component: {fileID: 1783275774593785743}
   - component: {fileID: -8112423209105562636}
+  - component: {fileID: -366894199337648746}
+  - component: {fileID: 2966097210715679594}
   m_Layer: 0
   m_Name: wallDoorway
   m_TagString: Untagged
@@ -72,6 +74,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.StructurePartDescription
   wallType: 1
   description: 
+--- !u!114 &-366894199337648746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848705470400202011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc51f81abd8fc423bad15d76526be3cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.StructureCutoutController
+  _settings: {fileID: 0}
+  _targetRenderers: []
+  _targetIntensity: 0
+  _cutoutCenter: {x: 0, y: 0, z: 0}
+  _cutoutRadius: 5
+--- !u!114 &2966097210715679594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848705470400202011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c42c994140334591a79d311e2c78e35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.Visuals.StructureDecoration
+  visibilityMode: 1
+  constructionThreshold: 0.896
+  requiredModuleTag: 
+  animate: 1
+  fadeDuration: 0.5
 --- !u!1001 &1970098180308783812
 PrefabInstance:
   m_ObjectHideFlags: 0

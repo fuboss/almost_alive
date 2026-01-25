@@ -2,13 +2,17 @@ using System.Collections.Generic;
 using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.Building.Data;
+using Content.Scripts.Building.Services.Visuals;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using VContainer;
 
 namespace Content.Scripts.Building.Runtime {
   public class UnfinishedStructureActor : UnfinishedActorBase {
+    [Inject] private StructureVisualsModule _visualsModule;
+    
     [Title("Definition")] [ShowInInspector, ReadOnly]
     private StructureDefinitionSO _definition;
 
@@ -30,6 +34,25 @@ namespace Content.Scripts.Building.Runtime {
 
     public void SetGhostView(GameObject ghost) {
       _ghostView = ghost;
+    }
+
+    public override bool AddWork(float amount) {
+      var wasComplete = workComplete;
+      var hadProgress = _workProgress > 0f;
+      
+      var result = base.AddWork(amount);
+      
+      // Disable ghost on first work
+      if (!hadProgress && _workProgress > 0f && _ghostView != null && _ghostView.activeSelf) {
+        _ghostView.SetActive(false);
+      }
+      
+      // Mark dirty for visuals update
+      if (!wasComplete) {
+        _visualsModule?.MarkDirty(this);
+      }
+      
+      return result;
     }
 
     public override ActorDescription TryComplete() {

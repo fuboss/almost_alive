@@ -10,6 +10,7 @@ namespace Content.Scripts.Building.Runtime {
     public int index;
     public WallSegmentType type;
     public GameObject instance;
+    public Transform sideContainer;
 
     public WallSegment(WallSide side, int index, WallSegmentType type = WallSegmentType.Solid) {
       this.side = side;

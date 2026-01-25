@@ -42,7 +42,7 @@ MonoBehaviour:
       Data: WOOD
     - Name: count
       Entry: 3
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 8
       Data: 
@@ -54,7 +54,7 @@ MonoBehaviour:
       Data: STONE
     - Name: count
       Entry: 3
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -79,5 +79,4 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  isCampRecipe: 1
-  campBuildPriority: 49
+  buildPriority: 0

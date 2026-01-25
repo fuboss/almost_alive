@@ -87,7 +87,8 @@ MonoBehaviour:
     isInterior: 1
     startsLocked: 0
   coreModule: {fileID: 11400000, guid: b717e4bcc016341efb45175ba46ba98c, type: 2}
-  coreModuleSlotIds: []
+  coreModuleSlotIds:
+  - slot_1_0
   entryDirections: -1
   stairsPrefab: {fileID: 4590713513075860519, guid: 692f3ec527bac4297a4430fdb3e6c5aa, type: 3}
   navMeshLinkPrefab: {fileID: 3690033036347875673, guid: a8459d36ac22c4905b81d0e2c5bdd58f, type: 3}
@@ -96,3 +97,10 @@ MonoBehaviour:
   passageWallPrefab: {fileID: 5251156377760183539, guid: d5cf4e461747f4e2388ac881c1904cf8, type: 3}
   maxStairsHeight: 2
   supportPrefab: {fileID: 6801685095816586767, guid: 69edabb32dc104fd9b1215ec865ff61b, type: 3}
+  snapPoints:
+  - side: 0
+    segmentIndex: 0
+    expandFootprint: {x: 1, y: 1}
+    allowedExpansions:
+    - {fileID: 11400000}
+  canBeExpansion: 1

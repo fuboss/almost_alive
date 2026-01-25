@@ -148,7 +148,7 @@ MonoBehaviour:
       noiseScale: 0.02
       noiseStrength: 0.3
     - prototype: {fileID: 11400000, guid: 238d5f558887f47f29dcb017ab096475, type: 2}
-      density: 0.795
+      density: 1
       coverage: 3
       slopeFalloff:
         serializedVersion: 2
@@ -200,10 +200,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       allowedTerrainLayers: 
       useNoise: 1
-      noiseScale: 0.02
-      noiseStrength: 0.3
+      noiseScale: 0.0454
+      noiseStrength: 0.735
     - prototype: {fileID: 11400000, guid: d269002decf934121abf91c34ac8270e, type: 2}
-      density: 0.824
+      density: 1
       coverage: 2.61
       slopeFalloff:
         serializedVersion: 2
@@ -255,10 +255,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       allowedTerrainLayers: 
       useNoise: 1
-      noiseScale: 0.02
-      noiseStrength: 0.3
+      noiseScale: 0.0572
+      noiseStrength: 0.683
     - prototype: {fileID: 11400000, guid: 4c5c73f0e0acf46caa5ad09298cc393b, type: 2}
-      density: 0.832
+      density: 0.984
       coverage: 1.72
       slopeFalloff:
         serializedVersion: 2
@@ -313,7 +313,7 @@ MonoBehaviour:
       noiseScale: 0.02
       noiseStrength: 0.3
     - prototype: {fileID: 11400000, guid: 988224f55253b402aa6e83874a386ef8, type: 2}
-      density: 0.839
+      density: 0.901
       coverage: 2.33
       slopeFalloff:
         serializedVersion: 2
@@ -423,8 +423,8 @@ MonoBehaviour:
       noiseScale: 0.02
       noiseStrength: 0.3
     - prototype: {fileID: 11400000, guid: 8387860a831d7439c91b648f748a7224, type: 2}
-      density: 0.5
-      coverage: 1.32
+      density: 0.794
+      coverage: 1.92
       slopeFalloff:
         serializedVersion: 2
         m_Curve:
@@ -475,7 +475,7 @@ MonoBehaviour:
         m_RotationOrder: 4
       allowedTerrainLayers: 
       useNoise: 1
-      noiseScale: 0.02
-      noiseStrength: 0.3
+      noiseScale: 0.0478
+      noiseStrength: 0.653
     densityMultiplier: 4
     maxDensityPerCell: 30

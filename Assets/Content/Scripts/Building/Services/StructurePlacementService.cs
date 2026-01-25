@@ -9,16 +9,17 @@ namespace Content.Scripts.Building.Services {
   /// Handles terrain positioning and ghost preview for structure placement.
   /// </summary>
   public class StructurePlacementService {
+    [Inject] private BuildingManagerConfigSO _config;
     [Inject] [Key("ghostMaterial")] private Material _ghostMaterial;
 
     /// <summary>
     /// Calculate structure position on terrain (at max height within footprint).
     /// </summary>
-    public Vector3 CalculateStructurePosition(Vector3 targetPos, Vector2Int footprint, Terrain terrain) {
+    public Vector3 CalculateStructurePosition(Vector3 targetPos, Vector2Int footprint, Terrain terrain, float heightOffset = 0f) {
       if (terrain == null) return targetPos;
 
-      var maxHeight = GetMaxTerrainHeight(targetPos, footprint, terrain);
-     
+      var maxHeight = GetMaxTerrainHeight(targetPos + Vector3.up * heightOffset, footprint, terrain);
+
       return new Vector3(targetPos.x, maxHeight, targetPos.z);
     }
 
@@ -38,6 +39,7 @@ namespace Content.Scripts.Building.Services {
           maxHeight = Mathf.Max(maxHeight, height);
         }
       }
+
       maxHeight += 0.5f;
       return maxHeight;
     }

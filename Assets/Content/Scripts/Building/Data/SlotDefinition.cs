@@ -31,7 +31,7 @@ namespace Content.Scripts.Building.Data {
     public bool startsLocked;
 
 #if UNITY_EDITOR
-    private IEnumerable<string> Tags() => Tag.ALL_TAGS;
+    private string[] Tags() => Tag.ALL_TAGS;
 #endif
   }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Content.Scripts.Building.Data.Expansion;
 using Content.Scripts.Building.Runtime;
 using Content.Scripts.Descriptors.Tags;
 using Sirenix.OdinInspector;
@@ -19,6 +20,10 @@ namespace Content.Scripts.Building.Data {
     [Title("Identity")]
     [Tooltip("Unique structure identifier")]
     public string structureId;
+    
+    [Tooltip("Structure type - defines what components are generated")]
+    [EnumToggleButtons]
+    public StructureType structureType = StructureType.Enclosed;
 
     [Title("Footprint")]
     [Tooltip("Grid size in cells (X, Z)")]
@@ -38,7 +43,7 @@ namespace Content.Scripts.Building.Data {
 
     [Title("Slots")]
     [Tooltip("Available slots for modules")]
-    [TableList(ShowIndexLabels = true, AlwaysExpanded = true)]
+    [TableList(ShowIndexLabels = true)]
     public SlotDefinition[] slots;
 
     [Title("Core Module")]
@@ -85,6 +90,13 @@ namespace Content.Scripts.Building.Data {
     [Tooltip("Prefab for procedural supports under foundation")]
     [AssetsOnly]
     public GameObject supportPrefab;
+    
+    [Title("Expansion")]
+    [Tooltip("Snap points where other structures can attach")]
+    public SnapPoint[] snapPoints = System.Array.Empty<SnapPoint>();
+    
+    [Tooltip("Can this structure be used as expansion?")]
+    public bool canBeExpansion = false;
 
     // TODO Phase 9: Expansion system
     // public ExpansionDefinition[] expansions;

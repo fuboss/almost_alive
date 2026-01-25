@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d5a90cdd35124529aafc95ff32f6e73, type: 3}
+  m_Name: littleCamp_definition
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Data.StructureDefinitionSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  structureId: littleCamp_structure
+  structureType: 1
+  footprint: {x: 5, y: 6}
+  foundationPrefab: {fileID: 527142586765427795, guid: a714bfc3061124af5bfcee3eb9ba9cdb, type: 3}
+  constructionData:
+    _requiredResources:
+    - tag: WOOD
+      count: 2
+    - tag: STONE
+      count: 1
+    workRequired: 10
+  slots:
+  - slotId: 2-3 Fireplace
+    type: 3
+    localPosition: {x: 2.5, y: 0, z: 3.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 0}
+    acceptedModuleTags:
+    - FIREPLACE
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_1_2
+    type: 0
+    localPosition: {x: 1.5, y: 0, z: 2.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_1_1
+    type: 0
+    localPosition: {x: 1.5, y: 0, z: 1.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_0_1
+    type: 0
+    localPosition: {x: 0.5, y: 0, z: 1.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_0_2
+    type: 0
+    localPosition: {x: 0.5, y: 0, z: 2.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_0_3
+    type: 0
+    localPosition: {x: 0.5, y: 0, z: 3.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_3_2
+    type: 2
+    localPosition: {x: 3.5, y: 0, z: 2.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_4_3
+    type: 2
+    localPosition: {x: 4.5, y: 0, z: 3.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_4_2
+    type: 2
+    localPosition: {x: 4.5, y: 0, z: 2.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_4_1
+    type: 2
+    localPosition: {x: 4.5, y: 0, z: 1.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_3_1
+    type: 2
+    localPosition: {x: 3.5, y: 0, z: 1.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_3_5
+    type: 3
+    localPosition: {x: 3.5, y: 0, z: 5.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_4_5
+    type: 3
+    localPosition: {x: 4.5, y: 0, z: 5.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_4_4
+    type: 3
+    localPosition: {x: 4.5, y: 0, z: 4.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_0_5
+    type: 1
+    localPosition: {x: 0.5, y: 0, z: 5.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_1_5
+    type: 1
+    localPosition: {x: 1.5, y: 0, z: 5.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_2_5
+    type: 1
+    localPosition: {x: 2.5, y: 0, z: 5.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  - slotId: slot_0_4
+    type: 1
+    localPosition: {x: 0.5, y: 0, z: 4.5}
+    localRotation: {x: 0, y: 0, z: 0, w: 1}
+    acceptedModuleTags: []
+    isInterior: 0
+    startsLocked: 0
+  coreModule: {fileID: 11400000, guid: b717e4bcc016341efb45175ba46ba98c, type: 2}
+  coreModuleSlotIds:
+  - 2-3 Fireplace
+  entryDirections: 15
+  stairsPrefab: {fileID: 0}
+  navMeshLinkPrefab: {fileID: 0}
+  solidWallPrefab: {fileID: 0}
+  doorwayWallPrefab: {fileID: 0}
+  passageWallPrefab: {fileID: 0}
+  maxStairsHeight: 3
+  supportPrefab: {fileID: 0}
+  snapPoints:
+  - side: 0
+    segmentIndex: 0
+    expandFootprint: {x: 6, y: 2}
+    allowedExpansions:
+    - {fileID: 0}
+  canBeExpansion: 1

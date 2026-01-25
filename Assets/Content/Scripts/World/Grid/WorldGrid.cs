@@ -243,5 +243,28 @@ namespace Content.Scripts.World.Grid {
     }
 
     #endregion
+
+    #region Snapping
+
+    /// <summary>
+    /// Snap world position to grid alignment.
+    /// X and Z are aligned to cellSize grid, Y remains unchanged.
+    /// </summary>
+    public static Vector3 SnapToGrid(Vector3 worldPosition) {
+      var snappedX = Mathf.Floor(worldPosition.x / cellSize) * cellSize;
+      var snappedZ = Mathf.Floor(worldPosition.z / cellSize) * cellSize;
+      return new Vector3(snappedX, worldPosition.y, snappedZ);
+    }
+
+    /// <summary>
+    /// Snap world position to grid cell center.
+    /// </summary>
+    public static Vector3 SnapToGridCenter(Vector3 worldPosition) {
+      var snappedX = Mathf.Floor(worldPosition.x / cellSize) * cellSize + cellSize * 0.5f;
+      var snappedZ = Mathf.Floor(worldPosition.z / cellSize) * cellSize + cellSize * 0.5f;
+      return new Vector3(snappedX, worldPosition.y, snappedZ);
+    }
+
+    #endregion
   }
 }

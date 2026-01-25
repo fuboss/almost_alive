@@ -25,6 +25,7 @@
 | INVENTORY_CRAFT.md | Items, storage, recipes |
 | CAMP.md | Camp system (legacy) |
 | BUILDING.md (GD_DOC) | Smart Blueprints building system |
+| **WFC_BUILDING_CONCEPT.md** | 🆕 WFC процедурная генерация структур |
 
 ---
 
@@ -58,14 +59,23 @@ WorldModule           // World generation
 
 ## Current Focus
 
+### WFC Building Generation 🆕
+See: `Docs/WFC_BUILDING_CONCEPT.md`
+
+Phase 1 - Foundation:
+- [ ] WFCTile, WFCTileSetSO data classes
+- [ ] WFCSimpleSolver (footprint generation)
+- [ ] Socket system for walls
+- [ ] Editor preview tool
+
 ### Building System (Smart Blueprints)
 See: `GD_DOC/BUILDING.md`, `GD_DOC/BUILDING_DEVPLAN.md`
 
-Phase 1 in progress:
-- [ ] StructureDefinitionSO
-- [ ] SlotDefinition
-- [ ] ModuleDefinitionSO
-- [ ] SlotType enum
+Core complete:
+- [x] StructureDefinitionSO
+- [x] SlotDefinition
+- [x] ModuleDefinitionSO
+- [x] SlotType enum
 
 ### Deferred
 

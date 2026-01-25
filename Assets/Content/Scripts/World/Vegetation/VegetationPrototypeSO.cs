@@ -52,6 +52,11 @@ namespace Content.Scripts.World.Vegetation {
     /// </summary>
     /// <param name="layerCoverageDensity"></param>
     public DetailPrototype ToDetailPrototype(float layerCoverageDensity) {
+      var r = prefab.GetComponent<Renderer>();
+      if(r == null) {
+        return null;
+      }
+      
       var prototype = new DetailPrototype {
         renderMode = renderMode,
         usePrototypeMesh = prefab != null,

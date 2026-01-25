@@ -136,8 +136,8 @@ MonoBehaviour:
         m_RotationOrder: 4
       allowedTerrainLayers: 
       useNoise: 1
-      noiseScale: 0.02
-      noiseStrength: 0.3
+      noiseScale: 0.0538
+      noiseStrength: 0.749
     - prototype: {fileID: 11400000, guid: 238d5f558887f47f29dcb017ab096475, type: 2}
       density: 0.868
       coverage: 3
@@ -246,8 +246,8 @@ MonoBehaviour:
         m_RotationOrder: 4
       allowedTerrainLayers: 
       useNoise: 1
-      noiseScale: 0.02
-      noiseStrength: 0.3
+      noiseScale: 0.056
+      noiseStrength: 0.726
     - prototype: {fileID: 11400000, guid: 086594b9bad5b48489779d798f274165, type: 2}
       density: 0.759
       coverage: 1.92
@@ -468,5 +468,225 @@ MonoBehaviour:
       useNoise: 1
       noiseScale: 0.02
       noiseStrength: 0.3
-    densityMultiplier: 1
-    maxDensityPerCell: 15
+    - prototype: {fileID: 11400000, guid: 649fe456c0d734ac5811e07e2beb17a0, type: 2}
+      density: 0.061
+      coverage: 0.28
+      slopeFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: -0.022222223
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 45
+          value: 0
+          inSlope: -0.022222223
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      heightFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 200
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      allowedTerrainLayers: 
+      useNoise: 1
+      noiseScale: 0.02
+      noiseStrength: 0.3
+    - prototype: {fileID: 11400000, guid: a04901e05a50248858398160c17a949a, type: 2}
+      density: 0.106
+      coverage: 0.4
+      slopeFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: -0.022222223
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 45
+          value: 0
+          inSlope: -0.022222223
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      heightFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 200
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      allowedTerrainLayers: 
+      useNoise: 1
+      noiseScale: 0.02
+      noiseStrength: 0.3
+    - prototype: {fileID: 11400000, guid: 6e0439072522342d59b96ae09ab752bb, type: 2}
+      density: 0.117
+      coverage: 0.59
+      slopeFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: -0.022222223
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 45
+          value: 0
+          inSlope: -0.022222223
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      heightFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 200
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      allowedTerrainLayers: 
+      useNoise: 1
+      noiseScale: 0.02
+      noiseStrength: 0.3
+    - prototype: {fileID: 11400000, guid: 09c8132956a494c999201cd826c5eabc, type: 2}
+      density: 0.277
+      coverage: 0.46
+      slopeFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: -0.022222223
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 45
+          value: 0
+          inSlope: -0.022222223
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      heightFalloff:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 200
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      allowedTerrainLayers: 
+      useNoise: 1
+      noiseScale: 0.02
+      noiseStrength: 0.3
+    densityMultiplier: 2.3
+    maxDensityPerCell: 23

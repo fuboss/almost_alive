@@ -33,10 +33,11 @@ MonoBehaviour:
     - JobComplete
     - Remembers_Nearby/WOOD
     - Job_NotRequired_WoodCutting
+    - Remember_Nearby_CraftResource
   references:
     version: 2
     RefIds:
     - rid: 365113004158353539
       type: {class: CutTheTreeStrategy, ns: Content.Scripts.AI.GOAP.Strategies, asm: Assembly-CSharp}
       data:
-        duration: 3
+        workRate: 2

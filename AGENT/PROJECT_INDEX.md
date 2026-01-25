@@ -1,154 +1,219 @@
-### DebugPanel (NEW)
-```
-Assets/Content/Scripts/DebugPanel/
-├── Actions/           — SpawnActorAction, SpawnStructureAction, DestroyActorAction, etc.
-├── DebugModule.cs     — Main controller, action registry, input handling
-├── DebugPanelUI.cs    — UI building, category dropdowns
-├── DebugActionRegistry.cs — Action storage by category
-├── DebugEnums.cs      — DebugState, DebugCategory, DebugActionType
-└── IDebugAction.cs    — Action interface
-```
+# Project Index - Almost Alive
 
-# Project Index
+## Project Overview
+**Type:** 3D Colony Simulation (RimWorld-inspired)
+**Engine:** Unity 2022+
+**Stack:** C# + VContainer + Odin + DOTween + UniTask + Addressables
 
-> Последнее обновление: 2025-01-23
+## Directory Structure
 
-## Быстрые ссылки
-
-| Категория | Путь |
-|-----------|------|
-| Scripts | `Assets/Content/Scripts/` |
-| Prefabs | `Assets/Content/Prefabs/` |
-| Configs (SO) | `Assets/Content/Configs/` |
-| UI Assets | `Assets/Content/UI/` |
-| Scenes | `Assets/Content/Scenes/` |
-| Editor Tools | `Assets/Content/Scripts/Editor/` |
-| Technical Docs | `AGENT/Docs/` |
-| Game Design Docs | `AGENT/GD_DOC/` |
-| AI Notes | `AGENT/AI_NOTES.md` |
-
-## Documentation
-
-### Technical Docs (`AGENT/Docs/`)
-
-| File | Topic |
-|------|-------|
-| ARCHITECTURE.md | Core systems, patterns |
-| GOAP.md | Beliefs, actions, planning |
-| NAVIGATION.md | NavMesh, stuck detection |
-| ANIMALS.md | Animal agents, herding |
-| INTERFACE_DECOMPOSITION.md | Agent interfaces |
-| WORLD_GENERATION.md | Biomes, terrain, scatters |
-| INVENTORY_CRAFT.md | Items, storage, recipes |
-| CAMP.md | Camp system (legacy) |
-| REFACTORING_IDEAS.md | Pending refactoring |
-| UNITY_CONVENTIONS.md | Unity folder restrictions, gotchas |
-
-### Game Design Docs (`AGENT/GD_DOC/`)
-
-| File | Topic | Status |
-|------|-------|--------|
-| GDD.md | Project overview | 🟢 Active |
-| BUILDING.md | Smart Blueprints system | 🟡 Design |
-| BUILDING_DEVPLAN.md | Building dev plan | 🟡 Phase 1 |
-| COLONISTS.md | Colonist systems | 🔴 Not started |
-| STORYTELLER.md | Event system | 🔴 Not started |
-| IDEAS_GD.md | GD proposals | 🟢 Active |
-| IDEAS_NIKITA.md | Your ideas | 🟢 Active |
-
-## Структура Scripts
-
-### AI
-```
-Assets/Content/Scripts/AI/
-├── GOAP/               — GOAP система (агенты, действия, цели, планировщик)
-│   ├── Beliefs/Structure/  — Structure beliefs (NEW)
-│   └── Strategies/Structure/ — Structure strategies (NEW)
-├── Animals/            — AI животных
-├── Camp/               — Логика лагеря (DEPRECATED)
-├── Craft/              — Система крафта (AI часть)
-├── Navigation/         — Навигация
-└── Utility/            — AI утилиты
-```
-
-### Building (NEW)
-```
-Assets/Content/Scripts/Building/
-├── Data/               — StructureDefinitionSO, ModuleDefinitionSO, ConstructionData, enums
-├── Editor/            — Custom Editors
-├── EditorUtilities/   — StructureFoundationBuilder
-├── Runtime/           — Structure, UnfinishedStructure, Slot, Module, WallSegment, EntryPoint
-├── Services/          — StructuresModule, PlacementService, ConstructionService
-└── BuildingConstants.cs
-```
-
-### Core
-```
-Assets/Content/Scripts/Core/
-├── Simulation/         — SimulationLoop, SimulationTimeController
-├── Environment/        — Окружение
-└── (root)              — IPrefabFactory, StaticReset система
-```
-
-### Game
-```
-Assets/Content/Scripts/Game/
-├── Camera/             — Камера
-├── Craft/              — Система крафта (игровая часть)
-├── Interaction/        — Взаимодействия
-├── Storage/            — Хранилища
-├── Trees/              — Деревья
-├── Work/               — Система работ
-└── AgentContainerModule.cs — Контейнер агентов
-```
-
-### UI
-```
-Assets/Content/Scripts/Ui/
-└── UiModule.cs         — Управление UI слоями
-```
-
-### Utility
-```
-Assets/Content/Scripts/Utility/
-└── (утилиты общего назначения)
-```
-
-### Other
 ```
 Assets/Content/Scripts/
-├── Animation/          — Анимационные скрипты
-├── DebugPanel/         — Дебаг панель
-├── Descriptors/        — Дескрипторы
-├── Docs/               — Документация в коде
-├── Editor/             — Editor скрипты и окна
-├── World/              — Мир
-└── GameScope.cs        — VContainer главный scope
+├── AI/                        # AI systems (GOAP, Navigation, Craft)
+├── Building/                  # Building system
+│   ├── Data/                  # ScriptableObjects, data structures
+│   │   ├── Expansion/         # Expansion system (SnapPoint, StructureConnection)
+│   │   ├── StructureDefinitionSO.cs
+│   │   ├── ModuleDefinitionSO.cs
+│   │   └── BuildingConstants.cs
+│   ├── Runtime/               # Runtime components
+│   │   ├── Visuals/           # Visual management (decorations)
+│   │   ├── Structure.cs
+│   │   ├── UnfinishedStructureActor.cs
+│   │   ├── Slot.cs
+│   │   └── Module.cs
+│   ├── Services/              # Services (stateless logic)
+│   │   ├── Visuals/           # Visual strategies
+│   │   ├── StructurePlacementService.cs
+│   │   ├── StructureConstructionService.cs
+│   │   └── StructureExpansionService.cs
+│   └── Editor/                # Editor tools
+├── Core/                      # Core systems
+├── Descriptors/               # Actor/Tag descriptors
+├── Game/                      # Game-level systems
+│   └── Craft/                 # Crafting system
+└── World/                     # World systems
+    └── Grid/                  # WorldGrid, GroundCoord
+
 ```
 
-## Ключевые классы
+## Dependency Injection (VContainer)
 
-| Класс | Путь | Описание |
-|-------|------|----------|
-| GOAPAgent | `Scripts/AI/GOAP/Agent/GOAPAgent.cs` | Главный компонент AI агента |
-| AgentBrain | `Scripts/AI/GOAP/Agent/AgentBrain.cs` | Мозг агента (планирование) |
-| AgentBody | `Scripts/AI/GOAP/Agent/AgentBody.cs` | Тело агента (визуал, статы) |
-| UiModule | `Scripts/Ui/UiModule.cs` | Управление UI слоями |
-| GameScope | `Scripts/GameScope.cs` | VContainer DI scope |
+**ROOT SCOPE:** `Assets/Resources/GameScope.prefab`  
+**SCRIPT:** `Assets/Content/Scripts/GameScope.cs`
 
-## Configs (ScriptableObjects)
+### Registration Pattern
 
-| Тип | Путь | Описание |
-|-----|------|----------|
-| AgentStatSetSO | `Configs/` | Наборы статов агентов |
-| (TODO) | — | Добавлять по мере обнаружения |
+```csharp
+protected override void Configure(IContainerBuilder builder) {
+    // Singleton service
+    builder.Register<MyService>(Lifetime.Singleton).AsSelf();
+    
+    // Interface + Self
+    builder.Register<MyModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+    
+    // EntryPoint (ITickable/IStartable)
+    builder.RegisterEntryPoint<MyTickableModule>().AsSelf();
+    
+    // Instance (SO/config)
+    builder.RegisterInstance(myConfig).AsSelf();
+    
+    // Keyed dependency
+    builder.RegisterInstance(material).Keyed("ghostMaterial").AsSelf();
+}
+```
 
-## Editor Tools
+### Adding New Services
 
-| Окно | Путь | Описание |
-|------|------|----------|
-| (TODO) | `Scripts/Editor/` | Добавлять по мере обнаружения |
+1. Open `GameScope.cs`
+2. Add using for your service namespace
+3. Add registration in appropriate section:
+   - **Simulation** - SimulationLoop, TimeController
+   - **Environment** - World, Navigation, Trees, Animals
+   - **Building** - Structure services
+   - **AI** - GOAP, Agents
+   - **UI** - UI modules
 
----
+**Example (Building Service):**
+```csharp
+// Building section
+builder.Register<StructureVisualsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+builder.Register<LinearProgressionStrategy>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+```
 
-*Обновлять при изменении структуры проекта. См. `AGENT/skills/unity-code-expert/references/project-index-guide.md`*
+## Building System Architecture
+
+### Core Types
+
+**Structure Types:**
+- `Enclosed` - Full structure with walls, roof, supports, entries
+- `Open` - Outdoor structures without walls (camps, plazas)
+
+**Structure States:**
+```csharp
+enum StructureState {
+    BLUEPRINT,
+    UNDER_CONSTRUCTION,
+    BUILT,
+    DAMAGED,
+    DESTROYED
+}
+```
+
+### Services
+
+| Service | Purpose |
+|---------|---------|
+| StructurePlacementService | Terrain positioning, ghost preview |
+| StructureConstructionService | Build walls, supports, entries, slots |
+| StructureExpansionService | Snap points, expansion connections |
+| ModulePlacementService | Place modules in structure slots |
+| StructureVisualsModule | Decoration visibility management |
+
+### Key Components
+
+**Structure.cs** - Runtime structure instance
+- Slots management
+- Module assignment
+- Wall/Entry/Support containers
+- Expansion connections
+
+**UnfinishedStructureActor.cs** - Under construction
+- Work progress tracking
+- Resource delivery
+- Ghost management
+- Completion logic
+
+**StructureDecoration.cs** - Decoration visibility
+- Visibility modes (Always, OnConstruction, AfterCoreModule, WithModule)
+- Animation support
+- Context-based evaluation
+
+### Slot System
+
+**SlotType:** Interior, Exterior, Wall, Roof, Foundation
+**SlotPriority:** LOW, NORMAL, HIGH
+
+Module placement validates:
+- Footprint compatibility
+- Clearance radius
+- Core module requirement
+- Tag matching
+
+## Recent Features
+
+### WFC Building Generation (Jan 2026) 🟡
+- Procedural structure generation via Wave Function Collapse
+- Non-rectangular footprints using WorldGrid
+- Modular tile system with socket constraints
+- Multi-floor support with MaterialSets
+- See: `/AGENT/Docs/WFC_BUILDING_CONCEPT.md`
+
+### Expansion System (Jan 2026)
+- SnapPoint-based attachment
+- Wall-to-passage conversion
+- Entry removal at connections
+- Navigation link updates
+
+### Visual Management (Jan 2026)
+- Strategy pattern for animations/progression
+- Dirty tracking optimization
+- Module-dependent decorations
+- Construction-progressive reveal
+- Ghost auto-disable on work start
+
+### Open Structures (Jan 2026)
+- TerrainSnapDecoration component
+- Terrain-following decorations
+- No walls/supports generation
+
+## Code Style
+
+### Patterns
+- **Services:** Stateless, injected dependencies
+- **Components:** MonoBehaviour data containers
+- **Strategies:** Interface-based extensibility
+- **Modules:** Singleton services with ITickable
+
+### Naming
+- Private fields: `_camelCase`
+- Public properties: `camelCase`
+- Methods: `PascalCase`
+- Constants: `PascalCase`
+
+### Documentation
+- XML summary on public APIs
+- Odin attributes for Inspector
+- Tooltips on serialized fields
+
+## TODO: Missing Documentation
+
+1. **DI Registration**
+   - Root scope location
+   - Service registration pattern
+   - How to add new services
+
+2. **Game Loop**
+   - Main loop structure
+   - Tick order
+   - Fixed vs variable update
+
+3. **Actor System**
+   - ActorRegistry pattern
+   - ActorDescription lifecycle
+   - Tag system
+
+4. **Navigation**
+   - NavMesh generation flow
+   - NavigationModule API
+   - Surface registration
+
+5. **Resource System**
+   - Item tags
+   - Inventory system
+   - Resource delivery
+
+## Contact
+Project: Almost Alive
+Developer: Nikita (13+ years Unity exp)
+Last Updated: 2026-01-26

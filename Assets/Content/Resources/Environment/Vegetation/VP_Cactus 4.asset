@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: VP_Cactus 4
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Vegetation.VegetationPrototypeSO
   texture: {fileID: 0}
-  prefab: {fileID: 2659927329805041569, guid: 4442298d70ff92748bff47f5c0997109, type: 3}
+  prefab: {fileID: 3252471215262533267, guid: 83742298e20f86143a0ab9eed9820d31, type: 3}
   renderMode: 1
   useInstancing: 1
   widthRange: {x: 0.5, y: 1.8634961}
-  heightRange: {x: 0.35192803, y: 3.4128535}
+  heightRange: {x: 1.1077121, y: 2.5688946}
   dryColor: {r: 0.8, g: 0.7, b: 0.4, a: 1}
   healthyColor: {r: 0.3, g: 0.8, b: 0.2, a: 1}
   noiseSpread: 0.454

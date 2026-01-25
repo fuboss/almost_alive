@@ -36,7 +36,7 @@ namespace Content.Scripts.DebugPanel.Actions {
 
     public void Execute(DebugActionContext context) {
       // Spawn structure at click position
-      var structure = _structuresModule.PlaceBlueprint(_structureDefinition, context.worldPosition);
+      var structure = _structuresModule.PlaceBlueprint(_structureDefinition, context.worldPosition, 0.5f);
       if (structure == null) {
         Debug.LogError($"[DebugAction] Failed to place structure {_structureDefinition.structureId}");
         return;
@@ -45,7 +45,7 @@ namespace Content.Scripts.DebugPanel.Actions {
       Debug.Log($"[DebugAction] Structure {_structureDefinition.structureId} placed at {context.worldPosition}");
 
       // Spawn agent next to structure
-      var agentPosition = context.worldPosition + Vector3.right * _agentOffset;
+      var agentPosition = context.worldPosition + Random.onUnitSphere * _agentOffset;
       if (_actorCreation.TrySpawnActorOnGround(_actorKey, agentPosition, out var actor)) {
         Debug.Log($"[DebugAction] Spawned {_actorKey} at {agentPosition}");
         if (actor.GetComponent<IGoapAgent>() is { } agent) {

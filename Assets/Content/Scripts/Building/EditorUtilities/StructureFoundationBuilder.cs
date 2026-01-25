@@ -11,7 +11,7 @@ namespace Content.Scripts.Building.EditorUtilities {
   /// Editor tool for assembling structure foundation prefabs.
   /// Provides gizmos for footprint visualization and slot placement.
   /// </summary>
-  public class StructureFoundationBuilder : MonoBehaviour {
+  public class StructureFoundationBuilder : SerializedMonoBehaviour {
     [Title("Footprint")]
     [Tooltip("Grid size in cells (X, Z)")]
     [MinValue(1)]
@@ -443,6 +443,65 @@ namespace Content.Scripts.Building.EditorUtilities {
       };
       slots.Add(slot);
       return slot;
+    }
+
+    /// <summary>
+    /// Add slot at cell center.
+    /// </summary>
+    public SlotDefinition AddSlotAtCell(int cellX, int cellZ, SlotType type) {
+      var localPos = new Vector3((cellX + 0.5f) * CellSize, 0, (cellZ + 0.5f) * CellSize);
+      var slot = new SlotDefinition {
+        slotId = $"slot_{cellX}_{cellZ}",
+        type = type,
+        localPosition = localPos,
+        localRotation = Quaternion.identity,
+        isInterior = true,
+        startsLocked = false
+      };
+      slots.Add(slot);
+      return slot;
+    }
+
+    /// <summary>
+    /// Get slot at cell position (if any).
+    /// </summary>
+    public SlotDefinition GetSlotAtCell(int cellX, int cellZ) {
+      var cellCenter = new Vector3((cellX + 0.5f) * CellSize, 0, (cellZ + 0.5f) * CellSize);
+      foreach (var slot in slots) {
+        if (slot == null) continue;
+        var slotCellX = Mathf.FloorToInt(slot.localPosition.x / CellSize);
+        var slotCellZ = Mathf.FloorToInt(slot.localPosition.z / CellSize);
+        if (slotCellX == cellX && slotCellZ == cellZ) return slot;
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Remove slot at cell position.
+    /// </summary>
+    public bool RemoveSlotAtCell(int cellX, int cellZ) {
+      var slot = GetSlotAtCell(cellX, cellZ);
+      if (slot == null) return false;
+      slots.Remove(slot);
+      return true;
+    }
+
+    /// <summary>
+    /// Convert world position to cell coordinates.
+    /// </summary>
+    public Vector2Int WorldToCell(Vector3 worldPos) {
+      var local = worldPos - transform.position;
+      return new Vector2Int(
+        Mathf.FloorToInt(local.x / CellSize),
+        Mathf.FloorToInt(local.z / CellSize)
+      );
+    }
+
+    /// <summary>
+    /// Check if cell is within footprint bounds.
+    /// </summary>
+    public bool IsCellInBounds(int cellX, int cellZ) {
+      return cellX >= 0 && cellX < footprint.x && cellZ >= 0 && cellZ < footprint.y;
     }
 
     /// <summary>

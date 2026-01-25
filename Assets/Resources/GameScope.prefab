@@ -53,6 +53,7 @@ MonoBehaviour:
   cameraPrefab: {fileID: 8021852593781628534, guid: 9c3184f7489e4486ca157e9d0021142f, type: 3}
   cameraSettings: {fileID: 11400000, guid: ac81409452a4449e6a63a1df84fdf97c, type: 2}
   environmentSetup: {fileID: 11400000, guid: 3bfe433e341c843b783202485f7d580c, type: 2}
+  buildingManagerConfig: {fileID: 11400000, guid: 964a458b678ad4bf386c3559b50c0d52, type: 2}
   uiLayers:
   - {fileID: 1276088289653312547, guid: 6ce1e3cd3383549a5b9c7c216970e70b, type: 3}
   - {fileID: -8401498511303770125, guid: be7d5e28fd312472e944e7297bd6a268, type: 3}

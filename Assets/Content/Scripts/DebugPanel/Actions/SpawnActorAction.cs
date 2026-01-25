@@ -38,7 +38,7 @@ namespace Content.Scripts.DebugPanel.Actions {
           var definition = _structuresModule.definitions.FirstOrDefault(d => d.structureId == actor.actorKey);
           structure.Initialize(definition, 100);
           structure.transform.position = _placement
-            .CalculateStructurePosition(structure.transform.position, definition!.footprint, Terrain.activeTerrain);
+            .CalculateStructurePosition(structure.transform.position, definition!.footprint, Terrain.activeTerrain, 0.5f);
         }
 
         return;

@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - StructureDefinition
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5479306618c54a18b3be9057e0a8983
+    m_Address: littleCamp_definition
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StructureDefinition
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}
   m_SchemaSet:

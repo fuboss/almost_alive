@@ -13,6 +13,7 @@ namespace Content.Scripts.Building.Services {
   public class StructureConstructionService {
     [Inject] private StructurePlacementService _placement;
     [Inject] private NavigationModule _navigationModule;
+    [Inject] private BuildingManagerConfigSO _config;
 
     /// <summary>
     /// Build all structure components. Main entry point after structure GO is created.
@@ -24,20 +25,28 @@ namespace Content.Scripts.Building.Services {
         return;
       }
 
-      // Order matters!
+      // Always create slots
       CreateSlots(structure);
       
-      var entryPoints = _placement.DetermineEntryPoints(definition, structure.transform.position, terrain);
-      structure.entryPointsInternal.AddRange(entryPoints);
-      
-      GenerateWalls(structure);
-      GenerateSupports(structure, terrain);
-      SpawnEntryPoints(structure, terrain);
+      // Type-specific construction
+      if (definition.structureType == StructureType.Enclosed) {
+        // Full enclosed structure: walls, supports, entries
+        var entryPoints = _placement.DetermineEntryPoints(definition, structure.transform.position, terrain);
+        structure.entryPointsInternal.AddRange(entryPoints);
+        
+        GenerateWalls(structure);
+        GenerateSupports(structure, terrain);
+        SpawnEntryPoints(structure, terrain);
+      }
+      else if (definition.structureType == StructureType.Open) {
+        // Open structure: snap decorations to terrain
+        SnapDecorationsToTerrain(structure, terrain);
+      }
 
       _navigationModule.RegisterSurface(structure.navMeshSurface);
       
       structure.SetState(StructureState.BUILT);
-      Debug.Log($"[StructureConstructionService] Built structure: {definition.structureId}");
+      Debug.Log($"[StructureConstructionService] Built {definition.structureType} structure: {definition.structureId}");
     }
     
 
@@ -61,12 +70,14 @@ namespace Content.Scripts.Building.Services {
       structure.wallSegmentsData.Clear();
       var definition = structure.definition;
       if (definition == null) return;
+      
+      var wallsRoot = structure.wallsContainer;
 
-      // Create wall segments for each side
-      CreateWallsForSide(structure, WallSide.North, definition.footprint.x);
-      CreateWallsForSide(structure, WallSide.South, definition.footprint.x);
-      CreateWallsForSide(structure, WallSide.East, definition.footprint.y);
-      CreateWallsForSide(structure, WallSide.West, definition.footprint.y);
+      // Create side containers and wall segments
+      CreateWallsForSide(structure, WallSide.North, definition.footprint.x, wallsRoot);
+      CreateWallsForSide(structure, WallSide.South, definition.footprint.x, wallsRoot);
+      CreateWallsForSide(structure, WallSide.East, definition.footprint.y, wallsRoot);
+      CreateWallsForSide(structure, WallSide.West, definition.footprint.y, wallsRoot);
 
       // Mark doorways for entry points
       foreach (var entry in structure.entryPoints) {
@@ -82,9 +93,14 @@ namespace Content.Scripts.Building.Services {
       }
     }
 
-    private void CreateWallsForSide(Structure structure, WallSide side, int count) {
+    private void CreateWallsForSide(Structure structure, WallSide side, int count, Transform wallsRoot) {
+      var sideContainer = new GameObject(side.ToString()).transform;
+      sideContainer.SetParent(wallsRoot, false);
+      
       for (var i = 0; i < count; i++) {
-        structure.wallSegmentsData.Add(new WallSegment(side, i, WallSegmentType.Solid));
+        var segment = new WallSegment(side, i, WallSegmentType.Solid);
+        segment.sideContainer = sideContainer;
+        structure.wallSegmentsData.Add(segment);
       }
     }
 
@@ -100,11 +116,13 @@ namespace Content.Scripts.Building.Services {
 
       var localPos = segment.GetLocalPosition(definition.footprint);
       var localRot = segment.GetLocalRotation();
+      
+      var container = segment.sideContainer != null ? segment.sideContainer : parent;
 
-      segment.instance = Object.Instantiate(prefab, parent);
+      segment.instance = Object.Instantiate(prefab, container);
       segment.instance.transform.localPosition = localPos;
       segment.instance.transform.localRotation = localRot;
-      segment.instance.name = $"Wall_{segment.side}_{segment.index}";
+      segment.instance.name = $"Wall_{segment.index}";
     }
 
     /// <summary>
@@ -148,7 +166,7 @@ namespace Content.Scripts.Building.Services {
     }
 
     private void SpawnSupport(Structure structure, Vector3 cellCenter, float terrainY, float height, GameObject prefab) {
-      var support = Object.Instantiate(prefab, structure.transform);
+      var support = Object.Instantiate(prefab, structure.supportsContainer);
       support.transform.position = new Vector3(cellCenter.x, terrainY + height/2, cellCenter.z);
       support.name = $"Support_{structure.supportsInternal.Count}";
 
@@ -169,20 +187,22 @@ namespace Content.Scripts.Building.Services {
       if (definition == null) return;
 
       foreach (var entry in structure.entryPoints) {
-        SpawnStairs(entry, structure, definition);
-        CreateNavMeshLink(entry, structure, definition);
+        var entryContainer = new GameObject($"Entry_{entry.side}_{entry.segmentIndex}").transform;
+        entryContainer.SetParent(structure.entriesContainer, false);
+        
+        SpawnStairs(entry, structure, definition, entryContainer);
+        CreateNavMeshLink(entry, structure, definition, entryContainer);
       }
     }
 
-    private void SpawnStairs(EntryPoint entry, Structure structure, StructureDefinitionSO definition) {
+    private void SpawnStairs(EntryPoint entry, Structure structure, StructureDefinitionSO definition, Transform container) {
       if (definition.stairsPrefab == null) return;
 
       var structureY = structure.transform.position.y;
-      var terrainY = structureY - entry.stairsHeight;
 
-      entry.stairsInstance = Object.Instantiate(definition.stairsPrefab, structure.transform);
+      entry.stairsInstance = Object.Instantiate(definition.stairsPrefab);
       entry.stairsInstance.transform.position = new Vector3(entry.stairsPosition.x, structureY, entry.stairsPosition.z);
-      entry.stairsInstance.name = $"Stairs_{entry.side}_{entry.segmentIndex}";
+      entry.stairsInstance.name = "Stairs";
 
       // Rotate to face inward
       var rotation = entry.side switch {
@@ -193,40 +213,75 @@ namespace Content.Scripts.Building.Services {
         _ => Quaternion.identity
       };
       entry.stairsInstance.transform.rotation = rotation;
-
-      // Scale Y based on height
-      // var scale = entry.stairsInstance.transform.localScale;
-      // scale.y = Mathf.Max(0.1f, entry.stairsHeight / BuildingConstants.WallHeight);
-      // entry.stairsInstance.transform.localScale = scale;
+      
+      // Parent with world position stays (stairs already positioned correctly)
+      entry.stairsInstance.transform.SetParent(container, true);
     }
 
-    private void CreateNavMeshLink(EntryPoint entry, Structure structure, StructureDefinitionSO definition) {
-      var structureY = structure.transform.position.y;
-      var terrainY = structureY - entry.stairsHeight;
+    private void CreateNavMeshLink(EntryPoint entry, Structure structure, StructureDefinitionSO definition, Transform container) {
       var cellSize = BuildingConstants.CellSize;
       var footprint = definition.footprint;
 
-      // Inside position (on structure floor)
-      var insidePos = entry.side switch {
-        WallSide.North => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, footprint.y * cellSize),
-        WallSide.South => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, 0),
-        WallSide.East => structure.transform.position + new Vector3(footprint.x * cellSize, 0, (entry.segmentIndex + 0.5f) * cellSize),
-        WallSide.West => structure.transform.position + new Vector3(0, 0, (entry.segmentIndex + 0.5f) * cellSize),
-        _ => structure.transform.position
+      // Wall edge position (at doorway)
+      var wallEdgePos = entry.side switch {
+        WallSide.North => new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, footprint.y * cellSize),
+        WallSide.South => new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, 0),
+        WallSide.East => new Vector3(footprint.x * cellSize, 0, (entry.segmentIndex + 0.5f) * cellSize),
+        WallSide.West => new Vector3(0, 0, (entry.segmentIndex + 0.5f) * cellSize),
+        _ => Vector3.zero
       };
 
-      // Outside position (on terrain)
-      var outsidePos = new Vector3(entry.stairsPosition.x, terrainY, entry.stairsPosition.z);
+      // Offset directions
+      var offsetDir = entry.side switch {
+        WallSide.North => Vector3.forward,
+        WallSide.South => Vector3.back,
+        WallSide.East => Vector3.right,
+        WallSide.West => Vector3.left,
+        _ => Vector3.zero
+      };
+      
+      // Inside position (1 cell inward from wall edge)
+      var localInsidePos = wallEdgePos - offsetDir * cellSize;
+      
+      // Outside position (1 cell outward from wall edge + height drop)
+      var localOutsidePos = wallEdgePos + offsetDir * cellSize - Vector3.up * entry.stairsHeight;
 
-      // Create NavMeshLink
-      var linkGO = new GameObject($"NavMeshLink_{entry.side}_{entry.segmentIndex}");
-      linkGO.transform.SetParent(structure.transform);
+      // Create NavMeshLink (parented to structure, uses local coords)
+      var linkGO = new GameObject("NavMeshLink");
+      linkGO.transform.SetParent(container, false);
 
       entry.navMeshLink = linkGO.AddComponent<NavMeshLink>();
-      entry.navMeshLink.startPoint = linkGO.transform.InverseTransformPoint(outsidePos);
-      entry.navMeshLink.endPoint = linkGO.transform.InverseTransformPoint(insidePos);
+      entry.navMeshLink.startPoint = localOutsidePos;
+      entry.navMeshLink.endPoint = localInsidePos;
       entry.navMeshLink.width = cellSize * 0.8f;
       entry.navMeshLink.bidirectional = true;
+    }
+
+    #endregion
+
+    #region Open Structures
+
+    /// <summary>
+    /// Snap all decorations in foundation to terrain surface.
+    /// Searches for TerrainSnapDecoration components in structure hierarchy.
+    /// </summary>
+    private void SnapDecorationsToTerrain(Structure structure, Terrain terrain) {
+      if (terrain == null) {
+        Debug.LogWarning("[StructureConstructionService] No terrain for decoration snap");
+        return;
+      }
+
+      var decorations = structure.GetComponentsInChildren<TerrainSnapDecoration>(true);
+      if (decorations.Length == 0) {
+        Debug.LogWarning($"[StructureConstructionService] Open structure {structure.name} has no TerrainSnapDecoration components");
+        return;
+      }
+
+      foreach (var decoration in decorations) {
+        decoration.SnapToTerrain(terrain);
+      }
+
+      Debug.Log($"[StructureConstructionService] Snapped {decorations.Length} decorations to terrain");
     }
 
     #endregion

@@ -144,9 +144,13 @@ namespace Content.Scripts.World.Vegetation {
         foreach (var layer in biome.vegetationConfig.layers) {
           if (layer?.prototype == null) continue;
           if (indexMap.ContainsKey(layer.prototype)) continue;
-          
+          var prototype = layer.prototype.ToDetailPrototype(layer.coverage);
+          if (prototype == null) {
+            Debug.LogError($"{layer.prototype.name} has invalid prefab. Cannot create DetailPrototype.");
+            continue;
+          }
           indexMap[layer.prototype] = prototypes.Count;
-          prototypes.Add(layer.prototype.ToDetailPrototype(layer.coverage));
+          prototypes.Add(prototype);
         }
       }
       
