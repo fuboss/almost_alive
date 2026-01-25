@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: bd7b58e59c8b1456cb611f885cdcfec8
   m_currentHash:
     serializedVersion: 2
-    Hash: 9d0219870045672d5cbf0c9f0c3618b2
+    Hash: 7316f1c4be78ea44acdd66121271a01e
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -107,7 +107,6 @@ MonoBehaviour:
     m_LabelNames:
     - default
     - Actors
-    - CampSetups
     - Structure
     - StructurePart
     - StructureDefinition

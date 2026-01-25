@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 379146604345625682}
-  - component: {fileID: 773175546638495236}
   - component: {fileID: 4380085423223805995}
   - component: {fileID: 360585143607875373}
   - component: {fileID: 7005436089314303309}
   - component: {fileID: 5564619779306526721}
+  - component: {fileID: 7071224434239087601}
   m_Layer: 6
   m_Name: unfinished_module
   m_TagString: Untagged
@@ -37,18 +37,6 @@ Transform:
   - {fileID: 4261703307686475361}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &773175546638495236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125075522904230170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d51ea80c0a0fb41bba2e002b77450b59, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.UnfinishedStructureActor
 --- !u!114 &4380085423223805995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,7 +58,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  actorKey: unfinished_structure
+  actorKey: unfinished_module
   _descriptionData:
     tags:
     - UNFINISHED
@@ -166,6 +154,18 @@ MonoBehaviour:
       max: 100
       current: 0
   availableTags: []
+--- !u!114 &7071224434239087601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125075522904230170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62001713ec0554114a187053abd59f97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.UnfinishedModuleActor
 --- !u!1 &4922016246412448707
 GameObject:
   m_ObjectHideFlags: 0

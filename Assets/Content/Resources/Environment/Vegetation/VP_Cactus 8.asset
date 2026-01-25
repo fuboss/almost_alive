@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55f80abda42b4eac8a4fa02c001aba1, type: 3}
+  m_Name: VP_Cactus 8
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Vegetation.VegetationPrototypeSO
+  texture: {fileID: 0}
+  prefab: {fileID: 2659927329805041569, guid: 4442298d70ff92748bff47f5c0997109, type: 3}
+  renderMode: 1
+  useInstancing: 1
+  widthRange: {x: 0.5, y: 1.8634961}
+  heightRange: {x: 0.35192803, y: 3.4128535}
+  dryColor: {r: 0.8, g: 0.7, b: 0.4, a: 1}
+  healthyColor: {r: 0.3, g: 0.8, b: 0.2, a: 1}
+  noiseSpread: 0.454

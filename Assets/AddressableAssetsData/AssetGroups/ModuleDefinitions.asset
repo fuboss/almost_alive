@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: ModuleDefinitions
   m_GUID: 3969c41b0aaa64e40998c242a08821dd
   m_SerializeEntries:
+  - m_GUID: 8b287f5638f004eb1bf4df1278d093f2
+    m_Address: Assets/Content/Configs/ModuleDefinitios/bedrollDefintion.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ModuleDefinition
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b717e4bcc016341efb45175ba46ba98c
     m_Address: fireplaceDefintion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ModuleDefinition
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de3991b3621234c1db31628c0403de0f
+    m_Address: Assets/Content/Configs/ModuleDefinitios/resourceStorageDefintion.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - ModuleDefinition
