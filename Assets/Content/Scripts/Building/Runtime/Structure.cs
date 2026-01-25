@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Game;
 using Sirenix.OdinInspector;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 namespace Content.Scripts.Building.Runtime {
@@ -39,8 +40,7 @@ namespace Content.Scripts.Building.Runtime {
     [ShowInInspector, ReadOnly] private readonly List<EntryPoint> _entryPoints = new();
 
     [ShowInInspector, ReadOnly] private readonly List<GameObject> _supports = new();
-
-    [ShowInInspector, ReadOnly] private GameObject _foundationView;
+    private NavMeshSurface _floorNavMeshSurface;
 
     #region Properties
 
@@ -55,7 +55,6 @@ namespace Content.Scripts.Building.Runtime {
     public IReadOnlyList<WallSegment> wallSegments => _wallSegments;
     public IReadOnlyList<EntryPoint> entryPoints => _entryPoints;
     public IReadOnlyList<GameObject> supports => _supports;
-    public GameObject foundationView => _foundationView;
 
     public Vector2Int footprint => _definition != null ? _definition.footprint : Vector2Int.one;
 
@@ -64,15 +63,17 @@ namespace Content.Scripts.Building.Runtime {
     public List<WallSegment> wallSegmentsData => _wallSegments;
     public List<EntryPoint> entryPointsInternal => _entryPoints;
     public List<GameObject> supportsInternal => _supports;
+    
+    public NavMeshSurface navMeshSurface => _floorNavMeshSurface??= GetComponentInChildren<NavMeshSurface>();
 
     #endregion
-    
+
     private void OnEnable() {
-      Registry<Structure>.Register(this);
+      ActorRegistry<Structure>.Register(this);
     }
 
     private void OnDisable() {
-      Registry<Structure>.Unregister(this);
+      ActorRegistry<Structure>.Unregister(this);
     }
 
     private void Start() {
@@ -89,10 +90,6 @@ namespace Content.Scripts.Building.Runtime {
       _maxHp = maxHp;
       _hp = maxHp;
       _state = StructureState.BLUEPRINT;
-    }
-
-    public void SetFoundationView(GameObject view) {
-      _foundationView = view;
     }
 
     public void SetState(StructureState newState) {
@@ -116,7 +113,7 @@ namespace Content.Scripts.Building.Runtime {
     public void ModifyHp(float delta) {
       SetHp(_hp + delta);
     }
-    
+
     public Slot GetSlot(string slotId) {
       return _slots.Find(s => s.slotId == slotId);
     }
@@ -134,7 +131,7 @@ namespace Content.Scripts.Building.Runtime {
     public WallSegment GetWallSegment(WallSide side, int index) {
       return _wallSegments.Find(w => w.side == side && w.index == index);
     }
-    
+
     private void OnDestroy() {
       // Cleanup entry points
       foreach (var entry in _entryPoints) {
@@ -149,11 +146,6 @@ namespace Content.Scripts.Building.Runtime {
       // Cleanup supports
       foreach (var support in _supports) {
         if (support != null) Destroy(support);
-      }
-
-      // Cleanup foundation
-      if (_foundationView != null) {
-        Destroy(_foundationView);
       }
     }
   }

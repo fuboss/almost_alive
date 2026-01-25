@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Content.Scripts.AI.GOAP;
-using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.Runtime;
 using Content.Scripts.Game;
@@ -22,6 +21,7 @@ namespace Content.Scripts.Building.Services {
     [Inject] private StructureConstructionService _construction;
     [Inject] private ActorCreationModule _actorCreationModule;
     [Inject] private ActorDestructionModule _actorDestructionModule;
+    [Inject] private NavigationModule _navigationModule;
 
     private readonly List<StructureDefinitionSO> _definitions = new();
     private Terrain _terrain;
@@ -38,9 +38,12 @@ namespace Content.Scripts.Building.Services {
         isInitialized = true;
         Debug.Log($"[StructuresModule] Loaded {_definitions.Count} structure definitions");
       };
+      
+      ActorRegistry<Structure>.onUnregistered += OnStructureUnregistered;
     }
 
     void IDisposable.Dispose() {
+      ActorRegistry<Structure>.onUnregistered -= OnStructureUnregistered;
       _definitions.Clear();
     }
 
@@ -88,13 +91,25 @@ namespace Content.Scripts.Building.Services {
     public void OnStructureActorSpawned(ActorDescription actor) {
       var structure = actor.GetComponent<Structure>();
       if (structure == null) return;
-
-      // Build walls, slots, entries
-      _construction.BuildStructure(structure, _terrain);
+      
+      //todo: its a heavy operation, consider making it async
+      _construction.BuildStructure(structure, _terrain);// Build walls, slots, entries
+      RebuildNavMesh();
     }
 
-    public IEnumerable<Structure> GetAll() {
-      return Registry<Structure>.GetAll();
+    private void RebuildNavMesh() {
+      _navigationModule.RequestBake();
+    }
+    
+    private void OnStructureUnregistered(Structure structure) {
+      if (structure != null) {
+        _navigationModule.UnregisterSurface(structure.navMeshSurface);
+      }
+      RebuildNavMesh();
+    }
+
+    public IReadOnlyCollection<Structure> GetAll() {
+      return ActorRegistry<Structure>.all;
     }
 
     public IEnumerable<Structure> GetByState(StructureState state) {

@@ -3,6 +3,7 @@ using Content.Scripts.AI.Craft;
 using Content.Scripts.AI.GOAP;
 using Content.Scripts.AI.GOAP.Agent;
 using Content.Scripts.AI.GOAP.Planning;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Environment;
 using Content.Scripts.Core.Simulation;
@@ -48,6 +49,7 @@ namespace Content.Scripts {
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<NavigationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
 
       // Decay & Work

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6216338964656996060}
   - component: {fileID: 850609335243420934}
   - component: {fileID: 8439188152107560648}
-  m_Layer: 10
+  m_Layer: 6
   m_Name: pf_plank_03 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: -63027727697791003}
   - component: {fileID: 803217959777994555}
   - component: {fileID: 6258077557419813979}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: shelter_small_structure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2000351500058136715}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -347,7 +347,8 @@ GameObject:
   m_Component:
   - component: {fileID: 639026734215657525}
   - component: {fileID: 6759924791908324793}
-  m_Layer: 0
+  - component: {fileID: 1252281057143297612}
+  m_Layer: 6
   m_Name: floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,6 +368,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2566378125782200583}
+  - {fileID: 3107610838829761103}
   - {fileID: 1741198633110314638}
   - {fileID: 4914010836121411341}
   - {fileID: 5982152599972626928}
@@ -386,7 +389,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdc17a61e114497dbdd02e0c0e22c3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Utility.NavMeshBuilder
-  _meshSurface: {fileID: 8478697012310782451}
+  _meshSurface: {fileID: 1252281057143297612}
+--- !u!114 &1252281057143297612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520032701964810416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 2
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 1
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.083333336
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &3595946681577276849
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,7 +435,7 @@ GameObject:
   - component: {fileID: 5743999878750326198}
   - component: {fileID: 4317714433195992369}
   - component: {fileID: 7007005273547092679}
-  m_Layer: 10
+  m_Layer: 6
   m_Name: pf_plank_03 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,9 +565,7 @@ GameObject:
   - component: {fileID: 1741198633110314638}
   - component: {fileID: 661191660334430828}
   - component: {fileID: 974560227436831117}
-  - component: {fileID: 7594970780224060085}
-  - component: {fileID: 8478697012310782451}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wood_floor3x3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -611,59 +644,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7594970780224060085
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3699827326707969274}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2.74, y: 2.061458, z: 0.2}
-  m_Center: {x: 0.0071965586, y: 0.96839523, z: 0}
---- !u!114 &8478697012310782451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3699827326707969274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
-  m_SerializedVersion: 0
-  m_AgentTypeID: 0
-  m_CollectObjects: 2
-  m_Size: {x: 3.7104857, y: 3.7522702, z: 1}
-  m_Center: {x: -0.30743778, y: 1.3761351, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_UseGeometry: 1
-  m_DefaultArea: 0
-  m_GenerateLinks: 1
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: d005261db22f44585b0b41dd06a6277d, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!1 &4279243209128417257
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,7 +653,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4478395793219396637}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: roof
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -708,7 +688,7 @@ GameObject:
   - component: {fileID: 4758162372356750062}
   - component: {fileID: 6906043365104866093}
   - component: {fileID: 5590658262414881287}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: wood_roof3x3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -808,6 +788,118 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.74, y: 2.061458, z: 0.1}
   m_Center: {x: 0.0071965586, y: 0.96839523, z: 0.023144284}
+--- !u!1 &6750378878452623253
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3107610838829761103}
+  - component: {fileID: 8707228013886915198}
+  m_Layer: 6
+  m_Name: NotWalkableArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3107610838829761103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6750378878452623253}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 639026734215657525}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8707228013886915198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6750378878452623253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 3.5, y: 0.5, z: 3.5}
+  m_Center: {x: 0, y: -0.25, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
+--- !u!1 &7379937166955906063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2566378125782200583}
+  - component: {fileID: 5917840239606967919}
+  - component: {fileID: 5206585731305840293}
+  m_Layer: 6
+  m_Name: nav-Mesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2566378125782200583
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379937166955906063}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.355, y: 0.355, z: 0.355}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 639026734215657525}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &5917840239606967919
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379937166955906063}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &5206585731305840293
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7379937166955906063}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &7442186271930107636
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,7 +913,7 @@ GameObject:
   - component: {fileID: 9019263302045725488}
   - component: {fileID: 7174221236096014085}
   - component: {fileID: 3923052251922280881}
-  m_Layer: 10
+  m_Layer: 6
   m_Name: pf_plank_03 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -953,7 +1045,7 @@ GameObject:
   - component: {fileID: 5260054656760364281}
   - component: {fileID: 6283607368464423328}
   - component: {fileID: 2498325247669929419}
-  m_Layer: 10
+  m_Layer: 6
   m_Name: pf_plank_03 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

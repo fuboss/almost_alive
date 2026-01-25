@@ -16,6 +16,7 @@ namespace Content.Scripts.DebugPanel {
     [Inject] private ActorDestructionModule _actorDestruction;
     [Inject] private SimulationTimeController _simTime;
     [Inject] private StructuresModule _structuresModule;
+    [Inject] private StructurePlacementService _placement;
 
     private DebugActionRegistry _registry;
     private DebugState _currentState = DebugState.Idle;
@@ -23,7 +24,7 @@ namespace Content.Scripts.DebugPanel {
     private DebugActionContext _pendingContext;
 
     private readonly RaycastHit[] _raycastBuffer = new RaycastHit[32];
-    private const int GROUND_LAYER_MASK = ~0; // all layers
+    private LayerMask GROUND_LAYER_MASK = LayerMask.GetMask("Terrain", "Water");
 
     public event System.Action<DebugState> OnStateChanged;
     public event System.Action<IDebugAction> OnActionSelected;
@@ -232,7 +233,8 @@ namespace Content.Scripts.DebugPanel {
         var actorDesc = prefab;
         if (actorDesc == null) continue;
         var displayName = $"Spawn {actorDesc.actorKey}";
-        _registry.Register(new Actions.SpawnActorAction(_actorCreation,_structuresModule, actorDesc.actorKey, displayName));
+        _registry.Register(new Actions.SpawnActorAction(_actorCreation, _structuresModule, _placement,
+          actorDesc.actorKey, displayName));
         count++;
       }
 
@@ -270,7 +272,7 @@ namespace Content.Scripts.DebugPanel {
       }
 
       var firstStructure = _structuresModule.definitions?.FirstOrDefault();
-      var firstActor = _actorCreation.allPrefabs?.FirstOrDefault(p=>p.GetDefinition(Tag.AGENT));
+      var firstActor = _actorCreation.allPrefabs?.FirstOrDefault(p => p.GetDefinition(Tag.AGENT));
 
       if (firstStructure == null || firstActor == null) return;
 

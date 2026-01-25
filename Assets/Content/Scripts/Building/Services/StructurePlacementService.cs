@@ -145,7 +145,7 @@ namespace Content.Scripts.Building.Services {
     }
 
     private Vector3 GetOutsidePosition(WallSide side, int index, Vector3 origin, float cellSize, Vector2Int footprint) {
-      var offset = 0.5f;
+      var offset = 0.0f;
       return side switch {
         WallSide.North => origin + new Vector3((index + 0.5f) * cellSize, 0, footprint.y * cellSize + offset),
         WallSide.South => origin + new Vector3((index + 0.5f) * cellSize, 0, -offset),

@@ -1,11 +1,10 @@
 using System.Collections.Generic;
+using Content.Scripts.AI.Navigation;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.Runtime;
 using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEngine.AI;
 using VContainer;
-using NavMeshBuilder = Content.Scripts.Utility.NavMeshBuilder;
 
 namespace Content.Scripts.Building.Services {
   /// <summary>
@@ -13,6 +12,7 @@ namespace Content.Scripts.Building.Services {
   /// </summary>
   public class StructureConstructionService {
     [Inject] private StructurePlacementService _placement;
+    [Inject] private NavigationModule _navigationModule;
 
     /// <summary>
     /// Build all structure components. Main entry point after structure GO is created.
@@ -34,7 +34,8 @@ namespace Content.Scripts.Building.Services {
       GenerateSupports(structure, terrain);
       SpawnEntryPoints(structure, terrain);
 
-      structure.GetComponentInChildren<NavMeshBuilder>().Build();
+      _navigationModule.RegisterSurface(structure.navMeshSurface);
+      
       structure.SetState(StructureState.BUILT);
       Debug.Log($"[StructureConstructionService] Built structure: {definition.structureId}");
     }
@@ -194,9 +195,9 @@ namespace Content.Scripts.Building.Services {
       entry.stairsInstance.transform.rotation = rotation;
 
       // Scale Y based on height
-      var scale = entry.stairsInstance.transform.localScale;
-      scale.y = Mathf.Max(0.1f, entry.stairsHeight / BuildingConstants.WallHeight);
-      entry.stairsInstance.transform.localScale = scale;
+      // var scale = entry.stairsInstance.transform.localScale;
+      // scale.y = Mathf.Max(0.1f, entry.stairsHeight / BuildingConstants.WallHeight);
+      // entry.stairsInstance.transform.localScale = scale;
     }
 
     private void CreateNavMeshLink(EntryPoint entry, Structure structure, StructureDefinitionSO definition) {
@@ -207,10 +208,10 @@ namespace Content.Scripts.Building.Services {
 
       // Inside position (on structure floor)
       var insidePos = entry.side switch {
-        WallSide.North => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, (footprint.y - 0.5f) * cellSize),
-        WallSide.South => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, 0.5f * cellSize),
-        WallSide.East => structure.transform.position + new Vector3((footprint.x - 0.5f) * cellSize, 0, (entry.segmentIndex + 0.5f) * cellSize),
-        WallSide.West => structure.transform.position + new Vector3(0.5f * cellSize, 0, (entry.segmentIndex + 0.5f) * cellSize),
+        WallSide.North => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, footprint.y * cellSize),
+        WallSide.South => structure.transform.position + new Vector3((entry.segmentIndex + 0.5f) * cellSize, 0, 0),
+        WallSide.East => structure.transform.position + new Vector3(footprint.x * cellSize, 0, (entry.segmentIndex + 0.5f) * cellSize),
+        WallSide.West => structure.transform.position + new Vector3(0, 0, (entry.segmentIndex + 0.5f) * cellSize),
         _ => structure.transform.position
       };
 

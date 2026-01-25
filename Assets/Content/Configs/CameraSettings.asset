@@ -87,3 +87,6 @@ MonoBehaviour:
   followSmoothing: 1
   followHeightOffset: 5
   showDebugGizmos: 1
+  groundCheckLayer:
+    serializedVersion: 2
+    m_Bits: 144

@@ -66,6 +66,8 @@ namespace Content.Scripts.Game.Camera.Settings {
     [Title("Debug")]
     public bool showDebugGizmos = false;
 
+    public LayerMask groundCheckLayer = Physics.DefaultRaycastLayers;
+
     /// <summary>
     /// Gets the target height for a normalized zoom value (0-1)
     /// </summary>

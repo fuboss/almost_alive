@@ -143,7 +143,7 @@ namespace Content.Scripts.Game.Camera {
 
     private float GetGroundHeight(Vector3 position) {
       var rayOrigin = new Vector3(position.x, position.y + 500f, position.z);
-      if (Physics.Raycast(rayOrigin, Vector3.down, out var hit, 1000f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) {
+      if (Physics.Raycast(rayOrigin, Vector3.down, out var hit, 1000f, this._settings.groundCheckLayer, QueryTriggerInteraction.Ignore)) {
         return hit.point.y;
       }
       return 0f;
