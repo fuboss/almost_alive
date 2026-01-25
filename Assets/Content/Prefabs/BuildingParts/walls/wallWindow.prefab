@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7171483181928979228}
   - component: {fileID: 3138320021580661155}
   - component: {fileID: -6096635376483393045}
+  - component: {fileID: 8202421905437700428}
   m_Layer: 0
   m_Name: wallWindow
   m_TagString: Untagged
@@ -76,6 +77,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.StructurePartDescription
   wallType: 3
   description: 
+--- !u!114 &8202421905437700428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5866287703868876177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc51f81abd8fc423bad15d76526be3cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Building.Runtime.StructureCutoutController
+  _settings: {fileID: 11400000, guid: 0ad686046a4ee43a0892c9c050455bb1, type: 2}
+  _targetRenderers: []
+  _targetIntensity: 0
+  _cutoutCenter: {x: 0, y: 0, z: 0}
+  _cutoutRadius: 5
 --- !u!1001 &1959420769725179914
 PrefabInstance:
   m_ObjectHideFlags: 0

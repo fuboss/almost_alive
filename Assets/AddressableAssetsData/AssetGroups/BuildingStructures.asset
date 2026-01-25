@@ -20,6 +20,7 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - Actors
+    - Structure
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c376bece5ef284582907ddaf2a3cae20, type: 2}

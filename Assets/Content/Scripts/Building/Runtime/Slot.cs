@@ -7,9 +7,10 @@ namespace Content.Scripts.Building.Runtime {
   /// Runtime slot state.
   /// </summary>
   public enum SlotState {
-    EMPTY, // no module assigned
-    ASSIGNED, // module assigned, awaiting construction
-    BUILT // module constructed
+    EMPTY,
+    ASSIGNED,  // anchor slot: module assigned, awaiting construction
+    OCCUPIED,  // non-anchor slot: part of multi-slot module
+    BUILT      // module constructed
   }
 
   /// <summary>
@@ -24,13 +25,20 @@ namespace Content.Scripts.Building.Runtime {
 
   /// <summary>
   /// Runtime representation of a module slot within a structure.
+  /// Supports multi-slot modules via anchor/occupied pattern.
   /// </summary>
   public class Slot {
     public SlotDefinition definition;
     public SlotState state;
     public SlotPriority priority;
+    
+    // Anchor slot data (this slot owns the module)
     public ModuleDefinitionSO assignedModuleDef;
     public Module builtModule;
+    
+    // Multi-slot support: non-anchor slots reference their anchor
+    public Slot anchorSlot;
+    
     public object owner; // IGoapAgent, nullable
 
     public Slot(SlotDefinition definition) {
@@ -39,8 +47,11 @@ namespace Content.Scripts.Building.Runtime {
       this.priority = SlotPriority.NORMAL;
       this.assignedModuleDef = null;
       this.builtModule = null;
+      this.anchorSlot = null;
       this.owner = null;
     }
+
+    #region Properties
 
     public string slotId => definition.slotId;
     public SlotType type => definition.type;
@@ -51,26 +62,86 @@ namespace Content.Scripts.Building.Runtime {
 
     public bool isEmpty => state == SlotState.EMPTY;
     public bool isAssigned => state == SlotState.ASSIGNED;
+    public bool isOccupied => state == SlotState.OCCUPIED;
     public bool isBuilt => state == SlotState.BUILT;
+    
+    /// <summary>True if this slot is the anchor (owner) of a multi-slot module.</summary>
+    public bool isAnchor => anchorSlot == null && (isAssigned || isBuilt);
+    
+    /// <summary>True if slot is used by any module (anchor or occupied).</summary>
+    public bool isInUse => state != SlotState.EMPTY;
+    
+    /// <summary>Get the module occupying this slot (from anchor if occupied).</summary>
+    public Module GetModule() {
+      if (isBuilt) return builtModule;
+      if (isOccupied && anchorSlot != null) return anchorSlot.builtModule;
+      return null;
+    }
+    
+    /// <summary>Get assigned module def (from anchor if occupied).</summary>
+    public ModuleDefinitionSO GetAssignedModuleDef() {
+      if (isAssigned) return assignedModuleDef;
+      if (isOccupied && anchorSlot != null) return anchorSlot.assignedModuleDef;
+      return null;
+    }
+
+    #endregion
+
+    #region Assignment (single slot - legacy support)
 
     /// <summary>
-    /// Assign a module to this slot for construction.
+    /// Assign a module to this slot for construction (single-slot module).
+    /// For multi-slot modules use Structure.AssignModuleToSlots().
     /// </summary>
     public bool AssignModule(ModuleDefinitionSO moduleDef, SlotPriority priority = SlotPriority.NORMAL) {
       if (state != SlotState.EMPTY) return false;
       if (moduleDef == null) return false;
-
-      // Check compatibility
       if (!IsModuleCompatible(moduleDef)) return false;
+
+      // Single-slot module check
+      if (moduleDef.slotFootprint.x > 1 || moduleDef.slotFootprint.y > 1) {
+        Debug.LogWarning($"[Slot] Cannot assign multi-slot module {moduleDef.moduleId} to single slot. Use Structure.AssignModuleToSlots()");
+        return false;
+      }
 
       assignedModuleDef = moduleDef;
       this.priority = priority;
       state = SlotState.ASSIGNED;
+      anchorSlot = null; // this is anchor
       return true;
     }
 
+    #endregion
+
+    #region Multi-Slot Assignment (called by Structure)
+
     /// <summary>
-    /// Mark module as built.
+    /// Mark this slot as anchor for a multi-slot module.
+    /// Called by Structure.AssignModuleToSlots().
+    /// </summary>
+    internal void AssignAsAnchor(ModuleDefinitionSO moduleDef, SlotPriority priority) {
+      assignedModuleDef = moduleDef;
+      this.priority = priority;
+      state = SlotState.ASSIGNED;
+      anchorSlot = null;
+    }
+
+    /// <summary>
+    /// Mark this slot as occupied by a multi-slot module (not anchor).
+    /// Called by Structure.AssignModuleToSlots().
+    /// </summary>
+    internal void AssignAsOccupied(Slot anchor) {
+      anchorSlot = anchor;
+      state = SlotState.OCCUPIED;
+      assignedModuleDef = null; // data lives in anchor
+    }
+
+    #endregion
+
+    #region Build & Clear
+
+    /// <summary>
+    /// Mark module as built (anchor slot only).
     /// </summary>
     public void SetBuilt(Module module) {
       builtModule = module;
@@ -78,7 +149,7 @@ namespace Content.Scripts.Building.Runtime {
     }
 
     /// <summary>
-    /// Clear the slot (deconstruct).
+    /// Clear the slot. For multi-slot modules, must be called on anchor first.
     /// </summary>
     public void Clear() {
       if (builtModule != null) {
@@ -87,12 +158,26 @@ namespace Content.Scripts.Building.Runtime {
       }
 
       assignedModuleDef = null;
+      anchorSlot = null;
       state = SlotState.EMPTY;
       priority = SlotPriority.NORMAL;
     }
+    
+    /// <summary>
+    /// Clear occupied slot (non-anchor). Called by Structure when clearing module.
+    /// </summary>
+    internal void ClearOccupied() {
+      if (state != SlotState.OCCUPIED) return;
+      anchorSlot = null;
+      state = SlotState.EMPTY;
+    }
+
+    #endregion
+
+    #region Compatibility
 
     /// <summary>
-    /// Check if module is compatible with this slot.
+    /// Check if module is compatible with this slot (type + tags).
     /// </summary>
     public bool IsModuleCompatible(ModuleDefinitionSO moduleDef) {
       if (moduleDef == null) return false;
@@ -106,7 +191,6 @@ namespace Content.Scripts.Building.Runtime {
             break;
           }
         }
-
         if (!compatible) return false;
       }
 
@@ -123,5 +207,7 @@ namespace Content.Scripts.Building.Runtime {
           .Any(acceptedTag => moduleTag == acceptedTag)
         );
     }
+
+    #endregion
   }
 }

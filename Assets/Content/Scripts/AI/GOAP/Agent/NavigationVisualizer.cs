@@ -15,8 +15,9 @@ namespace Content.Scripts.AI.GOAP.Agent {
     [SerializeField] private float _heightOffset = 0.3f;
     [Tooltip("Raycast height above expected ground")]
     [SerializeField] private float _raycastHeight = 50f;
-    [Tooltip("Layer mask for terrain raycast")]
-    [SerializeField] private LayerMask _terrainMask = ~0;
+
+    [Tooltip("Layer mask for terrain raycast")] [SerializeField]
+    private LayerMask _terrainMask;
     
     private NavMeshAgent _navMeshAgent;
     private readonly Vector3[] _corners = new Vector3[48];

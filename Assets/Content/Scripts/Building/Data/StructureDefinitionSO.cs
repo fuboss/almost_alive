@@ -41,6 +41,14 @@ namespace Content.Scripts.Building.Data {
     [TableList(ShowIndexLabels = true, AlwaysExpanded = true)]
     public SlotDefinition[] slots;
 
+    [Title("Core Module")]
+    [Tooltip("Required module to make structure functional. Other modules blocked until core is built.")]
+    public ModuleDefinitionSO coreModule;
+
+    [Tooltip("Which slot(s) core module occupies. If empty, auto-finds first compatible slots.")]
+    [ValueDropdown("GetSlotIds")]
+    public string[] coreModuleSlotIds;
+
     [Title("Entry Points")]
     [Tooltip("Which sides allow entry (stairs placement)")]
     [EnumToggleButtons]
@@ -218,6 +226,25 @@ namespace Content.Scripts.Building.Data {
         }
       }
       
+      // Core module validation
+      if (coreModule != null) {
+        if (coreModuleSlotIds != null && coreModuleSlotIds.Length > 0) {
+          foreach (var slotId in coreModuleSlotIds) {
+            var found = false;
+            foreach (var slot in slots) {
+              if (slot.slotId == slotId) { found = true; break; }
+            }
+            if (!found) {
+              Debug.LogWarning($"[{name}] coreModuleSlotId '{slotId}' not found in slots", this);
+            }
+          }
+        }
+        var coreFootprintSize = coreModule.slotFootprint.x * coreModule.slotFootprint.y;
+        if (coreModuleSlotIds != null && coreModuleSlotIds.Length > 0 && coreModuleSlotIds.Length != coreFootprintSize) {
+          Debug.LogWarning($"[{name}] coreModuleSlotIds count ({coreModuleSlotIds.Length}) doesn't match coreModule footprint ({coreFootprintSize})", this);
+        }
+      }
+      
       var hasNavMeshSurface = foundationPrefab.GetComponentInChildren<NavMeshSurface>(true) != null;
       if (!hasNavMeshSurface) {
         Debug.LogWarning($"[{name}] foundationPrefab has no NavMeshSurface in children!", this);
@@ -235,7 +262,15 @@ namespace Content.Scripts.Building.Data {
         Debug.LogWarning($"[{name}] doorwayWallPrefab is not assigned", this);
       }
       
-      Debug.Log($"[{name}] Valid ✓", this);
+      var coreInfo = coreModule != null ? $" (core: {coreModule.moduleId})" : "";
+      Debug.Log($"[{name}] Valid ✓{coreInfo}", this);
+    }
+    
+    private IEnumerable<string> GetSlotIds() {
+      if (slots == null) yield break;
+      foreach (var slot in slots) {
+        if (!string.IsNullOrEmpty(slot.slotId)) yield return slot.slotId;
+      }
     }
 
     [Button("Copy Slots from Prefab"), PropertyOrder(-1)]

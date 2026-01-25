@@ -1,6 +1,7 @@
 using System.Linq;
 using Content.Scripts.AI;
 using Content.Scripts.AI.GOAP;
+using Content.Scripts.Building.Runtime;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
@@ -17,6 +18,7 @@ namespace Content.Scripts.DebugPanel {
     [Inject] private SimulationTimeController _simTime;
     [Inject] private StructuresModule _structuresModule;
     [Inject] private StructurePlacementService _placement;
+    [Inject] private ModulePlacementService _modulePlacement;
 
     private DebugActionRegistry _registry;
     private DebugState _currentState = DebugState.Idle;
@@ -44,6 +46,9 @@ namespace Content.Scripts.DebugPanel {
       // Try to register spawn actions immediately
       TryRegisterSpawnActions();
       TryRegisterStructureActions();
+      
+      // Subscribe to module loading
+      _structuresModule.OnModulesLoaded += RegisterModuleActions;
     }
 
     void ILateTickable.LateTick() {
@@ -159,10 +164,20 @@ namespace Content.Scripts.DebugPanel {
             ResetAfterAction();
           }
           else {
-            // Click missed - cancel action
             CancelAction();
           }
+          break;
 
+        case DebugActionType.RequiresStructure:
+          if (TryGetStructureUnderMouse(out Structure structure)) {
+            _pendingContext.targetStructure = structure;
+            _pendingAction.Execute(_pendingContext);
+            Debug.Log($"[DebugModule] Executed {_pendingAction.displayName} on {structure.name}");
+            ResetAfterAction();
+          }
+          else {
+            CancelAction();
+          }
           break;
       }
     }
@@ -200,6 +215,24 @@ namespace Content.Scripts.DebugPanel {
       for (int i = 0; i < hitCount; i++) {
         actor = _raycastBuffer[i].collider.GetComponentInParent<ActorDescription>();
         if (actor != null) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    private bool TryGetStructureUnderMouse(out Structure structure) {
+      structure = null;
+
+      if (Camera.main == null) return false;
+
+      Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+      int hitCount = Physics.RaycastNonAlloc(ray, _raycastBuffer, 1000f);
+
+      for (int i = 0; i < hitCount; i++) {
+        structure = _raycastBuffer[i].collider.GetComponentInParent<Structure>();
+        if (structure != null) {
           return true;
         }
       }
@@ -285,6 +318,32 @@ namespace Content.Scripts.DebugPanel {
         displayName));
 
       Debug.Log($"[DebugModule] Registered SpawnTemplates action: {displayName}");
+    }
+
+    public void RegisterModuleActions(Building.Data.ModuleDefinitionSO[] moduleDefinitions) {
+      if (moduleDefinitions == null || moduleDefinitions.Length == 0) return;
+
+      int count = 0;
+      foreach (var moduleDef in moduleDefinitions) {
+        if (moduleDef == null) continue;
+        
+        var footprintInfo = $"({moduleDef.slotFootprint.x}x{moduleDef.slotFootprint.y})";
+        var clearanceInfo = moduleDef.clearanceRadius > 0 ? $" c{moduleDef.clearanceRadius}" : "";
+        
+        // Instant placement (debug/cheat)
+        var instantName = $"[Instant] {moduleDef.moduleId} {footprintInfo}{clearanceInfo}";
+        _registry.Register(new Actions.PlaceModuleAction(_modulePlacement, moduleDef, instantName));
+        
+        // Assignment for construction
+        var assignName = $"[Assign] {moduleDef.moduleId} {footprintInfo}{clearanceInfo}";
+        _registry.Register(new Actions.AssignModuleAction(_modulePlacement, moduleDef, assignName));
+        
+        count++;
+      }
+
+      if (count > 0) {
+        Debug.Log($"[DebugModule] Registered {count * 2} module actions ({count} instant + {count} assign)");
+      }
     }
   }
 }

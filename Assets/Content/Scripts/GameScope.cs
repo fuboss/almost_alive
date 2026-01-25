@@ -68,7 +68,9 @@ namespace Content.Scripts {
       builder.RegisterInstance(structureGhostMaterial).Keyed("ghostMaterial").AsSelf();
       builder.Register<StructurePlacementService>(Lifetime.Singleton).AsSelf();
       builder.Register<StructureConstructionService>(Lifetime.Singleton).AsSelf();
+      builder.Register<ModulePlacementService>(Lifetime.Singleton).AsSelf();
       builder.Register<StructuresModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
 
 
       builder.RegisterComponent(agentPrefab).AsSelf();
@@ -79,6 +81,7 @@ namespace Content.Scripts {
       builder.RegisterComponentInNewPrefab(cameraPrefab, Lifetime.Scoped).AsSelf();
       builder.RegisterInstance(cameraSettings).AsSelf();
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<CutoutModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<DebugPanel.DebugModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
       InitUi(builder);

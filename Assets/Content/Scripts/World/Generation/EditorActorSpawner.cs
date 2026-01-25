@@ -15,7 +15,7 @@ namespace Content.Scripts.World.Generation {
   public class EditorActorSpawner : IDisposable {
     private const float RAYCAST_HEIGHT = 50f;
     private const float RAYCAST_DISTANCE = 300f;
-    private static readonly int GROUND_MASK = LayerMask.GetMask("Default");
+    private static readonly int GROUND_MASK = LayerMask.GetMask("Terrain");
 
     private readonly Dictionary<string, GameObject> _prefabCache = new();
     private readonly Dictionary<string, Transform> _biomeContainers = new();

@@ -1,12 +1,11 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using Content.Scripts.Building.Data;
 using Content.Scripts.Building.EditorUtilities;
-using Content.Scripts.Building.Runtime;
 using Content.Scripts.Descriptors.Tags;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
-using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace Content.Scripts.Building.Editor {
@@ -90,7 +89,7 @@ namespace Content.Scripts.Building.Editor {
       Undo.RecordObject(_builder.transform, "Snap to Grid");
       
       var pos = _builder.transform.position;
-      var cellSize = Content.Scripts.World.Grid.WorldGrid.cellSize;
+      var cellSize = World.Grid.WorldGrid.cellSize;
       
       pos.x = Mathf.Round(pos.x / cellSize) * cellSize;
       pos.z = Mathf.Round(pos.z / cellSize) * cellSize;
@@ -104,7 +103,7 @@ namespace Content.Scripts.Building.Editor {
     private void AddSlotAtCenter() {
       Undo.RecordObject(_builder, "Add Slot");
       
-      var cellSize = Content.Scripts.World.Grid.WorldGrid.cellSize;
+      var cellSize = World.Grid.WorldGrid.cellSize;
       var centerPos = new Vector3(
         _builder.footprint.x * cellSize * 0.5f,
         0,
@@ -213,15 +212,17 @@ namespace Content.Scripts.Building.Editor {
         }
       }
 
-      // Remove StructureFoundationBuilder before saving (it's editor-only tool)
-      // We need to save without this component
-      var tempGO = Instantiate(_builder.gameObject);
-      tempGO.name = prefabName;
-      
+      // Create a temp copy that preserves nested prefab links where possible
+      var tempGO = BuildTempCopyPreservingNestedPrefabs(_builder.gameObject, prefabName);
+      if (tempGO == null) {
+        EditorUtility.DisplayDialog("Error", "Failed to create temp copy for prefab.", "OK");
+        return;
+      }
+
       // Remove the builder component from temp copy
       var builderOnCopy = tempGO.GetComponent<StructureFoundationBuilder>();
       if (builderOnCopy != null) {
-        DestroyImmediate(builderOnCopy);
+        Object.DestroyImmediate(builderOnCopy);
       }
 
       // Add StructureDescription with metadata
@@ -249,7 +250,7 @@ namespace Content.Scripts.Building.Editor {
       var prefab = PrefabUtility.SaveAsPrefabAsset(tempGO, prefabPath);
       
       // Cleanup temp object
-      DestroyImmediate(tempGO);
+      Object.DestroyImmediate(tempGO);
 
       if (prefab == null) {
         EditorUtility.DisplayDialog("Error", "Failed to create prefab!", "OK");
@@ -272,6 +273,81 @@ namespace Content.Scripts.Building.Editor {
 
       Debug.Log($"[StructureFoundationBuilder] Saved: {prefabPath}");
       EditorUtility.DisplayDialog("Prefab Saved", message, "OK");
+    }
+
+    // Build a temporary copy of the original object but when a node has a prefab asset source,
+    // instantiate that asset (preserving nested prefab links). For other nodes, clone components and recurse.
+    private static GameObject BuildTempCopyPreservingNestedPrefabs(GameObject originalRoot, string tempName) {
+      if (originalRoot == null) return null;
+
+      var tempRoot = new GameObject(tempName);
+
+      // Copy root-level components except Transform (will be handled by GameObject transform)
+      // We'll keep the root mostly empty and only copy children since StructureFoundationBuilder is an editor helper.
+
+      void CopyNode(Transform src, Transform destParent) {
+        var srcGO = src.gameObject;
+        var sourceAsset = PrefabUtility.GetCorrespondingObjectFromSource(srcGO);
+
+        GameObject newGO;
+
+        if (sourceAsset != null) {
+          // If this node is a prefab instance, instantiate its asset to preserve prefab connection
+          newGO = PrefabUtility.InstantiatePrefab(sourceAsset) as GameObject;
+          if (newGO == null) {
+            // fallback to cloning
+            newGO = Object.Instantiate(srcGO);
+          }
+
+          newGO.name = srcGO.name;
+          newGO.transform.SetParent(destParent, false);
+
+          // Copy local transform
+          newGO.transform.localPosition = src.localPosition;
+          newGO.transform.localRotation = src.localRotation;
+          newGO.transform.localScale = src.localScale;
+
+          // Do NOT recurse into children — instantiated prefab carries its own hierarchy (and nested prefab links)
+        }
+        else {
+          // Clone the GameObject but strip its children so we can process them individually
+          newGO = Object.Instantiate(srcGO);
+          newGO.name = srcGO.name;
+
+          // Detach and hold clones of children created by Instantiate so we can replace them
+          var detachedChildren = new List<GameObject>();
+          for (var i = 0; i < newGO.transform.childCount; i++) {
+            detachedChildren.Add(newGO.transform.GetChild(i).gameObject);
+          }
+          foreach (var c in detachedChildren) c.transform.SetParent(null, false);
+
+          // Parent the cloned root under destination
+          newGO.transform.SetParent(destParent, false);
+          newGO.transform.localPosition = src.localPosition;
+          newGO.transform.localRotation = src.localRotation;
+          newGO.transform.localScale = src.localScale;
+
+          // Now recursively copy children from original into the newly cloned GO
+          foreach (Transform child in src) {
+            CopyNode(child, newGO.transform);
+          }
+
+          // Cleanup detached clones (they are duplicates created by Instantiate)
+          foreach (var c in detachedChildren) Object.DestroyImmediate(c);
+        }
+      }
+
+      // Copy children of original root (we don't copy the original root GameObject itself)
+      foreach (Transform child in originalRoot.transform) {
+        CopyNode(child, tempRoot.transform);
+      }
+
+      // Copy transform of root to match original
+      tempRoot.transform.position = originalRoot.transform.position;
+      tempRoot.transform.rotation = originalRoot.transform.rotation;
+      tempRoot.transform.localScale = originalRoot.transform.localScale;
+
+      return tempRoot;
     }
 
     private bool MakeAddressable(string assetPath, string address) {

@@ -18,7 +18,7 @@ namespace Content.Scripts.AI.GOAP {
 
     private const float RAYCAST_HEIGHT = 50f;
     private const float RAYCAST_DISTANCE = 300f;
-    private static readonly int GROUND_MASK = LayerMask.GetMask("Default");
+    private static readonly int GROUND_MASK = LayerMask.GetMask("Terrain");
 
     void IInitializable.Initialize() {
       Debug.Log("ActorCreationModule:Initialize");

@@ -86,6 +86,8 @@ MonoBehaviour:
     acceptedModuleTags: []
     isInterior: 1
     startsLocked: 0
+  coreModule: {fileID: 11400000, guid: b717e4bcc016341efb45175ba46ba98c, type: 2}
+  coreModuleSlotIds: []
   entryDirections: -1
   stairsPrefab: {fileID: 4590713513075860519, guid: 692f3ec527bac4297a4430fdb3e6c5aa, type: 3}
   navMeshLinkPrefab: {fileID: 3690033036347875673, guid: a8459d36ac22c4905b81d0e2c5bdd58f, type: 3}

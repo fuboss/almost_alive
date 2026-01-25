@@ -24,19 +24,32 @@ namespace Content.Scripts.Building.Services {
     [Inject] private NavigationModule _navigationModule;
 
     private readonly List<StructureDefinitionSO> _definitions = new();
+    private readonly List<ModuleDefinitionSO> _moduleDefinitions = new();
     private Terrain _terrain;
 
     public bool isInitialized { get; private set; }
+    public bool modulesInitialized { get; private set; }
     public IReadOnlyList<StructureDefinitionSO> definitions => _definitions;
+    public IReadOnlyList<ModuleDefinitionSO> moduleDefinitions => _moduleDefinitions;
+    
+    public event Action<ModuleDefinitionSO[]> OnModulesLoaded;
 
     void IInitializable.Initialize() {
       _terrain = Terrain.activeTerrain;
 
-      // Load definitions from Addressables
+      // Load structure definitions from Addressables
       Addressables.LoadAssetsAsync<StructureDefinitionSO>("StructureDefinition").Completed += handle => {
         _definitions.AddRange(handle.Result);
         isInitialized = true;
         Debug.Log($"[StructuresModule] Loaded {_definitions.Count} structure definitions");
+      };
+      
+      // Load module definitions from Addressables
+      Addressables.LoadAssetsAsync<ModuleDefinitionSO>("ModuleDefinition").Completed += handle => {
+        _moduleDefinitions.AddRange(handle.Result);
+        modulesInitialized = true;
+        Debug.Log($"[StructuresModule] Loaded {_moduleDefinitions.Count} module definitions");
+        OnModulesLoaded?.Invoke(_moduleDefinitions.ToArray());
       };
       
       ActorRegistry<Structure>.onUnregistered += OnStructureUnregistered;

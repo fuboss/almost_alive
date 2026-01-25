@@ -611,7 +611,7 @@ MonoBehaviour:
   _raycastHeight: 20
   _terrainMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
 --- !u!1 &5785814355086398748
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,7 +740,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  _animationController: {fileID: 0}
+  _animationController: {fileID: 7829366352340831186}
   _rigidbody: {fileID: 3385872056700084885}
 --- !u!1001 &226242912564321317
 PrefabInstance:
@@ -941,6 +941,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8023406233556619781, guid: 848076de366594559a925394e77eff58, type: 3}
   m_PrefabInstance: {fileID: 3498816246191866555}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7829366352340831186 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6640898368552438121, guid: 848076de366594559a925394e77eff58, type: 3}
+  m_PrefabInstance: {fileID: 3498816246191866555}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3af16cc6d53402799aa631a31456cb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Animation.UniversalAnimationController
 --- !u!1001 &4594903380522952517
 PrefabInstance:
   m_ObjectHideFlags: 0

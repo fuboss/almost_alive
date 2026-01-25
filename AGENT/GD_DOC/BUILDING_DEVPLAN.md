@@ -2,22 +2,22 @@
 
 > Extracted from BUILDING.md for tracking implementation progress.
 
-## Status: 🟡 Phase 4.5 (Action Assets needed)
+## Status: 🟡 Phase 4.5 — Multi-Slot Modules
 
 ---
 
 ## Phase 1: Data Foundation ✅ DONE
 **Goal:** Core data structures, no runtime yet.
 
-- [x] 1.1 `StructureDefinitionSO` — scriptable object with footprint, foundationPrefab, slots[], foundationRecipe
+- [x] 1.1 `StructureDefinitionSO` — scriptable object with footprint, foundationPrefab, slots[], constructionData
 - [x] 1.2 `SlotDefinition` — serializable class with slotId, slotType, localPosition/rotation, acceptedModuleTags[], isInterior, startsLocked
 - [x] 1.3 `ModuleDefinitionSO` — scriptable object with moduleId, tags[], compatibleSlotTypes[], recipe, prefab, deconstructReturnPercent
-- [x] 1.4 `SlotType` enum — Sleeping, Production, Storage, Utility
+- [x] 1.4 `SlotType` enum — Sleeping, Production, Storage, Utility, Entertainment
 - [ ] 1.5 Test assets — StructureDefinition_BasicShelter.asset, ModuleDefinition_Bedroll.asset, _Chest.asset
 
 ---
 
-## Phase 2: Runtime Structure + Editor Tooling
+## Phase 2: Runtime Structure + Editor Tooling ✅ DONE
 
 ### 2.A Editor Tooling ✅ DONE
 
@@ -25,7 +25,7 @@
 - [x] 2.A.2 `StructureFoundationBuilderEditor.cs` — custom editor with buttons
 - [x] 2.A.3 Terrain Check Visualization
 - [x] 2.A.4 Slot visualization colors
-- [x] 2.A.5 `StructureDescription.cs` — prefab metadata component
+- [x] 2.A.5 `StructureTag.cs` — prefab metadata component (renamed from StructureDescription)
 - [x] 2.A.6 `StructurePartDescription.cs` — wall prefab metadata
 - [x] 2.A.7 Save as Addressable Prefab workflow
 
@@ -50,7 +50,7 @@
 
 #### Runtime Layer (refactored)
 - [x] 2.C.5 `Structure` (MonoBehaviour) — data-only
-- [x] 2.C.6 `UnfinishedStructure` (MonoBehaviour) — blueprint + progress
+- [x] 2.C.6 `UnfinishedStructureActor` (MonoBehaviour) — blueprint + progress (extends UnfinishedActorBase)
 
 #### Services Layer (DI)
 - [x] 2.C.7 `StructurePlacementService` — terrain, ghost
@@ -73,122 +73,233 @@
 
 ---
 
-## Phase 4: Construction Flow (GOAP) ⬅️ CURRENT
+## Phase 4: Construction Flow (GOAP) ✅ DONE
 **Goal:** Agents build structures autonomously.
 
-### 4.0 Deprecate Camp System
-- [ ] Mark `AI/Camp/` as deprecated
-- [ ] Mark `AI/GOAP/Beliefs/Camp/` as deprecated
-- [ ] Mark `AI/GOAP/Strategies/Camp/` as deprecated
+### 4.0 Unify Craft System ✅ DONE
+- [x] `UnfinishedActorBase` — abstract base for all unfinished actors
+- [x] `UnfinishedActor` — generic craft items
+- [x] `UnfinishedStructureActor` — structures (extends base)
+- [x] `UnfinishedQuery` — unified queries for all unfinished types
+- [x] `IUnfinishedActor` interface
 
-### 4.1 Query Helpers
-- [x] `UnfinishedStructureQuery.cs` — static query helpers
+### 4.1 Beliefs ✅ DONE (in CraftBeliefs.cs — unified for all craft)
+- [x] `HasActiveUnfinishedBelief`
+- [x] `UnfinishedNeedsResourcesBelief`
+- [x] `UnfinishedNeedsWorkBelief`
+- [x] `UnfinishedReadyToCompleteBelief`
+- [x] `InventoryHasResourcesForUnfinishedBelief`
+- [x] `StorageHasResourcesForUnfinishedBelief`
+- [x] `NeedsGatherForUnfinishedBelief`
+- [x] `MemoryHasCraftResourceBelief`
+- [x] `CanStartCraftingOnStructuresEmptySlotsBelief`
 
-### 4.2 Agent Interface
+### 4.2 Strategies ✅ DONE (in Strategies/Craft/)
+- [x] `DeliverToUnfinishedStrategy` — delivers resources to nearest UnfinishedActorBase
+- [x] `WorkOnUnfinishedStrategy` — works on unfinished, completes when ready
+- [x] `MoveToBestUnfinishedStrategy` — moves to nearest unfinished
+
+### 4.3 Agent Interface ✅ DONE
 - [x] `IBuilderAgent` interface
 - [x] Add to `GOAPAgent`
 
-### 4.3 Beliefs
-- [x] `UnfinishedStructureNeedsResourcesBelief`
-- [x] `UnfinishedStructureNeedsWorkBelief`
-- [x] `UnfinishedStructureReadyToCompleteBelief`
-- [x] `AgentHasResourceForStructureBelief`
-- [x] `NoUnfinishedStructuresBelief`
+### 4.4 Debug Actions ✅ DONE
+- [x] `SpawnStructureAction` — spawn structure via DebugPanel
+- [x] `SpawnStructureWithAgentAction` — spawn structure + agent
 
-### 4.4 Strategies
-- [x] `DeliverToStructureStrategy` — delivers resources to nearest UnfinishedStructure
-- [x] `WorkOnStructureStrategy` — works on structure, completes when ready
-- [x] `MoveToStructureStrategy` — moves to nearest structure
-
-### 4.5 Action Assets (TODO)
-- [ ] Create `action_DeliverToStructure.asset`
-- [ ] Create `action_WorkOnStructure.asset`
-- [ ] Create `action_GatherForStructure.asset` (gather specific resource)
-
-### 4.6 Goal Assets (TODO)
+### 4.5 Action/Goal Assets (TODO — low priority)
+- [ ] Create `action_DeliverToUnfinished.asset`
+- [ ] Create `action_WorkOnUnfinished.asset`
 - [ ] Create `goal_BuildStructure.asset`
-
-### 4.7 Feature Set (TODO)
-- [ ] Create `Structure_FeatureSet.asset` with beliefs, actions, goals
-- [ ] Add to agent's feature sets
-
-### 4.8 Test
-- [ ] Place structure via DebugPanel
-- [ ] Verify agent gathers resources
-- [ ] Verify agent delivers to structure
-- [ ] Verify agent works on structure
-- [ ] Verify structure completes
+- [ ] Create `Structure_FeatureSet.asset`
 
 ---
 
-## Phase 5: Player Module Assignment
-**Goal:** Player can assign modules to slots.
+## Phase 4.5: Multi-Slot Modules ✅ DONE
+**Goal:** Module actors can occupy multiple slots (footprint).
 
-- [ ] 5.1 Structure Selection — click to select, info panel
-- [ ] 5.2 Slot Visualization — highlight slots, color coding
-- [ ] 5.3 Assignment UI — popup with compatible modules
-- [ ] 5.4 Priority Control — Low/Normal/High/Critical
+### 4.5.1 Data Layer Changes ✅
+- [x] `ModuleDefinitionSO` — added `Vector2Int slotFootprint` (default 1x1)
+- [x] `ModuleDefinitionSO` — added `int clearanceRadius` for pathfinding zone
+- [x] `ModuleDefinitionSO` — removed `prefab`, using `recipe.resultActorKey` instead
+- [x] `StructureDefinitionSO` — added `coreModule` (required module before others)
+- [x] `StructureDefinitionSO` — added `coreModuleSlotIds[]`
+
+### 4.5.2 Runtime Slot Logic ✅
+- [x] `Slot` — new state `OCCUPIED` for non-anchor slots
+- [x] `Slot` — added `anchorSlot` reference
+- [x] `Slot.AssignAsAnchor()`, `AssignAsOccupied()`, `ClearOccupied()`
+- [x] `Slot.isAnchor`, `isInUse`, `GetModule()`, `GetAssignedModuleDef()`
+
+### 4.5.3 Structure Query Methods ✅
+- [x] `Structure.FindSlotsForModule()` — finds contiguous slots that fit footprint
+- [x] `Structure.CanPlaceModule()` — validates placement + clearance + core
+- [x] `Structure.AssignModuleToSlots()` — assigns anchor + occupied slots
+- [x] `Structure.GetSlotsForModule()`, `ClearModule()`
+- [x] `Structure.isCoreBuilt`, `requiresCore`, `SetCoreBuilt()`
+
+### 4.5.4 Clearance Validation ✅
+- [x] `Structure.ValidateClearance()` — checks ring around module
+- [x] Slots outside structure bounds (walls) are ignored
+- [x] Grid-based position calculation
+
+### 4.5.5 Module Placement Service ✅
+- [x] `ModulePlacementService` — handles module placement logic
+- [x] `PlaceModule()`, `PlaceModuleAt()`, `PlaceCoreModule()`
+- [x] `RemoveModule()` — clears all slots, resets core status if needed
+- [x] Uses `ActorCreationModule` to spawn (not Instantiate)
+- [x] Registered in `GameScope`
+
+### 4.5.6 Debug Panel Integration ✅
+- [x] `PlaceModuleAction` — place module via DebugPanel
+- [x] `DebugCategory.Module` added
+- [x] `DebugActionType.RequiresStructure` handling
+- [x] `DebugModule.TryGetStructureUnderMouse()`
+- [x] `DebugModule.RegisterModuleActions()` + event subscription
+- [x] `StructuresModule` loads `ModuleDefinitionSO` from Addressables
+
+### 4.5.7 Test Scenarios (Manual)
+- [ ] Create test ModuleDefinition assets with Addressable label
+- [ ] Place 1x1 module in single slot
+- [ ] Place 2x1 module occupying 2 adjacent slots
+- [ ] Validate clearance prevents placement next to occupied slots
+- [ ] Validate core module required before other modules
+- [ ] Remove module frees all occupied slots
 
 ---
 
-## Phase 6: Agent Autonomous Building
+## Phase 5: Module Construction Flow ✅ DONE
+**Goal:** Modules go through UnfinishedActor flow like structures.
+
+### 5.1 UnfinishedModuleActor ✅
+- [x] `UnfinishedModuleActor` — extends UnfinishedActorBase
+- [x] Stores: `targetStructure`, `anchorSlot`, `ModuleDefinitionSO`
+- [x] `TryComplete()` → calls `ModulePlacementService.CompleteModule()`
+- [x] `OnDestroy()` — clears slot assignment if destroyed without completion
+- [x] Inherits `ActorRegistry<UnfinishedActorBase>` registration
+
+### 5.2 ModulePlacementService Updates ✅
+- [x] `AssignModule()` — assigns slots + creates UnfinishedModuleActor
+- [x] `AssignModuleAt()` — at specific anchor slot
+- [x] `AssignCoreModule()` — for core module
+- [x] `CompleteModule()` — called by UnfinishedModuleActor.TryComplete()
+- [x] `InstantPlaceModule()` — for debug/cheats (no construction)
+- [x] `InstantPlaceModuleAt()`, `InstantPlaceCoreModule()` — instant variants
+- [x] Injects dependencies into UnfinishedModuleActor
+
+### 5.3 DebugPanel Integration ✅
+- [x] `PlaceModuleAction` — instant placement (debug)
+- [x] `AssignModuleAction` — assignment for construction
+- [x] Both registered for each ModuleDefinition
+
+### 5.4 Integration with Craft Flow ✅
+- [x] `UnfinishedQuery` works via `ActorRegistry<UnfinishedActorBase>` — auto picks up UnfinishedModuleActor
+- [x] Existing beliefs (`UnfinishedNeedsResourcesBelief`, etc.) work automatically
+- [x] Existing strategies (`DeliverToUnfinishedStrategy`, `WorkOnUnfinishedStrategy`) work automatically
+
+### 5.5 Required Prefab
+- [ ] Create `unfinished_module` prefab with:
+  - `ActorDescription` (actorKey: "unfinished_module")
+  - `ActorInventory`
+  - `UnfinishedModuleActor`
+  - Visual placeholder (optional)
+- [ ] Add to Addressables
+
+---
+
+## Phase 6: Player Module Assignment (DEFERRED)
+**Goal:** Player can assign modules to slots via UI.
+
+- [ ] 6.1 Structure Selection — click to select, info panel
+- [ ] 6.2 Slot Visualization — highlight slots, color coding
+- [ ] 6.3 Assignment UI — popup with compatible modules
+- [ ] 6.4 Priority Control — Low/Normal/High/Critical
+
+---
+
+## Phase 7: Agent Autonomous Building (DEFERRED)
 **Goal:** Agents decide what to build without player input.
 
-- [ ] 6.1 Need Evaluation — map needs to module tags
-- [ ] 6.2 Slot Selection — find compatible empty slots
-- [ ] 6.3 Auto-Assignment — agent assigns, lower priority than player
-- [ ] 6.4 Balancing Autonomy — config for auto-build, slot locking
+- [ ] 7.1 Need Evaluation — map needs to module tags
+- [ ] 7.2 Slot Selection — find compatible empty slots
+- [ ] 7.3 Auto-Assignment — agent assigns, lower priority than player
+- [ ] 7.4 Balancing Autonomy — config for auto-build, slot locking
 
 ---
 
-## Phase 7: Ownership & Usage
+## Phase 8: Ownership & Usage (DEFERRED)
 **Goal:** Modules can be owned, affects AI decisions.
 
-- [ ] 7.1 Ownership Assignment — player UI, agent claims on use
-- [ ] 7.2 Usage Priority — owner first, others if not claiming
-- [ ] 7.3 Mood Integration — own bed buff, stranger's bed debuff
+- [ ] 8.1 Ownership Assignment — player UI, agent claims on use
+- [ ] 8.2 Usage Priority — owner first, others if not claiming
+- [ ] 8.3 Mood Integration — own bed buff, stranger's bed debuff
 
 ---
 
-## Phase 8: Deconstruction
+## Phase 9: Deconstruction (DEFERRED)
 **Goal:** Player can remove modules and structures.
 
-- [ ] 8.1 Mark for Deconstruction — UI button, visual indicator
-- [ ] 8.2 Deconstruction Action — action_Deconstruct
-- [ ] 8.3 Resource Return — base * HP% * returnPercent
-- [ ] 8.4 Structure Deconstruction — modules first, foundation last
+- [ ] 9.1 Mark for Deconstruction — UI button, visual indicator
+- [ ] 9.2 Deconstruction Action — action_Deconstruct
+- [ ] 9.3 Resource Return — base * HP% * returnPercent
+- [ ] 9.4 Structure Deconstruction — modules first, foundation last
 
 ---
 
-## Phase 9: Expansion System
+## Phase 10: Expansion System (DEFERRED)
 **Goal:** Structures can be expanded with new wings.
 
-- [ ] 9.1 `ExpansionDefinition` — snapPointIndex, slots[], recipe
-- [ ] 9.2 Expansion UI — button, available expansions list
-- [ ] 9.3 Expansion Placement — ghost at snap point
-- [ ] 9.4 Expansion Construction — same flow, new slots added
+- [ ] 10.1 `ExpansionDefinition` — snapPointIndex, slots[], recipe
+- [ ] 10.2 Expansion UI — button, available expansions list
+- [ ] 10.3 Expansion Placement — ghost at snap point
+- [ ] 10.4 Expansion Construction — same flow, new slots added
 
 ---
 
-## Phase 10: Polish & Integration
+## Phase 11: Polish & Integration (DEFERRED)
 **Goal:** System feels complete, edge cases handled.
 
-- [ ] 10.1 Visual Polish — construction progress, slot highlights, damage
-- [ ] 10.2 Audio — construction sounds, completion
-- [ ] 10.3 Save/Load — serialize state, rebuild on load
-- [ ] 10.4 Migration — convert CampSetup to StructureDefinitions
-- [ ] 10.5 Debug Tools — inspector, quick-build cheat, visualizer
+- [ ] 11.1 Visual Polish — construction progress, slot highlights, damage
+- [ ] 11.2 Audio — construction sounds, completion
+- [ ] 11.3 Save/Load — serialize state, rebuild on load
+- [ ] 11.4 Debug Tools — inspector, quick-build cheat, visualizer
 
 ---
 
-## MVP Milestone
+## MVP Milestone (Updated)
 
-Phases 1-4 = minimum playable:
-- Player places blueprint (UnfinishedStructure with ghost)
-- Agents deliver resources
-- Agents do work
-- Structure completes (walls, slots, entries)
+**Phases 1-4** = structures can be built by agents ✅
+**Phase 4.5** = modules occupy correct slots ⬅️ CURRENT
+**Phase 5** = modules built via craft flow
 
 ---
 
-*Last updated: Session with GD — Architecture Refactor*
+## File Locations
+
+```
+Building/
+├── Data/
+│   ├── StructureDefinitionSO.cs
+│   ├── ModuleDefinitionSO.cs      ← add slotFootprint
+│   ├── SlotDefinition.cs
+│   ├── SlotType.cs
+│   ├── ConstructionData.cs
+│   ├── IConstructionRequirements.cs
+│   └── (enums)
+├── Runtime/
+│   ├── Structure.cs               ← add module placement queries
+│   ├── Slot.cs                    ← add multi-slot support
+│   ├── Module.cs
+│   ├── UnfinishedStructureActor.cs
+│   └── (walls, entries)
+├── Services/
+│   ├── StructuresModule.cs
+│   ├── StructurePlacementService.cs
+│   ├── StructureConstructionService.cs
+│   └── ModulePlacementService.cs  ← NEW
+└── Editor/
+```
+
+---
+
+*Last updated: Session — Multi-Slot Modules Planning*

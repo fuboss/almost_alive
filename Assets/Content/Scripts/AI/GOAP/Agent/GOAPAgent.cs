@@ -96,12 +96,14 @@ namespace Content.Scripts.AI.GOAP.Agent {
     }
 
     private void OnEnable() {
+      ActorRegistry<GOAPAgent>.Register(this);
       _simLoop?.Register(this);
       if (_simTime != null) _simTime.OnSpeedChanged += OnSimSpeedChanged;
       _agentContainerModule.Add(this);
     }
 
     private void OnDisable() {
+      ActorRegistry<GOAPAgent>.Unregister(this);
       _simLoop?.Unregister(this);
       if (_simTime != null) _simTime.OnSpeedChanged -= OnSimSpeedChanged;
       _agentContainerModule?.Remove(this);

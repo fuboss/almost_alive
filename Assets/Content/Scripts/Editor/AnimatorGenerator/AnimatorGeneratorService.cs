@@ -30,32 +30,53 @@ namespace Content.Scripts.Editor.AnimatorGenerator {
         new BaseLayerBuilder(),
         new CombatLayerBuilder(),
         new UpperBodyLayerBuilder($"{outputPath}/UpperBodyMask.mask"),
-        new AdditiveLayerBuilder()
+        new AdditiveLayerBuilder(),
+        new SimulationLayerBuilder()
       };
     }
 
     public AnimatorController Generate() {
+      Debug.Log("[AnimatorGenerator] Starting generation...");
       var controllerPath = $"{_outputPath}/UniversalAnimator.controller";
       var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
 
       if (controller != null) {
+        Debug.Log("[AnimatorGenerator] Clearing existing controller...");
         ClearController(controller);
       } else {
+        Debug.Log("[AnimatorGenerator] Creating new controller...");
         controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
       }
 
+      Debug.Log("[AnimatorGenerator] Adding parameters...");
       AddParameters(controller);
 
       var context = new LayerBuildContext(_clipProvider, _blendTreeFactory, _config, _transitionFactory);
 
       foreach (var builder in _layerBuilders) {
+        if (builder.LayerIndex >= _config.layers.Length) {
+          Debug.LogWarning($"[AnimatorGenerator] Skipping layer {builder.LayerName} - config has no entry for index {builder.LayerIndex}");
+          continue;
+        }
+        
         if (_config.layers[builder.LayerIndex].enabled) {
-          builder.Build(controller, context);
+          Debug.Log($"[AnimatorGenerator] Building layer: {builder.LayerName}");
+          try {
+            builder.Build(controller, context);
+            Debug.Log($"[AnimatorGenerator] Layer {builder.LayerName} built successfully");
+          } catch (System.Exception e) {
+            Debug.LogError($"[AnimatorGenerator] Failed to build layer {builder.LayerName}: {e.Message}\n{e.StackTrace}");
+            throw;
+          }
+        } else {
+          Debug.Log($"[AnimatorGenerator] Skipping disabled layer: {builder.LayerName}");
         }
       }
 
+      Debug.Log("[AnimatorGenerator] Saving controller...");
       EditorUtility.SetDirty(controller);
       AssetDatabase.SaveAssets();
+      Debug.Log("[AnimatorGenerator] Generation completed!");
 
       return controller;
     }
@@ -74,9 +95,11 @@ namespace Content.Scripts.Editor.AnimatorGenerator {
       // Int
       controller.AddParameter("WeaponType", AnimatorControllerParameterType.Int);
       controller.AddParameter("ToolType", AnimatorControllerParameterType.Int);
-      controller.AddParameter("AttackIndex", AnimatorControllerParameterType.Int);
       controller.AddParameter("SitType", AnimatorControllerParameterType.Int);
-      controller.AddParameter("DeathType", AnimatorControllerParameterType.Int);
+
+      // Float (for BlendTrees)
+      controller.AddParameter("AttackIndex", AnimatorControllerParameterType.Float);
+      controller.AddParameter("DeathType", AnimatorControllerParameterType.Float);
 
       // Bool
       controller.AddParameter("IsGrounded", AnimatorControllerParameterType.Bool);
@@ -117,12 +140,16 @@ namespace Content.Scripts.Editor.AnimatorGenerator {
 
       var baseStateMachine = controller.layers[0].stateMachine;
 
-      foreach (var state in baseStateMachine.states.ToArray()) {
-        baseStateMachine.RemoveState(state.state);
-      }
+      if (baseStateMachine != null) {
+        if (baseStateMachine.states != null)
+          foreach (var state in baseStateMachine.states.ToArray()) {
+            baseStateMachine.RemoveState(state.state);
+          }
 
-      foreach (var subMachine in baseStateMachine.stateMachines.ToArray()) {
-        baseStateMachine.RemoveStateMachine(subMachine.stateMachine);
+        if (baseStateMachine.stateMachines != null)
+          foreach (var subMachine in baseStateMachine.stateMachines.ToArray()) {
+            baseStateMachine.RemoveStateMachine(subMachine.stateMachine);
+          }
       }
 
       // Remove sub-assets but keep state machines

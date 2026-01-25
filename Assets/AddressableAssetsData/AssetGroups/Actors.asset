@@ -94,7 +94,7 @@ MonoBehaviour:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dddf1773dfc1e44e1823a0b3cc7e37fd
-    m_Address: Assets/Content/Prefabs/Actors/unfinished_structure.prefab
+    m_Address: unfinished_structure
     m_ReadOnly: 0
     m_SerializedLabels:
     - Actors

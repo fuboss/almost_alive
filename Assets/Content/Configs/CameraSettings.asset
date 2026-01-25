@@ -47,8 +47,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   zoomSpeed: 3.38
-  zoomSmoothing: 1
-  basePanSpeed: 52.5
+  zoomSmoothing: 0.989
+  basePanSpeed: 24.4
   panSpeedByZoomCurve:
     serializedVersion: 2
     m_Curve:
@@ -73,12 +73,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  panSmoothing: 1
+  panSmoothing: 0.996
   enableEdgePanning: 0
   edgePanSpeed: 15
   edgeThreshold: 0.05
   rotationSpeed: 90
-  rotationSmoothing: 0.1
+  rotationSmoothing: 0.987
   discreteRotationStep: 45
   enableBoundaries: 1
   worldBounds:

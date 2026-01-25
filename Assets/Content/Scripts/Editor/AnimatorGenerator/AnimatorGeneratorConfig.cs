@@ -33,7 +33,8 @@ namespace Content.Scripts.Editor.AnimatorGenerator {
       new() { layerName = "Base", enabled = true, weight = 1f, transitionOverride = -1f },
       new() { layerName = "Combat", enabled = true, weight = 1f, transitionOverride = -1f },
       new() { layerName = "UpperBody", enabled = true, weight = 1f, transitionOverride = -1f },
-      new() { layerName = "Additive", enabled = true, weight = 0.5f, transitionOverride = -1f, isAdditive = true }
+      new() { layerName = "Additive", enabled = true, weight = 0.5f, transitionOverride = -1f, isAdditive = true },
+      new() { layerName = "Simulation", enabled = true, weight = 1f, transitionOverride = -1f }
     };
 
     [TitleGroup("Combat Tuning")]
