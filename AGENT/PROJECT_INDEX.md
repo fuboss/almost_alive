@@ -34,6 +34,13 @@ Assets/Content/Scripts/
 │   └── Craft/                 # Crafting system
 └── World/                     # World systems
     └── Grid/                  # WorldGrid, GroundCoord
+        ├── WorldGrid.cs       # Spatial index (static)
+        ├── GroundCoord.cs     # 2D grid coordinate struct
+        └── Presentation/      # Grid visualization
+            ├── WorldGridPresentationModule.cs
+            ├── WorldGridPresentationConfigSO.cs
+            ├── DecalGridVisualizer.cs (URP Decal)
+            └── LineRendererGridVisualizer.cs (Fallback)
 
 ```
 
@@ -141,6 +148,14 @@ Module placement validates:
 - Tag matching
 
 ## Recent Features
+
+### WorldGrid Presentation System (Jan 2026) ⏳
+- In-game grid visualization for debugging/placement
+- Dual rendering backends: URP Decal (primary) + LineRenderer (fallback)
+- Mode system: Hidden, StaticGrid, PlacementPreview
+- Integration with DebugPanel for actor/structure placement preview
+- Configurable via ScriptableObject
+- See: `/AGENT/Features/WORLDGRID_PRESENTATION.md`
 
 ### WFC Building Generation (Jan 2026) 🟡
 - Procedural structure generation via Wave Function Collapse

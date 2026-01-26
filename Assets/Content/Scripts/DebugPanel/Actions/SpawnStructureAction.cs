@@ -16,6 +16,9 @@ namespace Content.Scripts.DebugPanel.Actions {
     public string displayName { get; }
     public DebugCategory category => DebugCategory.Structure;
     public DebugActionType actionType => DebugActionType.RequiresWorldPosition;
+    
+    // Expose footprint for grid visualization
+    public Vector2Int footprint => _definitionSo != null ? _definitionSo.footprint : Vector2Int.one;
 
     public void Execute(DebugActionContext context) {
       var structure = _structuresModule.PlaceBlueprint(_definitionSo, context.worldPosition);

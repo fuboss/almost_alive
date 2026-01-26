@@ -18,6 +18,7 @@ using Content.Scripts.Game.Trees;
 using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
 using Content.Scripts.World;
+using Content.Scripts.World.Grid.Presentation;
 using Unity.Cinemachine;
 using UnityEngine;
 using VContainer;
@@ -35,6 +36,9 @@ namespace Content.Scripts {
     public UILayer[] uiLayers;
 
     [Header("Building")] public Material structureGhostMaterial;
+    
+    [Header("Debug")]
+    public WorldGridPresentationConfigSO gridPresentationConfig;
 
     private Transform _uiRoot;
 
@@ -92,6 +96,10 @@ namespace Content.Scripts {
       builder.Register<CameraModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<CutoutModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<DebugPanel.DebugModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
+      // WorldGrid Presentation
+      builder.RegisterInstance(gridPresentationConfig).AsSelf();
+      builder.Register<WorldGridPresentationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
       InitUi(builder);
     }
