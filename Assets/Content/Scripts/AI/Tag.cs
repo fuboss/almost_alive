@@ -11,6 +11,7 @@ namespace Content.Scripts.AI {
     public const string WOOD = "WOOD";
     public const string STONE = "STONE";
     public const string ITEM = "ITEM";
+    public const string LOG = "LOG";
     
     // Buildable actors
     public const string BED = "BED";
@@ -31,6 +32,7 @@ namespace Content.Scripts.AI {
       WOOD,
       STONE,
       ITEM,
+      LOG,
       BED,
       FIREPLACE,
       WORKBENCH,

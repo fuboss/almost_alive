@@ -105,6 +105,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf77f23bf380042c594d7b85a3af88cf
+    m_Address: log_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dddf1773dfc1e44e1823a0b3cc7e37fd
     m_Address: unfinished_structure
     m_ReadOnly: 0

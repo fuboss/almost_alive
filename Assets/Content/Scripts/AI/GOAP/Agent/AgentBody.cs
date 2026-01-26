@@ -90,5 +90,13 @@ namespace Content.Scripts.AI.GOAP.Agent {
     public void SetToiletUse(bool inToilet) {
       Debug.LogError($"BODY inToilet: {inToilet}", this);
     }
+
+    public void TakeDamage(float damage) {
+      var healthStat = GetStat(StatType.HEALTH) as FloatAgentStat;
+      if (healthStat != null) {
+        healthStat.value = Mathf.Max(0f, healthStat.value - damage);
+        Debug.Log($"[AgentBody] Took {damage:F1} damage, health: {healthStat.value:F1}/{healthStat.maxValue}");
+      }
+    }
   }
 }

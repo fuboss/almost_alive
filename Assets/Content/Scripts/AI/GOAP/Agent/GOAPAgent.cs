@@ -5,6 +5,7 @@ using Content.Scripts.Building.Runtime;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Interaction;
 using Content.Scripts.Game.Work;
 using Sirenix.OdinInspector;
 using UnityEditor.Timeline.Actions;
@@ -14,7 +15,7 @@ using VContainer;
 
 namespace Content.Scripts.AI.GOAP.Agent {
   [RequireComponent(typeof(NavMeshAgent))]
-  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable {
+  public class GOAPAgent : SerializedMonoBehaviour, IGoapAgent, ISimulatable, IImpactReceiver {
     [Inject] private SimulationLoop _simLoop;
     [Inject] private SimulationTimeController _simTime;
     [Inject] private RecipeModule _recipeModule;
@@ -175,6 +176,14 @@ namespace Content.Scripts.AI.GOAP.Agent {
 
     public IEnumerable<Structure> GetAvailableStructures() {
       return _structuresModule.GetByState(StructureState.BUILT);
+    }
+
+    // IImpactReceiver
+    public bool canReceiveImpact => true;
+
+    public void ReceiveImpact(float damage, Vector3 impactPoint, Vector3 impactDirection) {
+      Debug.Log($"[GOAPAgent] {name} received impact damage: {damage:F1}");
+      _agentBody?.TakeDamage(damage);
     }
   }
 }

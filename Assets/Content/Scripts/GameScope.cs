@@ -12,6 +12,7 @@ using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game.Camera;
 using Content.Scripts.Game.Camera.Settings;
 using Content.Scripts.Game.Decay;
+using Content.Scripts.Game.Effects;
 using Content.Scripts.Game.Interaction;
 using Content.Scripts.Game.Trees;
 using Content.Scripts.Game.Work;
@@ -30,6 +31,7 @@ namespace Content.Scripts {
     public CameraSettingsSO cameraSettings;
     public EnvironmentSetupSO environmentSetup;
     public BuildingManagerConfigSO buildingManagerConfig;
+    public TreeFallConfigSO treeFallConfig;
     public UILayer[] uiLayers;
 
     [Header("Building")] public Material structureGhostMaterial;
@@ -51,6 +53,8 @@ namespace Content.Scripts {
       builder.Register<WorldModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.RegisterInstance(treeFallConfig).AsSelf();
+      builder.Register<EffectsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<NavigationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 

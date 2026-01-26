@@ -5,6 +5,7 @@ using Content.Scripts.Building.Runtime;
 using Content.Scripts.Building.Services;
 using Content.Scripts.Core.Simulation;
 using Content.Scripts.Game;
+using Content.Scripts.Game.Trees;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -19,6 +20,7 @@ namespace Content.Scripts.DebugPanel {
     [Inject] private StructuresModule _structuresModule;
     [Inject] private StructurePlacementService _placement;
     [Inject] private ModulePlacementService _modulePlacement;
+    [Inject] private TreeModule _treeModule;
 
     private DebugActionRegistry _registry;
     private DebugState _currentState = DebugState.Idle;
@@ -251,6 +253,7 @@ namespace Content.Scripts.DebugPanel {
       _registry.Register(new Actions.SetTimeAction(_simTime, 0f, "Set Time to Midnight (00:00)"));
       _registry.Register(new Actions.StartFireAction());
       _registry.Register(new Actions.ExtinguishFiresAction());
+      _registry.Register(new Actions.ChopTreeAction(_treeModule));
     }
 
     private void TryRegisterSpawnActions() {
