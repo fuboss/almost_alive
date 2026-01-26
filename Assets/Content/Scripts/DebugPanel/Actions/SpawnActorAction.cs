@@ -26,6 +26,8 @@ namespace Content.Scripts.DebugPanel.Actions {
     public DebugCategory category => DebugCategory.Spawn;
     public DebugActionType actionType => DebugActionType.RequiresWorldPosition;
 
+    public string actorKey => _actorKey;
+
     public void Execute(DebugActionContext context) {
       if (_actorCreation.TrySpawnActorOnGround(_actorKey, context.worldPosition, out var actor)) {
         Debug.Log($"[DebugAction] Spawned {displayName} at {context.worldPosition}");

@@ -29,7 +29,17 @@ namespace Content.Scripts.AI.GOAP {
       };
     }
 
-    
+    public bool TryGetComponentOnPrefab<T>(string actorKey, out T value) where T : Component {
+      value = null;
+      var prefab = GetPrefab(actorKey);
+      if (prefab != null) {
+        value = prefab.GetComponent<T>();
+        return value != null;
+      }
+      Debug.LogError($"ActorCreationModule: Prefab not found for actorKey '{actorKey}'");
+      return false;
+    }
+
     public bool TrySpawnActor(string actorKey, Vector3 position, out ActorDescription actor) {
       actor = null;
       var prefab = GetPrefab(actorKey);
@@ -37,12 +47,13 @@ namespace Content.Scripts.AI.GOAP {
         Debug.LogError($"ActorCreationModule: Prefab not found for actorKey '{actorKey}'");
         return false;
       }
+
       actor = _objectResolver.Instantiate(prefab, position, Quaternion.identity);
       _objectResolver.Inject(actor.gameObject);
 
       return true;
     }
-    
+
     public bool TrySpawnActorOnGround(string actorKey, Vector3 position, out ActorDescription actor, ushort count = 1) {
       actor = null;
       var prefab = GetPrefab(actorKey);
@@ -78,12 +89,12 @@ namespace Content.Scripts.AI.GOAP {
         Debug.LogWarning($"[ActorCreation] No ground found at {targetPos}, using original position");
         return targetPos;
       }
-      
+
       var groundY = hit.point.y;
       var boundsOffset = 0;
       return new Vector3(targetPos.x, groundY + boundsOffset, targetPos.z);
     }
-    
+
 
     public void Dispose() {
       _allPrefabs.Clear();
