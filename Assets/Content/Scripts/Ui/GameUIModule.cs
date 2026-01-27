@@ -2,7 +2,10 @@ using System;
 using Content.Scripts.Game;
 using Content.Scripts.Game.Craft;
 using Content.Scripts.Game.Trees;
+using Content.Scripts.Ui.Layers.BottomBar;
 using Content.Scripts.Ui.Layers.ControlsPanel;
+using Content.Scripts.Ui.Layers.Inspector;
+using Content.Scripts.Ui.Layers.TopBar;
 using Content.Scripts.Ui.Layers.WorldSpaceUI;
 using VContainer;
 using VContainer.Unity;
@@ -10,15 +13,17 @@ using VContainer.Unity;
 namespace Content.Scripts.Ui {
   public class GameUIModule : IStartable, ITickable, IInitializable, IDisposable {
     [Inject] private UiModule _uiModule;
-    [Inject] private ControlsPanelLayer _controlsPanelLayer;
     [Inject] private WorldSpaceUI _worldSpaceUI;
+    [Inject] private InspectorLayer _inspectorLayer;
+    [Inject] private TopBarLayer _topBarLayer;
 
-    public void Initialize() {
+    void IInitializable.Initialize() {
     }
 
-    public void Start() {
-      _uiModule.AddLayer(_controlsPanelLayer);
+    void IStartable.Start() {
       _uiModule.AddLayer(_worldSpaceUI);
+      _uiModule.AddLayer(_inspectorLayer);
+      _uiModule.AddLayer(_topBarLayer);
 
       ActorRegistry<UnfinishedActorBase>.onRegistered += OnUnfinishedCreated;
       ActorRegistry<UnfinishedActorBase>.onUnregistered += OnUnfinishedRemoved;
@@ -27,7 +32,7 @@ namespace Content.Scripts.Ui {
       ActorRegistry<ChoppingProgress>.onUnregistered += OnChoppingEnded;
     }
 
-    private void OnUnfinishedCreated(UnfinishedActorBase actor) => 
+    private void OnUnfinishedCreated(UnfinishedActorBase actor) =>
       _worldSpaceUI.CreateProgressBar(actor);
 
     private void OnChoppingStarted(ChoppingProgress choppingProgress) =>

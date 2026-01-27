@@ -1,38 +1,58 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Content.Scripts.Ui.Layers.MainPanel {
   public class TabButton : MonoBehaviour {
-    public Image iconImage;
-    public Button button;
-    public TMP_Text titleText;
+    [SerializeField] private Image _iconImage;
+    [SerializeField] private Button _button;
+    [SerializeField] private TMP_Text _titleText;
+    [SerializeField] private Image _background;
 
-    [SerializeField] private bool _isSelected;
-    private MainInfoPanel _mainInfoPanel;
+    [Header("Colors")]
+    [SerializeField] private Color _selectedColor = new(0.18f, 0.18f, 0.18f, 1f);
+    [SerializeField] private Color _normalColor = new(0.1f, 0.1f, 0.1f, 1f);
+
     private IInfoPanel _infoPanel;
+    private Action<IInfoPanel> _onSelect;
+    private bool _isSelected;
+
+    public IInfoPanel infoPanel => _infoPanel;
 
     public bool isSelected {
       get => _isSelected;
       set {
         _isSelected = value;
-        infoPanel.active = _isSelected;
+        _infoPanel.active = _isSelected;
+        UpdateVisuals();
       }
     }
 
-    public IInfoPanel infoPanel => _infoPanel;
+    public void Setup(AgentInspectorView view, IInfoPanel panel) {
+      _infoPanel = panel;
+      _onSelect = view.SelectTab;
+      _titleText.text = panel.tab;
+      _button.onClick.RemoveAllListeners();
+      _button.onClick.AddListener(OnClick);
+    }
 
-
-    public void Setup(MainInfoPanel mainInfoPanel, IInfoPanel infoPanel) {
-      _infoPanel = infoPanel;
-      _mainInfoPanel = mainInfoPanel;
-      titleText.text = infoPanel.tab;
-      button.onClick.RemoveAllListeners();
-      button.onClick.AddListener(OnClick);
+    // Legacy support
+    public void Setup(MainInfoPanel mainInfoPanel, IInfoPanel panel) {
+      _infoPanel = panel;
+      _onSelect = mainInfoPanel.SelectTab;
+      _titleText.text = panel.tab;
+      _button.onClick.RemoveAllListeners();
+      _button.onClick.AddListener(OnClick);
     }
 
     private void OnClick() {
-      _mainInfoPanel.SelectTab(_infoPanel);
+      _onSelect?.Invoke(_infoPanel);
+    }
+
+    private void UpdateVisuals() {
+      if (_background != null)
+        _background.color = _isSelected ? _selectedColor : _normalColor;
     }
   }
 }

@@ -11,8 +11,23 @@ namespace Content.Scripts.AI.Craft {
     /// <summary>Unique recipe ID (asset name).</summary>
     public string recipeId => name;
 
+    [Title("Display")]
+    [Tooltip("Category for UI grouping (e.g. 'Furniture', 'Production', 'Storage')")]
+    public string category = "Other";
+    
+    [Tooltip("Display name in UI (if empty, uses recipeId)")]
+    public string displayName;
+    
+    [PreviewField(50), HideLabel]
+    public Sprite icon;
+
+    [Title("Priority")]
     [Range(0, 100)] public int buildPriority = 0;
+    
     public RecipeData recipe => data;
+
+    /// <summary>Gets display name for UI.</summary>
+    public string GetDisplayName() => string.IsNullOrEmpty(displayName) ? recipeId : displayName;
 
 #if UNITY_EDITOR
     [Button("Validate", ButtonSizes.Small), PropertyOrder(-1), GUIColor(0.4f, 0.8f, 0.4f)]

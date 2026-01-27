@@ -56,9 +56,11 @@ MonoBehaviour:
   buildingManagerConfig: {fileID: 11400000, guid: 964a458b678ad4bf386c3559b50c0d52, type: 2}
   treeFallConfig: {fileID: 11400000, guid: 4d2c1755e03304c13966385d65bf2401, type: 2}
   uiLayers:
-  - {fileID: 1276088289653312547, guid: 6ce1e3cd3383549a5b9c7c216970e70b, type: 3}
-  - {fileID: -8401498511303770125, guid: be7d5e28fd312472e944e7297bd6a268, type: 3}
   - {fileID: -6451863338487059937, guid: 76a4945ad4e404af3861b2cebba0edeb, type: 3}
   - {fileID: 5007448928981979815, guid: fc132fed422e54283b50ca5986009b8b, type: 3}
+  - {fileID: 7918621154526648364, guid: 068d72a41807d4d37a0b278a04e716a4, type: 3}
+  - {fileID: 6596762662413122668, guid: fc2fdc5f880e84e5bbad8d7b7f5c34d9, type: 3}
+  - {fileID: -1708881664202224477, guid: fbceb2546be184005938f8ac1bb88e79, type: 3}
   structureGhostMaterial: {fileID: 2100000, guid: 129d05324dfeb43ca9b79264554cdc18, type: 2}
+  colonyProgressionConfig: {fileID: 11400000, guid: 900f68f01f5044442a11c5fe56d211f2, type: 2}
   gridPresentationConfig: {fileID: 11400000, guid: 23c21e619287e4001a3b69b8a13534a8, type: 2}

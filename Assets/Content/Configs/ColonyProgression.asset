@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e760a77ba41e4ac890ec806c0d87a6e, type: 3}
+  m_Name: ColonyProgression
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.Game.Progression.ColonyProgressionConfigSO
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  recipeUnlocks:
+  - milestone: 0
+    recipe: {fileID: 11400000, guid: d9ba67ebf41a843e8b10f33d65242b75, type: 2}
+    requiresResearch: 
+  - milestone: 0
+    recipe: {fileID: 11400000, guid: aac47cd981fef48978ad043e74cd7d21, type: 2}
+    requiresResearch: 
+  - milestone: 0
+    recipe: {fileID: 11400000, guid: 3cf1af46e0a934b5480b4d860a3083a0, type: 2}
+    requiresResearch: 
+  - milestone: 0
+    recipe: {fileID: 11400000, guid: 61533bae1bfd74fb199dcb279670c902, type: 2}
+    requiresResearch: 
+  - milestone: 1
+    recipe: {fileID: 11400000, guid: e5e59eb5b3b504ad4897be61f5b99b44, type: 2}
+    requiresResearch: 
+  starterRecipes:
+  - {fileID: 11400000, guid: d9ba67ebf41a843e8b10f33d65242b75, type: 2}
+  - {fileID: 11400000, guid: aac47cd981fef48978ad043e74cd7d21, type: 2}
+  - {fileID: 11400000, guid: 3cf1af46e0a934b5480b4d860a3083a0, type: 2}
+  - {fileID: 11400000, guid: e5e59eb5b3b504ad4897be61f5b99b44, type: 2}
+  - {fileID: 11400000, guid: 675d1f3b41e644072b2db32919c1dda1, type: 2}
+  - {fileID: 11400000, guid: 61533bae1bfd74fb199dcb279670c902, type: 2}

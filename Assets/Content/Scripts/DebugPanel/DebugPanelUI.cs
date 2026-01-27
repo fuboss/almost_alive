@@ -13,13 +13,18 @@ namespace Content.Scripts.DebugPanel {
     // UI Elements
     private GameObject _contentPanel;
     private TextMeshProUGUI _statusText;
+    private TextMeshProUGUI _breadcrumbText;
     private Dictionary<DebugCategory, GameObject> _categoryButtons = new();
     private GameObject _activeDropdown;
     private readonly List<GameObject> _dropdownButtonPool = new();
-    private List<IDebugAction> _currentDropdownActions = new();
+    private readonly List<MenuEntry> _currentMenuEntries = new();
     private int _activePooledButtonsCount;
     
-    // Cached references to avoid allocations
+    // Navigation state
+    private DebugCategory? _activeCategory;
+    private readonly Stack<string> _pathStack = new();
+    
+    // Cached references
     private RectTransform _rectTransform;
     private readonly Vector3[] _cornersBuffer = new Vector3[4];
 
@@ -29,7 +34,6 @@ namespace Content.Scripts.DebugPanel {
       
       BuildUI();
       
-      // Subscribe to events
       _debugModule.OnActionSelected += OnActionSelected;
       _debugModule.OnActionCancelled += OnActionCancelled;
       _debugModule.OnStateChanged += OnStateChanged;
@@ -55,12 +59,11 @@ namespace Content.Scripts.DebugPanel {
       mainRect.pivot = new Vector2(0.5f, 1f);
       mainRect.anchoredPosition = new Vector2(0, DebugPanelStyles.PanelTopOffset);
       
-      // Add ContentSizeFitter for automatic sizing
       var mainFitter = mainPanel.AddComponent<ContentSizeFitter>();
       mainFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
       mainFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-      // Content panel (main content)
+      // Content panel
       _contentPanel = CreatePanel("ContentPanel", mainPanel.transform);
       var contentLayout = _contentPanel.AddComponent<HorizontalLayoutGroup>();
       contentLayout.spacing = DebugPanelStyles.Spacing;
@@ -81,7 +84,7 @@ namespace Content.Scripts.DebugPanel {
       statusLayout.preferredWidth = DebugPanelStyles.StatusTextWidth;
       statusLayout.preferredHeight = DebugPanelStyles.ButtonHeight;
 
-      // Create category buttons dynamically
+      // Category buttons
       foreach (DebugCategory category in System.Enum.GetValues(typeof(DebugCategory))) {
         CreateCategoryButton(category, _contentPanel.transform);
       }
@@ -92,17 +95,14 @@ namespace Content.Scripts.DebugPanel {
       var buttonLayout = buttonObj.AddComponent<LayoutElement>();
       buttonLayout.preferredWidth = DebugPanelStyles.ButtonWidth;
       buttonLayout.preferredHeight = DebugPanelStyles.ButtonHeight;
-      
       _categoryButtons[category] = buttonObj;
     }
 
     private GameObject CreatePanel(string panelName, Transform parent) {
       var panel = new GameObject(panelName, typeof(RectTransform));
       panel.transform.SetParent(parent, false);
-      
       var image = panel.AddComponent<Image>();
       image.color = DebugPanelStyles.PanelColor;
-      
       return panel;
     }
 
@@ -115,17 +115,13 @@ namespace Content.Scripts.DebugPanel {
       
       var button = buttonObj.AddComponent<Button>();
       button.targetGraphic = image;
-      
-      // Setup colors
       var colors = button.colors;
       colors.normalColor = DebugPanelStyles.ButtonNormal;
       colors.highlightedColor = DebugPanelStyles.ButtonHover;
       colors.pressedColor = DebugPanelStyles.ButtonActive;
       button.colors = colors;
-      
       button.onClick.AddListener(() => onClick?.Invoke());
       
-      // Text
       var textObj = new GameObject("Text", typeof(RectTransform));
       textObj.transform.SetParent(buttonObj.transform, false);
       var tmp = textObj.AddComponent<TextMeshProUGUI>();
@@ -143,9 +139,7 @@ namespace Content.Scripts.DebugPanel {
       return buttonObj;
     }
 
-
     private void Update() {
-      // Close dropdown when clicking outside of it
       if (_activeDropdown != null && Mouse.current.leftButton.wasPressedThisFrame) {
         if (!IsPointerOverDropdown()) {
           CloseDropdown();
@@ -164,35 +158,101 @@ namespace Content.Scripts.DebugPanel {
       EventSystem.current.RaycastAll(pointerEventData, raycastResults);
       
       foreach (var result in raycastResults) {
-        // Check if clicked on dropdown or any of its children, or on category buttons
         if (result.gameObject.transform.IsChildOf(_activeDropdown.transform) ||
             result.gameObject == _activeDropdown ||
             _categoryButtons.Values.Any(btn => result.gameObject.transform.IsChildOf(btn.transform) || result.gameObject == btn)) {
           return true;
         }
       }
-      
       return false;
     }
 
     private void OnCategoryClicked(DebugCategory category) {
-      // Close previous dropdown if exists
       CloseDropdown();
+      _activeCategory = category;
+      _pathStack.Clear();
       
-      // Get actions for this category
-      _currentDropdownActions = _debugModule.Registry.GetActionsByCategory(category).ToList();
-      
-      if (_currentDropdownActions.Count == 0) {
+      var actions = _debugModule.Registry.GetActionsByCategory(category).ToList();
+      if (actions.Count == 0) {
         Debug.Log($"[DebugPanelUI] No actions for category {category}");
         return;
       }
-      
-      // Create dropdown under category button
+
       var categoryButton = _categoryButtons[category];
-      CreateDropdown(categoryButton, _currentDropdownActions);
+      ShowMenuLevel(actions, categoryButton);
     }
 
-    private void CreateDropdown(GameObject parentButton, List<IDebugAction> actions) {
+    private void ShowMenuLevel(List<IDebugAction> actions, GameObject anchorButton) {
+      // Build hierarchical entries from actions
+      _currentMenuEntries.Clear();
+      var currentPath = string.Join("/", _pathStack);
+      
+      var groups = new Dictionary<string, List<IDebugAction>>();
+      var directActions = new List<IDebugAction>();
+
+      foreach (var action in actions) {
+        var relativePath = GetRelativePath(action.displayName, currentPath);
+        if (string.IsNullOrEmpty(relativePath)) continue;
+
+        var slashIndex = relativePath.IndexOf('/');
+        if (slashIndex > 0) {
+          // Has subgroup
+          var groupName = relativePath.Substring(0, slashIndex);
+          if (!groups.TryGetValue(groupName, out var list)) {
+            list = new List<IDebugAction>();
+            groups[groupName] = list;
+          }
+          list.Add(action);
+        }
+        else {
+          // Direct action at this level
+          directActions.Add(action);
+        }
+      }
+
+      // Add group entries (folders)
+      foreach (var kvp in groups.OrderBy(k => k.Key)) {
+        _currentMenuEntries.Add(new MenuEntry {
+          displayText = $"📁 {kvp.Key}",
+          isGroup = true,
+          groupName = kvp.Key,
+          childActions = kvp.Value
+        });
+      }
+
+      // Add direct action entries
+      foreach (var action in directActions) {
+        var displayText = GetLastSegment(action.displayName);
+        _currentMenuEntries.Add(new MenuEntry {
+          displayText = displayText,
+          isGroup = false,
+          action = action
+        });
+      }
+
+      // Add back button if in submenu
+      if (_pathStack.Count > 0) {
+        _currentMenuEntries.Insert(0, new MenuEntry {
+          displayText = "⬅ Back",
+          isBack = true
+        });
+      }
+
+      CreateDropdown(anchorButton, _currentMenuEntries);
+    }
+
+    private string GetRelativePath(string fullPath, string currentPath) {
+      if (string.IsNullOrEmpty(currentPath)) return fullPath;
+      if (!fullPath.StartsWith(currentPath + "/")) return null;
+      return fullPath.Substring(currentPath.Length + 1);
+    }
+
+    private string GetLastSegment(string path) {
+      var lastSlash = path.LastIndexOf('/');
+      return lastSlash >= 0 ? path.Substring(lastSlash + 1) : path;
+    }
+
+    private void CreateDropdown(GameObject parentButton, List<MenuEntry> entries) {
       _activeDropdown = CreatePanel("Dropdown", transform);
       
       var layout = _activeDropdown.AddComponent<VerticalLayoutGroup>();
@@ -201,104 +261,149 @@ namespace Content.Scripts.DebugPanel {
         DebugPanelStyles.DropdownPadding, DebugPanelStyles.DropdownPadding, 
         DebugPanelStyles.DropdownPadding, DebugPanelStyles.DropdownPadding);
       layout.childForceExpandWidth = true;
-      layout.childForceExpandHeight = true;
+      layout.childForceExpandHeight = false;
+      layout.childControlWidth = true;
+      layout.childControlHeight = false;
       
       var rect = _activeDropdown.GetComponent<RectTransform>();
-      
-      // Position under button
       var parentRect = parentButton.GetComponent<RectTransform>();
       rect.anchorMin = new Vector2(0.5f, 1f);
       rect.anchorMax = new Vector2(0.5f, 1f);
       rect.pivot = new Vector2(0.5f, 1f);
       
-      // Calculate world position of button and convert to canvas local
       parentRect.GetWorldCorners(_cornersBuffer);
       Vector2 buttonBottomCenter = (_cornersBuffer[0] + _cornersBuffer[3]) / 2f;
       
       RectTransformUtility.ScreenPointToLocalPointInRectangle(
-        _rectTransform, 
-        buttonBottomCenter, 
-        null, 
-        out Vector2 localPoint
-      );
+        _rectTransform, buttonBottomCenter, null, out Vector2 localPoint);
       localPoint.y = DebugPanelStyles.DropdownYOffset;
       rect.anchoredPosition = localPoint;
-      rect.sizeDelta = new Vector2(DebugPanelStyles.DropdownWidth, actions.Count * (DebugPanelStyles.OptionHeight + 2) + 10);
       
-      // Use pooled buttons for each action
-      _activePooledButtonsCount = actions.Count;
-      for (int i = 0; i < actions.Count; i++) {
-        var action = actions[i];
-        var optionButton = GetOrCreatePooledButton(i, action);
+      // Calculate height based on entries
+      var entryHeight = DebugPanelStyles.OptionHeight + DebugPanelStyles.DropdownSpacing;
+      var totalHeight = entries.Count * entryHeight + DebugPanelStyles.DropdownPadding * 2;
+      totalHeight = Mathf.Min(totalHeight, 400); // Max height
+      rect.sizeDelta = new Vector2(DebugPanelStyles.DropdownWidth, totalHeight);
+
+      // Add breadcrumb if in submenu
+      if (_pathStack.Count > 0) {
+        var breadcrumb = new GameObject("Breadcrumb", typeof(RectTransform));
+        breadcrumb.transform.SetParent(_activeDropdown.transform, false);
+        _breadcrumbText = breadcrumb.AddComponent<TextMeshProUGUI>();
+        _breadcrumbText.text = string.Join(" / ", _pathStack);
+        _breadcrumbText.fontSize = DebugPanelStyles.FontSize - 2;
+        _breadcrumbText.color = DebugPanelStyles.TextMuted;
+        _breadcrumbText.alignment = TextAlignmentOptions.Left;
+        var bcLayout = breadcrumb.AddComponent<LayoutElement>();
+        bcLayout.preferredHeight = 20;
+      }
+
+      // Create buttons for entries
+      _activePooledButtonsCount = entries.Count;
+      for (int i = 0; i < entries.Count; i++) {
+        var entry = entries[i];
+        var optionButton = GetOrCreatePooledButton(i, entry);
         optionButton.transform.SetParent(_activeDropdown.transform, false);
         optionButton.SetActive(true);
       }
     }
 
-    private GameObject GetOrCreatePooledButton(int index, IDebugAction action) {
+    private GameObject GetOrCreatePooledButton(int index, MenuEntry entry) {
       GameObject buttonObj;
       
       if (index < _dropdownButtonPool.Count) {
-        // Reuse existing button from pool
         buttonObj = _dropdownButtonPool[index];
-        UpdatePooledButton(buttonObj, action);
-      } else {
-        // Create new button and add to pool
-        buttonObj = CreateButton($"PooledOption_{index}", transform, action.displayName, null);
+        UpdatePooledButton(buttonObj, entry);
+      }
+      else {
+        buttonObj = CreateButton($"PooledOption_{index}", transform, entry.displayText, null);
         var optionRect = buttonObj.GetComponent<RectTransform>();
         optionRect.sizeDelta = new Vector2(DebugPanelStyles.DropdownOptionWidth, DebugPanelStyles.OptionHeight);
         _dropdownButtonPool.Add(buttonObj);
         
-        // Setup click handler that reads current action
         var button = buttonObj.GetComponent<Button>();
         int capturedIndex = index;
         button.onClick.AddListener(() => OnPooledButtonClicked(capturedIndex));
       }
       
+      // Style based on entry type
+      var image = buttonObj.GetComponent<Image>();
+      if (entry.isGroup) {
+        image.color = DebugPanelStyles.ButtonGroupColor;
+      }
+      else if (entry.isBack) {
+        image.color = DebugPanelStyles.ButtonBackColor;
+      }
+      else {
+        image.color = DebugPanelStyles.ButtonNormal;
+      }
+      
       return buttonObj;
     }
 
-    private void UpdatePooledButton(GameObject buttonObj, IDebugAction action) {
+    private void UpdatePooledButton(GameObject buttonObj, MenuEntry entry) {
       var tmp = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
       if (tmp != null) {
-        tmp.text = action.displayName;
+        tmp.text = entry.displayText;
+        tmp.alignment = entry.isGroup || entry.isBack ? TextAlignmentOptions.Left : TextAlignmentOptions.Center;
       }
     }
 
     private void OnPooledButtonClicked(int index) {
-      if (index >= 0 && index < _currentDropdownActions.Count) {
-        OnActionClicked(_currentDropdownActions[index]);
+      if (index < 0 || index >= _currentMenuEntries.Count) return;
+      
+      var entry = _currentMenuEntries[index];
+      
+      if (entry.isBack) {
+        // Go back one level
+        if (_pathStack.Count > 0) _pathStack.Pop();
+        var actions = _debugModule.Registry.GetActionsByCategory(_activeCategory.Value).ToList();
+        var anchorButton = _categoryButtons[_activeCategory.Value];
+        CloseDropdownKeepState();
+        ShowMenuLevel(actions, anchorButton);
+      }
+      else if (entry.isGroup) {
+        // Enter submenu
+        _pathStack.Push(entry.groupName);
+        var anchorButton = _categoryButtons[_activeCategory.Value];
+        CloseDropdownKeepState();
+        ShowMenuLevel(entry.childActions, anchorButton);
+      }
+      else if (entry.action != null) {
+        // Execute action
+        Debug.Log($"[DebugPanelUI] Action clicked: {entry.action.displayName}");
+        _debugModule.SelectAction(entry.action);
+        CloseDropdown();
       }
     }
 
-    private void OnActionClicked(IDebugAction action) {
-      Debug.Log($"[DebugPanelUI] Action clicked: {action.displayName}");
-      _debugModule.SelectAction(action);
-      CloseDropdown();
-    }
-
-    private void CloseDropdown() {
+    private void CloseDropdownKeepState() {
       if (_activeDropdown != null) {
-        // Return pooled buttons to inactive state (reparent to this transform)
         for (int i = 0; i < _activePooledButtonsCount && i < _dropdownButtonPool.Count; i++) {
           var button = _dropdownButtonPool[i];
           button.transform.SetParent(transform, false);
           button.SetActive(false);
         }
         _activePooledButtonsCount = 0;
-        _currentDropdownActions.Clear();
-        
         Destroy(_activeDropdown);
         _activeDropdown = null;
       }
     }
 
+    private void CloseDropdown() {
+      CloseDropdownKeepState();
+      _currentMenuEntries.Clear();
+      _pathStack.Clear();
+      _activeCategory = null;
+    }
+
     private void OnActionSelected(IDebugAction action) {
       if (action.actionType == DebugActionType.Instant) {
-        _statusText.text = $"Executed: {action.displayName}";
+        _statusText.text = $"Executed: {GetLastSegment(action.displayName)}";
         _statusText.color = DebugPanelStyles.TextColor;
-      } else {
-        _statusText.text = $"{action.category} → {action.displayName}";
+      }
+      else {
+        _statusText.text = $"{action.category} → {GetLastSegment(action.displayName)}";
         _statusText.color = DebugPanelStyles.TextActive;
       }
     }
@@ -311,19 +416,15 @@ namespace Content.Scripts.DebugPanel {
     private void OnStateChanged(DebugState newState) {
       if (newState == DebugState.Idle) {
         CloseDropdown();
-      } else if (newState == DebugState.Browsing) {
+      }
+      else if (newState == DebugState.Browsing) {
         _statusText.text = "Ready";
         _statusText.color = DebugPanelStyles.TextColor;
       }
     }
 
-    private void OnDisable() {
-      UnsubscribeEvents();
-    }
-
-    private void OnDestroy() {
-      UnsubscribeEvents();
-    }
+    private void OnDisable() => UnsubscribeEvents();
+    private void OnDestroy() => UnsubscribeEvents();
 
     private void UnsubscribeEvents() {
       if (_debugModule != null) {
@@ -332,7 +433,14 @@ namespace Content.Scripts.DebugPanel {
         _debugModule.OnStateChanged -= OnStateChanged;
       }
     }
+
+    private class MenuEntry {
+      public string displayText;
+      public bool isGroup;
+      public bool isBack;
+      public string groupName;
+      public IDebugAction action;
+      public List<IDebugAction> childActions;
+    }
   }
 }
-
-

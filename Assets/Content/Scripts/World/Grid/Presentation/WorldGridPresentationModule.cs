@@ -3,26 +3,34 @@ using Content.Scripts.Building.Data;
 using Content.Scripts.Building.Runtime;
 using Content.Scripts.DebugPanel;
 using Content.Scripts.DebugPanel.Actions;
+using Content.Scripts.Game.Interaction;
+using Content.Scripts.Ui.Services;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
 namespace Content.Scripts.World.Grid.Presentation {
   /// <summary>
-  /// Main service for WorldGrid visualization. Manages hover and footprint visualizers.
+  /// Main service for WorldGrid visualization. Manages hover, footprint and selection visualizers.
   /// </summary>
   public class WorldGridPresentationModule : IStartable, ILateTickable {
     [Inject] private readonly WorldGridPresentationConfigSO _config;
     [Inject] private readonly DebugModule _debugModule;
     [Inject] private readonly ActorCreationModule _actorCreationModule;
+    [Inject] private readonly SelectionService _selectionService;
 
     private IHoverVisualizer _hoverVisualizer;
     private IFootprintVisualizer _footprintVisualizer;
+    private TileMeshRenderer _selectionRenderer;
 
     private GridVisualizationMode _currentMode = GridVisualizationMode.Hidden;
     private int _frameCounter;
 
     private Camera _mainCamera;
+
+    // Selection tracking
+    private ISelectableActor _selectedActor;
+    private GroundCoord _lastSelectionCoord;
 
     // Raycast for ground detection
     private readonly RaycastHit[] _raycastBuffer = new RaycastHit[8];
@@ -39,8 +47,9 @@ namespace Content.Scripts.World.Grid.Presentation {
 
       CreateVisualizers();
 
-      // Subscribe to DebugModule events
+      // Subscribe to events
       _debugModule.OnStateChanged += OnDebugStateChanged;
+      _selectionService.OnSelected += OnSelectionChanged;
 
       Debug.Log("[WorldGridPresentation] Initialized");
     }
@@ -51,6 +60,8 @@ namespace Content.Scripts.World.Grid.Presentation {
       if (_currentMode == GridVisualizationMode.PlacementPreview) {
         UpdatePlacementPreview();
       }
+
+      UpdateSelectionHighlight();
     }
 
     #region Public API
@@ -66,6 +77,39 @@ namespace Content.Scripts.World.Grid.Presentation {
 
       _currentMode = mode;
       Debug.Log($"[WorldGridPresentation] Mode: {_currentMode}");
+    }
+
+    #endregion
+
+    #region Selection Highlight
+
+    private void OnSelectionChanged(ISelectableActor current, ISelectableActor prev) {
+      _selectedActor = current;
+
+      if (_selectedActor == null) {
+        _selectionRenderer?.HideAll();
+        return;
+      }
+
+      // Immediate update
+      UpdateSelectionHighlight();
+    }
+
+    private void UpdateSelectionHighlight() {
+      if (_selectedActor == null || _selectionRenderer == null) return;
+
+      // Only update every N frames for perf (actor movement is usually smooth)
+      if (_frameCounter % 2 != 0) return;
+
+      var actorPos = _selectedActor.gameObject.transform.position;
+      var coord = GroundCoord.FromWorld(actorPos);
+
+      // Skip if same cell
+      if (coord.Equals(_lastSelectionCoord)) return;
+
+      _lastSelectionCoord = coord;
+      _selectionRenderer.HideAll();
+      _selectionRenderer.ShowTile(coord, _config.selectionColor, borderOnly: true);
     }
 
     #endregion
@@ -89,6 +133,12 @@ namespace Content.Scripts.World.Grid.Presentation {
       var footprint = footprintObj.AddComponent<FootprintVisualizer>();
       footprint.Initialize(_config);
       _footprintVisualizer = footprint;
+
+      // Create selection visualizer
+      var selectionObj = new GameObject("SelectionVisualizer");
+      selectionObj.transform.SetParent(container.transform, false);
+      _selectionRenderer = selectionObj.AddComponent<TileMeshRenderer>();
+      _selectionRenderer.Initialize(_config.tileMaterial);
 
       Debug.Log("[WorldGridPresentation] Visualizers created");
     }

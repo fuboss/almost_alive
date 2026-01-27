@@ -25,6 +25,11 @@ namespace Content.Scripts.World.Grid.Presentation {
     [Tooltip("Pulse intensity curve (1.0 = base, 1.2 = peak)")]
     public AnimationCurve hoverPulseCurve = AnimationCurve.EaseInOut(0, 1, 1, 1.2f);
     
+    [Title("Selection Highlight")]
+    [Tooltip("Color for selected actor cell highlight")]
+    [ColorUsage(false, true)]
+    public Color selectionColor = new Color(0.36f, 0.54f, 0.36f, 0.5f);
+    
     [Title("Footprint Preview")]
     [Tooltip("Footprint color when placement is valid")]
     [ColorUsage(false, true)]

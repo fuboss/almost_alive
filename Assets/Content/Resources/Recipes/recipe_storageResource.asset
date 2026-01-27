@@ -79,4 +79,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  category: Storage
+  displayName: Resources Storage Medium
+  icon: {fileID: 0}
   buildPriority: 0

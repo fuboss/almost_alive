@@ -45,23 +45,19 @@ namespace Content.Scripts.DebugPanel {
       _registry = new DebugActionRegistry();
       RegisterDefaultActions();
 
-      // Try to register spawn actions immediately
       TryRegisterSpawnActions();
       TryRegisterStructureActions();
       
-      // Subscribe to module loading
       _structuresModule.OnModulesLoaded += RegisterModuleActions;
     }
 
     void ILateTickable.LateTick() {
       HandleInput();
 
-      // Periodically check if actors have been loaded
       if (!_registry.GetActionsByCategory(DebugCategory.Spawn).Any() && _actorCreation.IsInitialized) {
         TryRegisterSpawnActions();
       }
 
-      // Periodically check if actors have been loaded
       if (!_registry.GetActionsByCategory(DebugCategory.Structure).Any() && _structuresModule.isInitialized) {
         TryRegisterStructureActions();
       }
@@ -69,13 +65,10 @@ namespace Content.Scripts.DebugPanel {
 
     public void TogglePanel() {
       if (CurrentState == DebugState.Idle) {
-        //_uiModule.AddLayer(DebugPanelLayer.Instance);
         SetState(DebugState.Browsing);
       }
       else {
-        //_uiModule.RemoveLayer(DebugPanelLayer.Instance);
         SetState(DebugState.Idle);
-        // Cancel any pending action
         if (CurrentState == DebugState.ReadyToApply) {
           CancelAction();
         }
@@ -88,29 +81,23 @@ namespace Content.Scripts.DebugPanel {
         return;
       }
 
-      // ESC - cancel current action
       if (_currentState == DebugState.ReadyToApply && Keyboard.current.escapeKey.wasPressedThisFrame) {
         CancelAction();
         return;
       }
 
-      // Handle click to apply action
       if (_currentState == DebugState.ReadyToApply && Mouse.current.leftButton.wasPressedThisFrame) {
-        // Check if click is not on UI
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) {
           return;
         }
-
         TryApplyPendingAction();
       }
     }
 
     public void SetState(DebugState newState) {
       if (_currentState == newState) return;
-
       _currentState = newState;
       OnStateChanged?.Invoke(_currentState);
-
       Debug.Log($"[DebugModule] State changed to: {_currentState}");
     }
 
@@ -120,7 +107,6 @@ namespace Content.Scripts.DebugPanel {
       _pendingAction = action;
       _pendingContext = new DebugActionContext();
 
-      // If action is instant - execute immediately
       if (action.actionType == DebugActionType.Instant) {
         action.Execute(_pendingContext);
         _pendingAction = null;
@@ -128,7 +114,6 @@ namespace Content.Scripts.DebugPanel {
         return;
       }
 
-      // Otherwise transition to waiting mode
       SetState(DebugState.ReadyToApply);
       OnActionSelected?.Invoke(action);
     }
@@ -138,7 +123,6 @@ namespace Content.Scripts.DebugPanel {
       _pendingContext = null;
       SetState(DebugState.Browsing);
       OnActionCancelled?.Invoke();
-
       Debug.Log("[DebugModule] Action cancelled");
     }
 
@@ -155,7 +139,6 @@ namespace Content.Scripts.DebugPanel {
             Debug.Log($"[DebugModule] Executed {_pendingAction.displayName} at {worldPos}");
             ResetAfterAction();
           }
-
           break;
 
         case DebugActionType.RequiresActor:
@@ -192,7 +175,6 @@ namespace Content.Scripts.DebugPanel {
 
     private bool TryGetWorldPosition(out Vector3 worldPosition) {
       worldPosition = Vector3.zero;
-
       if (Camera.main == null) return false;
 
       Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -202,13 +184,11 @@ namespace Content.Scripts.DebugPanel {
         worldPosition = _raycastBuffer[0].point;
         return true;
       }
-
       return false;
     }
 
     private bool TryGetActorUnderMouse(out ActorDescription actor) {
       actor = null;
-
       if (Camera.main == null) return false;
 
       Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -216,17 +196,13 @@ namespace Content.Scripts.DebugPanel {
 
       for (int i = 0; i < hitCount; i++) {
         actor = _raycastBuffer[i].collider.GetComponentInParent<ActorDescription>();
-        if (actor != null) {
-          return true;
-        }
+        if (actor != null) return true;
       }
-
       return false;
     }
 
     private bool TryGetStructureUnderMouse(out Structure structure) {
       structure = null;
-
       if (Camera.main == null) return false;
 
       Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -234,32 +210,31 @@ namespace Content.Scripts.DebugPanel {
 
       for (int i = 0; i < hitCount; i++) {
         structure = _raycastBuffer[i].collider.GetComponentInParent<Structure>();
-        if (structure != null) {
-          return true;
-        }
+        if (structure != null) return true;
       }
-
       return false;
     }
 
     private void RegisterDefaultActions() {
-      // Destroy actions
+      // Destroy
       _registry.Register(new Actions.DestroyActorAction(_actorDestruction));
 
-      // Environment actions
-      _registry.Register(new Actions.SetTimeAction(_simTime, 6f, "Set Time to Dawn (06:00)"));
-      _registry.Register(new Actions.SetTimeAction(_simTime, 12f, "Set Time to Noon (12:00)"));
-      _registry.Register(new Actions.SetTimeAction(_simTime, 18f, "Set Time to Dusk (18:00)"));
-      _registry.Register(new Actions.SetTimeAction(_simTime, 0f, "Set Time to Midnight (00:00)"));
+      // Environment / Time
+      _registry.Register(new Actions.SetTimeAction(_simTime, 6f, "Time/Dawn (06:00)"));
+      _registry.Register(new Actions.SetTimeAction(_simTime, 12f, "Time/Noon (12:00)"));
+      _registry.Register(new Actions.SetTimeAction(_simTime, 18f, "Time/Dusk (18:00)"));
+      _registry.Register(new Actions.SetTimeAction(_simTime, 0f, "Time/Midnight (00:00)"));
+      
+      // Environment / Fire
       _registry.Register(new Actions.StartFireAction());
       _registry.Register(new Actions.ExtinguishFiresAction());
+      
+      // Environment / Trees
       _registry.Register(new Actions.ChopTreeAction(_treeModule));
     }
 
     private void TryRegisterSpawnActions() {
-      if (!_actorCreation.IsInitialized) {
-        return;
-      }
+      if (!_actorCreation.IsInitialized) return;
 
       var allPrefabs = _actorCreation.allPrefabs;
       if (allPrefabs == null) return;
@@ -268,7 +243,11 @@ namespace Content.Scripts.DebugPanel {
       foreach (var prefab in allPrefabs) {
         var actorDesc = prefab;
         if (actorDesc == null) continue;
-        var displayName = $"Spawn {actorDesc.actorKey}";
+        
+        // Group by first tag or "Other"
+        var category = GetActorCategory(actorDesc);
+        var displayName = $"{category}/{actorDesc.actorKey}";
+        
         _registry.Register(new Actions.SpawnActorAction(_actorCreation, _structuresModule, _placement,
           actorDesc.actorKey, displayName));
         count++;
@@ -279,10 +258,16 @@ namespace Content.Scripts.DebugPanel {
       }
     }
 
+    private string GetActorCategory(ActorDescription actor) {
+      if (actor.GetDefinition(Tag.AGENT)) return "Agents";
+      if (actor.GetDefinition(Tag.RESOURCE)) return "Resources";
+      if (actor.GetDefinition(Tag.TREE)) return "Nature";
+      if (actor.GetDefinition(Tag.ITEM)) return "Items";
+      return "Other";
+    }
+
     private void TryRegisterStructureActions() {
-      if (!_structuresModule.isInitialized) {
-        return;
-      }
+      if (!_structuresModule.isInitialized) return;
 
       var allSo = _structuresModule.definitions;
       if (allSo == null) return;
@@ -290,7 +275,7 @@ namespace Content.Scripts.DebugPanel {
       int count = 0;
       foreach (var definitionSO in allSo) {
         if (definitionSO == null) continue;
-        var displayName = $"Place {definitionSO.structureId}";
+        var displayName = $"{definitionSO.structureId}";
         _registry.Register(new Actions.SpawnStructureAction(_structuresModule, definitionSO, displayName));
         count++;
       }
@@ -303,16 +288,14 @@ namespace Content.Scripts.DebugPanel {
     }
 
     private void TryRegisterSpawnTemplates() {
-      if (!_structuresModule.isInitialized || !_actorCreation.IsInitialized) {
-        return;
-      }
+      if (!_structuresModule.isInitialized || !_actorCreation.IsInitialized) return;
 
       var firstStructure = _structuresModule.definitions?.FirstOrDefault();
       var firstActor = _actorCreation.allPrefabs?.FirstOrDefault(p => p.GetDefinition(Tag.AGENT));
 
       if (firstStructure == null || firstActor == null) return;
 
-      var displayName = $"Structure + Agent ({firstStructure.structureId} + {firstActor.actorKey})";
+      var displayName = $"{firstStructure.structureId} + {firstActor.actorKey}";
       _registry.Register(new Actions.SpawnStructureWithAgentAction(
         _structuresModule,
         _actorCreation,
@@ -331,21 +314,21 @@ namespace Content.Scripts.DebugPanel {
         if (moduleDef == null) continue;
         
         var footprintInfo = $"({moduleDef.slotFootprint.x}x{moduleDef.slotFootprint.y})";
-        var clearanceInfo = moduleDef.clearanceRadius > 0 ? $" c{moduleDef.clearanceRadius}" : "";
+        
+        // Hierarchical: Module/<ModuleName>/Instant or Blueprint
+        var basePath = $"{moduleDef.moduleId} {footprintInfo}";
         
         // Instant placement (debug/cheat)
-        var instantName = $"[Instant] {moduleDef.moduleId} {footprintInfo}{clearanceInfo}";
-        _registry.Register(new Actions.PlaceModuleAction(_modulePlacement, moduleDef, instantName));
+        _registry.Register(new Actions.PlaceModuleAction(_modulePlacement, moduleDef, $"{basePath}/Instant Spawn"));
         
-        // Assignment for construction
-        var assignName = $"[Assign] {moduleDef.moduleId} {footprintInfo}{clearanceInfo}";
-        _registry.Register(new Actions.AssignModuleAction(_modulePlacement, moduleDef, assignName));
+        // Blueprint for construction
+        _registry.Register(new Actions.AssignModuleAction(_modulePlacement, moduleDef, $"{basePath}/Place Blueprint"));
         
         count++;
       }
 
       if (count > 0) {
-        Debug.Log($"[DebugModule] Registered {count * 2} module actions ({count} instant + {count} assign)");
+        Debug.Log($"[DebugModule] Registered {count * 2} module actions ({count} instant + {count} blueprint)");
       }
     }
   }

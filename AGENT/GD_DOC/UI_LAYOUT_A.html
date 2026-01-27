@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Almost Alive - UI Layout A</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Inter, system-ui, sans-serif; background: #0a0a0a; padding: 20px; }
+    h1 { color: #fff; margin-bottom: 20px; }
+    
+    .layout { width: 1200px; height: 700px; background: #1e1e1e; position: relative; border-radius: 8px; overflow: hidden; border: 2px solid #333; }
+    .panel { background: #252525; border: 1px solid #3a3a3a; border-radius: 4px; }
+    
+    /* Colors */
+    .text { color: #d4d4d4; }
+    .text-muted { color: #888; }
+    .text-dim { color: #666; }
+    .accent { color: #5c8a5c; }
+    .warning { color: #b8a052; }
+    .danger { color: #a05252; }
+    
+    /* Top Bar */
+    .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 40px; background: #252525; border-bottom: 1px solid #3a3a3a; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+    .btn { background: #252525; border: 1px solid #3a3a3a; color: #d4d4d4; padding: 4px 10px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+    .btn.active { background: #5c8a5c; border-color: #5c8a5c; color: #fff; }
+    .btn-group { display: flex; gap: 4px; }
+    
+    /* Game View */
+    .game-view { position: absolute; top: 40px; left: 0; right: 320px; bottom: 48px; background: linear-gradient(135deg, #2a3a2a, #1a2a1a); display: flex; align-items: center; justify-content: center; color: #666; font-size: 20px; }
+    
+    /* Inspector */
+    .inspector { position: absolute; top: 48px; right: 8px; width: 304px; bottom: 56px; display: flex; flex-direction: column; }
+    .agent-header { padding: 12px; border-bottom: 1px solid #3a3a3a; display: flex; gap: 12px; align-items: center; }
+    .avatar { width: 48px; height: 48px; background: #1a1a1a; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .agent-name { font-weight: 600; font-size: 14px; color: #d4d4d4; }
+    .agent-class { font-size: 11px; color: #888; }
+    .agent-mood { font-size: 10px; color: #5c8a5c; margin-top: 2px; }
+    
+    .tabs { display: flex; border-bottom: 1px solid #3a3a3a; background: #1a1a1a; }
+    .tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: #888; padding: 8px 16px; cursor: pointer; font-size: 12px; }
+    .tab.active { border-bottom-color: #5c8a5c; color: #d4d4d4; font-weight: 600; }
+    
+    .tab-content { flex: 1; overflow: auto; padding: 12px; color: #d4d4d4; font-size: 12px; }
+    .section-title { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
+    .section-title:first-child { margin-top: 0; }
+    
+    .goal-box { background: #1a1a1a; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #5c8a5c; margin-bottom: 12px; }
+    .action-item { padding: 6px 8px; border-radius: 3px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .action-item.active { background: rgba(92,138,92,0.2); border-left: 2px solid #5c8a5c; }
+    .action-num { font-size: 10px; color: #666; width: 16px; }
+    .action-item.active .action-num { color: #5c8a5c; }
+    
+    .progress-bar { margin-bottom: 6px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 2px; }
+    .progress-track { height: 8px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 2px; }
+    
+    .belief-item { padding: 4px 0; border-bottom: 1px solid #3a3a3a; display: flex; justify-content: space-between; }
+    
+    /* Bottom Bar */
+    .bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 48px; background: #252525; border-top: 1px solid #3a3a3a; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+    .cmd-btn { background: #252525; border: 1px solid #3a3a3a; color: #d4d4d4; padding: 8px 16px; border-radius: 3px; font-size: 13px; cursor: pointer; }
+    .cmd-btn.debug { border-color: #b8a052; }
+    
+    /* Notifications */
+    .notifications { position: absolute; top: 56px; left: 16px; width: 280px; }
+    .notification { padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid #b8a052; }
+    .notif-title { font-size: 11px; color: #b8a052; font-weight: 500; }
+    .notif-desc { font-size: 10px; color: #888; margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <h1>Almost Alive — Layout A: Right Panel Inspector</h1>
+  
+  <div class="layout">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="text" style="font-size:14px;font-weight:500;">Day 3, 14:32</span>
+        <div class="btn-group">
+          <button class="btn">⏸</button>
+          <button class="btn active">▶</button>
+          <button class="btn">▶▶</button>
+          <button class="btn">▶▶▶</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="text-muted" style="font-size:11px;">Camera:</span>
+        <button class="btn active">Free</button>
+        <button class="btn">Follow</button>
+      </div>
+      <div class="text-muted" style="font-size:12px;display:flex;gap:16px;">
+        <span>🪵 24</span>
+        <span>🪨 12</span>
+        <span>🍖 8</span>
+      </div>
+    </div>
+    
+    <!-- GAME VIEW -->
+    <div class="game-view">🎮 3D World View</div>
+    
+    <!-- INSPECTOR -->
+    <div class="inspector panel">
+      <div class="agent-header">
+        <div class="avatar">👤</div>
+        <div>
+          <div class="agent-name">Marcus</div>
+          <div class="agent-class">Builder • Level 3</div>
+          <div class="agent-mood">😊 Content</div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active">Plan</button>
+        <button class="tab">Needs</button>
+        <button class="tab">Beliefs</button>
+      </div>
+      <div class="tab-content">
+        <div class="section-title">Current Goal</div>
+        <div class="goal-box">
+          <div style="font-weight:500;">🏗️ BuildStructure</div>
+          <div class="text-muted" style="font-size:11px;margin-top:2px;">Priority: 0.85</div>
+        </div>
+        
+        <div class="section-title">Action Plan</div>
+        <div class="action-item active">
+          <span class="action-num">1.</span>
+          <span>GetResources</span>
+          <span class="accent" style="margin-left:auto;font-size:10px;">▶</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">2.</span>
+          <span class="text-muted">MoveTo(Blueprint)</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">3.</span>
+          <span class="text-muted">Build</span>
+        </div>
+        
+        <div class="section-title">Related Stats</div>
+        <div class="progress-bar">
+          <div class="progress-label"><span>Energy</span><span class="text-dim">65/100</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:65%;background:#5c8a5c;"></div></div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-label"><span>Hunger</span><span class="text-dim">45/100</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:45%;background:#b8a052;"></div></div>
+        </div>
+        
+        <div class="section-title">Related Beliefs</div>
+        <div class="belief-item"><span class="text-muted">✓ HasResources</span><span class="accent">true</span></div>
+        <div class="belief-item"><span class="text-muted">✓ CanReachTarget</span><span class="accent">true</span></div>
+        <div class="belief-item"><span class="text-muted">✗ TargetComplete</span><span class="danger">false</span></div>
+      </div>
+    </div>
+    
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar">
+      <div style="display:flex;gap:8px;">
+        <button class="cmd-btn">🏠 Build</button>
+        <button class="cmd-btn">⚙️ Orders</button>
+        <button class="cmd-btn">📋 Work</button>
+        <button class="cmd-btn">🗺️ Zones</button>
+        <button class="cmd-btn debug">⚡ Debug</button>
+      </div>
+      <button class="cmd-btn">≡ Menu</button>
+    </div>
+    
+    <!-- NOTIFICATIONS -->
+    <div class="notifications">
+      <div class="notification panel">
+        <div class="notif-title">⚠️ Low Food Supply</div>
+        <div class="notif-desc">Colony has 3 days of food remaining</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

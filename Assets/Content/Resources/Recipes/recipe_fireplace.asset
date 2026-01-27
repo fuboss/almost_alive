@@ -79,4 +79,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  buildPriority: 0
+  category: Camp
+  displayName: Fireplace
+  icon: {fileID: 0}
+  buildPriority: 18

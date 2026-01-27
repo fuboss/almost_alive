@@ -79,4 +79,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+  category: Camp
+  displayName: Bed roll
+  icon: {fileID: 0}
   buildPriority: 0

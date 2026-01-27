@@ -67,5 +67,7 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  isCampRecipe: 1
-  campBuildPriority: 30
+  category: Other
+  displayName: Tolilet
+  icon: {fileID: 0}
+  buildPriority: 0

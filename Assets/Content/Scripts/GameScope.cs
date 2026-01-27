@@ -14,9 +14,12 @@ using Content.Scripts.Game.Camera.Settings;
 using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Effects;
 using Content.Scripts.Game.Interaction;
+using Content.Scripts.Game.Progression;
 using Content.Scripts.Game.Trees;
 using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
+using Content.Scripts.Ui.Commands;
+using Content.Scripts.Ui.Services;
 using Content.Scripts.World;
 using Content.Scripts.World.Grid.Presentation;
 using Unity.Cinemachine;
@@ -35,7 +38,11 @@ namespace Content.Scripts {
     public TreeFallConfigSO treeFallConfig;
     public UILayer[] uiLayers;
 
-    [Header("Building")] public Material structureGhostMaterial;
+    [Header("Building")] 
+    public Material structureGhostMaterial;
+    
+    [Header("Progression")]
+    public ColonyProgressionConfigSO colonyProgressionConfig;
     
     [Header("Debug")]
     public WorldGridPresentationConfigSO gridPresentationConfig;
@@ -51,6 +58,7 @@ namespace Content.Scripts {
 
       builder.Register<ActorCreationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<ActorDestructionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      
       // Environment
       builder.RegisterInstance(environmentSetup).AsSelf();
       builder.Register<WorldEnvironment>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
@@ -62,14 +70,21 @@ namespace Content.Scripts {
       builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<NavigationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
+      // Progression
+      builder.RegisterInstance(colonyProgressionConfig).AsSelf();
+      builder.Register<ColonyProgressionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
 
       // Decay & Work
       builder.RegisterEntryPoint<DecayModule>().AsSelf();
       builder.RegisterEntryPoint<WorkAssignmentModule>().AsSelf();
+      builder.RegisterEntryPoint<WorkContextActionsRegistrar>();
+      
+      // Commands
+      builder.RegisterEntryPoint<DebugCommandsRegistrar>();
+      builder.RegisterEntryPoint<BuildCommandsRegistrar>();
 
-    
-
-      builder.Register<ActorSelectionModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.Register<SelectionService>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
+      builder.RegisterEntryPoint<SelectionInputHandler>();
       builder.Register<AgentContainerModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<LinearProgressionStrategy>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<FadeAnimationStrategy>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
