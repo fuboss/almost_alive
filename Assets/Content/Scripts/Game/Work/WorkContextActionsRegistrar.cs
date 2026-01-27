@@ -1,5 +1,6 @@
 using Content.Scripts.AI;
 using Content.Scripts.Game.Harvesting;
+using Content.Scripts.Game.Interaction;
 using Content.Scripts.Ui.Layers.Inspector;
 using UnityEngine;
 using VContainer.Unity;
@@ -49,7 +50,7 @@ namespace Content.Scripts.Game.Work {
       ContextActionRegistry.RegisterForTag(Tag.HARVESTABLE, new ContextAction(
         label: "Harvest",
         icon: "🌿",
-        canExecute: target => !IsMarkedForWork(target) && HarvestModule.HasYield(target),
+        canExecute: target => !IsMarkedForWork(target) && HarvestModule.HasYield(target as ActorDescription),
         execute: target => MarkForWork(target, WorkType.FARMING, "harvesting")
       ));
 
@@ -67,7 +68,7 @@ namespace Content.Scripts.Game.Work {
       ContextActionRegistry.RegisterGlobal(new ContextAction(
         label: "Cancel Work",
         icon: "❌",
-        canExecute: target => IsMarkedForWork(target),
+        canExecute: IsMarkedForWork,
         execute: target => {
           var marker = target.gameObject.GetComponent<WorkMarker>();
           marker?.Unmark();
@@ -78,12 +79,12 @@ namespace Content.Scripts.Game.Work {
 
     #region Helpers
 
-    private static bool IsMarkedForWork(ActorDescription target) {
+    private static bool IsMarkedForWork(ISelectableActor target) {
       var marker = target.gameObject.GetComponent<WorkMarker>();
       return marker != null && marker.isMarked;
     }
 
-    private static void MarkForWork(ActorDescription target, WorkType workType, string actionName) {
+    private static void MarkForWork(ISelectableActor target, WorkType workType, string actionName) {
       var marker = target.gameObject.GetComponent<WorkMarker>();
       if (marker == null)
         marker = target.gameObject.AddComponent<WorkMarker>();
