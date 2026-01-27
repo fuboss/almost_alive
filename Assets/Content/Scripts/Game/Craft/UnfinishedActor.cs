@@ -4,11 +4,6 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.Game.Craft {
-  public interface IProgressProvider {
-    float progress { get; }
-    ActorDescription actor { get; }
-  }
-
   public class UnfinishedActor : UnfinishedActorBase {
     [ShowInInspector, ReadOnly] private RecipeSO _recipe;
 

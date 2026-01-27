@@ -159,4 +159,50 @@ belief.lastEvaluation               // bool
 
 ---
 
+### Harvestable Plants System ✅
+Path: `Game/Harvesting/`
+
+**Status:** Core implementation done
+
+**Components:**
+- `HarvestableTag` — настройки (actorKey, maxHarvest, respawnTime, workPerUnit, curve)
+- `GrowthProgress : ISimulatable` — симуляция роста (progress 0-1 → currentYield)
+- `HarvestingProgress` — прогресс работы агента (как ChoppingProgress)
+- `HarvestModule` — менеджер (init, spawn yield, static helpers)
+- `HarvestStrategy` — GOAP strategy (work → drop on ground)
+- `TreeTag` — регистрируется в ActorRegistry (для "Chop All Trees")
+- `HarvestableHasYieldBelief` — belief для проверки урожая
+
+**GOAP Flow:**
+```
+MoveToHarvestable (MoveStrategy + MemorySearcher[HARVESTABLE])
+  → HarvestFromPlant (HarvestStrategy)
+    → yield drops on ground
+      → PickupItem (separate action)
+```
+
+**Architecture:**
+- SOLID: GrowthProgress ticks progress, HarvestModule converts to yield
+- Registration via ActorRegistry<HarvestableTag>
+- VContainer: HarvestModule in GameScope
+
+**Beliefs:**
+- `HarvestableHasYieldBelief` — transient target has yield
+- `HarvestableInMemoryBelief` — memory has harvestable with yield (+ distance check)
+
+**Work System Integration:**
+- `WorkType.FARMING` — check via `HasFarmingWork()`
+- Context actions:
+  - 🪓 "Chop Tree" / 🌲 "Chop All Trees"
+  - ⛏️ "Mine Rock"
+  - 🌿 "Harvest" / 🧺 "Harvest All Ready"
+  - ❌ "Cancel Work"
+
+**TODO:**
+- [ ] View для визуала плодов (позже)
+- [ ] GOAP Action SO (создать в редакторе)
+- [ ] Тест с реальным кустом
+
+---
+
 *Update when major systems change.*

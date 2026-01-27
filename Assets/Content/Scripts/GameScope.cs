@@ -15,6 +15,7 @@ using Content.Scripts.Game.Decay;
 using Content.Scripts.Game.Effects;
 using Content.Scripts.Game.Interaction;
 using Content.Scripts.Game.Progression;
+using Content.Scripts.Game.Harvesting;
 using Content.Scripts.Game.Trees;
 using Content.Scripts.Game.Work;
 using Content.Scripts.Ui;
@@ -66,6 +67,7 @@ namespace Content.Scripts {
       builder.Register<WorldSaveModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<TreeModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.RegisterInstance(treeFallConfig).AsSelf();
+      builder.Register<HarvestModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<EffectsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<AnimalsModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();
       builder.Register<NavigationModule>(Lifetime.Singleton).AsImplementedInterfaces().AsSelf();

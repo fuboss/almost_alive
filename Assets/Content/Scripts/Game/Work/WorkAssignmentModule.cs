@@ -1,4 +1,5 @@
 using Content.Scripts.AI.GOAP.Agent;
+using Content.Scripts.Game.Harvesting;
 using VContainer.Unity;
 
 namespace Content.Scripts.Game.Work {
@@ -54,9 +55,20 @@ namespace Content.Scripts.Game.Work {
     private static bool IsWorkAvailable(WorkType workType) {
       return workType switch {
         WorkType.HAULING => HasHaulingWork(),
+        WorkType.FARMING => HasFarmingWork(),
         // TODO: Add other work type checks
         _ => false
       };
+    }
+
+    /// <summary>
+    /// Check if there's any farming/harvesting work available.
+    /// </summary>
+    public static bool HasFarmingWork() {
+      foreach (var growth in ActorRegistry<GrowthProgress>.all) {
+        if (growth != null && growth.hasYield) return true;
+      }
+      return false;
     }
   }
 }
