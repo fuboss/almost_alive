@@ -106,6 +106,113 @@ namespace Content.Scripts.World.Biomes {
     [InlineProperty, HideLabel]
     public BiomeVegetationConfig vegetationConfig = new();
 
+    // preview texture for vegetation mask (editor only)
+#if UNITY_EDITOR
+    [FoldoutGroup("Vegetation"), PropertyOrder(900)]
+    [ShowIf("hasVegetation")]
+    [PreviewField(64, ObjectFieldAlignment.Left)]
+    public Texture2D vegetationMaskPreview;
+
+    [Button("Generate Vegetation Mask Preview"), FoldoutGroup("Vegetation")]
+    private void GenerateVegetationMaskPreview() {
+      var t = Terrain.activeTerrain;
+      if (t == null) {
+        Debug.LogError($"[{name}] No terrain found for mask preview");
+        return;
+      }
+
+      var terrainData = t.terrainData;
+      var detailResolution = terrainData.detailResolution;
+      if (detailResolution <= 0) {
+        Debug.LogError($"[{name}] Terrain detail resolution is zero");
+        return;
+      }
+
+      var terrainPos = t.transform.position;
+      var terrainSize = terrainData.size;
+      var seed = WorldGeneratorConfigSO.GetFromResources()?.seed ?? System.Environment.TickCount;
+
+      var settings = new Content.Scripts.World.Vegetation.Mask.MaskSettings();
+      settings.mode = vegetationConfig.maskMode;
+      settings.scale = vegetationConfig.maskScale;
+      settings.fbmOctaves = vegetationConfig.maskOctaves;
+      settings.fbmPersistence = vegetationConfig.maskPersistence;
+      settings.threshold = vegetationConfig.maskThreshold;
+      settings.blend = vegetationConfig.maskBlend;
+      settings.useStochasticCulling = vegetationConfig.maskUseStochastic;
+      settings.stochasticBlend = vegetationConfig.maskStochasticBlend;
+      settings.cacheEnabled = vegetationConfig.maskCacheEnabled;
+      settings.seedOffset = seed;
+
+      var mask = Content.Scripts.World.Vegetation.Mask.MaskService.GetMask(terrainData, detailResolution, terrainPos, terrainSize, seed, settings);
+
+      // create texture from mask (downsampled to 256 max for preview)
+      var previewSize = Mathf.Min(256, detailResolution);
+      var tex = new Texture2D(previewSize, previewSize, TextureFormat.RGBA32, false);
+      for (var y = 0; y < previewSize; y++) {
+        for (var x = 0; x < previewSize; x++) {
+          var srcX = Mathf.FloorToInt((float)x / previewSize * detailResolution);
+          var srcY = Mathf.FloorToInt((float)y / previewSize * detailResolution);
+          srcX = Mathf.Clamp(srcX, 0, detailResolution - 1);
+          srcY = Mathf.Clamp(srcY, 0, detailResolution - 1);
+          var v = mask[srcY, srcX];
+          tex.SetPixel(x, y, new Color(v, v, v, 1f));
+        }
+      }
+      tex.Apply();
+
+      // Save temporary asset (overwrite existing)
+      var dir = "Assets/Temp";
+      if (!System.IO.Directory.Exists(dir)) System.IO.Directory.CreateDirectory(dir);
+      var path = $"{dir}/biome_{name}_mask.png";
+      System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
+      UnityEditor.AssetDatabase.ImportAsset(path);
+      var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+      vegetationMaskPreview = asset;
+      UnityEditor.EditorUtility.SetDirty(this);
+
+      // create or update a preview quad in the scene so user can visually inspect mask
+      try {
+        var previewName = $"[BiomeMaskPreview_{name}]";
+        var existing = UnityEngine.GameObject.Find(previewName);
+        UnityEngine.GameObject go;
+        if (existing == null) {
+          go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+          go.name = previewName;
+          // keep preview separate from generated world container
+          UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Biome Mask Preview");
+        } else {
+          go = existing;
+        }
+
+        // position quad above terrain a little
+        var center = terrainPos + new Vector3(terrainSize.x * 0.5f, 0.5f, terrainSize.z * 0.5f);
+        go.transform.position = center;
+        go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        go.transform.localScale = new Vector3(terrainSize.x, terrainSize.z, 1f);
+
+        // create material
+        var matPath = $"Assets/Temp/biome_{name}_mask.mat";
+        UnityEngine.Material mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (mat == null) {
+          var shader = Shader.Find("Unlit/Texture") ?? Shader.Find("Unlit/Color");
+          mat = new Material(shader);
+          UnityEditor.AssetDatabase.CreateAsset(mat, matPath);
+        }
+        mat.mainTexture = asset;
+        var renderer = go.GetComponent<Renderer>();
+        renderer.sharedMaterial = mat;
+
+        // mark scene dirty
+        UnityEditor.EditorUtility.SetDirty(go);
+      } catch (System.Exception ex) {
+        Debug.LogWarning($"[{name}] Failed to create scene preview: {ex.Message}");
+      }
+
+      Debug.Log($"[{name}] Vegetation mask preview generated: {path}");
+    }
+#endif
+
     // ═══════════════════════════════════════════════════════════════
     // TEXTURE SLOT CLASSES
     // ═══════════════════════════════════════════════════════════════

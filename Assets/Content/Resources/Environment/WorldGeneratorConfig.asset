@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.WorldGeneratorConfigSO
   terrainPalette: {fileID: 11400000, guid: 84bb87ae5541d43799c7e3f4fbf4b2ab, type: 2}
   terrain: {fileID: 0}
-  size: 150
+  size: 200
   edgeMargin: 1
   sculptTerrain: 1
   paintSplatmap: 1
@@ -22,15 +22,16 @@ MonoBehaviour:
   seed: 1
   biomes:
   - {fileID: 11400000, guid: 80a28265ed14c489194c747350b7610a, type: 2}
-  - {fileID: 11400000, guid: 329f88d8c4f5145d5acd9556a8cf9a30, type: 2}
-  - {fileID: 11400000, guid: 2a50fb2547aed40a282423343f83effc, type: 2}
   - {fileID: 11400000, guid: e034e7daa00e74edba9226b406966606, type: 2}
   - {fileID: 11400000, guid: 9b2e20e2404b649069948e3d7c03bd36, type: 2}
-  biomeBorderBlend: 20
-  minBiomeCells: 10
-  maxBiomeCells: 26
+  - {fileID: 11400000, guid: 329f88d8c4f5145d5acd9556a8cf9a30, type: 2}
+  - {fileID: 11400000, guid: 2a50fb2547aed40a282423343f83effc, type: 2}
+  - {fileID: 11400000, guid: f0b8534364fb7487fa18f310b234250a, type: 2}
+  biomeBorderBlend: 18.5
+  minBiomeCells: 5
+  maxBiomeCells: 19
   logGeneration: 0
   drawBiomeGizmos: 0
-  gizmoResolution: 37
+  gizmoResolution: 24
   drawCellCenters: 1
   createScattersInEditor: 1

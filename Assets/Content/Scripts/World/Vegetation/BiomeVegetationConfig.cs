@@ -130,5 +130,39 @@ namespace Content.Scripts.World.Vegetation {
     // common practical upper bound is 255 (byte range) — this gives you room to tune weight and density.
     [Range(8, 255)]
     public int maxDensityPerCell = 64;
+
+    // New mask settings exposed per-biome
+    [FoldoutGroup("Vegetation Mask", expanded: false)]
+    public Content.Scripts.World.Vegetation.Mask.MaskMode maskMode = Content.Scripts.World.Vegetation.Mask.MaskMode.Perlin;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(0.001f, 0.1f)]
+    public float maskScale = 0.02f;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(1, 6)]
+    public int maskOctaves = 3;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(0.1f, 0.9f)]
+    public float maskPersistence = 0.5f;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(0f, 1f)]
+    public float maskThreshold = 0.6f;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(0f, 0.5f)]
+    public float maskBlend = 0.12f;
+
+    [FoldoutGroup("Vegetation Mask")]
+    public bool maskUseStochastic = false;
+
+    [FoldoutGroup("Vegetation Mask")]
+    [Range(0f, 1f)]
+    public float maskStochasticBlend = 0f;
+
+    [FoldoutGroup("Vegetation Mask")]
+    public bool maskCacheEnabled = true;
   }
 }

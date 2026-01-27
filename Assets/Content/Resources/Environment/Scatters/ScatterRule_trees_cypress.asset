@@ -26,5 +26,5 @@ MonoBehaviour:
   avoidTags: []
   avoidRadius: 5
   randomRotation: 1
-  scaleRange: {x: 0.7477876, y: 1.1725664}
+  scaleRange: {x: 0.6126126, y: 1.5405406}
   childScatters: []

@@ -23,38 +23,38 @@ MonoBehaviour:
     SerializationNodes: []
   type: 0
   debugColor: {r: 0, g: 0.4056604, b: 0, a: 1}
-  weight: 1
-  baseHeight: 5.1
-  heightAmplitude: 6
+  weight: 1.14
+  baseHeight: 4.8
+  heightAmplitude: 10.1
   heightProfile:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: -0.00983429
       value: 0.8364334
-      inSlope: -0.036223434
-      outSlope: -0.036223434
-      tangentMode: 34
+      inSlope: 0.011702002
+      outSlope: 0.011702002
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.15398476
     - serializedVersion: 3
-      time: 0.511545
-      value: 0.81754726
-      inSlope: 0.0014952533
-      outSlope: 0.0014952533
+      time: 0.5024813
+      value: 0.8280148
+      inSlope: 0.035792336
+      outSlope: 0.035792336
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1.0118408
-      value: 0.83716583
-      inSlope: 0.03921394
-      outSlope: 0.03921394
-      tangentMode: 34
+      time: 1.03656
+      value: 0.8750229
+      inSlope: -0.021000966
+      outSlope: -0.021000966
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.11487112
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -451,7 +451,7 @@ MonoBehaviour:
       noiseStrength: 0.484
     - previewCache: {fileID: 6011036630121576164, guid: 0ec1c69bd47ad864f96cc2b516f6cd4b, type: 3}
       prototype: {fileID: 11400000, guid: 8387860a831d7439c91b648f748a7224, type: 2}
-      density: 0.31
+      density: 0.157
       coverage: 1.55
       weight: 1.61
       slopeFalloff:
@@ -508,9 +508,9 @@ MonoBehaviour:
       noiseStrength: 0.653
     - previewCache: {fileID: 1748410436971110666, guid: ebdb35cf559fb314dae7df6d0a352b48, type: 3}
       prototype: {fileID: 11400000, guid: 417d4f55815654ae9924216e2141312f, type: 2}
-      density: 0.311
-      coverage: 0.72
-      weight: 1
+      density: 0.1
+      coverage: 0.441
+      weight: 0.68
       slopeFalloff:
         serializedVersion: 2
         m_Curve:
@@ -565,9 +565,9 @@ MonoBehaviour:
       noiseStrength: 0.3
     - previewCache: {fileID: 8725595529617163904, guid: 79c8f33bcb747754cbfe118970170a81, type: 3}
       prototype: {fileID: 11400000, guid: 947c8b39fbab543559f954a3a4e4a92e, type: 2}
-      density: 0.21
-      coverage: 0.72
-      weight: 1.34
+      density: 0.075
+      coverage: 0.325
+      weight: 0.86
       slopeFalloff:
         serializedVersion: 2
         m_Curve:
@@ -679,3 +679,13 @@ MonoBehaviour:
       noiseStrength: 0.678
     densityMultiplier: 3.92
     maxDensityPerCell: 82
+    maskMode: 1
+    maskScale: 0.0218
+    maskOctaves: 5
+    maskPersistence: 0.776
+    maskThreshold: 0.363
+    maskBlend: 0.12
+    maskUseStochastic: 0
+    maskStochasticBlend: 0
+    maskCacheEnabled: 1
+  vegetationMaskPreview: {fileID: 2800000, guid: a040555197a6c4cdf8af68c24f6773db, type: 3}
