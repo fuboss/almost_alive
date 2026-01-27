@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -8,43 +9,28 @@ namespace Content.Scripts.World.Vegetation {
   /// </summary>
   [CreateAssetMenu(menuName = "World/Vegetation Prototype", fileName = "VegetationPrototype_")]
   public class VegetationPrototypeSO : ScriptableObject {
-    
-    [BoxGroup("Rendering")]
-    [Tooltip("Texture for billboard grass")]
-    [PreviewField(50)]
-    public Texture2D texture;
-    
-    [BoxGroup("Rendering")]
-    [Tooltip("Mesh for 3D vegetation (bushes, flowers)")]
+    [BoxGroup("Rendering")] [Tooltip("Mesh for 3D vegetation (bushes, flowers)")]
     public GameObject prefab;
-    
-    [BoxGroup("Rendering")]
-    [Tooltip("How to render this vegetation")]
-    public DetailRenderMode renderMode = DetailRenderMode.GrassBillboard;
-    
-    [BoxGroup("Rendering")]
-    [Tooltip("Use GPU instancing for better performance")]
+    [BoxGroup("Rendering")] [Tooltip("Mesh for 3D vegetation (bushes, flowers)")]
+    public GameObject[] prefabs;
+
+    [BoxGroup("Rendering")] [Tooltip("How to render this vegetation")]
+    public DetailRenderMode renderMode = DetailRenderMode.VertexLit;
+
+    [BoxGroup("Rendering")] [Tooltip("Use GPU instancing for better performance")]
     public bool useInstancing = true;
 
-    [BoxGroup("Size")]
-    [MinMaxSlider(0.1f, 5f, true)]
+    [BoxGroup("Size")] [MinMaxSlider(0.1f, 5f, true)]
     public Vector2 widthRange = new(0.5f, 1.5f);
-    
-    [BoxGroup("Size")]
-    [MinMaxSlider(0.1f, 5f, true)]
+
+    [BoxGroup("Size")] [MinMaxSlider(0.1f, 5f, true)]
     public Vector2 heightRange = new(0.5f, 1.5f);
 
-    [BoxGroup("Color")]
-    [ColorPalette]
-    public Color dryColor = new(0.8f, 0.7f, 0.4f);
-    
-    [BoxGroup("Color")]
-    [ColorPalette]
-    public Color healthyColor = new(0.3f, 0.8f, 0.2f);
-    
-    [BoxGroup("Color")]
-    [Tooltip("How much color varies between instances")]
-    [Range(0f, 1f)]
+    [BoxGroup("Color")] [ColorPalette] public Color dryColor = new(0.8f, 0.7f, 0.4f);
+
+    [BoxGroup("Color")] [ColorPalette] public Color healthyColor = new(0.3f, 0.8f, 0.2f);
+
+    [BoxGroup("Color")] [Tooltip("How much color varies between instances")] [Range(0f, 1f)]
     public float noiseSpread = 0.2f;
 
     /// <summary>
@@ -52,11 +38,26 @@ namespace Content.Scripts.World.Vegetation {
     /// </summary>
     /// <param name="layerCoverageDensity"></param>
     public DetailPrototype ToDetailPrototype(float layerCoverageDensity) {
+      var prototype = Convert(prefab, layerCoverageDensity);
+      return prototype;
+    }
+    
+    public IEnumerable<DetailPrototype> ToDetailPrototypes(float layerCoverageDensity) {
+      if(prefabs == null || prefabs.Length == 0) {
+        yield return Convert(prefab, layerCoverageDensity);
+        yield break;
+      }
+      foreach (var pr in prefabs) {
+        yield return Convert(pr, layerCoverageDensity);
+      }
+    }
+
+    private DetailPrototype Convert(GameObject prefab, float layerCoverageDensity) {
       var r = prefab.GetComponent<Renderer>();
-      if(r == null) {
+      if (r == null) {
         return null;
       }
-      
+
       var prototype = new DetailPrototype {
         renderMode = renderMode,
         usePrototypeMesh = prefab != null,
@@ -73,8 +74,6 @@ namespace Content.Scripts.World.Vegetation {
 
       if (prefab != null) {
         prototype.prototype = prefab;
-      } else if (texture != null) {
-        prototype.prototypeTexture = texture;
       }
 
       return prototype;

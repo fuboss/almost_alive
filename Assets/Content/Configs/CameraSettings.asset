@@ -21,7 +21,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  heightRange: {x: 1.5, y: 40.14653}
+  heightRange: {x: 1.5, y: 56.412384}
   zoomToPitchCurve:
     serializedVersion: 2
     m_Curve:
@@ -46,25 +46,25 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  zoomSpeed: 3.38
+  zoomSpeed: 3.77
   zoomSmoothing: 0.989
-  basePanSpeed: 24.4
+  basePanSpeed: 25.3
   panSpeedByZoomCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.5
-      inSlope: 0
-      outSlope: 1.5
+      value: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 2
-      inSlope: 1.5
+      value: 1
+      inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
@@ -73,7 +73,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  panSmoothing: 0.996
+  panSmoothing: 0.982
   enableEdgePanning: 0
   edgePanSpeed: 15
   edgeThreshold: 0.05
@@ -86,7 +86,7 @@ MonoBehaviour:
     m_Extent: {x: 50, y: 25, z: 50}
   followSmoothing: 1
   followHeightOffset: 5
-  showDebugGizmos: 1
+  showDebugGizmos: 0
   groundCheckLayer:
     serializedVersion: 2
     m_Bits: 144

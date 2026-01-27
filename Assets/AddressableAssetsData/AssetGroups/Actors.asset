@@ -93,6 +93,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Actors
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b60d0e81bdebf41509e1ee4663671e98
+    m_Address: Bush_Berries
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Actors
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b7343b6e220904dd6aee04adcf27856c
     m_Address: tree_Pine_2
     m_ReadOnly: 0

@@ -9,7 +9,7 @@ namespace Content.Scripts.World.Biomes {
   /// Defines terrain appearance, height profile, textures, and scatter rules.
   /// </summary>
   [CreateAssetMenu(menuName = "World/Biome", fileName = "Biome_")]
-  public class BiomeSO : ScriptableObject {
+  public class BiomeSO : SerializedScriptableObject {
     
     // ═══════════════════════════════════════════════════════════════
     // IDENTITY

@@ -84,6 +84,12 @@ MonoBehaviour:
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
+  - rule: {fileID: 11400000, guid: ce4211a5754514bceba1c1b98bb0b6d9, type: 2}
+    placement: 0
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 30}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}
   vegetationConfig:
     layers:
     - prototype: {fileID: 11400000, guid: 18071d2fd4aa5428288996808cd56b27, type: 2}

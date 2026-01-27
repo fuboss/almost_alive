@@ -9,7 +9,7 @@ using VContainer;
 using Random = UnityEngine.Random;
 
 namespace Content.Scripts.Game.Trees {
-  public class TreeModule : IDisposable{
+  public class TreeModule : IDisposable {
     [Inject] private ActorDestructionModule _actorDestruction;
     [Inject] private ActorCreationModule _creationModule;
     [Inject] private EffectsModule _effectsModule;
@@ -44,7 +44,7 @@ namespace Content.Scripts.Game.Trees {
         _actorDestruction.DestroyActor(treeActor);
         return;
       }
-      
+
       var worldBounds = meshRenderer.bounds;
       var material = meshRenderer.sharedMaterial;
 
@@ -90,7 +90,7 @@ namespace Content.Scripts.Game.Trees {
       rb.linearDamping = _config.linearDrag;
       rb.interpolation = RigidbodyInterpolation.Interpolate;
       rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-      
+
       // Prevent initial physics jitter - freeze position briefly
       rb.constraints = RigidbodyConstraints.FreezePositionY;
     }
@@ -100,15 +100,15 @@ namespace Content.Scripts.Game.Trees {
 
       var treeTransform = fallingTree.transform;
       var bounds = fallingTree.originalBounds;
-      
+
       // Calculate log spawn position - center of the fallen tree
       // The tree's "up" is now roughly horizontal, so we offset along that axis
       var treeCenter = treeTransform.position + treeTransform.up * (bounds.extents.y * 0.5f);
-      
+
       // Log rotation: align log's X axis with tree's up (the fallen direction)
       // Log mesh is created along X axis, so we rotate it to match tree's orientation
       var logRotation = Quaternion.LookRotation(treeTransform.up, Vector3.up) * Quaternion.Euler(0, 90, 0);
-      
+
       Debug.Log($"[TreeModule] Tree bounds: {bounds}, center calc: {treeCenter}");
       Debug.Log($"[TreeModule] Tree transform.up: {treeTransform.up}, position: {treeTransform.position}");
 
@@ -116,7 +116,8 @@ namespace Content.Scripts.Game.Trees {
       if (originalActor != null) {
         Debug.Log($"[TreeModule] Destroying original tree actor: {originalActor.name}");
         _actorDestruction.DestroyActor(originalActor);
-      } else {
+      }
+      else {
         Debug.LogWarning("[TreeModule] Original actor is null, cannot destroy!");
       }
 
@@ -126,7 +127,7 @@ namespace Content.Scripts.Game.Trees {
     private void SpawnLog(Vector3 position, Quaternion rotation, Bounds treeBounds, Material material,
       TreeTag treeDef) {
       Debug.Log($"[TreeModule] SpawnLog at {position}, rotation: {rotation.eulerAngles}");
-      
+
       if (!_creationModule.TrySpawnActor(_config.logActorKey, position, out var logActor)) {
         Debug.LogError($"[TreeModule] Failed to spawn log actor '{_config.logActorKey}'");
         return;
@@ -147,6 +148,13 @@ namespace Content.Scripts.Game.Trees {
       }
 
       Debug.Log($"[TreeModule] Log spawned successfully at {position}");
+    }
+
+    public void LogChopped(ChoppingProgress choppingProgress, IGoapAgentCore agent) {
+      var logData = choppingProgress.actor.GetDefinition<LogTag>();
+      SpawnYieldWood(choppingProgress, agent, logData.woodSource, logData.woodActorID);
+
+      _actorDestruction.DestroyActor(choppingProgress.actor);
     }
 
     private void SpawnYieldWood(ChoppingProgress choppingProgress, IGoapAgentCore byAgent, int yield, string actorID) {

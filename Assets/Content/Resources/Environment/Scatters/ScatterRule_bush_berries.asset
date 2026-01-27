@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80442152045c748b5a92fbbe7748cc01, type: 3}
+  m_Name: ScatterRule_bush_berries
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.ScatterRuleSO
+  actorKey: Bush_Berries
+  prefab: {fileID: 0}
+  fixedCount: 0
+  density: 1.04
+  minSpacing: 4.9
+  maxAttempts: 25
+  clusterSize: {x: 1, y: 2}
+  clusterSpread: 8.63
+  slopeRange: {x: 0, y: 32.43243}
+  heightRange: {x: 0, y: 100}
+  allowedTerrainLayers: 
+  avoidTags: []
+  avoidRadius: 1
+  randomRotation: 1
+  scaleRange: {x: 0.9, y: 1.2207208}
+  childScatters: []

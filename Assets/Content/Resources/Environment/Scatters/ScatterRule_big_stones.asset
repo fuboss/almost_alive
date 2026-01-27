@@ -29,8 +29,8 @@ MonoBehaviour:
   scaleRange: {x: 0.62724936, y: 1.3329048}
   childScatters:
   - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
-    countPerParent: {x: 2, y: 5}
-    radiusMin: 1.33
-    radiusMax: 8
+    countPerParent: {x: 1, y: 5}
+    radiusMin: 0.58
+    radiusMax: 5.5
     inheritTerrainFilter: 1
     localSpacingOnly: 1

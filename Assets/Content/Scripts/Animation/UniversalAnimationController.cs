@@ -84,6 +84,7 @@ namespace Content.Scripts.Animation {
     #region Convenience Methods (for strategies)
 
     public void CutTree() => StartWork(ToolAnimationType.Axe);
+    public void ChopLog() => StartWork(ToolAnimationType.Axe);
     public void Mine() => StartWork(ToolAnimationType.Pickaxe);
     public void Dig() => StartWork(ToolAnimationType.Shovel);
     public void Fish() => StartWork(ToolAnimationType.FishingRod);
@@ -217,6 +218,8 @@ namespace Content.Scripts.Animation {
     public void SetSneaking(bool sneaking) => animator.SetBool(IsSneakingHash, sneaking);
 
     #endregion
+
+    
   }
 
   public enum WeaponAnimationType {

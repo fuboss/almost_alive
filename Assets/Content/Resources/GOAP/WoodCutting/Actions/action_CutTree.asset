@@ -31,9 +31,8 @@ MonoBehaviour:
     - Transient_Is/TREE
     effects:
     - JobComplete
-    - Remembers_Nearby/WOOD
+    - Remembers_Nearby/LOG
     - Job_NotRequired_WoodCutting
-    - Remember_Nearby_CraftResource
   references:
     version: 2
     RefIds:

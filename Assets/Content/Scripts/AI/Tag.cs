@@ -19,6 +19,7 @@ namespace Content.Scripts.AI {
     public const string WORKBENCH = "WORKBENCH";
     public const string UNFINISHED = "UNFINISHED";
     public const string STRUCTURE = "STRUCTURE";
+    public const string HARVESTABLE = "HARVESTABLE";
     
     public static string[] ALL_TAGS = {
       FOOD,
@@ -38,6 +39,7 @@ namespace Content.Scripts.AI {
       WORKBENCH,
       UNFINISHED,
       STRUCTURE,
+      HARVESTABLE,
     };
   }
 }

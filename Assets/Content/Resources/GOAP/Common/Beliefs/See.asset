@@ -22,116 +22,123 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   beliefs:
-  - rid: 365113165708525777
-  - rid: 365113165708525778
-  - rid: 365113165708525779
-  - rid: 365113165708525780
-  - rid: 365113165708525781
-  - rid: 365113165708525782
-  - rid: 365113165708525783
-  - rid: 365113165708525784
-  - rid: 365113165708525785
-  - rid: 365113165708525786
-  - rid: 365113165708525787
-  - rid: 365113165708525788
-  - rid: 365113165708525789
-  - rid: 365113165708525790
-  - rid: 365113165708525791
-  - rid: 365113165708525792
+  - rid: 2108328445730357606
+  - rid: 2108328445730357607
+  - rid: 2108328445730357608
+  - rid: 2108328445730357609
+  - rid: 2108328445730357610
+  - rid: 2108328445730357611
+  - rid: 2108328445730357612
+  - rid: 2108328445730357613
+  - rid: 2108328445730357614
+  - rid: 2108328445730357615
+  - rid: 2108328445730357616
+  - rid: 2108328445730357617
+  - rid: 2108328445730357618
+  - rid: 2108328445730357619
+  - rid: 2108328445730357620
+  - rid: 2108328445730357621
+  - rid: 2108328445730357622
   references:
     version: 2
     RefIds:
-    - rid: 365113165708525777
+    - rid: 2108328445730357606
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/FOOD
         tags:
         - FOOD
-    - rid: 365113165708525778
+    - rid: 2108328445730357607
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/REST
         tags:
         - REST
-    - rid: 365113165708525779
+    - rid: 2108328445730357608
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/TOILET
         tags:
         - TOILET
-    - rid: 365113165708525780
+    - rid: 2108328445730357609
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/SOCIAL
         tags:
         - SOCIAL
-    - rid: 365113165708525781
+    - rid: 2108328445730357610
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/AGENT
         tags:
         - AGENT
-    - rid: 365113165708525782
+    - rid: 2108328445730357611
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/STORAGE
         tags:
         - STORAGE
-    - rid: 365113165708525783
+    - rid: 2108328445730357612
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/TREE
         tags:
         - TREE
-    - rid: 365113165708525784
+    - rid: 2108328445730357613
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/RESOURCE
         tags:
         - RESOURCE
-    - rid: 365113165708525785
+    - rid: 2108328445730357614
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/WOOD
         tags:
         - WOOD
-    - rid: 365113165708525786
+    - rid: 2108328445730357615
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/STONE
         tags:
         - STONE
-    - rid: 365113165708525787
+    - rid: 2108328445730357616
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/ITEM
         tags:
         - ITEM
-    - rid: 365113165708525788
+    - rid: 2108328445730357617
+      type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
+      data:
+        name: See/LOG
+        tags:
+        - LOG
+    - rid: 2108328445730357618
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/BED
         tags:
         - BED
-    - rid: 365113165708525789
+    - rid: 2108328445730357619
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/FIREPLACE
         tags:
         - FIREPLACE
-    - rid: 365113165708525790
+    - rid: 2108328445730357620
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/WORKBENCH
         tags:
         - WORKBENCH
-    - rid: 365113165708525791
+    - rid: 2108328445730357621
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/UNFINISHED
         tags:
         - UNFINISHED
-    - rid: 365113165708525792
+    - rid: 2108328445730357622
       type: {class: VisionBelief, ns: Content.Scripts.AI.GOAP.Beliefs, asm: Assembly-CSharp}
       data:
         name: See/STRUCTURE
