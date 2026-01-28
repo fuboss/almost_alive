@@ -28,14 +28,20 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       
       var config = ctx.Config;
       
-      // Generate Voronoi biome map
+      Debug.Log($"[BiomeLayout] Starting generation: bounds={ctx.Bounds}, seed={ctx.Seed}, biomes={config.biomes?.Count ?? 0}");
+      
+      // Generate Voronoi biome map with domain warping
       var biomeMap = VoronoiGenerator.Generate(
         ctx.Bounds,
         config.biomes,
         config.biomeBorderBlend,
         ctx.Seed,
         config.minBiomeCells,
-        config.maxBiomeCells
+        config.maxBiomeCells,
+        config.useDomainWarping,
+        config.warpStrength,
+        config.warpScale,
+        config.warpOctaves
       );
       
       ReportProgress(0.8f, "Storing biome map...");
@@ -44,6 +50,8 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       
       // Cache in config SO for gizmo drawing
       ctx.ConfigSO.cachedBiomeMap = biomeMap;
+      
+      Debug.Log($"[BiomeLayout] Generated BiomeMap: cells={biomeMap?.cells?.Count ?? 0}");
       
       ReportProgress(1f);
       ClearProgressBar();
@@ -55,17 +63,30 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
     }
 
     protected override Material CreateDebugMaterial(GenerationContext ctx) {
-      if (ctx.BiomeMap == null) return null;
+      Debug.Log($"[BiomeLayout] CreateDebugMaterial called, BiomeMap={(ctx.BiomeMap != null ? "exists" : "NULL")}");
+      
+      if (ctx.BiomeMap == null) {
+        Debug.LogWarning("[BiomeLayout] Cannot create debug material - BiomeMap is null");
+        return null;
+      }
       
       // Create or update debug texture
       _debugTexture = GenerateBiomeColorTexture(ctx.BiomeMap, 256);
+      Debug.Log($"[BiomeLayout] Debug texture created: {_debugTexture.width}x{_debugTexture.height}");
       
-      // Create simple unlit material
+      // Create simple unlit material (URP compatible)
       if (_debugMaterial == null) {
-        _debugMaterial = new Material(Shader.Find("Unlit/Texture"));
+        // Try URP unlit first, fallback to legacy
+        var shader = Shader.Find("Universal Render Pipeline/Unlit") 
+                  ?? Shader.Find("Unlit/Texture");
+        Debug.Log($"[BiomeLayout] Using shader: {(shader != null ? shader.name : "NULL")}");
+        _debugMaterial = new Material(shader);
       }
       
-      _debugMaterial.mainTexture = _debugTexture;
+      // Set texture (URP uses _BaseMap, legacy uses _MainTex)
+      _debugMaterial.SetTexture("_BaseMap", _debugTexture);
+      _debugMaterial.SetTexture("_MainTex", _debugTexture);
+      Debug.Log($"[BiomeLayout] Debug material ready: {_debugMaterial.name}");
       return _debugMaterial;
     }
 

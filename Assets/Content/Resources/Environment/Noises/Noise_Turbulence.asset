@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a9cfe19acd3a4be4af94bfd7870b50c, type: 3}
+  m_Name: Noise_Turbulence
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Generation.Noise.Modifiers.TurbulenceNoiseSO
+  frequency: 0.05
+  amplitude: 1
+  offset: {x: 0, y: 0}
+  seedOffset: 0
+  normalize: 1
+  invert: 0
+  power: 1
+  previewSize: 256
+  source: {fileID: 0}
+  warpNoiseX: {fileID: 0}
+  warpNoiseY: {fileID: 0}
+  warpStrength: 10
+  warpIterations: 1

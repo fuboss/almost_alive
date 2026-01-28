@@ -79,6 +79,28 @@ namespace Content.Scripts.World {
     [Range(4, 100)]
     public int maxBiomeCells = 25;
 
+    [FoldoutGroup("Biomes/Shape Noise")]
+    [Tooltip("Apply noise to biome boundaries for organic shapes")]
+    public bool useDomainWarping = true;
+
+    [FoldoutGroup("Biomes/Shape Noise")]
+    [ShowIf("useDomainWarping")]
+    [Tooltip("How much to distort boundaries (meters)")]
+    [Range(0f, 50f)]
+    public float warpStrength = 20f;
+
+    [FoldoutGroup("Biomes/Shape Noise")]
+    [ShowIf("useDomainWarping")]
+    [Tooltip("Scale of the warp noise (smaller = larger features)")]
+    [Range(0.001f, 0.1f)]
+    public float warpScale = 0.02f;
+
+    [FoldoutGroup("Biomes/Shape Noise")]
+    [ShowIf("useDomainWarping")]
+    [Tooltip("Noise layers for detail")]
+    [Range(1, 4)]
+    public int warpOctaves = 2;
+
     // ═══════════════════════════════════════════════════════════════
     // DEBUG
     // ═══════════════════════════════════════════════════════════════

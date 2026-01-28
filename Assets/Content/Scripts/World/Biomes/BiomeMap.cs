@@ -7,10 +7,6 @@ namespace Content.Scripts.World.Biomes {
   /// Runtime biome map generated from Voronoi diagram.
   /// Uses noise-distorted distances for organic, wavy borders.
   /// </summary>
-  // TODO: Add serialization support for DevPreloadWorld
-  // - Create SerializedBiomeMap struct with cells data, bounds, blendDistance, noiseOffset
-  // - Add ToSerialized() and static FromSerialized() methods
-  // - This will allow runtime biome queries (GetBiomeAt) when loading from preload
   public class BiomeMap {
     private readonly List<BiomeCell> _cells = new();
     private readonly Dictionary<BiomeType, BiomeSO> _biomeData = new();
@@ -18,9 +14,11 @@ namespace Content.Scripts.World.Biomes {
     private readonly Bounds _bounds;
     private readonly float _noiseOffset;
 
-    // Noise settings for organic borders
-    private const float BORDER_NOISE_SCALE = 0.015f;  // Larger scale = smoother waves
-    private const float BORDER_NOISE_STRENGTH = 25f;  // How much noise affects distance
+    // Domain warping settings
+    private readonly bool _useWarping;
+    private readonly float _warpStrength;
+    private readonly float _warpScale;
+    private readonly int _warpOctaves;
 
     public readonly struct BiomeCell {
       public readonly Vector2 center;
@@ -65,10 +63,17 @@ namespace Content.Scripts.World.Biomes {
     public IReadOnlyList<BiomeCell> cells => _cells;
     public Bounds bounds => _bounds;
 
-    public BiomeMap(Bounds bounds, float blendDistance, int seed = 0) {
+    public BiomeMap(Bounds bounds, float blendDistance, int seed, 
+                    bool useWarping = true, float warpStrength = 20f, 
+                    float warpScale = 0.02f, int warpOctaves = 2) {
       _bounds = bounds;
       _blendDistance = blendDistance;
-      _noiseOffset = seed * 137.5f; // Deterministic offset
+      _noiseOffset = seed * 137.5f;
+      
+      _useWarping = useWarping;
+      _warpStrength = warpStrength;
+      _warpScale = warpScale;
+      _warpOctaves = warpOctaves;
     }
 
     public void RegisterBiome(BiomeSO biome) {
@@ -105,7 +110,6 @@ namespace Content.Scripts.World.Biomes {
     public BiomeQuery QueryBiome(Vector2 pos) {
       if (_cells.Count == 0) return default;
 
-      // Find cells with noise-distorted distances
       var (dist1, cell1, dist2, cell2) = FindTwoNearestCellsWithNoise(pos);
 
       var primaryData = _biomeData.GetValueOrDefault(cell1.type);
@@ -120,7 +124,6 @@ namespace Content.Scripts.World.Biomes {
 
       var distDiff = dist2 - dist1;
       
-      // No blending if clearly inside one biome
       if (distDiff >= _blendDistance) {
         return new BiomeQuery(
           cell1.type, primaryData, 1f,
@@ -146,20 +149,47 @@ namespace Content.Scripts.World.Biomes {
     }
 
     /// <summary>
-    /// Get noise-distorted distance to cell. This creates organic, wavy borders.
+    /// Get noise-distorted distance to cell using domain warping.
+    /// Multi-octave noise creates organic, naturally wavy borders.
     /// </summary>
     private float GetNoisyDistance(Vector2 pos, BiomeCell cell) {
       var realDist = Vector2.Distance(pos, cell.center);
       
-      // Use position-based noise so it's consistent for same position
-      // Add cell center to noise input for unique pattern per cell
-      var noiseX = (pos.x + cell.center.x * 0.1f + _noiseOffset) * BORDER_NOISE_SCALE;
-      var noiseY = (pos.y + cell.center.y * 0.1f + _noiseOffset) * BORDER_NOISE_SCALE;
+      if (!_useWarping || _warpStrength <= 0f) {
+        return realDist;
+      }
       
-      var noise = Mathf.PerlinNoise(noiseX, noiseY);
-      var noiseOffset = (noise - 0.5f) * 2f * BORDER_NOISE_STRENGTH;
+      // Domain warping: offset the sample position with noise
+      var warpOffset = SampleWarpNoise(pos, cell.center);
+      return realDist + warpOffset;
+    }
+
+    /// <summary>
+    /// Multi-octave Perlin noise for domain warping.
+    /// </summary>
+    private float SampleWarpNoise(Vector2 pos, Vector2 cellCenter) {
+      var total = 0f;
+      var amplitude = 1f;
+      var frequency = 1f;
+      var maxValue = 0f;
       
-      return realDist + noiseOffset;
+      // Use cell center to make noise unique per cell
+      var offsetX = _noiseOffset + cellCenter.x * 0.1f;
+      var offsetY = _noiseOffset + cellCenter.y * 0.1f;
+      
+      for (int i = 0; i < _warpOctaves; i++) {
+        var noiseX = (pos.x + offsetX) * _warpScale * frequency;
+        var noiseY = (pos.y + offsetY) * _warpScale * frequency;
+        
+        var noise = Mathf.PerlinNoise(noiseX, noiseY);
+        total += (noise - 0.5f) * 2f * amplitude;
+        
+        maxValue += amplitude;
+        amplitude *= 0.5f;
+        frequency *= 2f;
+      }
+      
+      return (total / maxValue) * _warpStrength;
     }
 
     private (float distance, BiomeCell cell) FindNearestCellWithNoise(Vector2 pos) {

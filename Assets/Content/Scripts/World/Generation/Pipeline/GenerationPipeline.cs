@@ -201,6 +201,9 @@ namespace Content.Scripts.World.Generation.Pipeline {
           _phases[i].Rollback(Context);
         }
         
+        // Cleanup debug visualization
+        Context.CleanupDebugVisualization();
+        
         // Restore original terrain data
         Context.RestoreTerrainData();
       }
@@ -228,8 +231,8 @@ namespace Content.Scripts.World.Generation.Pipeline {
     // ═══════════════════════════════════════════════════════════════
 
     private void Finalize() {
-      // Restore original material
-      Context?.SetDebugMaterial(null);
+      // Cleanup debug visualization
+      Context?.CleanupDebugVisualization();
       
       IsRunning = false;
       IsPaused = false;

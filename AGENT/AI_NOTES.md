@@ -23,11 +23,12 @@
 | INTERFACE_DECOMPOSITION.md | Agent interfaces |
 | WORLD_GENERATION.md | Biomes, terrain, scatters |
 | **WORLD_GENERATION_PIPELINE.md** | Phased generation, Artist Mode, Noise system (✅ Core done) |
+| **ARTIST_MODE_WINDOW_REFACTOR.md** | 🆕 ArtistModeWindow SOLID refactor plan |
 | INVENTORY_CRAFT.md | Items, storage, recipes |
 | CAMP.md | Camp system (legacy) |
 | BUILDING.md (GD_DOC) | Smart Blueprints building system |
 | **WFC_BUILDING_CONCEPT.md** | WFC процедурная генерация структур |
-| **UI.md (GD_DOC)** | 🆕 UI Layout & Inspector design |
+| **UI.md (GD_DOC)** | UI Layout & Inspector design |
 
 ---
 
@@ -92,11 +93,14 @@ See: `Docs/WORLD_GENERATION_PIPELINE.md`
 - [x] All 5 Phases (BiomeLayout, TerrainSculpt, SplatmapPaint, Vegetation, Scatter)
 
 **TODO:**
-- [ ] 🚨 **ScriptableConfig Refactor** - вынести данные из ConfigSO в struct (5 штук)
-- [ ] ArtistModeWindow.cs (dockable EditorWindow)
-- [ ] Debug shaders (BiomeDebug, HeightGradient)
-- [ ] Integration (button in GenerationConfigComposite)
-- [ ] ⏸️ Preset system (отложено - напомнить когда устаканится)
+- [x] 🚨 **ScriptableConfig Refactor** - вынести данные из ConfigSO в struct (5 штук) ✅
+- [x] ArtistModeWindow.cs (dockable EditorWindow) ✅
+- [x] Debug visualization (Quad overlay + BiomeGizmoDrawer) ✅
+- [x] Domain Warping (organic biome borders) ✅
+- [x] Context-sensitive phase settings in ArtistModeWindow ✅
+- [x] Integration (button in GenerationConfigComposite) ✅
+- [ ] Debug shaders (HeightGradient, DensityHeatmap) - optional
+- [ ] ⏸️ Preset system (отложено)
 
 ---
 

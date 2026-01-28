@@ -16,13 +16,21 @@ namespace Content.Scripts.World.Biomes {
     /// <param name="seed">Random seed for deterministic generation</param>
     /// <param name="minCellCount">Minimum number of Voronoi cells</param>
     /// <param name="maxCellCount">Maximum number of Voronoi cells</param>
+    /// <param name="useWarping">Apply domain warping for organic borders</param>
+    /// <param name="warpStrength">Warping strength in meters</param>
+    /// <param name="warpScale">Warping noise scale</param>
+    /// <param name="warpOctaves">Number of noise octaves</param>
     public static BiomeMap Generate(
       Bounds bounds,
       IReadOnlyList<BiomeSO> biomes,
       float blendDistance,
       int seed,
       int minCellCount = 8,
-      int maxCellCount = 20) {
+      int maxCellCount = 20,
+      bool useWarping = true,
+      float warpStrength = 20f,
+      float warpScale = 0.02f,
+      int warpOctaves = 2) {
       
       if (biomes == null || biomes.Count == 0) {
         Debug.LogError("[VoronoiGenerator] No biomes provided");
@@ -32,7 +40,7 @@ namespace Content.Scripts.World.Biomes {
       // Init deterministic random
       var rng = new System.Random(seed);
       
-      var map = new BiomeMap(bounds, blendDistance, seed);
+      var map = new BiomeMap(bounds, blendDistance, seed, useWarping, warpStrength, warpScale, warpOctaves);
       
       // Register biome data
       foreach (var biome in biomes) {

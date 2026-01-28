@@ -1,6 +1,7 @@
 using System;
 using Content.Scripts.World.Biomes;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Content.Scripts.World.Generation.Pipeline {
   /// <summary>
@@ -65,6 +66,11 @@ namespace Content.Scripts.World.Generation.Pipeline {
     
     /// <summary>Current debug material override</summary>
     public Material CurrentDebugMaterial { get; set; }
+    
+    /// <summary>Debug visualization quad (overlay above terrain)</summary>
+    private const string DEBUG_QUAD_NAME = "[ArtistMode_DebugOverlay]";
+    private GameObject _debugQuad;
+    private MeshRenderer _debugRenderer;
 
     // ═══════════════════════════════════════════════════════════════
     // RANDOM
@@ -147,14 +153,80 @@ namespace Content.Scripts.World.Generation.Pipeline {
     }
 
     /// <summary>
-    /// Apply debug material override.
+    /// Apply debug material override via overlay quad.
     /// </summary>
     public void SetDebugMaterial(Material mat) {
       CurrentDebugMaterial = mat;
+      
       if (mat != null) {
-        Terrain.materialTemplate = mat;
+        EnsureDebugQuad();
+        _debugRenderer.sharedMaterial = mat;
+        _debugQuad.SetActive(true);
+        Debug.Log($"[GenContext] Showing debug quad with material: {mat.name}");
       } else {
-        Terrain.materialTemplate = OriginalTerrainMaterial;
+        if (_debugQuad != null) {
+          _debugQuad.SetActive(false);
+          Debug.Log("[GenContext] Hiding debug quad");
+        }
+      }
+    }
+
+    private void EnsureDebugQuad() {
+      // Try to find existing quad first
+      if (_debugQuad == null) {
+        _debugQuad = GameObject.Find(DEBUG_QUAD_NAME);
+      }
+      
+      if (_debugQuad != null) {
+        _debugRenderer = _debugQuad.GetComponent<MeshRenderer>();
+        UpdateDebugQuadTransform();
+        return;
+      }
+      
+      // Create new quad
+      _debugQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+      _debugQuad.name = DEBUG_QUAD_NAME;
+      _debugQuad.hideFlags = HideFlags.DontSave;
+      
+      // Remove collider
+      var collider = _debugQuad.GetComponent<Collider>();
+      if (collider != null) Object.DestroyImmediate(collider);
+      
+      _debugRenderer = _debugQuad.GetComponent<MeshRenderer>();
+      _debugRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+      _debugRenderer.receiveShadows = false;
+      
+      UpdateDebugQuadTransform();
+      
+      Debug.Log($"[GenContext] Created debug quad");
+    }
+
+    private void UpdateDebugQuadTransform() {
+      if (_debugQuad == null || Terrain == null) return;
+      
+      var terrainPos = Terrain.transform.position;
+      var terrainSize = Terrain.terrainData.size;
+      var center = terrainPos + new Vector3(terrainSize.x * 0.5f, 0.5f, terrainSize.z * 0.5f);
+      
+      _debugQuad.transform.position = center;
+      _debugQuad.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+      _debugQuad.transform.localScale = new Vector3(terrainSize.x, terrainSize.z, 1f);
+    }
+
+    /// <summary>
+    /// Destroy debug visualization objects.
+    /// </summary>
+    public void CleanupDebugVisualization() {
+      // Find by name in case reference was lost
+      if (_debugQuad == null) {
+        _debugQuad = GameObject.Find(DEBUG_QUAD_NAME);
+      }
+      
+      if (_debugQuad != null) {
+        Object.DestroyImmediate(_debugQuad);
+        _debugQuad = null;
+        _debugRenderer = null;
+        Debug.Log("[GenContext] Destroyed debug quad");
       }
     }
 

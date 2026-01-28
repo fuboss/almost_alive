@@ -47,6 +47,13 @@ namespace Content.Scripts.Editor.WorldGenerationWizard {
       World.WorldGeneratorEditor.Clear();
     }
 
+    [PropertyOrder(2)]
+    [Button(ButtonSizes.Large, Icon = SdfIconType.Sliders, Name = "Open Artist Mode"), GUIColor(0.6f, 0.8f, 1f)]
+    [EnableIf("hasConfig")]
+    private void OpenArtistMode() {
+      ArtistModeWindow.OpenWithConfig(config);
+    }
+
     [Title("Preview")]
     [PropertyOrder(3)]
     [Button(Icon = SdfIconType.Eye, Name = "Preview Biomes"), GUIColor(0.6f, 0.8f, 1f)]

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5a240fdcd634b19a97fe2af1ed6076, type: 3}
+  m_Name: Noise_Cellular
+  m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Generation.Noise.Samplers.CellularNoiseSO
+  frequency: 0.05
+  amplitude: 1
+  offset: {x: 0, y: 0}
+  seedOffset: 0
+  normalize: 1
+  invert: 0
+  power: 1
+  previewSize: 256
+  cellType: 0
+  jitter: 1

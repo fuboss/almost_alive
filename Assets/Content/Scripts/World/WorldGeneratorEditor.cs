@@ -252,11 +252,31 @@ namespace Content.Scripts.Editor.World {
     public static void Clear() {
       var existing = GameObject.Find(CONTAINER_NAME);
       if (existing != null) Undo.DestroyObjectImmediate(existing);
-
+      
       var terrain = Terrain.activeTerrain;
       if (terrain != null) {
+        // Flatten terrain
+        TerrainSculptor.Flatten(terrain, 0f);
+        
+        // Clear splatmap to first layer
+        SplatmapPainter.Clear(terrain, 0);
+        
+        // Clear vegetation details
+        ClearVegetation(terrain);
+        
+        // Rebuild NavMesh
         var navSurface = terrain.GetComponent<NavMeshSurface>();
         if (navSurface != null) navSurface.BuildNavMesh();
+      }
+    }
+
+    private static void ClearVegetation(Terrain terrain) {
+      var td = terrain.terrainData;
+      var detailRes = td.detailResolution;
+      var emptyLayer = new int[detailRes, detailRes];
+      
+      for (int i = 0; i < td.detailPrototypes.Length; i++) {
+        td.SetDetailLayer(0, 0, i, emptyLayer);
       }
     }
 

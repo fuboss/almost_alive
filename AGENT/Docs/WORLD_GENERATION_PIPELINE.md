@@ -12,9 +12,9 @@
 | **Pipeline Core** | ✅ Complete | 4 files |
 | **Generation Phases** | ✅ Complete | 5 files |
 | **ScriptableConfig Refactor** | ✅ Complete | 5 configs |
-| **Artist Mode Window** | ⏳ TODO | - |
+| **Artist Mode Window** | ✅ Complete | `Editor/WorldGenerationWizard/ArtistModeWindow.cs` |
 | **Debug Shaders** | ⏳ TODO | - |
-| **Integration** | ⏳ TODO | - |
+| **Integration** | ✅ Complete | Button in GenerationConfigComposite |
 
 ### Completed Files
 
@@ -118,9 +118,17 @@ var config = myConfigSO.Data;  // returns MyConfig
 
 ## Remaining Tasks
 
-### 1. ArtistModeWindow.cs (NEXT)
+### 1. ArtistModeWindow.cs ✅
 
-EditorWindow для Artist Mode с контролем над каждой фазой генерации.
+**Location**: `Editor/WorldGenerationWizard/ArtistModeWindow.cs`
+
+**Features:**
+- Per-phase Run/Rollback controls
+- Status icons (○ Pending, ● Running, ◉ Completed, ✗ Failed)
+- Seed control with randomize button
+- Run All / Reset / Quick Generate actions
+- Debug visualization toggle
+- Opens from World Generation Wizard or menu `AA/Artist Mode Window`
 
 ### 2. Debug Shaders
 
