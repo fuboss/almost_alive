@@ -14,10 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Vegetation.VegetationPrototypeSO
   prefab: {fileID: 0}
   prefabs:
-  - {fileID: 1748410436971110666, guid: ebdb35cf559fb314dae7df6d0a352b48, type: 3}
   - {fileID: 1033526270896112297, guid: 69c9acbe8555c004da65c9f23f84e0ee, type: 3}
   - {fileID: 5685329883349570044, guid: 98f211bbe8b1c394e9776934d19e7bbb, type: 3}
-  - {fileID: 1748410436971110666, guid: ebdb35cf559fb314dae7df6d0a352b48, type: 3}
   - {fileID: 8085020682187681203, guid: d38fe55d9ce7fe24b97a9c962d1e1fa2, type: 3}
   - {fileID: 7645957183743255753, guid: ad78d04b7c54829438ab31e98e21308d, type: 3}
   - {fileID: 1642209886274377320, guid: 7015d7e441c16454aa7f2f797a703ad1, type: 3}

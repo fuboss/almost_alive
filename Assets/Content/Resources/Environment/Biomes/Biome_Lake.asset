@@ -92,21 +92,193 @@ MonoBehaviour:
         layerName: Soil_Rocks_TerrainLayer
         threshold: 45
     vegetation:
-      globalDensity: 0.2
-      maxDensityPerCell: 32
+      globalDensity: 1.1
+      maxDensityPerCell: 110
       categories:
-      - name: Ground Cover
+      - name: Shore Grass
+        size: 0
+        enabled: 1
+        densityMultiplier: 1.3
+        noise:
+          mode: 1
+          scale: 0.035
+          octaves: 3
+          persistence: 0.5
+          threshold: 0.15
+          blend: 0.25
+          useStochastic: 0
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers: []
+      - name: Wetland Ferns
         size: 0
         enabled: 1
         densityMultiplier: 1
         noise:
           mode: 1
-          scale: 0.05
-          octaves: 2
+          scale: 0.02
+          octaves: 3
           persistence: 0.5
           threshold: 0.3
           blend: 0.2
-          useStochastic: 0
+          useStochastic: 1
+          stochasticBlend: 0.25
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers: []
+      - name: Waterside Plants
+        size: 0
+        enabled: 1
+        densityMultiplier: 0.7
+        noise:
+          mode: 1
+          scale: 0.015
+          octaves: 2
+          persistence: 0.5
+          threshold: 0.45
+          blend: 0.18
+          useStochastic: 1
           stochasticBlend: 0.3
         biomeEdgeFalloff:
           serializedVersion: 2

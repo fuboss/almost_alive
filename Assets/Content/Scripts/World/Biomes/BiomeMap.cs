@@ -99,6 +99,11 @@ namespace Content.Scripts.World.Biomes {
       var type = GetBiomeAt(worldPos);
       return _biomeData.GetValueOrDefault(type);
     }
+    
+    public BiomeSO GetBiomeDataAt(float x, float z) {
+      var type = GetBiomeAt(new Vector2(x, z));
+      return _biomeData.GetValueOrDefault(type);
+    }
 
     public BiomeQuery QueryBiome(Vector3 worldPos) {
       return QueryBiome(new Vector2(worldPos.x, worldPos.z));
@@ -281,6 +286,10 @@ namespace Content.Scripts.World.Biomes {
       if (cellRadius < 0.001f) return 0f;
 
       return Mathf.Clamp01(dist / cellRadius);
+    }
+    
+    public float GetNormalizedDistanceToCenter(float x, float z) {
+      return GetNormalizedDistanceToCenter(new Vector2(x, z));
     }
 
     public void Clear() {

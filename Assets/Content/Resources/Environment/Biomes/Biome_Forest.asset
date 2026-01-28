@@ -31,7 +31,7 @@ MonoBehaviour:
       floorDepth: 3
       shoreSteepness: 0.5
     riverShore:
-      style: 0
+      style: 1
       gradient: 0.5
       width: 4
       rockyIrregularity: 0.2

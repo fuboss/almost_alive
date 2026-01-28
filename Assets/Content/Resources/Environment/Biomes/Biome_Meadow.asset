@@ -101,20 +101,20 @@ MonoBehaviour:
         layerName: Muddy_TerrainLayer
         threshold: 50
     vegetation:
-      globalDensity: 1.3
-      maxDensityPerCell: 64
+      globalDensity: 0.9
+      maxDensityPerCell: 96
       categories:
-      - name: Ground Cover
+      - name: Lush Grass
         size: 0
         enabled: 1
-        densityMultiplier: 1
+        densityMultiplier: 1.1
         noise:
-          mode: 1
-          scale: 0.05
-          octaves: 2
+          mode: 0
+          scale: 0.03
+          octaves: 3
           persistence: 0.5
-          threshold: 0.3
-          blend: 0.2
+          threshold: 0.1
+          blend: 0.3
           useStochastic: 0
           stochasticBlend: 0.3
         biomeEdgeFalloff:
@@ -189,7 +189,542 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-        layers: []
+        layers:
+        - previewCache: {fileID: 398929321252300881, guid: 4e6885e0d11bd224fa27617a4657c329, type: 3}
+          prototype: {fileID: 11400000, guid: 18071d2fd4aa5428288996808cd56b27, type: 2}
+          density: 0.95
+          weight: 1
+          useLayerNoise: 1
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.25
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 1245006558584958560, guid: 7b3e6db10d22f504dbc606110b2cb5e7, type: 3}
+          prototype: {fileID: 11400000, guid: 238d5f558887f47f29dcb017ab096475, type: 2}
+          density: 0.9
+          weight: 0.95
+          useLayerNoise: 1
+          layerNoiseScale: 0.035
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 6846659341408791651, guid: 4c72217d56dcb6749a897a75cad1f34e, type: 3}
+          prototype: {fileID: 11400000, guid: d269002decf934121abf91c34ac8270e, type: 2}
+          density: 0.85
+          weight: 0.9
+          useLayerNoise: 1
+          layerNoiseScale: 0.04
+          layerNoiseStrength: 0.35
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+      - name: Wildflowers
+        size: 1
+        enabled: 1
+        densityMultiplier: 1.1
+        noise:
+          mode: 0
+          scale: 0.018
+          octaves: 3
+          persistence: 0.5
+          threshold: 0.25
+          blend: 0.22
+          useStochastic: 1
+          stochasticBlend: 0.35
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers:
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.7
+          weight: 0.85
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.65
+          weight: 0.8
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.6
+          weight: 0.75
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.55
+          weight: 0.7
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.5
+          weight: 0.65
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+      - name: Scattered Bushes
+        size: 2
+        enabled: 1
+        densityMultiplier: 0.3
+        noise:
+          mode: 0
+          scale: 0.012
+          octaves: 2
+          persistence: 0.5
+          threshold: 0.7
+          blend: 0.15
+          useStochastic: 1
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.033333335
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 30
+            value: 0
+            inSlope: -0.033333335
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers:
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.25
+          weight: 0.5
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.2
+          weight: 0.45
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 0}
+          prototype: {fileID: 0}
+          density: 0.15
+          weight: 0.3
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
       layers: []
   scatterConfigs:
   - rule: {fileID: 11400000, guid: 2c2064ce3fba040049f0c5fa7cad0d52, type: 2}

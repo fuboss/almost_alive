@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Content.Scripts.World.Biomes;
 using Content.Scripts.World.Vegetation;
 using Content.Scripts.World.Vegetation.Mask;
@@ -14,7 +15,17 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
     public override string Description => "Paint grass and details";
 
     // Cached masks per category (category index + seed offset -> mask)
-    private readonly System.Collections.Generic.Dictionary<string, float[,]> _categoryMasks = new();
+    private readonly Dictionary<string, float[,]> _categoryMasks = new();
+    
+    // Cached prototype indices: VegetationPrototypeSO -> list of matching terrain prototype indices
+    private readonly Dictionary<VegetationPrototypeSO, int[]> _prototypeIndexCache = new();
+    
+    // Reference to detail prototypes for cache building
+    private DetailPrototype[] _detailPrototypes;
+    
+    // Pre-computed terrain data
+    private float[,] _slopeMap;
+    private int[,] _dominantSplatMap;
 
     protected override bool ValidateContext(GenerationContext ctx) {
       if (ctx?.BiomeMap == null) {
@@ -45,8 +56,9 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         return;
       }
       
-      // Clear mask cache
+      // Clear caches
       _categoryMasks.Clear();
+      _prototypeIndexCache.Clear();
       MaskService.ClearCache();
       
       // Create detail layers array
@@ -56,46 +68,67 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         detailLayers[layer] = new int[resolution, resolution];
       }
       
-      // Pre-sample heights and slopes for performance
-      ReportProgress(0.1f, "Sampling terrain...");
+      // Pre-compute all terrain data
+      ReportProgress(0.05f, "Pre-computing terrain data...");
       var heightmapRes = td.heightmapResolution;
       var heights = td.GetHeights(0, 0, heightmapRes, heightmapRes);
+      
+      // Pre-compute slope map
+      ReportProgress(0.1f, "Computing slope map...");
+      PrecomputeSlopeMap(heights, heightmapRes, terrainSize, resolution);
+      
+      // Pre-compute dominant splat map (for allowedTerrainLayers checks)
+      ReportProgress(0.15f, "Computing splat map...");
+      PrecomputeDominantSplatMap(td, resolution);
+      
+      // Store reference for prototype cache
+      _detailPrototypes = detailPrototypes;
+      
+      // Pre-compute coordinate mappings
+      var resMinusOne = resolution - 1;
+      var heightResMinusOne = heightmapRes - 1;
+      var boundsMinX = bounds.min.x;
+      var boundsMinZ = bounds.min.z;
+      var boundsSizeX = bounds.size.x;
+      var boundsSizeZ = bounds.size.z;
+      var terrainHeight = terrainSize.y;
       
       // Paint vegetation
       ReportProgress(0.2f, "Painting vegetation...");
       
       for (int y = 0; y < resolution; y++) {
-        if (y % 50 == 0) {
+        if (y % 200 == 0) {
           ReportProgress(0.2f + 0.7f * ((float)y / resolution), $"Row {y}/{resolution}");
         }
         
         for (int x = 0; x < resolution; x++) {
-          // Convert detail coords to world position
-          var nx = x / (float)(resolution - 1);
-          var ny = y / (float)(resolution - 1);
+          // Convert detail coords to world position (inlined for speed)
+          var nx = x / (float)resMinusOne;
+          var ny = y / (float)resMinusOne;
           
-          var worldX = bounds.min.x + nx * bounds.size.x;
-          var worldZ = bounds.min.z + ny * bounds.size.z;
-          var worldPos = new Vector3(worldX, 0, worldZ);
+          var worldX = boundsMinX + nx * boundsSizeX;
+          var worldZ = boundsMinZ + ny * boundsSizeZ;
           
           // Get BiomeSO at this point
-          var biome = biomeMap.GetBiomeDataAt(worldPos);
+          var biome = biomeMap.GetBiomeDataAt(worldX, worldZ);
           if (biome?.vegetationConfig == null) continue;
           
           var vegConfig = biome.vegetationConfig;
           if (vegConfig.categories == null || vegConfig.categories.Length == 0) continue;
           
-          // Calculate terrain conditions (convert detail coords to heightmap coords)
-          var hx = Mathf.FloorToInt(nx * (heightmapRes - 1));
-          var hy = Mathf.FloorToInt(ny * (heightmapRes - 1));
-          var height = heights[hy, hx] * terrainSize.y;
-          var slope = CalculateSlope(heights, hx, hy, heightmapRes, terrainSize);
+          // Get pre-computed terrain conditions
+          var hx = (int)(nx * heightResMinusOne);
+          var hy = (int)(ny * heightResMinusOne);
+          var height = heights[hy, hx] * terrainHeight;
+          var slope = _slopeMap[y, x];
           
           // Get distance from biome center (0 = center, 1 = edge)
-          var biomeEdgeDistance = biomeMap.GetNormalizedDistanceToCenter(new Vector2(worldX, worldZ));
+          var biomeEdgeDistance = biomeMap.GetNormalizedDistanceToCenter(worldX, worldZ);
           
           // Process each category
-          foreach (var category in vegConfig.categories) {
+          var categories = vegConfig.categories;
+          for (int catIdx = 0; catIdx < categories.Length; catIdx++) {
+            var category = categories[catIdx];
             if (!category.enabled || category.layers == null) continue;
             
             // Get or create mask for this category
@@ -113,11 +146,19 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
             if (categoryMod <= 0.01f) continue;
             
             // Process layers in this category
-            foreach (var vegLayer in category.layers) {
+            var layers = category.layers;
+            for (int layerIdx = 0; layerIdx < layers.Length; layerIdx++) {
+              var vegLayer = layers[layerIdx];
               if (vegLayer?.prototype == null) continue;
               
-              var protoIndex = FindPrototypeIndex(detailPrototypes, vegLayer.prototype, ctx.Random);
-              if (protoIndex < 0) continue;
+              // Get cached prototype indices
+              var protoIndices = GetCachedPrototypeIndices(vegLayer.prototype);
+              if (protoIndices == null || protoIndices.Length == 0) continue;
+              
+              // Pick prototype index (random if multiple)
+              var protoIndex = protoIndices.Length == 1 
+                ? protoIndices[0] 
+                : protoIndices[ctx.Random.Next(protoIndices.Length)];
               
               // Calculate layer-specific noise if enabled
               var layerNoise = 0.5f;
@@ -131,9 +172,9 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
               // Calculate final density
               var finalDensity = vegLayer.CalculateDensity(categoryMod, slope, layerNoise);
               
-              // Check allowed terrain layers
+              // Check allowed terrain layers (using pre-computed map)
               if (vegLayer.allowedTerrainLayers != null && vegLayer.allowedTerrainLayers.Length > 0) {
-                var dominantLayer = GetDominantSplatLayer(td, x, y, resolution);
+                var dominantLayer = _dominantSplatMap[y, x];
                 if (!vegLayer.IsLayerAllowed(dominantLayer)) continue;
               }
               
@@ -146,9 +187,9 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
               
               // Convert to detail value
               var detailValue = Mathf.RoundToInt(weightedDensity * vegConfig.maxDensityPerCell);
-              detailValue = Mathf.Max(detailValue, detailLayers[protoIndex][y, x]);
-              
-              detailLayers[protoIndex][y, x] = detailValue;
+              if (detailValue > detailLayers[protoIndex][y, x]) {
+                detailLayers[protoIndex][y, x] = detailValue;
+              }
             }
           }
         }
@@ -163,7 +204,7 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       }
       
       // Cleanup
-      _categoryMasks.Clear();
+      Cleanup();
       
       ReportProgress(1f);
       ClearProgressBar();
@@ -179,6 +220,126 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         }
       }
       ctx.DetailLayers = null;
+    }
+    
+    private void Cleanup() {
+      _categoryMasks.Clear();
+      _prototypeIndexCache.Clear();
+      _slopeMap = null;
+      _dominantSplatMap = null;
+      _detailPrototypes = null;
+    }
+    
+    /// <summary>
+    /// Pre-compute slope map at detail resolution for fast lookup.
+    /// </summary>
+    private void PrecomputeSlopeMap(float[,] heights, int heightmapRes, Vector3 terrainSize, int detailRes) {
+      _slopeMap = new float[detailRes, detailRes];
+      
+      var heightResMinusOne = heightmapRes - 1;
+      var cellSize = terrainSize.x / heightmapRes;
+      var heightScale = terrainSize.y / (2f * cellSize);
+      
+      for (int y = 0; y < detailRes; y++) {
+        var ny = y / (float)(detailRes - 1);
+        var hy = (int)(ny * heightResMinusOne);
+        
+        for (int x = 0; x < detailRes; x++) {
+          var nx = x / (float)(detailRes - 1);
+          var hx = (int)(nx * heightResMinusOne);
+          
+          // Sample neighboring heights
+          var h = heights[hy, hx];
+          var hL = hx > 0 ? heights[hy, hx - 1] : h;
+          var hR = hx < heightResMinusOne ? heights[hy, hx + 1] : h;
+          var hD = hy > 0 ? heights[hy - 1, hx] : h;
+          var hU = hy < heightResMinusOne ? heights[hy + 1, hx] : h;
+          
+          // Calculate gradients
+          var dx = (hR - hL) * heightScale;
+          var dy = (hU - hD) * heightScale;
+          
+          // Convert to angle
+          var gradient = Mathf.Sqrt(dx * dx + dy * dy);
+          _slopeMap[y, x] = Mathf.Atan(gradient) * Mathf.Rad2Deg;
+        }
+      }
+    }
+    
+    /// <summary>
+    /// Pre-compute dominant splat layer at detail resolution.
+    /// Avoids calling GetAlphamaps per-pixel during main loop.
+    /// </summary>
+    private void PrecomputeDominantSplatMap(TerrainData td, int detailRes) {
+      _dominantSplatMap = new int[detailRes, detailRes];
+      
+      var alphaRes = td.alphamapResolution;
+      var alphas = td.GetAlphamaps(0, 0, alphaRes, alphaRes);
+      var layerCount = alphas.GetLength(2);
+      
+      var detailToAlpha = (float)alphaRes / detailRes;
+      
+      for (int y = 0; y < detailRes; y++) {
+        var ay = Mathf.Clamp((int)(y * detailToAlpha), 0, alphaRes - 1);
+        
+        for (int x = 0; x < detailRes; x++) {
+          var ax = Mathf.Clamp((int)(x * detailToAlpha), 0, alphaRes - 1);
+          
+          // Find dominant layer
+          var maxWeight = 0f;
+          var maxIndex = 0;
+          for (int i = 0; i < layerCount; i++) {
+            var weight = alphas[ay, ax, i];
+            if (weight > maxWeight) {
+              maxWeight = weight;
+              maxIndex = i;
+            }
+          }
+          
+          _dominantSplatMap[y, x] = maxIndex;
+        }
+      }
+    }
+    
+    /// <summary>
+    /// Get cached prototype indices for a VegetationPrototypeSO.
+    /// Builds cache entry on first access (lazy).
+    /// </summary>
+    private int[] GetCachedPrototypeIndices(VegetationPrototypeSO vegProto) {
+      if (_prototypeIndexCache.TryGetValue(vegProto, out var cached)) {
+        return cached;
+      }
+      
+      // Collect all prefabs from VegetationPrototypeSO
+      var prefabs = new List<GameObject>(4);
+      if (vegProto.prefab != null) {
+        prefabs.Add(vegProto.prefab);
+      }
+      if (vegProto.prefabs != null) {
+        foreach (var p in vegProto.prefabs) {
+          if (p != null && !prefabs.Contains(p)) {
+            prefabs.Add(p);
+          }
+        }
+      }
+      
+      if (prefabs.Count == 0) {
+        Debug.LogWarning($"[Vegetation] VegProto '{vegProto.name}' has no prefabs!");
+        _prototypeIndexCache[vegProto] = null;
+        return null;
+      }
+      
+      // Find matching indices in terrain prototypes
+      var matchingIndices = new List<int>(4);
+      for (int i = 0; i < _detailPrototypes.Length; i++) {
+        if (prefabs.Contains(_detailPrototypes[i].prototype)) {
+          matchingIndices.Add(i);
+        }
+      }
+      
+      var result = matchingIndices.Count > 0 ? matchingIndices.ToArray() : null;
+      _prototypeIndexCache[vegProto] = result;
+      return result;
     }
     
     private float[,] GetOrCreateCategoryMask(
@@ -211,84 +372,6 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       
       _categoryMasks[key] = mask;
       return mask;
-    }
-    
-    private float CalculateSlope(float[,] heights, int x, int y, int resolution, Vector3 terrainSize) {
-      // Sample neighboring heights
-      var h = heights[y, x];
-      var hL = x > 0 ? heights[y, x - 1] : h;
-      var hR = x < resolution - 1 ? heights[y, x + 1] : h;
-      var hD = y > 0 ? heights[y - 1, x] : h;
-      var hU = y < resolution - 1 ? heights[y + 1, x] : h;
-      
-      // Calculate gradients
-      var cellSize = terrainSize.x / resolution;
-      var dx = (hR - hL) * terrainSize.y / (2f * cellSize);
-      var dy = (hU - hD) * terrainSize.y / (2f * cellSize);
-      
-      // Convert to angle
-      var gradient = Mathf.Sqrt(dx * dx + dy * dy);
-      return Mathf.Atan(gradient) * Mathf.Rad2Deg;
-    }
-    
-    private int GetDominantSplatLayer(TerrainData td, int x, int y, int detailResolution) {
-      // Convert detail coords to alphamap coords
-      var alphaRes = td.alphamapResolution;
-      var ax = Mathf.FloorToInt((float)x / detailResolution * alphaRes);
-      var ay = Mathf.FloorToInt((float)y / detailResolution * alphaRes);
-      ax = Mathf.Clamp(ax, 0, alphaRes - 1);
-      ay = Mathf.Clamp(ay, 0, alphaRes - 1);
-      
-      var alphas = td.GetAlphamaps(ax, ay, 1, 1);
-      var layers = alphas.GetLength(2);
-      
-      var maxWeight = 0f;
-      var maxIndex = 0;
-      for (int i = 0; i < layers; i++) {
-        if (alphas[0, 0, i] > maxWeight) {
-          maxWeight = alphas[0, 0, i];
-          maxIndex = i;
-        }
-      }
-      
-      return maxIndex;
-    }
-    
-    private int FindPrototypeIndex(DetailPrototype[] prototypes, VegetationPrototypeSO vegProto, System.Random random = null) {
-      // Collect all prefabs from VegetationPrototypeSO
-      var prefabsToSearch = new System.Collections.Generic.List<GameObject>();
-      
-      if (vegProto.prefab != null) {
-        prefabsToSearch.Add(vegProto.prefab);
-      }
-      if (vegProto.prefabs != null) {
-        foreach (var p in vegProto.prefabs) {
-          if (p != null && !prefabsToSearch.Contains(p)) {
-            prefabsToSearch.Add(p);
-          }
-        }
-      }
-      
-      if (prefabsToSearch.Count == 0) {
-        Debug.LogWarning($"[Vegetation] VegProto '{vegProto.name}' has no prefabs!");
-        return -1;
-      }
-      
-      // Find all matching prototype indices
-      var matchingIndices = new System.Collections.Generic.List<int>();
-      for (int i = 0; i < prototypes.Length; i++) {
-        if (prefabsToSearch.Contains(prototypes[i].prototype)) {
-          matchingIndices.Add(i);
-        }
-      }
-      
-      if (matchingIndices.Count == 0) return -1;
-      
-      // Return random index if multiple matches, otherwise first
-      if (matchingIndices.Count == 1 || random == null) {
-        return matchingIndices[0];
-      }
-      return matchingIndices[random.Next(matchingIndices.Count)];
     }
   }
 }
