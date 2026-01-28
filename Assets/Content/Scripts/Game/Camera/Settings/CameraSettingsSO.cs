@@ -52,9 +52,6 @@ namespace Content.Scripts.Game.Camera.Settings {
 
     [Title("Boundaries")]
     public bool enableBoundaries = true;
-    
-    [ShowIf("enableBoundaries")]
-    public Bounds worldBounds = new(Vector3.zero, new Vector3(100f, 50f, 100f));
 
     [Title("Follow Mode")]
     [Range(0.01f, 1f)]

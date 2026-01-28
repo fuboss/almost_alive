@@ -145,5 +145,14 @@ namespace Content.Scripts.World.Generation.Pipeline {
     /// Get random integer in range [min, max).
     /// </summary>
     public int RandomRange(int min, int max) => Random.Next(min, max);
+
+    /// <summary>
+    /// Create a deterministic Random for a specific phase.
+    /// Each phase gets consistent results regardless of execution order.
+    /// </summary>
+    public System.Random CreatePhaseRandom(int phaseIndex) {
+      // Combine base seed with phase index for unique but deterministic seed
+      return new System.Random(Seed * 31 + phaseIndex * 7919);
+    }
   }
 }

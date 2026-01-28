@@ -159,6 +159,23 @@ Editor/WorldGenerationWizard/
 - [ ] Debug shaders (HeightGradient, DensityHeatmap) - optional
 - [ ] ⏸️ Preset system (отложено)
 
+**Scatter Phase Fixes (Jan 2026):**
+- ✅ Removed prefab field from ScatterRuleSO (was added by mistake)
+- ✅ ScatterPhase now loads actors via Addressables by actorKey (sync load via WaitForCompletion)
+- ✅ ScatterSettingsDrawer validates actorKey against Addressables 'Actors' label
+- ✅ Added per-rule spawn statistics logging
+- ✅ CleanupExistingScatters() — removes [Generated_Scatters] before creating new
+- ✅ GenerationPipeline.RerunPhase() — allows re-running specific phase without full restart
+- ✅ Phase-specific deterministic random via CreatePhaseRandom(phaseIndex)
+- ✅ Biome containers for hierarchy organization ([BiomeType] folders under [Generated_Scatters])
+- ⚠️ **Important**: ScatterRuleSO.actorKey MUST match ActorDescription.actorKey in Addressables
+
+**WorldGeneratorEditor Refactor (Jan 2026):**
+- ✅ Now uses GenerationPipeline instead of old EditorWorldGenerator
+- ✅ Same results as ArtistModeWindow (consistent generation)
+- ✅ Menu: World/Generate (Edit Mode), World/Clear Generated
+- ✅ SaveToDevPreloadWorld collects spawn data from scene hierarchy
+
 ---
 
 ### UI System — Inspector for AI Debug 🆕

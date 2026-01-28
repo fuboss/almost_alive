@@ -5,6 +5,7 @@ using Content.Scripts.World;
 using Content.Scripts.World.Generation.Pipeline;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
   /// <summary>
@@ -126,18 +127,20 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
     public void RunPhase(int index) {
       EnsurePipeline();
 
-      if (!Pipeline.IsRunning) {
+      // Check if pipeline has valid context (was started before)
+      var hasContext = Pipeline.Context != null;
+      
+      if (!hasContext) {
+        // Never started - begin fresh and run to target phase
         Pipeline.Begin(Config, Terrain, artistMode: true);
-      }
-
-      // If phase already completed, rollback first
-      if (index <= Pipeline.CurrentPhaseIndex) {
-        Pipeline.RollbackTo(index - 1);
-      }
-
-      // Execute phases up to and including target
-      while (Pipeline.CurrentPhaseIndex < index && Pipeline.IsRunning) {
-        Pipeline.ExecuteNextPhase();
+        
+        // Execute phases up to and including target
+        while (Pipeline.CurrentPhaseIndex < index && Pipeline.IsRunning) {
+          Pipeline.ExecuteNextPhase();
+        }
+      } else {
+        // Pipeline already has context - rerun specific phase
+        Pipeline.RerunPhase(index);
       }
 
       NotifyStateChanged();
@@ -177,7 +180,19 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
     public void Clear() {
       Pipeline?.Reset();
       WorldGeneratorEditor.Clear();
+      
+      // Cleanup generated objects that might persist
+      CleanupGeneratedObjects();
+      
       NotifyStateChanged();
+    }
+
+    private void CleanupGeneratedObjects() {
+      // Destroy scatter root if exists
+      var scatterRoot = GameObject.Find("[Generated_Scatters]");
+      if (scatterRoot != null) {
+        Object.DestroyImmediate(scatterRoot);
+      }
     }
 
     // ═══════════════════════════════════════════════════════════════

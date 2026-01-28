@@ -15,10 +15,7 @@ namespace Content.Scripts.World {
 
     [BoxGroup("Actor")] [Tooltip("Addressables actor key")]
     public string actorKey;
-
-    [BoxGroup("Actor")] [Tooltip("Regular Prefab")]
-    public GameObject prefab;
-
+    
     [BoxGroup("Actor")] [Tooltip("Total instances to spawn per biome (overrides density if > 0)")]
     public int fixedCount;
 
@@ -101,8 +98,6 @@ namespace Content.Scripts.World {
     public string actorName =>
       !string.IsNullOrWhiteSpace(actorKey)
         ? actorKey
-        : prefab != null
-          ? prefab.name
-          : "NULL";
+        :"NULL";
   }
 }

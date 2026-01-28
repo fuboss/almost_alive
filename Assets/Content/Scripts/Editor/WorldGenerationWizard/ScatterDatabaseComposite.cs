@@ -121,7 +121,6 @@ namespace Content.Scripts.Editor.WorldGenerationWizard {
 
       var scatter = ScriptableObject.CreateInstance<ScatterRuleSO>();
       scatter.actorKey = newActorKey;
-      scatter.prefab = newPrefab;
       scatter.density = newDensity;
       scatter.minSpacing = newMinSpacing;
 
@@ -154,7 +153,7 @@ namespace Content.Scripts.Editor.WorldGenerationWizard {
           continue;
         }
 
-        if (string.IsNullOrEmpty(scatter.actorKey) && scatter.prefab == null) {
+        if (string.IsNullOrEmpty(scatter.actorKey)) {
           Debug.LogError($"[ScatterDB] {scatter.name}: No actorKey or prefab assigned");
           errors++;
         }

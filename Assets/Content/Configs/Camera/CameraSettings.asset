@@ -48,22 +48,22 @@ MonoBehaviour:
     m_RotationOrder: 4
   zoomSpeed: 3.77
   zoomSmoothing: 0.989
-  basePanSpeed: 25.3
+  basePanSpeed: 36.1
   panSpeedByZoomCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
+      time: -0.0012664795
+      value: 0.2166748
+      inSlope: 0.8002597
+      outSlope: 0.8002597
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.059495233
     - serializedVersion: 3
-      time: 1
-      value: 1
+      time: 0.99871826
+      value: 0.7238083
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -81,9 +81,6 @@ MonoBehaviour:
   rotationSmoothing: 0.987
   discreteRotationStep: 45
   enableBoundaries: 1
-  worldBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 50, y: 25, z: 50}
   followSmoothing: 1
   followHeightOffset: 5
   showDebugGizmos: 0

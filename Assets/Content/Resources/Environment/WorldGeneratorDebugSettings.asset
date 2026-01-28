@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fde65c22571a43099302eb2b04e5905, type: 3}
   m_Name: WorldGeneratorDebugSettings
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.WorldGeneratorDebugSettings
-  drawBiomeGizmos: 1
+  drawBiomeGizmos: 0
   gizmoAlpha: 0.1
   biomeLabelHeight: 2.55
   drawCellCenters: 1

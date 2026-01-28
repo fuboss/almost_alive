@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Content.Scripts.World;
 using Content.Scripts.World.Generation;
+using Content.Scripts.World.Generation.Pipeline;
 using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEngine;
@@ -10,21 +11,13 @@ using UnityEngine;
 namespace Content.Scripts.Editor.World {
   /// <summary>
   /// Editor facade for world generation.
-  /// Provides menu items and manages incremental actor spawning.
+  /// Uses GenerationPipeline for consistent results with ArtistModeWindow.
   /// </summary>
   [InitializeOnLoad]
   public static class WorldGeneratorEditor {
-    private const string CONTAINER_NAME = "[EditorWorld_Generated]";
-    private const int SPAWNS_PER_FRAME = 15;
+    private const string SCATTER_CONTAINER = "[Generated_Scatters]";
 
-    private static bool _isGenerating;
-    private static SpawningState _state;
-    private static EditorActorSpawner _spawner;
-
-    private class SpawningState {
-      public EditorGenerationContext Context;
-      public int SpawnIndex;
-    }
+    private static GenerationPipeline _pipeline;
 
     static WorldGeneratorEditor() {
       EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -32,17 +25,9 @@ namespace Content.Scripts.Editor.World {
 
     private static void OnPlayModeStateChanged(PlayModeStateChange state) {
       if (state == PlayModeStateChange.ExitingEditMode) {
-        var editorContainer = GameObject.Find(CONTAINER_NAME);
-        if (editorContainer != null) {
-          Debug.Log("[WorldGenEditor] Removing editor-generated world before Play Mode");
-          UnityEngine.Object.DestroyImmediate(editorContainer);
-        }
-
-        if (_isGenerating) {
-          CancelGeneration();
-        }
-
-        Cleanup();
+        // Cleanup editor-generated objects before Play Mode
+        CleanupGeneratedObjects();
+        _pipeline = null;
       }
     }
 
@@ -66,19 +51,7 @@ namespace Content.Scripts.Editor.World {
 
     [MenuItem("World/Clear Generated")]
     public static void ClearFromMenu() {
-      CancelGeneration();
       Clear();
-    }
-
-    [MenuItem("World/Cancel Generation")]
-    public static void CancelGeneration() {
-      if (!_isGenerating) return;
-      EditorApplication.update -= OnEditorUpdate;
-      EditorUtility.ClearProgressBar();
-      _isGenerating = false;
-      _state = null;
-      Cleanup();
-      Debug.Log("[WorldGenEditor] Generation cancelled");
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -91,17 +64,10 @@ namespace Content.Scripts.Editor.World {
         return;
       }
 
-      if (_isGenerating) {
-        Debug.LogWarning("[WorldGenEditor] Generation already in progress");
-        return;
-      }
-
       if (config.Data.biomes == null || config.Data.biomes.Count == 0) {
         Debug.LogError("[WorldGenEditor] No biomes configured");
         return;
       }
-
-      Clear();
 
       var terrain = config.terrain != null ? config.terrain : Terrain.activeTerrain;
       if (terrain == null) {
@@ -109,106 +75,115 @@ namespace Content.Scripts.Editor.World {
         return;
       }
 
+      // Clear previous generation
+      Clear();
+
       // Init terrain size
       terrain.terrainData.size = new Vector3(config.Data.size, 200, config.Data.size);
       terrain.transform.localPosition = new Vector3(-config.Data.size / 2f, 0, -config.Data.size / 2f);
 
-      // Create container
-      var container = new GameObject(CONTAINER_NAME).transform;
-      Undo.RegisterCreatedObjectUndo(container.gameObject, "Generate World");
+      // Create and run pipeline (non-artist mode = run all phases)
+      _pipeline = new GenerationPipeline();
+      
+      var startTime = DateTime.Now;
+      
+      // Subscribe to completion
+      _pipeline.OnPipelineCompleted += () => {
+        var elapsed = (DateTime.Now - startTime).TotalSeconds;
+        Debug.Log($"[WorldGenEditor] ✓ Generation completed in {elapsed:F2}s");
+        
+        // Build NavMesh
+        var navSurface = terrain.GetComponent<NavMeshSurface>();
+        if (navSurface != null) {
+          navSurface.BuildNavMesh();
+          Debug.Log("[WorldGenEditor] NavMesh rebuilt");
+        }
 
-      // Create context
-      var seed = config.Data.seed != 0 ? config.Data.seed : Environment.TickCount;
-      var context = new EditorGenerationContext(config, terrain, seed, saveToPreload);
-
-      // Run synchronous generation (biomes, terrain, positions)
-      EditorWorldGenerator.Generate(context);
-
-      if (context.BiomeMap == null) {
+        // Save to DevPreloadWorld if requested
+        if (saveToPreload) {
+          SaveToDevPreloadWorld(terrain, _pipeline.Context);
+        }
+        
+        SceneView.RepaintAll();
+      };
+      
+      _pipeline.OnPhaseFailed += phase => {
+        Debug.LogError($"[WorldGenEditor] Phase '{phase.Name}' failed!");
         EditorUtility.ClearProgressBar();
-        return;
-      }
-
-      Debug.Log($"[WorldGenEditor] Positions generated: {context.SpawnDataList.Count}");
-
-      // Setup spawning state
-      _spawner = new EditorActorSpawner(container);
-      _state = new SpawningState {
-        Context = context,
-        SpawnIndex = 0
       };
 
-      _isGenerating = true;
-      EditorApplication.update += OnEditorUpdate;
-
-      Debug.Log($"[WorldGenEditor] Started spawning (seed: {seed}, biomes: {context.BiomeMap.cells.Count})");
+      // Run all phases synchronously (artistMode = false)
+      _pipeline.Begin(config, terrain, artistMode: false);
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // SPAWNING (incremental per frame)
+    // CLEAR
     // ═══════════════════════════════════════════════════════════════
 
-    private static void OnEditorUpdate() {
-      if (!_isGenerating || _state == null) {
-        EditorApplication.update -= OnEditorUpdate;
-        EditorUtility.ClearProgressBar();
+    public static void Clear() {
+      // Reset pipeline if exists
+      _pipeline?.Reset();
+      _pipeline = null;
+      
+      // Cleanup generated objects
+      CleanupGeneratedObjects();
+
+      var terrain = Terrain.activeTerrain;
+      if (terrain != null) {
+        // Restore terrain to flat state
+        var td = terrain.terrainData;
+        
+        // Flatten heightmap
+        var hRes = td.heightmapResolution;
+        var flatHeights = new float[hRes, hRes];
+        td.SetHeights(0, 0, flatHeights);
+
+        // Clear splatmap to first layer
+        var aRes = td.alphamapResolution;
+        var layerCount = td.alphamapLayers;
+        var clearSplatmap = new float[aRes, aRes, layerCount];
+        for (int y = 0; y < aRes; y++) {
+          for (int x = 0; x < aRes; x++) {
+            clearSplatmap[y, x, 0] = 1f; // First layer only
+          }
+        }
+        td.SetAlphamaps(0, 0, clearSplatmap);
+
+        // Clear vegetation details
+        var dRes = td.detailResolution;
+        var emptyLayer = new int[dRes, dRes];
+        for (int i = 0; i < td.detailPrototypes.Length; i++) {
+          td.SetDetailLayer(0, 0, i, emptyLayer);
+        }
+
+        // Rebuild NavMesh
+        var navSurface = terrain.GetComponent<NavMeshSurface>();
+        if (navSurface != null) {
+          navSurface.BuildNavMesh();
+        }
+        
+        Debug.Log("[WorldGenEditor] Terrain cleared");
+      }
+    }
+
+    private static void CleanupGeneratedObjects() {
+      // Destroy scatter container
+      var scatterRoot = GameObject.Find(SCATTER_CONTAINER);
+      if (scatterRoot != null) {
+        UnityEngine.Object.DestroyImmediate(scatterRoot);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SAVE TO PRELOAD
+    // ═══════════════════════════════════════════════════════════════
+
+    private static void SaveToDevPreloadWorld(Terrain terrain, GenerationContext context) {
+      if (context == null) {
+        Debug.LogWarning("[WorldGenEditor] No context to save");
         return;
       }
-
-      var spawnDataList = _state.Context.SpawnDataList;
-      var spawnsThisFrame = 0;
-
-      while (_state.SpawnIndex < spawnDataList.Count && spawnsThisFrame < SPAWNS_PER_FRAME) {
-        var data = spawnDataList[_state.SpawnIndex];
-        _spawner.SpawnActor(data);
-        _state.SpawnIndex++;
-        spawnsThisFrame++;
-      }
-
-      var progress = spawnDataList.Count > 0
-        ? (float)_state.SpawnIndex / spawnDataList.Count
-        : 1f;
-
-      if (EditorUtility.DisplayCancelableProgressBar("Generating World",
-            $"Spawning: {_state.SpawnIndex}/{spawnDataList.Count}",
-            0.6f + progress * 0.4f)) {
-        CancelGeneration();
-        return;
-      }
-
-      if (_state.SpawnIndex >= spawnDataList.Count) {
-        FinishGeneration();
-      }
-    }
-
-    private static void FinishGeneration() {
-      EditorApplication.update -= OnEditorUpdate;
-      EditorUtility.ClearProgressBar();
-
-      var context = _state.Context;
-      Debug.Log($"[WorldGenEditor] ✓ Generated {_spawner.SpawnedCount} actors");
-
-      // Build NavMesh
-      var navSurface = context.Terrain.GetComponent<NavMeshSurface>();
-      if (navSurface != null) navSurface.BuildNavMesh();
-
-      // Save to DevPreloadWorld if requested
-      if (context.SaveToPreload) {
-        SaveToDevPreloadWorld(context);
-      }
-
-      _isGenerating = false;
-      _state = null;
-      Cleanup();
-      SceneView.RepaintAll();
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // HELPERS
-    // ═══════════════════════════════════════════════════════════════
-
-    private static void SaveToDevPreloadWorld(EditorGenerationContext context) {
-      var terrain = context.Terrain;
+      
       var preload = terrain.GetComponent<DevPreloadWorld>();
       if (preload == null) {
         preload = Undo.AddComponent<DevPreloadWorld>(terrain.gameObject);
@@ -218,55 +193,56 @@ namespace Content.Scripts.Editor.World {
 
       preload.Clear();
       preload.seed = context.Seed;
-      preload.spawnDataList = new List<WorldSpawnData>(context.SpawnDataList);
+      
+      // Collect spawn data from generated scatters
+      var spawnDataList = CollectSpawnDataFromScene();
+      preload.spawnDataList = spawnDataList;
       preload.isPreloaded = true;
 
       EditorUtility.SetDirty(preload);
       UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(terrain.gameObject.scene);
 
-      Debug.Log($"[WorldGenEditor] ✓ Saved {preload.spawnDataList.Count} actors to DevPreloadWorld");
+      Debug.Log($"[WorldGenEditor] ✓ Saved {spawnDataList.Count} actors to DevPreloadWorld");
     }
 
-    public static void Clear() {
-      var existing = GameObject.Find(CONTAINER_NAME);
-      if (existing != null) Undo.DestroyObjectImmediate(existing);
+    /// <summary>
+    /// Collect WorldSpawnData from spawned actors in scene.
+    /// </summary>
+    private static List<WorldSpawnData> CollectSpawnDataFromScene() {
+      var result = new List<WorldSpawnData>();
       
-      var terrain = Terrain.activeTerrain;
-      if (terrain != null) {
-        // Flatten terrain
-        TerrainSculptor.Flatten(terrain, 0f);
+      var scatterRoot = GameObject.Find(SCATTER_CONTAINER);
+      if (scatterRoot == null) return result;
+
+      // Iterate through all children (biome containers) and their children (actors)
+      foreach (Transform biomeContainer in scatterRoot.transform) {
+        var biomeId = biomeContainer.name;
         
-        // Clear splatmap to first layer
-        SplatmapPainter.Clear(terrain, 0);
-        
-        // Clear vegetation details
-        ClearVegetation(terrain);
-        
-        // Rebuild NavMesh
-        var navSurface = terrain.GetComponent<NavMeshSurface>();
-        if (navSurface != null) navSurface.BuildNavMesh();
+        foreach (Transform actor in biomeContainer) {
+          var actorDesc = actor.GetComponent<Content.Scripts.Game.ActorDescription>();
+          if (actorDesc == null) continue;
+          
+          result.Add(new WorldSpawnData {
+            actorKey = actorDesc.actorKey,
+            position = actor.position,
+            rotation = actor.eulerAngles.y,
+            scale = actor.localScale.x,
+            biomeId = biomeId
+          });
+        }
       }
+
+      return result;
     }
 
-    private static void ClearVegetation(Terrain terrain) {
-      var td = terrain.terrainData;
-      var detailRes = td.detailResolution;
-      var emptyLayer = new int[detailRes, detailRes];
-      
-      for (int i = 0; i < td.detailPrototypes.Length; i++) {
-        td.SetDetailLayer(0, 0, i, emptyLayer);
-      }
-    }
-
-    private static void Cleanup() {
-      _spawner?.Dispose();
-      _spawner = null;
-    }
+    // ═══════════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════════
 
     private static WorldGeneratorConfigSO LoadConfig() {
       var config = Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
       if (config == null) {
-        Debug.LogError("[WorldGenEditor] Config not found at Resources/Environment/");
+        Debug.LogError("[WorldGenEditor] Config not found at Resources/Environment/WorldGeneratorConfig");
       }
       return config;
     }

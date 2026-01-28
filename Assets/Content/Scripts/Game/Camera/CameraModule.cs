@@ -39,8 +39,27 @@ namespace Content.Scripts.Game.Camera {
       _rotationController = new CameraRotationController(_settings, _inputHandler, _state);
 
       InitializeStrategies();
-
+      InitializeWorldBounds();
       SetupCameraRig();
+    }
+
+    private void InitializeWorldBounds() {
+      var terrain = Terrain.activeTerrain;
+      if (terrain == null) return;
+      
+      var terrainPos = terrain.transform.position;
+      var terrainSize = terrain.terrainData.size;
+      
+      // Calculate bounds from terrain position and size
+      var center = new Vector3(
+        terrainPos.x + terrainSize.x * 0.5f,
+        terrainPos.y + terrainSize.y * 0.5f,
+        terrainPos.z + terrainSize.z * 0.5f
+      );
+      
+      _state.WorldBounds = new Bounds(center, terrainSize);
+      
+      Debug.Log($"[Camera] World bounds set from terrain: {_state.WorldBounds}");
     }
 
     private void InitializeStrategies() {

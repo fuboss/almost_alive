@@ -659,7 +659,7 @@ MonoBehaviour:
             m_PostInfinity: 2
             m_RotationOrder: 4
           allowedTerrainLayers: 
-        - previewCache: {fileID: 1748410436971110666, guid: ebdb35cf559fb314dae7df6d0a352b48, type: 3}
+        - previewCache: {fileID: 1033526270896112297, guid: 69c9acbe8555c004da65c9f23f84e0ee, type: 3}
           prototype: {fileID: 11400000, guid: 417d4f55815654ae9924216e2141312f, type: 2}
           density: 0.35
           weight: 0.6

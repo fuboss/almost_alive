@@ -83,7 +83,7 @@ namespace Content.Scripts.Game.Camera.Strategies {
     }
 
     private Vector3 ClampToBounds(Vector3 position) {
-      var bounds = _settings.worldBounds;
+      var bounds = _state.WorldBounds;
       return new Vector3(
         Mathf.Clamp(position.x, bounds.min.x, bounds.max.x),
         position.y,

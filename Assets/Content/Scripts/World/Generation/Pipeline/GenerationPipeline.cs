@@ -224,6 +224,32 @@ namespace Content.Scripts.World.Generation.Pipeline {
       }
     }
 
+    /// <summary>
+    /// Re-run a specific phase (rollback + execute).
+    /// Works even after pipeline completed.
+    /// </summary>
+    public void RerunPhase(int phaseIndex) {
+      if (Context == null) {
+        Debug.LogWarning("[WorldGen] Cannot rerun phase - no context");
+        return;
+      }
+      
+      if (phaseIndex < 0 || phaseIndex >= _phases.Count) {
+        Debug.LogWarning($"[WorldGen] Invalid phase index: {phaseIndex}");
+        return;
+      }
+      
+      // Ensure running state for rollback
+      IsRunning = true;
+      IsPaused = false;
+      
+      // Rollback to before target phase
+      RollbackTo(phaseIndex - 1);
+      
+      // Execute target phase
+      ExecuteNextPhase();
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // PRIVATE
     // ═══════════════════════════════════════════════════════════════

@@ -44,6 +44,11 @@ namespace Content.Scripts.Game.Camera {
     /// Whether the camera is currently in follow mode
     /// </summary>
     public bool IsFollowMode { get; set; }
+
+    /// <summary>
+    /// Runtime world bounds (calculated from terrain)
+    /// </summary>
+    public Bounds WorldBounds { get; set; }
   }
 }
 

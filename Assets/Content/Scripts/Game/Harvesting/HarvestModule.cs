@@ -45,8 +45,6 @@ namespace Content.Scripts.Game.Harvesting {
         growth = go.AddComponent<GrowthProgress>();
       }
       growth.Initialize(harvestable, _simulationLoop);
-
-      Debug.Log($"[HarvestModule] Initialized harvestable: {go.name}, maxYield: {harvestable.maxHarvest}");
     }
 
     /// <summary>
