@@ -1,15 +1,186 @@
 using System;
+using Content.Scripts.World.Vegetation.Mask;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.World.Vegetation {
+  
   /// <summary>
-  /// Configuration for a single vegetation layer within a biome.
+  /// Size category for vegetation - affects noise patterns and placement rules.
+  /// </summary>
+  public enum VegetationSize {
+    Small,   // Ground cover, small grass
+    Medium,  // Bushes, flowers, tall grass
+    Large    // Trees, large shrubs
+  }
+
+  /// <summary>
+  /// Noise settings for vegetation placement within a category.
+  /// Controls where vegetation appears vs bare ground.
+  /// </summary>
+  [Serializable]
+  public class VegetationNoiseSettings {
+    
+    [Tooltip("Noise algorithm for placement")]
+    public MaskMode mode = MaskMode.Perlin;
+
+    [Tooltip("Noise scale (smaller = larger patches)")]
+    [Range(0.001f, 0.2f)]
+    public float scale = 0.02f;
+
+    [Tooltip("FBM octaves for detail")]
+    [Range(1, 6)]
+    public int octaves = 3;
+
+    [Tooltip("FBM persistence")]
+    [Range(0.1f, 0.9f)]
+    public float persistence = 0.5f;
+
+    [Tooltip("Threshold for vegetation placement (0 = everywhere, 1 = nowhere)")]
+    [Range(0f, 1f)]
+    public float threshold = 0.4f;
+
+    [Tooltip("Softness of threshold edge")]
+    [Range(0f, 0.5f)]
+    public float blend = 0.15f;
+
+    [Tooltip("Additional stochastic culling for natural variation")]
+    public bool useStochastic = false;
+
+    [ShowIf("useStochastic")]
+    [Range(0f, 1f)]
+    public float stochasticBlend = 0.3f;
+
+    /// <summary>
+    /// Convert to MaskSettings for MaskService.
+    /// </summary>
+    public MaskSettings ToMaskSettings(int seedOffset = 0) {
+      return new MaskSettings {
+        mode = mode,
+        scale = scale,
+        fbmOctaves = octaves,
+        fbmPersistence = persistence,
+        threshold = threshold,
+        blend = blend,
+        useStochasticCulling = useStochastic,
+        stochasticBlend = stochasticBlend,
+        cacheEnabled = true,
+        seedOffset = seedOffset
+      };
+    }
+
+    /// <summary>
+    /// Create default settings for a size category.
+    /// </summary>
+    public static VegetationNoiseSettings CreateDefault(VegetationSize size) {
+      return size switch {
+        VegetationSize.Small => new VegetationNoiseSettings {
+          scale = 0.05f,
+          octaves = 2,
+          threshold = 0.3f,
+          blend = 0.2f
+        },
+        VegetationSize.Medium => new VegetationNoiseSettings {
+          scale = 0.025f,
+          octaves = 3,
+          threshold = 0.45f,
+          blend = 0.15f
+        },
+        VegetationSize.Large => new VegetationNoiseSettings {
+          scale = 0.01f,
+          octaves = 4,
+          threshold = 0.6f,
+          blend = 0.1f
+        },
+        _ => new VegetationNoiseSettings()
+      };
+    }
+  }
+
+  /// <summary>
+  /// A category of vegetation with shared noise settings.
+  /// Groups similar-sized plants that share placement patterns.
+  /// </summary>
+  [Serializable]
+  public class VegetationCategory {
+    
+    [HorizontalGroup("Header")]
+    [Tooltip("Display name for this category")]
+    public string name = "Ground Cover";
+
+    [HorizontalGroup("Header", Width = 100)]
+    [Tooltip("Size category affects default noise and terrain rules")]
+    public VegetationSize size = VegetationSize.Small;
+
+    [Tooltip("Enable/disable this entire category")]
+    public bool enabled = true;
+
+    [Tooltip("Base density multiplier for all layers in this category")]
+    [Range(0f, 2f)]
+    public float densityMultiplier = 1f;
+
+    [FoldoutGroup("Placement Noise")]
+    [Tooltip("Noise settings controlling where this category appears")]
+    [HideLabel, InlineProperty]
+    public VegetationNoiseSettings noise = new();
+
+    [FoldoutGroup("Terrain Filters")]
+    [Tooltip("Density falloff from biome center to edge (X: 0-1 distance, Y: multiplier)")]
+    public AnimationCurve biomeEdgeFalloff = AnimationCurve.EaseInOut(0f, 1f, 1f, 0.3f);
+
+    [FoldoutGroup("Terrain Filters")]
+    [Tooltip("Density multiplier based on slope (X: degrees, Y: multiplier)")]
+    public AnimationCurve slopeFalloff = AnimationCurve.Linear(0f, 1f, 45f, 0f);
+
+    [FoldoutGroup("Terrain Filters")]
+    [Tooltip("Density multiplier based on height (X: meters, Y: multiplier)")]
+    public AnimationCurve heightFalloff = AnimationCurve.Constant(0f, 200f, 1f);
+
+    [FoldoutGroup("Layers")]
+    [Tooltip("Vegetation layers in this category")]
+    [ListDrawerSettings(ShowFoldout = true, DraggableItems = true)]
+    public VegetationLayerConfig[] layers = Array.Empty<VegetationLayerConfig>();
+
+    /// <summary>
+    /// Calculate terrain-based density modifier.
+    /// </summary>
+    public float CalculateTerrainModifier(float slope, float height, float biomeEdgeDistance) {
+      var result = 1f;
+      result *= slopeFalloff.Evaluate(slope);
+      result *= heightFalloff.Evaluate(height);
+      result *= biomeEdgeFalloff.Evaluate(biomeEdgeDistance);
+      return result * densityMultiplier;
+    }
+
+    /// <summary>
+    /// Create a default category for given size.
+    /// </summary>
+    public static VegetationCategory CreateDefault(VegetationSize size) {
+      var name = size switch {
+        VegetationSize.Small => "Ground Cover",
+        VegetationSize.Medium => "Bushes & Flowers",
+        VegetationSize.Large => "Trees & Shrubs",
+        _ => "Vegetation"
+      };
+
+      return new VegetationCategory {
+        name = name,
+        size = size,
+        noise = VegetationNoiseSettings.CreateDefault(size),
+        slopeFalloff = size == VegetationSize.Large 
+          ? AnimationCurve.Linear(0f, 1f, 30f, 0f)  // Trees avoid steep slopes
+          : AnimationCurve.Linear(0f, 1f, 45f, 0f)
+      };
+    }
+  }
+
+  /// <summary>
+  /// Configuration for a single vegetation layer within a category.
   /// Controls density, terrain filters, and falloff curves.
   /// </summary>
   [Serializable]
   public class VegetationLayerConfig : ISerializationCallbackReceiver {
-    // Header: preview + prototype on a single row
+    
     [HorizontalGroup("Header", Width = 0.16f), HideLabel]
     #pragma warning disable 0414
     [SerializeField]
@@ -23,62 +194,56 @@ namespace Content.Scripts.World.Vegetation {
     [Required]
     public VegetationPrototypeSO prototype;
 
-    // Following fields are placed vertically (each on its own row) for readability
-    [BoxGroup("Settings", ShowLabel = false)]
-    [Tooltip("Base density (0-1, maps to 0-15 in terrain)")]
+    [BoxGroup("Density", ShowLabel = false)]
+    [Tooltip("Base density (0-1, maps to terrain detail value)")]
     [Range(0f, 1f)]
     public float density = 0.5f;
 
-    [BoxGroup("Settings", ShowLabel = false)]
-    [Range(0.1f, 3f)]
-    public float coverage;
-
-    [BoxGroup("Settings", ShowLabel = false)]
-    [Tooltip("Relative frequency multiplier (1 = normal, >1 denser)")]
+    [BoxGroup("Density", ShowLabel = false)]
+    [Tooltip("Relative weight when multiple layers compete (higher = more common)")]
     [Range(0.1f, 5f)]
     public float weight = 1f;
 
-    [FoldoutGroup("Terrain Filters", expanded: false)]
-    [Tooltip("Density multiplier based on slope (X=slope°, Y=multiplier)")]
+    [FoldoutGroup("Per-Layer Noise", expanded: false)]
+    [Tooltip("Add extra noise variation specific to this layer")]
+    public bool useLayerNoise = false;
+    
+    [FoldoutGroup("Per-Layer Noise")]
+    [ShowIf("useLayerNoise")]
+    [Range(0.001f, 0.1f)]
+    public float layerNoiseScale = 0.03f;
+    
+    [FoldoutGroup("Per-Layer Noise")]
+    [ShowIf("useLayerNoise")]
+    [Range(0f, 1f)]
+    public float layerNoiseStrength = 0.3f;
+
+    [FoldoutGroup("Terrain Overrides", expanded: false)]
+    [Tooltip("Override category slope falloff for this layer")]
+    public bool overrideSlopeFalloff = false;
+    
+    [FoldoutGroup("Terrain Overrides")]
+    [ShowIf("overrideSlopeFalloff")]
     public AnimationCurve slopeFalloff = AnimationCurve.Linear(0f, 1f, 45f, 0f);
-    
-    [FoldoutGroup("Terrain Filters")]
-    [Tooltip("Density multiplier based on height")]
-    public AnimationCurve heightFalloff = AnimationCurve.Constant(0f, 200f, 1f);
-    
-    [FoldoutGroup("Terrain Filters")]
+
+    [FoldoutGroup("Terrain Overrides")]
     [Tooltip("Only place on these terrain texture layers (empty = all)")]
     public int[] allowedTerrainLayers;
 
-    [FoldoutGroup("Noise")]
-    [Tooltip("Add noise variation to density")]
-    public bool useNoise = true;
-    
-    [FoldoutGroup("Noise")]
-    [ShowIf("useNoise")]
-    [Range(0.001f, 0.1f)]
-    public float noiseScale = 0.02f;
-    
-    [FoldoutGroup("Noise")]
-    [ShowIf("useNoise")]
-    [Range(0f, 1f)]
-    public float noiseStrength = 0.3f;
-
     /// <summary>
-    /// Calculate final density at given terrain conditions.
+    /// Calculate final density considering all factors.
     /// </summary>
-    public float CalculateDensity(float slope, float height, float noiseValue) {
-      var result = density;
+    public float CalculateDensity(float categoryModifier, float slope, float layerNoiseValue) {
+      var result = density * categoryModifier;
       
-      // Apply slope falloff
-      result *= slopeFalloff.Evaluate(slope);
+      // Apply per-layer slope override
+      if (overrideSlopeFalloff) {
+        result *= slopeFalloff.Evaluate(slope);
+      }
       
-      // Apply height falloff
-      result *= heightFalloff.Evaluate(height);
-      
-      // Apply noise
-      if (useNoise) {
-        result *= Mathf.Lerp(1f - noiseStrength, 1f + noiseStrength, noiseValue);
+      // Apply per-layer noise
+      if (useLayerNoise) {
+        result *= Mathf.Lerp(1f - layerNoiseStrength, 1f + layerNoiseStrength, layerNoiseValue);
       }
       
       return Mathf.Clamp01(result);
@@ -93,7 +258,6 @@ namespace Content.Scripts.World.Vegetation {
       return Array.IndexOf(allowedTerrainLayers, layerIndex) >= 0;
     }
 
-    // ISerializationCallbackReceiver — обновляем previewCache перед сериализацией/отображением
     public void OnBeforeSerialize() {
       if (prototype == null) {
         previewCache = null;
@@ -107,62 +271,85 @@ namespace Content.Scripts.World.Vegetation {
     }
     
     public void OnAfterDeserialize() {
-      // no-op, but touch previewCache so compiler doesn't warn it's unused
       var _ = previewCache;
     }
   }
 
   /// <summary>
   /// Per-biome vegetation configuration.
-  /// Contains multiple vegetation layers (grass, flowers, etc.)
+  /// Contains categorized vegetation layers with per-category noise.
   /// </summary>
   [Serializable]
   public class BiomeVegetationConfig {
-    [ListDrawerSettings(ShowFoldout = true, DraggableItems = true)]
-    public VegetationLayerConfig[] layers = Array.Empty<VegetationLayerConfig>();
     
-    [Tooltip("Global density multiplier for this biome (1.0 = normal, 2.0 = double)")]
-    [Range(0f, 6f)]
-    public float densityMultiplier = 1f;
+    [Tooltip("Global density multiplier for all vegetation in this biome")]
+    [Range(0f, 3f)]
+    public float globalDensity = 1f;
     
-    [Tooltip("Maximum density per cell (default 15, can go higher for denser grass)")]
-    // Increased upper bound to allow much denser grass when desired. Unity stores detail values as ints,
-    // common practical upper bound is 255 (byte range) — this gives you room to tune weight and density.
+    [Tooltip("Maximum density per terrain cell (higher = denser grass)")]
     [Range(8, 255)]
     public int maxDensityPerCell = 64;
 
-    // New mask settings exposed per-biome
-    [FoldoutGroup("Vegetation Mask", expanded: false)]
-    public Content.Scripts.World.Vegetation.Mask.MaskMode maskMode = Content.Scripts.World.Vegetation.Mask.MaskMode.Perlin;
+    [Tooltip("Vegetation categories (grouped by size/type)")]
+    [ListDrawerSettings(ShowFoldout = true, DraggableItems = true, CustomAddFunction = "AddDefaultCategory")]
+    public VegetationCategory[] categories = Array.Empty<VegetationCategory>();
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(0.001f, 0.1f)]
-    public float maskScale = 0.02f;
+    // ═══════════════════════════════════════════════════════════════
+    // LEGACY SUPPORT (for migration)
+    // ═══════════════════════════════════════════════════════════════
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(1, 6)]
-    public int maskOctaves = 3;
+    [HideInInspector]
+    [Obsolete("Use categories instead")]
+    public VegetationLayerConfig[] layers;
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(0.1f, 0.9f)]
-    public float maskPersistence = 0.5f;
+    // ═══════════════════════════════════════════════════════════════
+    // API
+    // ═══════════════════════════════════════════════════════════════
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(0f, 1f)]
-    public float maskThreshold = 0.6f;
+    public bool HasVegetation => categories != null && categories.Length > 0;
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(0f, 0.5f)]
-    public float maskBlend = 0.12f;
+    /// <summary>
+    /// Get total layer count across all categories.
+    /// </summary>
+    public int TotalLayerCount {
+      get {
+        var count = 0;
+        if (categories != null) {
+          foreach (var cat in categories) {
+            if (cat?.layers != null) count += cat.layers.Length;
+          }
+        }
+        return count;
+      }
+    }
 
-    [FoldoutGroup("Vegetation Mask")]
-    public bool maskUseStochastic = false;
+    /// <summary>
+    /// Initialize with default categories.
+    /// </summary>
+    public void InitializeDefaults() {
+      categories = new[] {
+        VegetationCategory.CreateDefault(VegetationSize.Small),
+        VegetationCategory.CreateDefault(VegetationSize.Medium),
+        VegetationCategory.CreateDefault(VegetationSize.Large)
+      };
+    }
 
-    [FoldoutGroup("Vegetation Mask")]
-    [Range(0f, 1f)]
-    public float maskStochasticBlend = 0f;
+    #if UNITY_EDITOR
+    private VegetationCategory AddDefaultCategory() {
+      // Find next unused size
+      var usedSizes = new System.Collections.Generic.HashSet<VegetationSize>();
+      if (categories != null) {
+        foreach (var cat in categories) usedSizes.Add(cat.size);
+      }
 
-    [FoldoutGroup("Vegetation Mask")]
-    public bool maskCacheEnabled = true;
+      foreach (VegetationSize size in Enum.GetValues(typeof(VegetationSize))) {
+        if (!usedSizes.Contains(size)) {
+          return VegetationCategory.CreateDefault(size);
+        }
+      }
+      
+      return VegetationCategory.CreateDefault(VegetationSize.Small);
+    }
+    #endif
   }
 }

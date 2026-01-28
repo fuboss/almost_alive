@@ -128,7 +128,7 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode.PhaseSettings 
           EditorGUI.indentLevel++;
           data.riverWidth = EditorGUILayout.Slider("Width (m)", data.riverWidth, 2f, 20f);
           data.riverBorderChance = EditorGUILayout.Slider("Border Chance", data.riverBorderChance, 0f, 1f);
-          data.riverBedDepth = EditorGUILayout.Slider("Bed Depth (m)", data.riverBedDepth, 0.5f, 5f);
+          data.riverCenterDepth = EditorGUILayout.Slider("Bed Depth (m)", data.riverCenterDepth, 0.5f, 5f);
           EditorGUI.indentLevel--;
         }
         

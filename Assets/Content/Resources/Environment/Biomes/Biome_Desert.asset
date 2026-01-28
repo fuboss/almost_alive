@@ -21,60 +21,167 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  type: 3
-  debugColor: {r: 0.9427508, g: 1, b: 0, a: 1}
-  weight: 0.67
-  baseHeight: 0
-  heightVariation: 5
-  heightNoise: {fileID: 0}
-  heightProfile:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.013923645
-      value: 0.28094482
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.414873
-      value: 0.67691374
-      inSlope: 0.7014871
-      outSlope: 0.7014871
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  noiseFrequency: 0.0036
-  noiseOctaves: 5
-  noisePersistence: 0.641
-  baseTexture:
-    layerName: Sand_TerrainLayer
-  detailTexture:
-    layerName: Soil_Rocks_TerrainLayer
-    strength: 0.3
-    noiseScale: 0.02
-  slopeTexture:
-    layerName: Sand_TerrainLayer
-    slopeRange: {x: 25, y: 45}
-  cliffTexture:
-    layerName: Cliff_Mossy_E
-    threshold: 55
+  _data:
+    identity:
+      type: 3
+      debugColor: {r: 1, g: 0.85, b: 0, a: 1}
+      weight: 0.9
+    waterBody:
+      isWaterBody: 0
+      floorDepth: 3
+      shoreSteepness: 0.5
+    riverShore:
+      style: 1
+      gradient: 0.8
+      width: 10
+      rockyIrregularity: 0
+    height:
+      baseHeight: 3.5
+      heightVariation: 1
+      minClearanceAboveWater: 0.5
+      heightProfile:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      noise:
+        template: {fileID: 0}
+        frequency: 0.015
+        amplitude: 0.6
+        offset: {x: 0, y: 0}
+        seedOffset: 300
+        normalize: 1
+        invert: 0
+        power: 0.7
+        useFBM: 1
+        octaves: 3
+        persistence: 0.35
+        lacunarity: 2.3
+        previewSize: 128
+        previewWorldSize: 150
+    textures:
+      baseTexture:
+        layerName: Sand_TerrainLayer
+      detailTexture:
+        layerName: Pebbles_B
+        strength: 0.3
+        noiseScale: 0.02
+      slopeTexture:
+        layerName: Black_Sand_Rocks_B
+        slopeRange: {x: 25, y: 45}
+      cliffTexture:
+        layerName: Cliff_Mossy_E
+        threshold: 55
+    vegetation:
+      globalDensity: 0.3
+      maxDensityPerCell: 32
+      categories:
+      - name: Ground Cover
+        size: 0
+        enabled: 1
+        densityMultiplier: 1
+        noise:
+          mode: 1
+          scale: 0.05
+          octaves: 2
+          persistence: 0.5
+          threshold: 0.3
+          blend: 0.2
+          useStochastic: 0
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers: []
+      layers: []
   scatterConfigs:
   - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
     placement: 0
@@ -82,17 +189,3 @@ MonoBehaviour:
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
-  vegetationConfig:
-    layers: []
-    densityMultiplier: 3.4
-    maxDensityPerCell: 28
-    maskMode: 1
-    maskScale: 0.0337
-    maskOctaves: 4
-    maskPersistence: 0.763
-    maskThreshold: 0.454
-    maskBlend: 0.158
-    maskUseStochastic: 0
-    maskStochasticBlend: 0.199
-    maskCacheEnabled: 1
-  vegetationMaskPreview: {fileID: 2800000, guid: a560055db773547f9a8ef92bd76b8e56, type: 3}

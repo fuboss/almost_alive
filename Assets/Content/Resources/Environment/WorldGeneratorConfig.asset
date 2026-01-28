@@ -22,7 +22,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _data:
-    terrainPalette: {fileID: 0}
+    terrainPalette: {fileID: 11400000, guid: 84bb87ae5541d43799c7e3f4fbf4b2ab, type: 2}
     size: 400
     edgeMargin: 10
     sculptTerrain: 1
@@ -45,20 +45,19 @@ MonoBehaviour:
     warpScale: 0.026
     warpOctaves: 4
     useGlobalNoise: 1
-    globalNoiseAmplitude: 10.95
-    globalNoiseScale: 0.02271
-    detailNoiseAmplitude: 2.48
+    globalNoiseAmplitude: 2.83
+    globalNoiseScale: 0.01025
+    detailNoiseAmplitude: 2.04
     detailNoiseScale: 0.05
     limitSlopes: 1
-    maxSlopeAngle: 20.05
+    maxSlopeAngle: 16.36
     slopeSmoothingPasses: 5
+    protectWaterSlopes: 1
+    maxSlopeAngleNearWater: 60
     generateRivers: 1
-    riverWidth: 5.15
-    riverBorderChance: 0.3
+    riverWidth: 10
+    riverBorderChance: 0.29
     waterLevel: 2
-    riverBedDepth: 0.774
-    logGeneration: 0
-    drawBiomeGizmos: 1
-    gizmoResolution: 20
-    drawCellCenters: 1
+    riverCenterDepth: 0.844
   terrain: {fileID: 0}
+  debugSettings: {fileID: 11400000, guid: 927633ac96c6d4a9989ca6588d3dd528, type: 2}

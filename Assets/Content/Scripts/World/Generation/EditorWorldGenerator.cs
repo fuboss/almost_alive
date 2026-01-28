@@ -70,7 +70,7 @@ namespace Content.Scripts.World.Generation {
       context.UpdateProgress("Generating transforms...", 0.50f);
       GenerateTransforms(context);
 
-      if (config.Data.logGeneration) {
+      if (config.ShouldLogGeneration) {
         Debug.Log($"[EditorWorldGenerator] Generated {context.SpawnDataList.Count} spawn entries");
       }
     }
@@ -93,7 +93,7 @@ namespace Content.Scripts.World.Generation {
           var rule = sc.rule;
           var targetCount = WorldPositionGenerator.CalculateTargetCount(rule, bounds);
 
-          if (config.Data.logGeneration) {
+          if (config.ShouldLogGeneration) {
             Debug.Log($"[EditorWorldGenerator] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
           }
 

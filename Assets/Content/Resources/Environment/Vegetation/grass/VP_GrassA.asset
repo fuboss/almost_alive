@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55f80abda42b4eac8a4fa02c001aba1, type: 3}
   m_Name: VP_GrassA
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Vegetation.VegetationPrototypeSO
-  texture: {fileID: 0}
   prefab: {fileID: 398929321252300881, guid: 4e6885e0d11bd224fa27617a4657c329, type: 3}
+  prefabs: []
   renderMode: 1
   useInstancing: 1
-  widthRange: {x: 0.5, y: 2.2103245}
-  heightRange: {x: 0.5, y: 2.976401}
+  widthRange: {x: 4, y: 8}
+  heightRange: {x: 4, y: 10}
   dryColor: {r: 0.8, g: 0.7, b: 0.4, a: 1}
   healthyColor: {r: 0.3, g: 0.8, b: 0.2, a: 1}
   noiseSpread: 0.454

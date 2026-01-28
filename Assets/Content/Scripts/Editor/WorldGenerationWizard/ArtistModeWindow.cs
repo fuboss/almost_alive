@@ -73,7 +73,8 @@ namespace Content.Scripts.Editor.WorldGenerationWizard {
         new SeedDrawer(_state),
         new PhasesListDrawer(_state),
         new ActionsDrawer(_state),
-        new StatusDrawer(_state)
+        new StatusDrawer(_state),
+        new DebugSettingsDrawer(_state)
       };
     }
 

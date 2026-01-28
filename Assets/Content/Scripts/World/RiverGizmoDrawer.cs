@@ -36,7 +36,12 @@ namespace Content.Scripts.World {
       if (_config == null || !_config.Data.generateRivers) return;
 
       DrawWaterLevelPlane();
-      DrawRiverGizmos();
+      
+      // Check debug settings for river markers
+      var debugSettings = _config.debugSettings;
+      if (debugSettings == null || debugSettings.drawRiverMarkers) {
+        DrawRiverGizmos();
+      }
     }
 
     private static void DrawRiverGizmos() {
@@ -49,10 +54,14 @@ namespace Content.Scripts.World {
       var terrainSize = terrainData.size;
       var resolution = riverMask.GetLength(0);
       
+      // Get alpha from debug settings
+      var debugSettings = _config.debugSettings;
+      var alpha = debugSettings != null ? debugSettings.gizmoAlpha : 0.7f;
+      
       // Sample every N pixels for performance
       int step = Mathf.Max(1, resolution / 60);
       
-      Handles.color = new Color(0.2f, 0.6f, 1f, 0.7f);
+      Handles.color = new Color(0.2f, 0.6f, 1f, alpha);
       
       for (int y = 0; y < resolution; y += step) {
         for (int x = 0; x < resolution; x += step) {
@@ -83,8 +92,14 @@ namespace Content.Scripts.World {
       var terrainSize = _terrain.terrainData.size;
       float waterY = terrainPos.y + _config.Data.waterLevel;
       
+      // Get alpha from debug settings
+      var debugSettings = _config.debugSettings;
+      var alpha = debugSettings != null ? debugSettings.gizmoAlpha : 0.5f;
+      var fillAlpha = alpha * 0.3f;
+      var outlineAlpha = alpha;
+      
       // Draw water level plane as semi-transparent quad
-      Handles.color = new Color(0.1f, 0.4f, 0.8f, 0.15f);
+      Handles.color = new Color(0.1f, 0.4f, 0.8f, fillAlpha);
       
       var corners = new Vector3[] {
         new Vector3(terrainPos.x, waterY, terrainPos.z),
@@ -94,8 +109,8 @@ namespace Content.Scripts.World {
       };
       
       Handles.DrawSolidRectangleWithOutline(corners, 
-        new Color(0.1f, 0.4f, 0.8f, 0.1f), 
-        new Color(0.2f, 0.6f, 1f, 0.8f));
+        new Color(0.1f, 0.4f, 0.8f, fillAlpha), 
+        new Color(0.2f, 0.6f, 1f, outlineAlpha));
       
       // Draw label
       Handles.color = Color.white;

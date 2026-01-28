@@ -32,11 +32,6 @@ namespace Content.Scripts.World.Generation.Pipeline {
     protected abstract void RollbackInternal(GenerationContext ctx);
     
     /// <summary>
-    /// Create debug visualization material. Override if needed.
-    /// </summary>
-    protected virtual Material CreateDebugMaterial(GenerationContext ctx) => null;
-    
-    /// <summary>
     /// Validation before execution. Override to add checks.
     /// </summary>
     protected virtual bool ValidateContext(GenerationContext ctx) => ctx != null;
@@ -60,9 +55,7 @@ namespace Content.Scripts.World.Generation.Pipeline {
         SetProgress(1f);
         SetState(PhaseState.Completed);
         
-        if (ctx.Config.logGeneration) {
-          Debug.Log($"[WorldGen] Phase completed: {Name}");
-        }
+        LogDebug(ctx, $"[WorldGen] Phase completed: {Name}");
       }
       catch (Exception ex) {
         Debug.LogError($"[WorldGen] Phase failed: {Name}\n{ex}");
@@ -76,17 +69,11 @@ namespace Content.Scripts.World.Generation.Pipeline {
         SetState(PhaseState.Pending);
         SetProgress(0f);
         
-        if (ctx.Config.logGeneration) {
-          Debug.Log($"[WorldGen] Phase rolled back: {Name}");
-        }
+        LogDebug(ctx, $"[WorldGen] Phase rolled back: {Name}");
       }
       catch (Exception ex) {
         Debug.LogError($"[WorldGen] Rollback failed: {Name}\n{ex}");
       }
-    }
-
-    public Material GetDebugMaterial(GenerationContext ctx) {
-      return CreateDebugMaterial(ctx);
     }
 
     public bool CanExecute(GenerationContext ctx) {
@@ -130,6 +117,15 @@ namespace Content.Scripts.World.Generation.Pipeline {
       #if UNITY_EDITOR
       UnityEditor.EditorUtility.ClearProgressBar();
       #endif
+    }
+
+    /// <summary>
+    /// Log debug message if logGeneration is enabled in debug settings.
+    /// </summary>
+    protected void LogDebug(GenerationContext ctx, string message) {
+      if (ctx?.ConfigSO?.debugSettings != null && ctx.ConfigSO.debugSettings.logGeneration) {
+        Debug.Log(message);
+      }
     }
   }
 }

@@ -121,28 +121,6 @@ namespace Content.Scripts.Editor.World {
       var seed = config.Data.seed != 0 ? config.Data.seed : Environment.TickCount;
       var context = new EditorGenerationContext(config, terrain, seed, saveToPreload);
 
-      // Configure vegetation mask settings so painting uses deterministic, size-aware defaults
-      try {
-        var maskSettings = Content.Scripts.World.Vegetation.VegetationPainter.VegetationMaskSettings;
-        if (maskSettings != null) {
-          // If vegetation painting turned off, disable mask
-          if (!config.Data.paintVegetation) {
-            maskSettings.mode = Content.Scripts.World.Vegetation.Mask.MaskMode.None;
-          } else {
-            maskSettings.mode = Content.Scripts.World.Vegetation.Mask.MaskMode.Perlin;
-          }
-
-          maskSettings.seedOffset = seed;
-          maskSettings.cacheEnabled = true;
-
-          // choose a reasonable noise scale based on world size (smaller world -> larger scale)
-          var defaultScale = 0.02f * (400f / Mathf.Max(1f, config.Data.size));
-          maskSettings.scale = Mathf.Clamp(defaultScale, 0.005f, 0.05f);
-        }
-      } catch (System.Exception ex) {
-        Debug.LogWarning($"[WorldGenEditor] Failed to configure VegetationMaskSettings: {ex.Message}");
-      }
-
       // Run synchronous generation (biomes, terrain, positions)
       EditorWorldGenerator.Generate(context);
 

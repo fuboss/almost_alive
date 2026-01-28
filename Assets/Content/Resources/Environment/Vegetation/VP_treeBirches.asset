@@ -25,8 +25,8 @@ MonoBehaviour:
   - {fileID: 6902929124157160549, guid: 8c4f34aaf3e4a77488c3288a5e57d03d, type: 3}
   renderMode: 1
   useInstancing: 1
-  widthRange: {x: 0.67387384, y: 2.218919}
-  heightRange: {x: 0.7172237, y: 1.13003}
+  widthRange: {x: 2.5, y: 6}
+  heightRange: {x: 3, y: 7}
   dryColor: {r: 0.8, g: 0.7, b: 0.4, a: 1}
   healthyColor: {r: 0.3, g: 0.8, b: 0.2, a: 1}
   noiseSpread: 0.454

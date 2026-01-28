@@ -106,9 +106,9 @@ namespace Content.Scripts.Editor.WorldGenerationWizard {
       EnsureFolderExists();
 
       var biome = ScriptableObject.CreateInstance<BiomeSO>();
-      biome.type = newBiomeType;
-      biome.debugColor = newBiomeColor;
-      biome.weight = 1f;
+      biome.Data.identity.type = newBiomeType;
+      biome.Data.identity.debugColor = newBiomeColor;
+      biome.Data.identity.weight = 1f;
 
       AssetDatabase.CreateAsset(biome, path);
       AssetDatabase.SaveAssets();

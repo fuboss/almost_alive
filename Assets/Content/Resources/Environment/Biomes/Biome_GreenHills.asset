@@ -21,103 +21,186 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  type: 4
-  debugColor: {r: 0.0710217, g: 0.7924528, b: 0.50360113, a: 1}
-  weight: 0.78
-  isWaterBody: 0
-  waterDepth: 3
-  shoreGradient: 0.5
-  riverShoreStyle: 2
-  riverShoreGradient: 0.5
-  riverShoreWidth: 4
-  rockyIrregularity: 0.5
-  baseHeight: 5.3
-  heightVariation: 5
-  heightNoise: {fileID: 0}
-  heightProfile:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.8075949
-      value: 1
-      inSlope: 0.08752077
-      outSlope: 0.08752077
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0075684
-      value: 1.0350037
-      inSlope: 0.17504154
-      outSlope: 0.17504154
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  noiseFrequency: 0.0275
-  noiseOctaves: 4
-  noisePersistence: 0.58
-  baseTexture:
-    layerName: Grass_Moss_A
-  detailTexture:
-    layerName: Soil_Rocks_TerrainLayer
-    strength: 0.532
-    noiseScale: 0.0088
-  slopeTexture:
-    layerName: Rock_TerrainLayer
-    slopeRange: {x: 60.53097, y: 78.0531}
-  cliffTexture:
-    layerName: Cliff_Mossy_E
-    threshold: 75.1
+  _data:
+    identity:
+      type: 4
+      debugColor: {r: 0.4, g: 0.75, b: 0.3, a: 1}
+      weight: 0.85
+    waterBody:
+      isWaterBody: 0
+      floorDepth: 3
+      shoreSteepness: 0.5
+    riverShore:
+      style: 0
+      gradient: 0.6
+      width: 5
+      rockyIrregularity: 0.15
+    height:
+      baseHeight: 6
+      heightVariation: 2.5
+      minClearanceAboveWater: 1
+      heightProfile:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33
+        - serializedVersion: 3
+          time: 0.7
+          value: 1
+          inSlope: 0
+          outSlope: -0.2
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33
+          outWeight: 0.33
+        - serializedVersion: 3
+          time: 1
+          value: 0.85
+          inSlope: -0.3
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      noise:
+        template: {fileID: 0}
+        frequency: 0.02
+        amplitude: 0.9
+        offset: {x: 0, y: 0}
+        seedOffset: 500
+        normalize: 1
+        invert: 0
+        power: 1
+        useFBM: 1
+        octaves: 5
+        persistence: 0.55
+        lacunarity: 2
+        previewSize: 128
+        previewWorldSize: 150
+    textures:
+      baseTexture:
+        layerName: Grass_B
+      detailTexture:
+        layerName: Grass_Moss_A
+        strength: 0.35
+        noiseScale: 0.03
+      slopeTexture:
+        layerName: Grass_Soil_A
+        slopeRange: {x: 20, y: 40}
+      cliffTexture:
+        layerName: Soil_Rocks_TerrainLayer
+        threshold: 50
+    vegetation:
+      globalDensity: 1.1
+      maxDensityPerCell: 64
+      categories:
+      - name: Ground Cover
+        size: 0
+        enabled: 1
+        densityMultiplier: 1
+        noise:
+          mode: 1
+          scale: 0.05
+          octaves: 2
+          persistence: 0.5
+          threshold: 0.3
+          blend: 0.2
+          useStochastic: 0
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers: []
+      layers: []
   scatterConfigs:
-  - rule: {fileID: 11400000, guid: 04b521175f833442aae1270f96b84f92, type: 2}
+  - rule: {fileID: 11400000, guid: 2c2064ce3fba040049f0c5fa7cad0d52, type: 2}
     placement: 1
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
   - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
-    placement: 5
-    overrideSlopeRange: 0
-    slopeRange: {x: 0, y: 30}
-    overrideHeightRange: 0
-    heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
-    placement: 4
-    overrideSlopeRange: 0
-    slopeRange: {x: 0, y: 30}
-    overrideHeightRange: 0
-    heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: c63de5b307ecd40b7bb20b6d92aa7401, type: 2}
     placement: 0
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
-  vegetationConfig:
-    layers: []
-    densityMultiplier: 2.09
-    maxDensityPerCell: 119
-    maskMode: 1
-    maskScale: 0.0303
-    maskOctaves: 4
-    maskPersistence: 0.612
-    maskThreshold: 0.416
-    maskBlend: 0.032
-    maskUseStochastic: 0
-    maskStochasticBlend: 0.002
-    maskCacheEnabled: 1
-  vegetationMaskPreview: {fileID: 2800000, guid: 7b6f0f5c988ba4bf7b07114e9070c453, type: 3}

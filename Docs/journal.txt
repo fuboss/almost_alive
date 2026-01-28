@@ -1,0 +1,83 @@
+# Claude's Development Journal - Almost Alive
+
+## Session: 2026-01-28
+
+### Biome Noise System Refactor
+
+**Problem:** Modifying NoiseSO reference in BiomeSO was changing the original asset.
+
+**Solution:** Created `BiomeNoiseConfig` - inline serializable class that:
+- Stores noise settings locally per-biome
+- Uses NoiseSO as read-only "template" for Copy operation
+- Includes live preview texture with auto-refresh
+- Supports FBM (octaves, persistence, lacunarity)
+
+**Files created:**
+- `/Assets/Content/Scripts/World/Generation/Noise/BiomeNoiseConfig.cs`
+
+**Files modified:**
+- `BiomeHeightData.cs` - replaced legacy noise params + NoiseSO ref with `BiomeNoiseConfig noise`
+- `BiomeSO.cs` - updated accessors, added `heightData` property
+- `TerrainSculptPhase.cs` - use `heightData.SampleNoise()` instead of direct NoiseSO
+- `TerrainSculptor.cs` - same update
+
+### Artist Documentation
+
+Created comprehensive biome configuration guide for artists:
+- `/Docs/BIOME_ARTIST_GUIDE.md`
+
+Covers all parameters:
+- Identity (weight distribution)
+- Height (base, variation, noise with FBM)
+- Water bodies (lake depth, shore steepness)
+- River shore styles (Natural, Soft, Rocky, Marshy, Terraced)
+- Textures (4-slot system: base, detail, slope, cliff)
+- Vegetation (category-based: Small/Medium/Large)
+
+Includes:
+- Parameter tables with ranges and effects
+- Visual examples (ASCII art for curves)
+- Common recipes (Forest, Mountain, Desert, Lake, Swamp)
+- Troubleshooting guide
+- Quick reference card
+
+---
+
+### Key Insights
+
+**Noise Frequency Reference:**
+| Frequency | Feature Size | Use |
+|-----------|--------------|-----|
+| 0.005 | ~200m | Mountain ranges |
+| 0.015 | ~65m | Hills |
+| 0.03 | ~33m | Small undulations |
+| 0.05+ | <20m | Surface detail |
+
+**Vegetation Threshold:**
+- Lower threshold = denser vegetation
+- 0.3-0.4 = dense forest
+- 0.5 = medium coverage
+- 0.7+ = sparse/rare
+
+**River Shore Style Selection:**
+- Natural → most biomes
+- Rocky → mountains, hills (use `rockyIrregularity`)
+- Marshy → swamps (wide, gradual)
+- Soft → meadows, beaches
+- Terraced → special geological formations
+
+---
+
+### Next Steps
+
+1. **Test current configs** - generate world and evaluate biome appearance
+2. **Tune biome presets** - adjust values based on visual results
+3. **Identify missing controls** - what parameters are needed?
+4. **Add missing features** if discovered during testing
+
+---
+
+## Catalog of Previous Sessions
+
+- `2026-01-28-19-31-28-biome-vegetation-refactor-complete.txt` - BiomeSO decomposition, vegetation categories
+- `2026-01-28-18-28-05-artist-window-debug-controls-alpha.txt` - WorldGeneratorDebugSettings, Artist Mode gizmos

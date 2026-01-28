@@ -30,9 +30,25 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       var resolution = td.alphamapResolution;
       var layerCount = td.alphamapLayers;
       
-      if (layerCount == 0) {
-        Debug.LogWarning("[SplatmapPaint] No terrain layers configured");
+      if (ctx.Config == null) {
+        Debug.LogError("[SplatmapPaint] Config is null!");
         return;
+      }
+      
+      if (ctx.Config.terrainPalette == null) {
+        Debug.LogError("[SplatmapPaint] TerrainPalette is null in config!");
+        return;
+      }
+      
+      if (layerCount == 0) {
+        Debug.LogWarning("[SplatmapPaint] No terrain layers - applying palette");
+        ctx.Config.terrainPalette.ApplyToTerrain(terrain);
+        layerCount = td.alphamapLayers;
+        
+        if (layerCount == 0) {
+          Debug.LogError("[SplatmapPaint] Still no layers after palette apply!");
+          return;
+        }
       }
       
       var splatmap = new float[resolution, resolution, layerCount];
@@ -62,12 +78,13 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
           }
           
           if (biome != null) {
-            // Get biome's base texture layer index
             var layerIndex = biome.GetBaseLayerIndex();
+            
             if (layerIndex >= 0 && layerIndex < layerCount) {
               splatmap[y, x, layerIndex] = 1f;
             } else {
               // Fallback to first layer
+              Debug.LogWarning($"[SplatmapPaint] Invalid layer index {layerIndex} for biome {biome.name} (layerName: {biome.baseTexture.layerName})");
               splatmap[y, x, 0] = 1f;
             }
           } else {
@@ -91,11 +108,6 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         ctx.Terrain.terrainData.SetAlphamaps(0, 0, ctx.OriginalSplatmap);
       }
       ctx.Splatmap = null;
-    }
-
-    protected override Material CreateDebugMaterial(GenerationContext ctx) {
-      // Real terrain textures are best for this phase
-      return null;
     }
   }
 }

@@ -18,7 +18,7 @@ namespace Content.Scripts.World.Generation {
 
       // Use seed from preload
       context.seed = _preload.seed;
-      if (config.Data.logGeneration) {
+      if (config.ShouldLogGeneration) {
         Debug.Log($"[PreloadGenerationStrategy] Loading from preload with seed {context.seed}");
       }
 
@@ -35,7 +35,7 @@ namespace Content.Scripts.World.Generation {
       context.spawnDataList.Clear();
       context.spawnDataList.AddRange(_preload.spawnDataList);
 
-      if (config.Data.logGeneration) {
+      if (config.ShouldLogGeneration) {
         Debug.Log($"[PreloadGenerationStrategy] Loaded {context.spawnDataList.Count} spawn entries from preload");
       }
 

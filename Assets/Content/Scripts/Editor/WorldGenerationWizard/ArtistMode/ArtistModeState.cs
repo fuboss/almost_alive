@@ -10,6 +10,7 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
   /// <summary>
   /// State container and pipeline manager for Artist Mode.
   /// Separates state/logic from GUI drawing.
+  /// Debug visualization now handled by Gizmo drawers (BiomeOverlayGizmoDrawer, RiverGizmoDrawer).
   /// </summary>
   public class ArtistModeState {
     private const string CONFIG_PATH = "Assets/Content/Resources/Environment/WorldGeneratorConfig.asset";
@@ -22,7 +23,6 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
     public WorldGeneratorConfigSO Config { get; set; }
     public Terrain Terrain { get; set; }
     public int Seed { get; set; }
-    public bool ShowDebugVisualization { get; set; } = true;
     public int TargetPhaseIndex { get; set; } = -1;
 
     // ═══════════════════════════════════════════════════════════════
@@ -67,6 +67,11 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
       Pipeline?.Reset();
       Pipeline = null;
       EnsurePipeline();
+      
+      // Clear gizmo caches when config changes
+      BiomeOverlayGizmoDrawer.ClearCache();
+      BiomeGizmoDrawer.ClearCache();
+      
       NotifyStateChanged();
     }
 
@@ -119,18 +124,14 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
     // ═══════════════════════════════════════════════════════════════
 
     public void RunPhase(int index) {
-      Debug.Log($"[ArtistMode] RunPhase({index})");
-
       EnsurePipeline();
 
       if (!Pipeline.IsRunning) {
-        Debug.Log("[ArtistMode] Starting pipeline");
         Pipeline.Begin(Config, Terrain, artistMode: true);
       }
 
       // If phase already completed, rollback first
       if (index <= Pipeline.CurrentPhaseIndex) {
-        Debug.Log($"[ArtistMode] Rolling back to regenerate phase {index}");
         Pipeline.RollbackTo(index - 1);
       }
 
@@ -201,54 +202,28 @@ namespace Content.Scripts.Editor.WorldGenerationWizard.ArtistMode {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // DEBUG VISUALIZATION
-    // ═══════════════════════════════════════════════════════════════
-
-    public void OnDebugVizChanged() {
-      if (Pipeline?.Context == null) return;
-
-      if (ShowDebugVisualization && Pipeline.CurrentPhase != null &&
-          Pipeline.CurrentPhase.State == PhaseState.Completed) {
-        var debugMat = Pipeline.CurrentPhase.GetDebugMaterial(Pipeline.Context);
-        Pipeline.Context.SetDebugMaterial(debugMat);
-      } else {
-        Pipeline.Context.SetDebugMaterial(null);
-      }
-    }
-
-    // ═══════════════════════════════════════════════════════════════
     // EVENT HANDLERS
     // ═══════════════════════════════════════════════════════════════
 
     private void HandlePhaseCompleted(IGenerationPhase phase) {
-      Debug.Log($"[ArtistMode] Phase completed: {phase.Name}");
-
-      if (Pipeline?.Context == null) return;
-
-      if (ShowDebugVisualization) {
-        var debugMat = phase.GetDebugMaterial(Pipeline.Context);
-        Debug.Log($"[ArtistMode] Debug material: {(debugMat != null ? debugMat.name : "NULL - hiding quad")}");
-        // Always call SetDebugMaterial - it will hide quad if mat is null
-        Pipeline.Context.SetDebugMaterial(debugMat);
-      } else {
-        // Debug viz disabled - ensure quad is hidden
-        Pipeline.Context.SetDebugMaterial(null);
-      }
-
-      // Update river gizmo context
+      // Update river gizmo context for Phase 2+
       RiverGizmoDrawer.SetContext(Pipeline, Config, Terrain);
+      
+      // Force scene view repaint so gizmos update
+      SceneView.RepaintAll();
 
       OnPhaseCompleted?.Invoke(phase);
       NotifyStateChanged();
     }
 
     private void HandlePipelineCompleted() {
-      Pipeline?.Context?.SetDebugMaterial(null);
+      SceneView.RepaintAll();
       NotifyStateChanged();
     }
 
     private void HandlePipelineReset() {
       RiverGizmoDrawer.Clear();
+      SceneView.RepaintAll();
       NotifyStateChanged();
     }
 

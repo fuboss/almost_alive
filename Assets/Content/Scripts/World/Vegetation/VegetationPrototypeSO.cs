@@ -42,7 +42,7 @@ namespace Content.Scripts.World.Vegetation {
       return prototype;
     }
     
-    public IEnumerable<DetailPrototype> ToDetailPrototypes(float layerCoverageDensity) {
+    public IEnumerable<DetailPrototype> ToDetailPrototypes(float layerCoverageDensity = 1f) {
       if(prefabs == null || prefabs.Length == 0) {
         yield return Convert(prefab, layerCoverageDensity);
         yield break;

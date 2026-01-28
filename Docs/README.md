@@ -46,6 +46,7 @@ Agent / Design docs (AGENT/)
 - `AGENT/Docs/INVENTORY_CRAFT.md` (2026-01-22)
 - `AGENT/Docs/INTERFACE_DECOMPOSITION.md` (2026-01-22)
 - `AGENT/Docs/GOAP.md` (2026-01-22)
+- `AGENT/Docs/GOAP_Utility_Implementation.md` (2026-01-28) ✨ NEW
 - `AGENT/Docs/CAMP.md` [REVIEW] (2026-01-22)
 - `AGENT/Docs/ANIMALS.md` [REVIEW] (2026-01-22)
 

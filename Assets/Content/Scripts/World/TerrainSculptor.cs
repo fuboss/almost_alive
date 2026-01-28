@@ -106,13 +106,14 @@ namespace Content.Scripts.World {
       var profileHeight = biome.heightProfile.Evaluate(normalizedDist);
       var baseHeight = biome.baseHeight + profileHeight * biome.heightVariation;
 
-      var noise = SampleNoise(
-        worldPos.x + noiseOffsetX, 
-        worldPos.y + noiseOffsetZ,
-        biome.noiseFrequency,
-        biome.noiseOctaves,
-        biome.noisePersistence
-      );
+      // Use biome's inline noise config
+      var heightData = biome.heightData;
+      var noise = 0f;
+      if (heightData != null && heightData.HasNoise) {
+        // Use seed from offset (deterministic)
+        var seed = (int)(noiseOffsetX * 1000 + noiseOffsetZ);
+        noise = heightData.SampleNoise(worldPos.x, worldPos.y, seed);
+      }
 
       var finalHeight = baseHeight + noise * biome.heightVariation * 0.5f;
 

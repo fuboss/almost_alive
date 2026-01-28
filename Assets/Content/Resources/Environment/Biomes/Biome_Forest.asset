@@ -21,65 +21,722 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  type: 0
-  debugColor: {r: 0, g: 0.4056604, b: 0, a: 1}
-  weight: 1.14
-  baseHeight: 4.8
-  heightVariation: 5
-  heightNoise: {fileID: 0}
-  heightProfile:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.00983429
-      value: 0.8364334
-      inSlope: 0.011702002
-      outSlope: 0.011702002
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.15398476
-    - serializedVersion: 3
-      time: 0.5024813
-      value: 0.8280148
-      inSlope: 0.035792336
-      outSlope: 0.035792336
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.03656
-      value: 0.8750229
-      inSlope: -0.021000966
-      outSlope: -0.021000966
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.11487112
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  noiseFrequency: 0.0339
-  noiseOctaves: 5
-  noisePersistence: 0.494
-  baseTexture:
-    layerName: Grass_B
-  detailTexture:
-    layerName: Muddy_TerrainLayer
-    strength: 0.3
-    noiseScale: 0.02
-  slopeTexture:
-    layerName: Rock_TerrainLayer
-    slopeRange: {x: 73.22581, y: 90}
-  cliffTexture:
-    layerName: Cliff_Mossy_E
-    threshold: 83.9
+  _data:
+    identity:
+      type: 0
+      debugColor: {r: 0.15, g: 0.5, b: 0.15, a: 1}
+      weight: 1.2
+    waterBody:
+      isWaterBody: 0
+      floorDepth: 3
+      shoreSteepness: 0.5
+    riverShore:
+      style: 0
+      gradient: 0.5
+      width: 4
+      rockyIrregularity: 0.2
+    height:
+      baseHeight: 4.5
+      heightVariation: 2
+      minClearanceAboveWater: 0.5
+      heightProfile:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0.05
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33
+        - serializedVersion: 3
+          time: 0.5
+          value: 1.02
+          inSlope: 0
+          outSlope: -0.05
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33
+          outWeight: 0.33
+        - serializedVersion: 3
+          time: 1
+          value: 0.95
+          inSlope: -0.1
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      noise:
+        template: {fileID: 0}
+        frequency: 0.025
+        amplitude: 0.8
+        offset: {x: 0, y: 0}
+        seedOffset: 400
+        normalize: 1
+        invert: 0
+        power: 1.1
+        useFBM: 1
+        octaves: 4
+        persistence: 0.5
+        lacunarity: 2.1
+        previewSize: 128
+        previewWorldSize: 150
+    textures:
+      baseTexture:
+        layerName: Grass_A
+      detailTexture:
+        layerName: Heather_A
+        strength: 0.4
+        noiseScale: 0.04
+      slopeTexture:
+        layerName: Grass_Moss_A
+        slopeRange: {x: 20, y: 40}
+      cliffTexture:
+        layerName: Muddy_TerrainLayer
+        threshold: 50
+    vegetation:
+      globalDensity: 1
+      maxDensityPerCell: 128
+      categories:
+      - name: Ground Cover
+        size: 0
+        enabled: 1
+        densityMultiplier: 1.5
+        noise:
+          mode: 0
+          scale: 0.04
+          octaves: 3
+          persistence: 0.5
+          threshold: 0.15
+          blend: 0.2
+          useStochastic: 0
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers:
+        - previewCache: {fileID: 398929321252300881, guid: 4e6885e0d11bd224fa27617a4657c329, type: 3}
+          prototype: {fileID: 11400000, guid: 18071d2fd4aa5428288996808cd56b27, type: 2}
+          density: 0.5
+          weight: 1.2
+          useLayerNoise: 1
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.25
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 1245006558584958560, guid: 7b3e6db10d22f504dbc606110b2cb5e7, type: 3}
+          prototype: {fileID: 11400000, guid: 238d5f558887f47f29dcb017ab096475, type: 2}
+          density: 0.4
+          weight: 1
+          useLayerNoise: 1
+          layerNoiseScale: 0.035
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 6846659341408791651, guid: 4c72217d56dcb6749a897a75cad1f34e, type: 3}
+          prototype: {fileID: 11400000, guid: d269002decf934121abf91c34ac8270e, type: 2}
+          density: 0.3
+          weight: 0.8
+          useLayerNoise: 1
+          layerNoiseScale: 0.04
+          layerNoiseStrength: 0.35
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+      - name: Bushes
+        size: 1
+        enabled: 1
+        densityMultiplier: 0.8
+        noise:
+          mode: 0
+          scale: 0.025
+          octaves: 3
+          persistence: 0.5
+          threshold: 0.5
+          blend: 0.18
+          useStochastic: 1
+          stochasticBlend: 0.25
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.022222223
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 45
+            value: 0
+            inSlope: -0.022222223
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers:
+        - previewCache: {fileID: 6011036630121576164, guid: 0ec1c69bd47ad864f96cc2b516f6cd4b, type: 3}
+          prototype: {fileID: 11400000, guid: 8387860a831d7439c91b648f748a7224, type: 2}
+          density: 0.381
+          weight: 0.58
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 2803505663424749585, guid: b273de0d6e5818a4cb3195ce4f376ccb, type: 3}
+          prototype: {fileID: 11400000, guid: 18291df15667a47318bcac6de497c483, type: 2}
+          density: 0.624
+          weight: 2.16
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 2085449277718671952, guid: 6629880e46886724fa0107d3035304e6, type: 3}
+          prototype: {fileID: 11400000, guid: 4c5c73f0e0acf46caa5ad09298cc393b, type: 2}
+          density: 0.5
+          weight: 1
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 4798742950742889349, guid: 5e7ace55a7bfd0d4f9ba3c05024e9d79, type: 3}
+          prototype: {fileID: 11400000, guid: d02c29fa98f5a49a49b1c44085aa5644, type: 2}
+          density: 0.5
+          weight: 1
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 1647502441230210415, guid: 4786e2698ac97a949a9209febfcbd49b, type: 3}
+          prototype: {fileID: 11400000, guid: 39a480c8711f94dffa1ea1c87ff8c167, type: 2}
+          density: 0.5
+          weight: 1
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+      - name: Debris
+        size: 2
+        enabled: 1
+        densityMultiplier: 0.7
+        noise:
+          mode: 0
+          scale: 0.06
+          octaves: 2
+          persistence: 0.5
+          threshold: 0.45
+          blend: 0.25
+          useStochastic: 1
+          stochasticBlend: 0.3
+        biomeEdgeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0.3
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        slopeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: -0.033333335
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 30
+            value: 0
+            inSlope: -0.033333335
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        heightFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 200
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        layers:
+        - previewCache: {fileID: 8725595529617163904, guid: 79c8f33bcb747754cbfe118970170a81, type: 3}
+          prototype: {fileID: 11400000, guid: 947c8b39fbab543559f954a3a4e4a92e, type: 2}
+          density: 0.4
+          weight: 0.7
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 1748410436971110666, guid: ebdb35cf559fb314dae7df6d0a352b48, type: 3}
+          prototype: {fileID: 11400000, guid: 417d4f55815654ae9924216e2141312f, type: 2}
+          density: 0.35
+          weight: 0.6
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+        - previewCache: {fileID: 3415603466028101140, guid: 7d84426399f2a4654b450c9de49f7d91, type: 3}
+          prototype: {fileID: 11400000, guid: 649fe456c0d734ac5811e07e2beb17a0, type: 2}
+          density: 0.45
+          weight: 0.8
+          useLayerNoise: 0
+          layerNoiseScale: 0.03
+          layerNoiseStrength: 0.3
+          overrideSlopeFalloff: 0
+          slopeFalloff:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: 0
+              outSlope: -0.022222223
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 45
+              value: 0
+              inSlope: -0.022222223
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          allowedTerrainLayers: 
+      layers: []
   scatterConfigs:
-  - rule: {fileID: 11400000, guid: 2e1af3500557a4dcab15b11b7d5df708, type: 2}
+  - rule: {fileID: 11400000, guid: 2c2064ce3fba040049f0c5fa7cad0d52, type: 2}
     placement: 1
     overrideSlopeRange: 0
-    slopeRange: {x: 0, y: 17.295374}
+    slopeRange: {x: 0, y: 30}
+    overrideHeightRange: 0
+    heightRange: {x: 0, y: 100}
+  - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
+    placement: 0
+    overrideSlopeRange: 0
+    slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
   - rule: {fileID: 11400000, guid: cb31842f8eee84524b269d2500052d14, type: 2}
@@ -88,35 +745,9 @@ MonoBehaviour:
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: ad54eabf9a5c34ff8b1476e92f8c43ac, type: 2}
-    placement: 3
-    overrideSlopeRange: 0
-    slopeRange: {x: 0, y: 30}
-    overrideHeightRange: 0
-    heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: 04b521175f833442aae1270f96b84f92, type: 2}
+  - rule: {fileID: 11400000, guid: ce4211a5754514bceba1c1b98bb0b6d9, type: 2}
     placement: 0
     overrideSlopeRange: 0
     slopeRange: {x: 0, y: 30}
     overrideHeightRange: 0
     heightRange: {x: 0, y: 100}
-  - rule: {fileID: 11400000, guid: ce4211a5754514bceba1c1b98bb0b6d9, type: 2}
-    placement: 1
-    overrideSlopeRange: 0
-    slopeRange: {x: 0, y: 30}
-    overrideHeightRange: 0
-    heightRange: {x: 0, y: 100}
-  vegetationConfig:
-    layers: []
-    densityMultiplier: 3.92
-    maxDensityPerCell: 82
-    maskMode: 1
-    maskScale: 0.0218
-    maskOctaves: 5
-    maskPersistence: 0.776
-    maskThreshold: 0.363
-    maskBlend: 0.12
-    maskUseStochastic: 0
-    maskStochasticBlend: 0
-    maskCacheEnabled: 1
-  vegetationMaskPreview: {fileID: 2800000, guid: a040555197a6c4cdf8af68c24f6773db, type: 3}

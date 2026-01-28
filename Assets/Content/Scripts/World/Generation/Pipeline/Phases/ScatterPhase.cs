@@ -94,9 +94,7 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       ReportProgress(1f);
       ClearProgressBar();
       
-      if (config.logGeneration) {
-        Debug.Log($"[Scatter] Spawned {_spawnedObjects.Count} objects");
-      }
+      LogDebug(ctx, $"[Scatter] Spawned {_spawnedObjects.Count} objects");
     }
 
     protected override void RollbackInternal(GenerationContext ctx) {
@@ -121,11 +119,6 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         #endif
         _scatterRoot = null;
       }
-    }
-
-    protected override Material CreateDebugMaterial(GenerationContext ctx) {
-      // No special debug material - objects visible in scene
-      return null;
     }
 
     private List<Vector3> GenerateScatterPoints(

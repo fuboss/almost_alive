@@ -66,7 +66,7 @@ namespace Content.Scripts.World.Generation {
       context.onProgress?.Invoke(0.50f);
       GenerateTransforms(context);
 
-      if (config.Data.logGeneration) {
+      if (config.ShouldLogGeneration) {
         Debug.Log($"[FullGenerationStrategy] Generated {context.spawnDataList.Count} spawn entries");
       }
     }
@@ -93,7 +93,7 @@ namespace Content.Scripts.World.Generation {
           var rule = sc.rule;
           var targetCount = WorldPositionGenerator.CalculateTargetCount(rule, bounds);
 
-          if (config.Data.logGeneration) {
+          if (config.ShouldLogGeneration) {
             Debug.Log($"[FullGenerationStrategy] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
           }
 

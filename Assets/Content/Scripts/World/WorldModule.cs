@@ -93,7 +93,7 @@ namespace Content.Scripts.World {
         onProgress = UpdateProgress
       };
 
-      if (_config.Data.logGeneration) {
+      if (_config.ShouldLogGeneration) {
         Debug.Log($"[WorldModule] Starting generation with seed {context.seed}, strategy: {strategy.GetType().Name}");
       }
 
@@ -166,7 +166,7 @@ namespace Content.Scripts.World {
           VegetationManager.Instance.Initialize(_terrain);
         }
 
-        if (_config.Data.logGeneration) {
+        if (_config.ShouldLogGeneration) {
           Debug.Log($"[WorldModule] ✓ Generated {_spawnedActors.Count} actors");
         }
       }

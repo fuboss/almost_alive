@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Content.Scripts.World.Generation.Pipeline {
   /// <summary>
@@ -33,21 +32,13 @@ namespace Content.Scripts.World.Generation.Pipeline {
     /// <summary>
     /// Execute this phase. May be async for long operations.
     /// </summary>
-    /// <param name="ctx">Shared generation context</param>
     void Execute(GenerationContext ctx);
     
     /// <summary>
     /// Rollback changes made by this phase.
     /// Called when user wants to re-do this phase.
     /// </summary>
-    /// <param name="ctx">Shared generation context</param>
     void Rollback(GenerationContext ctx);
-    
-    /// <summary>
-    /// Get debug visualization material for Artist Mode.
-    /// Return null to keep current terrain material.
-    /// </summary>
-    Material GetDebugMaterial(GenerationContext ctx);
     
     /// <summary>
     /// Check if this phase can be executed given current context.

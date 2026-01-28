@@ -1,4 +1,5 @@
 using Content.Scripts.World.Biomes;
+using Content.Scripts.World.Biomes.Data;
 using UnityEngine;
 
 namespace Content.Scripts.World.Generation.Pipeline.Phases {
@@ -73,14 +74,28 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
             if (biome.isWaterBody) {
               height = CalculateLakeHeight(query, config, terrainHeight);
             } else {
-              // Normal biome height calculation
-              height = biome.baseHeight / terrainHeight;
+              // Calculate primary biome height
+              float primaryHeight = CalculateBiomeHeight(biome, worldX, worldZ, ctx.Seed, terrainHeight);
               
-              // Biome-specific noise
-              if (biome.heightNoise != null) {
-                biome.heightNoise.SetSeed(ctx.Seed);
-                var noiseValue = biome.heightNoise.Sample(worldX, worldZ);
-                height += noiseValue * (biome.heightVariation / terrainHeight);
+              // Blend with secondary biome if in transition zone
+              if (query.isBlending && query.secondaryData != null) {
+                if (query.secondaryData.isWaterBody) {
+                  // LAND → WATER transition: create smooth beach/shore
+                  float shoreHeight = CalculateLandToWaterTransition(
+                    primaryHeight, query.primaryWeight, config, terrainHeight
+                  );
+                  height = shoreHeight;
+                } else {
+                  // LAND → LAND transition: normal blending
+                  float secondaryHeight = CalculateBiomeHeight(query.secondaryData, worldX, worldZ, ctx.Seed, terrainHeight);
+                  
+                  // Use smootherstep for extra-smooth blending (erosion-like)
+                  float t = query.primaryWeight;
+                  float smoothT = Smootherstep(Smootherstep(t)); // Double smoothstep for even softer edges
+                  height = Mathf.Lerp(secondaryHeight, primaryHeight, smoothT);
+                }
+              } else {
+                height = primaryHeight;
               }
             }
           }
@@ -94,6 +109,12 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
             // Fine detail
             float detailNoise = SamplePerlin(worldX, worldZ, config.detailNoiseScale, ctx.Seed + 12345);
             height += detailNoise * (config.detailNoiseAmplitude / terrainHeight);
+          }
+          
+          // Enforce minimum clearance above water for land biomes
+          if (biome != null && !biome.isWaterBody) {
+            float minHeight = (config.waterLevel + biome.minClearanceAboveWater) / terrainHeight;
+            height = Mathf.Max(height, minHeight);
           }
           
           heights[y, x] = Mathf.Clamp01(height);
@@ -122,7 +143,7 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       
       if (config.limitSlopes) {
         ReportProgress(0.75f, "Limiting slopes...");
-        LimitSlopes(heights, resolution, config.maxSlopeAngle, td.size, config.slopeSmoothingPasses);
+        LimitSlopes(heights, resolution, config.maxSlopeAngle, td.size, config.slopeSmoothingPasses, config, terrainHeight);
       }
       
       ReportProgress(0.95f, "Applying heightmap...");
@@ -152,7 +173,9 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         var waterLevel = planeY - terrainY;
         
         if (Mathf.Abs(waterLevel - ctx.Config.waterLevel) > 0.01f) {
-          Debug.Log($"[TerrainSculpt] Syncing waterLevel from WaterPlane: {waterLevel:F2}m");
+          if (ctx.ConfigSO.debugSettings != null && ctx.ConfigSO.debugSettings.logWaterSync) {
+            Debug.Log($"[TerrainSculpt] Syncing waterLevel from WaterPlane: {waterLevel:F2}m");
+          }
           ctx.ConfigSO.Data.waterLevel = waterLevel;
         }
       }
@@ -168,7 +191,9 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
           var pos = waterPlane.transform.position;
           pos.y = targetY;
           waterPlane.transform.position = pos;
-          Debug.Log($"[TerrainSculpt] Updated WaterPlane Y to {targetY:F2}");
+          if (ctx.ConfigSO.debugSettings != null && ctx.ConfigSO.debugSettings.logWaterSync) {
+            Debug.Log($"[TerrainSculpt] Updated WaterPlane Y to {targetY:F2}");
+          }
         }
       }
     }
@@ -180,25 +205,87 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
     private float CalculateLakeHeight(BiomeMap.BiomeQuery query, WorldGeneratorConfig config, float terrainHeight) {
       var biome = query.primaryData;
       float waterLevelNorm = config.waterLevel / terrainHeight;
-      float lakeBottomNorm = (config.waterLevel - biome.waterDepth) / terrainHeight;
+      
+      // Floor depth (always below water surface)
+      float floorHeight = config.waterLevel - biome.waterBodyFloorDepth;
+      float floorNorm = Mathf.Max(0f, floorHeight / terrainHeight);
+      
+      // Shore at water level
+      float shoreNorm = waterLevelNorm - 0.01f; // Just below surface
       
       // Use distance to center for depth profile
       // primaryWeight: 1 = center of biome, decreasing towards edges
       float centerWeight = query.primaryWeight;
       
-      // Shore gradient affects how steep the transition is
-      float gradient = biome.shoreGradient;
+      // Shore steepness affects how steep the transition is
+      float steepness = biome.waterBodyShoreSteepness;
       
-      // Remap t based on gradient (expand the transition zone)
+      // Remap t based on steepness (expand the transition zone)
       float t = Mathf.Clamp01(centerWeight);
-      float expandedT = Mathf.Lerp(t, t * t, 1f - gradient);
+      float expandedT = Mathf.Lerp(t, t * t, 1f - steepness);
       float smoothT = Smootherstep(expandedT);
       
       // Interpolate: edge = just below water, center = lake bottom
-      float shoreHeight = waterLevelNorm - 0.01f; // Just below water surface at shore
-      float height = Mathf.Lerp(shoreHeight, lakeBottomNorm, smoothT);
+      float height = Mathf.Lerp(shoreNorm, floorNorm, smoothT);
       
       return Mathf.Max(0.001f, height);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // LAND TO WATER TRANSITION
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Calculate smooth transition from land biome to water body.
+    /// Creates natural erosion-like beach/shore gradient.
+    /// </summary>
+    /// <param name="landHeight">Height of the land biome (normalized)</param>
+    /// <param name="landWeight">Weight of land biome (1 = pure land, 0 = pure water)</param>
+    /// <param name="config">World generator config</param>
+    /// <param name="terrainHeight">Total terrain height for normalization</param>
+    private float CalculateLandToWaterTransition(float landHeight, float landWeight, 
+                                                  WorldGeneratorConfig config, float terrainHeight) {
+      float waterLevelNorm = config.waterLevel / terrainHeight;
+      
+      // Shore target: just at water level (slight clearance for beach)
+      float shoreTargetNorm = (config.waterLevel + 0.1f) / terrainHeight;
+      
+      // Triple smoothstep for VERY gradual erosion-like transition
+      // t=1 -> pure land height, t=0 -> water level
+      float t = Mathf.Clamp01(landWeight);
+      float smoothT = Smootherstep(Smootherstep(Smootherstep(t)));
+      
+      // Interpolate: water edge → land height
+      float height = Mathf.Lerp(shoreTargetNorm, landHeight, smoothT);
+      
+      // Ensure we don't go below water in the transition
+      // (except at the very edge where water biome takes over)
+      if (landWeight > 0.1f) {
+        height = Mathf.Max(height, waterLevelNorm + 0.001f);
+      }
+      
+      return height;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BIOME HEIGHT CALCULATION
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Calculate terrain height for a single biome at given position.
+    /// Includes base height + noise variation.
+    /// </summary>
+    private float CalculateBiomeHeight(BiomeSO biome, float worldX, float worldZ, int seed, float terrainHeight) {
+      float height = biome.baseHeight / terrainHeight;
+      
+      // Biome-specific noise (using inline BiomeNoiseConfig)
+      var heightData = biome.heightData;
+      if (heightData != null && heightData.HasNoise) {
+        var noiseValue = heightData.SampleNoise(worldX, worldZ, seed);
+        height += noiseValue * (biome.heightVariation / terrainHeight);
+      }
+      
+      return height;
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -221,7 +308,8 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
                             Bounds bounds, WorldGeneratorConfig config, float terrainHeight, 
                             int seed, GenerationContext ctx) {
       float waterLevelNorm = config.waterLevel / terrainHeight;
-      float riverBedNorm = (config.waterLevel - config.riverBedDepth) / terrainHeight;
+      float riverFloorHeight = config.waterLevel - config.riverCenterDepth;
+      float riverFloorNorm = riverFloorHeight / terrainHeight;
       
       var riverMask = new float[resolution, resolution];
       int riverPixels = 0;
@@ -268,7 +356,7 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
                 riverPixels++;
                 
                 // Target height based on profile
-                float targetHeight = Mathf.Lerp(waterLevelNorm - 0.005f, riverBedNorm, riverProfile);
+                float targetHeight = Mathf.Lerp(waterLevelNorm - 0.005f, riverFloorNorm, riverProfile);
                 
                 // Blend with existing terrain
                 float blendFactor = Mathf.Clamp01(riverProfile * 1.5f);
@@ -285,7 +373,6 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       }
       
       ctx.RiverMask = riverMask;
-      Debug.Log($"[TerrainSculpt] Carved {riverPixels} river pixels");
     }
 
     /// <summary>
@@ -416,12 +503,18 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
     // SLOPE LIMITING
     // ═══════════════════════════════════════════════════════════════
 
-    private void LimitSlopes(float[,] heights, int resolution, float maxAngle, Vector3 terrainSize, int smoothPasses) {
+    private void LimitSlopes(float[,] heights, int resolution, float maxAngle, Vector3 terrainSize, int smoothPasses, 
+                            WorldGeneratorConfig config, float terrainHeight) {
+      float waterLevelNorm = config.waterLevel / terrainHeight;
+      float waterProximityThreshold = 0.05f; // ±5% of terrain height
+      
       float maxSlope = Mathf.Tan(maxAngle * Mathf.Deg2Rad);
+      float maxSlopeNearWater = config.protectWaterSlopes 
+        ? Mathf.Tan(config.maxSlopeAngleNearWater * Mathf.Deg2Rad) 
+        : maxSlope;
+      
       float cellSizeX = terrainSize.x / (resolution - 1);
       float cellSizeZ = terrainSize.z / (resolution - 1);
-      float maxHeightDiffX = maxSlope * cellSizeX / terrainSize.y;
-      float maxHeightDiffZ = maxSlope * cellSizeZ / terrainSize.y;
       
       for (int pass = 0; pass < smoothPasses + 1; pass++) {
         var temp = (float[,])heights.Clone();
@@ -429,6 +522,15 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
         for (int y = 1; y < resolution - 1; y++) {
           for (int x = 1; x < resolution - 1; x++) {
             float h = heights[y, x];
+            
+            // Check if near water level
+            bool isNearWater = config.protectWaterSlopes && 
+                               Mathf.Abs(h - waterLevelNorm) < waterProximityThreshold;
+            
+            // Use appropriate slope limit
+            float appliedMaxSlope = isNearWater ? maxSlopeNearWater : maxSlope;
+            float maxHeightDiffX = appliedMaxSlope * cellSizeX / terrainSize.y;
+            float maxHeightDiffZ = appliedMaxSlope * cellSizeZ / terrainSize.y;
             
             float hL = heights[y, x - 1];
             float hR = heights[y, x + 1];
@@ -458,10 +560,6 @@ namespace Content.Scripts.World.Generation.Pipeline.Phases {
       }
       ctx.Heightmap = null;
       ctx.RiverMask = null;
-    }
-
-    protected override Material CreateDebugMaterial(GenerationContext ctx) {
-      return null;
     }
   }
 }

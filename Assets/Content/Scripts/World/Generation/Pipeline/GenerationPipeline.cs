@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Content.Scripts.World.Generation.Pipeline.Phases;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Content.Scripts.World.Generation.Pipeline {
   /// <summary>
@@ -85,7 +87,7 @@ namespace Content.Scripts.World.Generation.Pipeline {
       
       OnPipelineStarted?.Invoke();
       
-      if (config.Data.logGeneration) {
+      if (config.ShouldLogGeneration) {
         Debug.Log($"[WorldGen] Pipeline started (seed: {Context.Seed}, artistMode: {artistMode})");
       }
       
@@ -119,16 +121,24 @@ namespace Content.Scripts.World.Generation.Pipeline {
       var phase = _phases[CurrentPhaseIndex];
       OnPhaseStarted?.Invoke(phase);
       
+      // Track phase timing
+      var sw = Stopwatch.StartNew();
+      
       phase.Execute(Context);
       
+      sw.Stop();
+      
       if (phase.State == PhaseState.Completed) {
+        // Log detailed timing if enabled
+        var debugSettings = Context.ConfigSO?.debugSettings;
+        if (debugSettings != null && debugSettings.logGeneration && debugSettings.logDetailedTimings) {
+          Debug.Log($"[WorldGen] Phase '{phase.Name}' completed in {sw.ElapsedMilliseconds}ms");
+        }
+        
         OnPhaseCompleted?.Invoke(phase);
         
         // Apply debug visualization in artist mode
         if (Context.IsArtistMode) {
-          var debugMat = phase.GetDebugMaterial(Context);
-          Context.SetDebugMaterial(debugMat);
-          
           IsPaused = true;
           OnPipelinePaused?.Invoke();
         }
@@ -180,15 +190,6 @@ namespace Content.Scripts.World.Generation.Pipeline {
       
       CurrentPhaseIndex = targetIndex;
       IsPaused = Context.IsArtistMode;
-      
-      // Update debug visualization
-      if (Context.IsArtistMode && targetIndex >= 0) {
-        var phase = _phases[targetIndex];
-        var debugMat = phase.GetDebugMaterial(Context);
-        Context.SetDebugMaterial(debugMat);
-      } else {
-        Context.SetDebugMaterial(null);
-      }
     }
 
     /// <summary>
@@ -200,9 +201,6 @@ namespace Content.Scripts.World.Generation.Pipeline {
         for (int i = CurrentPhaseIndex; i >= 0; i--) {
           _phases[i].Rollback(Context);
         }
-        
-        // Cleanup debug visualization
-        Context.CleanupDebugVisualization();
         
         // Restore original terrain data
         Context.RestoreTerrainData();
@@ -232,14 +230,13 @@ namespace Content.Scripts.World.Generation.Pipeline {
 
     private void Finalize() {
       // Cleanup debug visualization
-      Context?.CleanupDebugVisualization();
       
       IsRunning = false;
       IsPaused = false;
       
       OnPipelineCompleted?.Invoke();
       
-      if (Context?.Config?.logGeneration ?? false) {
+      if (Context?.ConfigSO?.ShouldLogGeneration ?? false) {
         Debug.Log("[WorldGen] Pipeline completed");
       }
     }

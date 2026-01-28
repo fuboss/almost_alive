@@ -11,14 +11,54 @@
 | **Noise System** | ✅ Complete | 12 files |
 | **Pipeline Core** | ✅ Complete | 4 files |
 | **Generation Phases** | ✅ Complete | 5 files |
-| **ScriptableConfig Refactor** | ✅ Complete | 5 configs |
+| **ScriptableConfig Refactor** | ✅ Complete | 6 configs |
+| **BiomeSO Decomposition** | ✅ Complete | ScriptableConfig<BiomeData> |
+| **Vegetation System** | ✅ Complete | Category-based noise |
 | **Artist Mode Window** | ✅ Complete | SOLID refactored (15+ files) |
 | **Water System** | ✅ Complete | Rivers, Lakes, Shore Styles |
-| **Debug Visualization** | ✅ Complete | Overlay quad + Gizmos |
+| **Debug Visualization** | ✅ Refactored | Gizmo-only (no quad) |
 
 ---
 
-## Water System ✅ NEW
+## Debug Visualization ✅ REFACTORED
+
+### Overview
+
+All debug visualization now uses **Scene Gizmos** instead of overlay quads. This prevents occlusion issues and integrates with Unity's Gizmo toggle system.
+
+### Gizmo Drawers
+
+| Drawer | Purpose | Location |
+|--------|---------|----------|
+| `BiomeOverlayGizmoDrawer` | Colored biome regions grid | Editor/World/ |
+| `BiomeGizmoDrawer` | Cell center labels & discs | Editor/World/ |
+| `RiverGizmoDrawer` | Water level plane + river markers | World/ |
+
+### BiomeOverlayGizmoDrawer
+
+- Draws 48x48 grid of colored quads via `Handles.DrawSolidRectangleWithOutline`
+- Adapts to terrain height (follows terrain surface)
+- Semi-transparent (45% alpha) to show terrain underneath
+- Controlled by `debugSettings.drawBiomeGizmos`
+
+### Removed Components
+
+- ❌ `GenerationContext.SetDebugMaterial()` - deleted
+- ❌ `GenerationContext._debugQuad` - deleted  
+- ❌ `BiomeLayoutPhase.CreateDebugMaterial()` - deleted
+- ❌ `IGenerationPhase.GetDebugMaterial()` - deleted
+- ❌ `ArtistModeState.ShowDebugVisualization` - deleted
+
+### Toggle
+
+All biome gizmos controlled via single flag in `WorldGeneratorDebugSettings`:
+```csharp
+debugSettings.drawBiomeGizmos = true; // Enable/disable all biome visualization
+```
+
+---
+
+## Water System ✅ 
 
 ### Overview
 
@@ -98,7 +138,8 @@ Editor/WorldGenerationWizard/ArtistMode/
 │   ├── HeaderDrawer.cs           # Seed, terrain, config
 │   ├── PhaseListDrawer.cs        # Phase toggles + Run To
 │   ├── ActionsDrawer.cs          # Run All, Reset, Quick
-│   └── DebugDrawer.cs            # Debug visualization toggle
+│   ├── StatusDrawer.cs           # Pipeline status
+│   └── DebugSettingsDrawer.cs    # NEW: Inline debug viz controls
 └── PhaseSettings/
     ├── IPhaseSettingsDrawer.cs   # Interface
     ├── BiomeLayoutSettingsDrawer.cs
@@ -112,7 +153,7 @@ Editor/WorldGenerationWizard/ArtistMode/
 
 - **Run To Selected**: Always resets and runs fresh to target phase
 - **Phase Settings**: Context-sensitive UI per phase
-- **Debug Overlay**: Single quad system (never modifies terrain material)
+- **Gizmo Visualization**: Automatic via Scene Gizmos (no manual toggle needed)
 - **Water Sync**: Button to sync with scene WaterPlane
 - **Lake Counter**: Shows how many water body biomes configured
 
@@ -123,7 +164,7 @@ Editor/WorldGenerationWizard/ArtistMode/
 ### Phase 1: BiomeLayoutPhase
 - Generates Voronoi diagram with domain warping
 - Assigns biomes to cells based on weights
-- Output: `BiomeMap`, debug material (biome colors)
+- Output: `BiomeMap` (cached for gizmo drawing)
 
 ### Phase 2: TerrainSculptPhase ✅ Enhanced
 - **Pass 1**: Base heights + biome heights + global noise + lakes
@@ -177,21 +218,6 @@ float waterLevel = 5f;               // Syncs with WaterPlane
 
 ---
 
-## Debug Visualization
-
-### Overlay Quad System
-- Single quad positioned above terrain
-- Shader shows biome colors (Phase 1)
-- Auto-hides when no debug material returned
-- Never modifies terrain material directly
-
-### River Gizmo (RiverGizmoDrawer.cs)
-- Blue water level plane
-- Blue discs at river locations
-- Activated after Phase 2 completion
-
----
-
 ## Noise System
 
 ### Available Noise Types
@@ -223,29 +249,36 @@ World/
 │   ├── BiomeSO.cs                  # Water body + river shore settings
 │   ├── BiomeType.cs
 │   ├── BiomeMap.cs                 # GetDistanceToBorder()
-│   └── RiverShoreStyle.cs          # NEW: Shore style enum
+│   └── RiverShoreStyle.cs          # Shore style enum
 │
 ├── Generation/
 │   ├── Pipeline/
-│   │   ├── GenerationContext.cs    # RiverMask property
+│   │   ├── GenerationContext.cs    # RiverMask property (no debug quad)
 │   │   ├── GenerationPipeline.cs
+│   │   ├── GenerationPhaseBase.cs  # No GetDebugMaterial
+│   │   ├── IGenerationPhase.cs     # No GetDebugMaterial
 │   │   └── Phases/
-│   │       ├── BiomeLayoutPhase.cs
-│   │       ├── TerrainSculptPhase.cs  # Water sync, lakes, rivers
+│   │       ├── BiomeLayoutPhase.cs # No CreateDebugMaterial
+│   │       ├── TerrainSculptPhase.cs
 │   │       ├── SplatmapPaintPhase.cs
 │   │       ├── VegetationPhase.cs
 │   │       └── ScatterPhase.cs
 │   └── Noise/
 │       └── ... (12 files)
 │
-├── RiverGizmoDrawer.cs             # NEW: Scene gizmo visualization
-└── WorldGeneratorConfigSO.cs       # Water/river/slope settings
+├── RiverGizmoDrawer.cs             # Scene gizmo visualization
+├── WorldGeneratorConfigSO.cs       # Water/river/slope settings
+└── WorldGeneratorDebugSettings.cs  # Gizmo toggles (see below)
+
+Editor/World/
+├── BiomeOverlayGizmoDrawer.cs      # NEW: Colored biome grid
+└── BiomeGizmoDrawer.cs             # MOVED: Cell center labels
 
 Editor/WorldGenerationWizard/ArtistMode/
 ├── ArtistModeWindow.cs
-├── ArtistModeState.cs
+├── ArtistModeState.cs              # No ShowDebugVisualization
 ├── ArtistModeStyles.cs
-├── Drawers/ (4 files)
+├── Drawers/ (6 files)
 └── PhaseSettings/ (6 files)
 ```
 
@@ -270,9 +303,152 @@ public abstract class ScriptableConfig<TData> : SerializedScriptableObject
 
 ---
 
+## WorldGeneratorDebugSettings
+
+All debug settings wired to their consumers:
+
+| Field | Type | Used By | Purpose |
+|-------|------|---------|----------|
+| `drawBiomeGizmos` | bool | BiomeGizmoDrawer, BiomeOverlayGizmoDrawer | Master toggle |
+| `gizmoAlpha` | float | All Gizmo Drawers | Gizmo transparency (0.1-1.0) |
+| `biomeLabelHeight` | float | BiomeGizmoDrawer | Label offset above terrain |
+| `drawCellCenters` | bool | BiomeGizmoDrawer | Show/hide disc markers |
+| `drawRiverMarkers` | bool | RiverGizmoDrawer | Show/hide river discs |
+| `logGeneration` | bool | GenerationPipeline | Master logging toggle |
+| `logDetailedTimings` | bool | GenerationPipeline | Per-phase ms timing |
+| `logWaterSync` | bool | TerrainSculptPhase | Water plane sync events |
+
+**Removed**: `gizmoResolution` (was unused legacy from overlay quad approach)
+
+---
+
+## BiomeSO Decomposition ✅
+
+### Pattern
+
+`BiomeSO` now extends `ScriptableConfig<BiomeData>` with nested data classes:
+
+```
+BiomeSO : ScriptableConfig<BiomeData>
+│
+├── BiomeData (aggregator class)
+│   ├── identity → BiomeIdentityData (type, debugColor, weight)
+│   ├── waterBody → BiomeWaterBodyData (isWaterBody, floorDepth, etc)
+│   ├── riverShore → BiomeRiverShoreData (style, gradient, width)
+│   ├── height → BiomeHeightData (baseHeight, noise, curve)
+│   ├── textures → BiomeTextureData (4 texture slots)
+│   └── vegetation → BiomeVegetationConfig (categories, density)
+│
+└── scatterConfigs (List<BiomeScatterConfig>) — stays at SO level (runtime refs)
+```
+
+### Data Files
+
+```
+World/Biomes/Data/
+├── BiomeData.cs            # Aggregator
+├── BiomeIdentityData.cs    # Type, color, weight
+├── BiomeWaterBodyData.cs   # Lake settings
+├── BiomeRiverShoreData.cs  # River shore style
+├── BiomeHeightData.cs      # Height & noise
+└── BiomeTextureData.cs     # 4 texture slots + nested slot classes
+```
+
+### Convenience Accessors
+
+BiomeSO provides backward-compatible accessors:
+```csharp
+public BiomeType type => Data.identity.type;
+public float baseHeight => Data.height.baseHeight;
+public BiomeVegetationConfig vegetationConfig => Data.vegetation;
+// ... etc
+```
+
+---
+
+## Vegetation System ✅ Category-Based
+
+### Overview
+
+Vegetation is now organized into **categories** by size (Small/Medium/Large), each with its own noise settings for natural distribution patterns.
+
+### Architecture
+
+```
+BiomeVegetationConfig
+├── globalDensity (0-3)
+├── maxDensityPerCell (8-255)
+└── categories[] → VegetationCategory[]
+    ├── name ("Ground Cover", "Bushes", etc)
+    ├── size (VegetationSize enum)
+    ├── enabled
+    ├── densityMultiplier (0-2)
+    ├── noise → VegetationNoiseSettings
+    │   ├── mode (Perlin, Voronoi, None)
+    │   ├── scale (0.001-0.2)
+    │   ├── threshold (0-1)
+    │   ├── blend (0-0.5)
+    │   ├── octaves (1-6)
+    │   └── useStochastic
+    ├── biomeEdgeFalloff (AnimationCurve)
+    ├── slopeFalloff (AnimationCurve)
+    ├── heightFalloff (AnimationCurve)
+    └── layers[] → VegetationLayerConfig[]
+        ├── prototype (VegetationPrototypeSO)
+        ├── density (0-1)
+        ├── weight (0.1-5)
+        ├── useLayerNoise
+        └── allowedTerrainLayers[]
+```
+
+### Size Categories & Default Noise
+
+| Size | Default Scale | Threshold | Typical Content |
+|------|--------------|-----------|------------------|
+| Small | 0.05 | 0.3 | Ground cover, small grass |
+| Medium | 0.025 | 0.45 | Bushes, flowers, tall grass |
+| Large | 0.01 | 0.6 | Trees, large shrubs |
+
+### VegetationPainter Flow
+
+1. **Collect prototypes** from all biomes/categories
+2. **Build masks** per biome+category using `MaskService`
+3. **Paint cells** with terrain filtering (slope, height, texture layer)
+4. **Apply density** from category → layer → noise modifiers
+
+### Artist Mode UI
+
+`VegetationSettingsDrawer` provides:
+- Biome selector dropdown
+- Per-biome global density slider
+- Expandable category sections with:
+  - Density multiplier
+  - Noise scale, threshold, blend, octaves
+  - Layer count info
+- "Initialize Defaults" button (creates 3 default categories)
+- "Clear Cache" button (clears mask cache for regeneration)
+
+### Quick Actions
+
+```csharp
+// Initialize default categories
+biome.vegetationConfig.InitializeDefaults();
+
+// Clear mask cache for re-paint
+VegetationPainter.ClearMaskCache();
+
+// Repaint only vegetation (no terrain regen)
+// Coming: VegetationPhase.RepaintOnly(context)
+```
+
+---
+
 ## Next Steps
 
-1. ⏳ Test river styles with different biomes
-2. ⏳ Add water plane material (transparency, caustics)
-3. ⏳ NavMesh baking test with slope limits
-4. ⏳ Preset system for generation configs (REMINDER)
+1. ⏳ Test vegetation categories with different biomes
+2. ⏳ Add real-time mask preview in Artist Mode
+3. ⏳ "Repaint Vegetation Only" button (no full regen)
+4. ⏳ Test river styles with different biomes
+5. ⏳ Add water plane material (transparency, caustics)
+6. ⏳ NavMesh baking test with slope limits
+7. ⏳ Preset system for generation configs (REMINDER)

@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c5a240fdcd634b19a97fe2af1ed6076, type: 3}
   m_Name: Noise_Cellular
   m_EditorClassIdentifier: Assembly-CSharp::Content.Scripts.World.Generation.Noise.Samplers.CellularNoiseSO
-  frequency: 0.05
-  amplitude: 1
+  frequency: 0.03
+  amplitude: 0.462
   offset: {x: 0, y: 0}
   seedOffset: 0
   normalize: 1
   invert: 0
-  power: 1
-  previewSize: 256
+  power: 1.868
+  previewSize: 266
   cellType: 0
   jitter: 1

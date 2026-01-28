@@ -34,7 +34,7 @@ namespace Content.Scripts.Editor.World {
         }
       }
 
-      if (!_config.Data.drawBiomeGizmos) return;
+      if (!_config.ShouldDrawGizmos) return;
       
       if (_config.cachedBiomeMap == null) {
         // Don't spam - only log once per second
@@ -82,9 +82,14 @@ namespace Content.Scripts.Editor.World {
         _loggedOnce = true;
       }
 
+      var debugSettings = _config.debugSettings;
+      var labelHeight = debugSettings != null ? debugSettings.biomeLabelHeight : 2f;
+      var drawCenters = debugSettings == null || debugSettings.drawCellCenters;
+      var alpha = debugSettings != null ? debugSettings.gizmoAlpha : 0.5f;
+      
       foreach (var cell in map.cells) {
         var worldY = _terrain.SampleHeight(new Vector3(cell.center.x, 0, cell.center.y)) 
-                   + _terrain.transform.position.y + 3f;
+                   + _terrain.transform.position.y + labelHeight;
         var pos = new Vector3(cell.center.x, worldY, cell.center.y);
 
         // Get biome color
@@ -95,15 +100,19 @@ namespace Content.Scripts.Editor.World {
         var label = biomeData.name;
 
         // Draw colored disc marker
-        Handles.color = color;
-        Handles.DrawSolidDisc(pos, Vector3.up, 2f);
-        
-        // Draw outline
-        Handles.color = Color.black;
-        Handles.DrawWireDisc(pos, Vector3.up, 2.1f);
+        if (drawCenters) {
+          var discColor = color;
+          discColor.a = alpha;
+          Handles.color = discColor;
+          Handles.DrawSolidDisc(pos, Vector3.up, 2f);
+          
+          // Draw outline
+          Handles.color = new Color(0, 0, 0, alpha);
+          Handles.DrawWireDisc(pos, Vector3.up, 2.1f);
+        }
 
         // Draw label with shadow for readability
-        var labelPos = pos + Vector3.up * 3f;
+        var labelPos = pos + Vector3.up * labelHeight;
         Handles.Label(labelPos + new Vector3(0.1f, -0.1f, 0), label, _labelStyleShadow);
         
         _labelStyle.normal.textColor = color;
