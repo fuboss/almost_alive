@@ -17,7 +17,7 @@ namespace Content.Scripts.World.Grid.Presentation {
 
       // Create tile renderer
       _tileRenderer = gameObject.AddComponent<TileMeshRenderer>();
-      _tileRenderer.Initialize(config.tileMaterial);
+      _tileRenderer.Initialize(config.Data.tileMaterial);
 
       Debug.Log("[FootprintVisualizer] Initialized with TileMeshRenderer");
     }
@@ -26,7 +26,7 @@ namespace Content.Scripts.World.Grid.Presentation {
       _isVisible = true;
       _isValid = isValid;
 
-      var color = isValid ? _config.footprintColorValid : _config.footprintColorInvalid;
+      var color = isValid ? _config.Data.footprintColorValid : _config.Data.footprintColorInvalid;
 
       _tileRenderer.HideAll();
       _tileRenderer.ShowFootprint(origin, footprint, color, borderOnly: false);
@@ -38,7 +38,7 @@ namespace Content.Scripts.World.Grid.Presentation {
       _isVisible = true;
       _isValid = isValid;
 
-      var color = isValid ? _config.footprintColorValid : _config.footprintColorInvalid;
+      var color = isValid ? _config.Data.footprintColorValid : _config.Data.footprintColorInvalid;
 
       _tileRenderer.HideAll();
 

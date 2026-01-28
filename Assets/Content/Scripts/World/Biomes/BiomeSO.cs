@@ -37,9 +37,14 @@ namespace Content.Scripts.World.Biomes {
     public float baseHeight = 10f;
 
     [FoldoutGroup("Height")]
-    [Tooltip("Maximum height variation amplitude")]
+    [Tooltip("Maximum height variation from noise")]
     [Range(0f, 50f)]
-    public float heightAmplitude = 5f;
+    public float heightVariation = 5f;
+
+    [FoldoutGroup("Height")]
+    [Tooltip("Noise asset for height variation (optional - uses legacy params if null)")]
+    [InlineEditor(InlineEditorModes.GUIOnly)]
+    public Generation.Noise.NoiseSO heightNoise;
 
     [FoldoutGroup("Height")]
     [Tooltip("Height variation curve (X: distance from center 0-1, Y: height multiplier)")]
@@ -130,7 +135,7 @@ namespace Content.Scripts.World.Biomes {
 
       var terrainPos = t.transform.position;
       var terrainSize = terrainData.size;
-      var seed = WorldGeneratorConfigSO.GetFromResources()?.seed ?? System.Environment.TickCount;
+      var seed = WorldGeneratorConfigSO.GetFromResources()?.Data.seed ?? System.Environment.TickCount;
 
       var settings = new Content.Scripts.World.Vegetation.Mask.MaskSettings();
       settings.mode = vegetationConfig.maskMode;
@@ -292,7 +297,7 @@ namespace Content.Scripts.World.Biomes {
     public static TerrainPaletteSO GetGlobalPalette() {
       if (_cachedPalette == null) {
         var config = WorldGeneratorConfigSO.GetFromResources();
-        _cachedPalette = config != null ? config.terrainPalette : null;
+        _cachedPalette = config != null ? config.Data.terrainPalette : null;
       }
       return _cachedPalette;
     }
@@ -351,7 +356,7 @@ namespace Content.Scripts.World.Biomes {
     /// Sample height modifier at given normalized distance from biome center.
     /// </summary>
     public float SampleHeightModifier(float normalizedDistance) {
-      return baseHeight + heightProfile.Evaluate(normalizedDistance) * heightAmplitude;
+      return baseHeight + heightProfile.Evaluate(normalizedDistance) * heightVariation;
     }
 
     public bool hasScatters => scatterConfigs != null && scatterConfigs.Count > 0;

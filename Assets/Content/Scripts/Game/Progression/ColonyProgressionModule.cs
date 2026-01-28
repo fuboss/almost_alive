@@ -118,7 +118,7 @@ namespace Content.Scripts.Game.Progression {
 
     private bool CanUnlock(RecipeSO recipe) {
       // Find unlock entry for this recipe
-      var entry = _config.recipeUnlocks.FirstOrDefault(u => u.recipe == recipe);
+      var entry = _config.Data.recipeUnlocks.FirstOrDefault(u => u.recipe == recipe);
       
       // Starter recipes always unlockable
       if (entry == null) return true;

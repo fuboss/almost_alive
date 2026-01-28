@@ -68,7 +68,7 @@ namespace Content.Scripts.World {
       if (_config == null || _terrain == null) return;
       if (isGenerating) return;
 
-      if (_config.biomes == null || _config.biomes.Count == 0) {
+      if (_config.Data.biomes == null || _config.Data.biomes.Count == 0) {
         Debug.LogError("[WorldModule] No biomes configured");
         return;
       }
@@ -89,11 +89,11 @@ namespace Content.Scripts.World {
       
       // Create context
       var context = new WorldGenerationContext(_config, _terrain, _actorCreation, ct) {
-        seed = _config.seed != 0 ? _config.seed : Environment.TickCount,
+        seed = _config.Data.seed != 0 ? _config.Data.seed : Environment.TickCount,
         onProgress = UpdateProgress
       };
 
-      if (_config.logGeneration) {
+      if (_config.Data.logGeneration) {
         Debug.Log($"[WorldModule] Starting generation with seed {context.seed}, strategy: {strategy.GetType().Name}");
       }
 
@@ -166,7 +166,7 @@ namespace Content.Scripts.World {
           VegetationManager.Instance.Initialize(_terrain);
         }
 
-        if (_config.logGeneration) {
+        if (_config.Data.logGeneration) {
           Debug.Log($"[WorldModule] ✓ Generated {_spawnedActors.Count} actors");
         }
       }
@@ -188,8 +188,8 @@ namespace Content.Scripts.World {
     // ═══════════════════════════════════════════════════════════════
 
     private void SetTerrainFromConfig() {
-      _terrain.terrainData.size = new Vector3(_config.size, 200, _config.size);
-      _terrain.transform.localPosition = new Vector3(-_config.size / 2f, 0, -_config.size / 2f);
+      _terrain.terrainData.size = new Vector3(_config.Data.size, 200, _config.Data.size);
+      _terrain.transform.localPosition = new Vector3(-_config.Data.size / 2f, 0, -_config.Data.size / 2f);
     }
 
     public void CancelGeneration() => _generationCts?.Cancel();

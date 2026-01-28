@@ -7,7 +7,7 @@ namespace Content.Scripts.Game.Trees.Strategies {
     private readonly RandomFallStrategy _randomStrategy = new();
 
     public Vector3 GetFallDirection(Transform tree, Vector3 chopperPosition, TreeFallConfigSO config) {
-      if (Random.value < config.buildingTargetProbability) {
+      if (Random.value < config.Data.buildingTargetProbability) {
         return _buildingsStrategy.GetFallDirection(tree, chopperPosition, config);
       }
 

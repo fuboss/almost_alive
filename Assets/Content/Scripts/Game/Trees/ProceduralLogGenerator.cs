@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Content.Scripts.Game.Trees {
   public static class ProceduralLogGenerator {
-    public static Mesh CreateLogMesh(Bounds treeBounds, TreeFallConfigSO config) {
+    public static Mesh CreateLogMesh(Bounds treeBounds, TreeFallConfigSO configSO) {
+      var config = configSO.Data;
       var mesh = new Mesh { name = "Log_Procedural" };
 
       float length = treeBounds.size.y * 0.85f;

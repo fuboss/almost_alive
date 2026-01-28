@@ -42,7 +42,7 @@ namespace Content.Scripts.World.Generation {
       var size = terrain.terrainData.size;
       return new Bounds(
         pos + size * 0.5f,
-        new Vector3(size.x - config.edgeMargin * 2, size.y, size.z - config.edgeMargin * 2)
+        new Vector3(size.x - config.Data.edgeMargin * 2, size.y, size.z - config.Data.edgeMargin * 2)
       );
     }
   }

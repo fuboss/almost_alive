@@ -1,18 +1,17 @@
+using System;
 using System.Collections.Generic;
+using Content.Scripts.Utility;
 using Content.Scripts.World.Biomes;
 using Sirenix.OdinInspector;
 using UnityEngine;
-#if UNITY_EDITOR
-using Content.Scripts.Editor.World;
-#endif
 
 namespace Content.Scripts.World {
+  
   /// <summary>
-  /// Main configuration for world generation.
-  /// Biomes define terrain appearance and scatter rules.
+  /// Configuration data for world generation.
   /// </summary>
-  [CreateAssetMenu(menuName = "World/Generator Config", fileName = "WorldGeneratorConfig")]
-  public class WorldGeneratorConfigSO : ScriptableObject {
+  [Serializable]
+  public class WorldGeneratorConfig {
     
     // ═══════════════════════════════════════════════════════════════
     // TERRAIN
@@ -21,13 +20,8 @@ namespace Content.Scripts.World {
     [BoxGroup("Terrain")]
     [Tooltip("Terrain texture palette (applies layers to terrain)")]
     [AssetsOnly]
-    [InlineEditor(InlineEditorModes.GUIOnly, Expanded = false)]
     public TerrainPaletteSO terrainPalette;
 
-    [BoxGroup("Terrain")]
-    [Tooltip("If null, will find Terrain in scene")]
-    [SceneObjectsOnly]
-    public Terrain terrain;
     [BoxGroup("Terrain")]
     public int size = 400;
 
@@ -56,15 +50,18 @@ namespace Content.Scripts.World {
     [Tooltip("Random seed (0 = use system time)")]
     public int seed;
 
+    [BoxGroup("Generation")]
+    [Tooltip("Create scatter actors in editor mode")]
+    public bool createScattersInEditor = true;
+
     // ═══════════════════════════════════════════════════════════════
     // BIOMES
     // ═══════════════════════════════════════════════════════════════
 
     [FoldoutGroup("Biomes")]
-    [Tooltip("Available biome configurations (each biome has its own scatter rules)")]
+    [Tooltip("Available biome configurations")]
     [AssetsOnly]
     [ListDrawerSettings(ShowFoldout = true)]
-    [Required]
     public List<BiomeSO> biomes = new();
 
     [FoldoutGroup("Biomes")]
@@ -103,138 +100,46 @@ namespace Content.Scripts.World {
     [Tooltip("Draw Voronoi cell centers")]
     [ShowIf("drawBiomeGizmos")]
     public bool drawCellCenters = true;
+  }
 
-    // Cached biome map for gizmo drawing
-    [System.NonSerialized] public BiomeMap cachedBiomeMap;
-    [System.NonSerialized] public TerrainFeatureMap cachedFeatureMap;
+  /// <summary>
+  /// ScriptableObject container for WorldGeneratorConfig.
+  /// Also holds runtime-only scene references and cache.
+  /// </summary>
+  [CreateAssetMenu(menuName = "World/Generator Config", fileName = "WorldGeneratorConfig")]
+  public class WorldGeneratorConfigSO : ScriptableConfig<WorldGeneratorConfig> {
+    
+    // ═══════════════════════════════════════════════════════════════
+    // RUNTIME (scene reference, not part of config data)
+    // ═══════════════════════════════════════════════════════════════
+
+    [Title("Runtime")]
+    [Tooltip("If null, will find Terrain in scene")]
+    [SceneObjectsOnly]
+    public Terrain terrain;
 
     // ═══════════════════════════════════════════════════════════════
-    // VALIDATION
+    // RUNTIME CACHE (not serialized)
     // ═══════════════════════════════════════════════════════════════
 
-    [Button("Validate"), FoldoutGroup("Debug")]
-    private void Validate() {
-      var errors = 0;
+    [NonSerialized] public BiomeMap cachedBiomeMap;
+    [NonSerialized] public TerrainFeatureMap cachedFeatureMap;
 
-      if (biomes == null || biomes.Count == 0) {
-        Debug.LogError("[WorldGenConfig] No biomes configured");
-        errors++;
-      } else {
-        foreach (var biome in biomes) {
-          if (biome == null) {
-            Debug.LogError("[WorldGenConfig] Null biome in list");
-            errors++;
-            continue;
-          }
-
-          if (biome.scatterConfigs != null) {
-            foreach (var sc in biome.scatterConfigs) {
-              if (sc == null) {
-                Debug.LogError($"[WorldGenConfig] Null scatter config in biome {biome.name}");
-                errors++;
-              } else if (sc.rule == null) {
-                Debug.LogError($"[WorldGenConfig] Null rule in scatter config (biome: {biome.name})");
-                errors++;
-              } else if (string.IsNullOrEmpty(sc.rule.actorKey) && sc.rule.prefab == null) {
-                Debug.LogError($"[WorldGenConfig] Missing actorKey in rule {sc.rule.name} (biome: {biome.name})");
-                errors++;
-              }
-            }
-          }
-        }
-      }
-
-      Debug.Log(errors == 0 ? "✓ Config valid" : $"✗ {errors} errors found");
-    }
+    // ═══════════════════════════════════════════════════════════════
+    // API
+    // ═══════════════════════════════════════════════════════════════
 
     public static WorldGeneratorConfigSO GetFromResources() {
       return Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // EDITOR BUTTONS
-    // ═══════════════════════════════════════════════════════════════
-
-#if UNITY_EDITOR
-    [FoldoutGroup("Editor")] public bool createScattersInEditor = true;
-    [Button(ButtonSizes.Large, Name = "Generate World"), FoldoutGroup("Editor"), GUIColor(0.4f, 0.8f, 0.4f)]
-    [PropertyOrder(-10)]
-    private void GenerateInEditor() {
-      WorldGeneratorEditor.Generate(this);
-    }
-
-    [Button(ButtonSizes.Medium, Name = "Clear Generated"), FoldoutGroup("Editor"), GUIColor(1f, 0.6f, 0.6f)]
-    [PropertyOrder(-9)]
-    private void ClearGenerated() {
-      WorldGeneratorEditor.Clear();
-      ClearSplatmap();
-      ClearBiomePreview();
-      FlattenTerrain();
-    }
-
-    [Button(ButtonSizes.Medium, Name = "Preview Biomes Only"), FoldoutGroup("Editor"), GUIColor(0.6f, 0.8f, 1f)]
-    [PropertyOrder(-8)]
-    private void PreviewBiomes() {
-      var t = terrain != null ? terrain : Terrain.activeTerrain;
-      if (t == null) {
-        Debug.LogError("[WorldGenConfig] No terrain found");
-        return;
-      }
-
-      var bounds = GetTerrainBounds(t);
-      var s = seed != 0 ? seed : System.Environment.TickCount;
-
-      cachedBiomeMap = VoronoiGenerator.Generate(bounds, biomes, biomeBorderBlend, s, minBiomeCells, maxBiomeCells);
-
-      UnityEditor.SceneView.RepaintAll();
-      Debug.Log($"[WorldGenConfig] Biome preview: {cachedBiomeMap?.cells.Count ?? 0} cells");
-    }
-
-    [Button(ButtonSizes.Small, Name = "Clear Preview"), FoldoutGroup("Editor")]
-    [PropertyOrder(-7)]
-    [ShowIf("@cachedBiomeMap != null")]
-    private void ClearBiomePreview() {
-      cachedBiomeMap = null;
-      UnityEditor.SceneView.RepaintAll();
-    }
-
-    [Button(ButtonSizes.Small, Name = "Apply Terrain Palette"), FoldoutGroup("Editor/Terrain Tools")]
-    private void ApplyPalette() {
-      if (terrainPalette == null) {
-        Debug.LogError("[WorldGenConfig] No terrain palette assigned");
-        return;
-      }
-      var t = terrain != null ? terrain : Terrain.activeTerrain;
-      if (t != null) {
-        UnityEditor.Undo.RecordObject(t.terrainData, "Apply Terrain Palette");
-        terrainPalette.ApplyToTerrain(t);
-      }
-    }
-
-    [Button(ButtonSizes.Small, Name = "Flatten Terrain"), FoldoutGroup("Editor/Terrain Tools")]
-    private void FlattenTerrain() {
-      var t = terrain != null ? terrain : Terrain.activeTerrain;
-      if (t != null) {
-        TerrainSculptor.Flatten(t, 0);
-      }
-    }
-
-    [Button(ButtonSizes.Small, Name = "Clear Splatmap"), FoldoutGroup("Editor/Terrain Tools")]
-    private void ClearSplatmap() {
-      var t = terrain != null ? terrain : Terrain.activeTerrain;
-      if (t != null) {
-        SplatmapPainter.Clear(t, 0);
-      }
-    }
-
     public Bounds GetTerrainBounds(Terrain t) {
       var pos = t.transform.position;
-      var size = t.terrainData.size;
+      var terrainSize = t.terrainData.size;
       return new Bounds(
-        pos + size * 0.5f,
-        new Vector3(size.x - edgeMargin * 2, size.y, size.z - edgeMargin * 2)
+        pos + terrainSize * 0.5f,
+        new Vector3(terrainSize.x - Data.edgeMargin * 2, terrainSize.y, terrainSize.z - Data.edgeMargin * 2)
       );
     }
-#endif
   }
 }

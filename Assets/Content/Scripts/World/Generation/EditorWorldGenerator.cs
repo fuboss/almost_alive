@@ -23,8 +23,8 @@ namespace Content.Scripts.World.Generation {
       // Phase 1: Generate Biomes
       context.UpdateProgress("Creating biome map...", 0.05f);
       context.BiomeMap = VoronoiGenerator.Generate(
-        bounds, config.biomes, config.biomeBorderBlend, seed,
-        config.minBiomeCells, config.maxBiomeCells
+        bounds, config.Data.biomes, config.Data.biomeBorderBlend, seed,
+        config.Data.minBiomeCells, config.Data.maxBiomeCells
       );
 
       if (context.BiomeMap == null) {
@@ -35,14 +35,14 @@ namespace Content.Scripts.World.Generation {
       config.cachedBiomeMap = context.BiomeMap;
 
       // Phase 2: Sculpt Terrain
-      if (config.sculptTerrain) {
+      if (config.Data.sculptTerrain) {
         context.UpdateProgress("Sculpting terrain...", 0.15f);
         context.RegisterTerrainUndo("Sculpt Terrain");
         TerrainSculptor.Sculpt(terrain, context.BiomeMap, seed);
       }
 
       // Phase 3: Paint Splatmap
-      if (config.paintSplatmap) {
+      if (config.Data.paintSplatmap) {
         context.UpdateProgress("Painting terrain...", 0.25f);
         context.RegisterTerrainUndo("Paint Splatmap");
         SplatmapPainter.Paint(terrain, context.BiomeMap, seed);
@@ -54,14 +54,14 @@ namespace Content.Scripts.World.Generation {
       config.cachedFeatureMap = context.FeatureMap;
 
       // Phase 3.6: Paint Vegetation
-      if (config.paintVegetation) {
+      if (config.Data.paintVegetation) {
         context.UpdateProgress("Painting vegetation...", 0.32f);
         context.RegisterTerrainUndo("Paint Vegetation");
-        VegetationPainter.Paint(terrain, context.BiomeMap, config.biomes, seed);
+        VegetationPainter.Paint(terrain, context.BiomeMap, config.Data.biomes, seed);
       }
 
       // Phase 4: Generate positions
-      if (config.createScattersInEditor) {
+      if (config.Data.createScattersInEditor) {
         context.UpdateProgress("Generating positions...", 0.35f);
         GeneratePositions(context, bounds);
       }
@@ -70,7 +70,7 @@ namespace Content.Scripts.World.Generation {
       context.UpdateProgress("Generating transforms...", 0.50f);
       GenerateTransforms(context);
 
-      if (config.logGeneration) {
+      if (config.Data.logGeneration) {
         Debug.Log($"[EditorWorldGenerator] Generated {context.SpawnDataList.Count} spawn entries");
       }
     }
@@ -84,7 +84,7 @@ namespace Content.Scripts.World.Generation {
       var allPositions = new List<(string actorKey, Vector3 position, ScatterRuleSO rule, BiomeType biomeType)>();
       var spawnedPositions = new List<Vector3>();
 
-      foreach (var biome in config.biomes) {
+      foreach (var biome in config.Data.biomes) {
         if (biome?.scatterConfigs == null) continue;
 
         foreach (var sc in biome.scatterConfigs) {
@@ -93,7 +93,7 @@ namespace Content.Scripts.World.Generation {
           var rule = sc.rule;
           var targetCount = WorldPositionGenerator.CalculateTargetCount(rule, bounds);
 
-          if (config.logGeneration) {
+          if (config.Data.logGeneration) {
             Debug.Log($"[EditorWorldGenerator] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
           }
 

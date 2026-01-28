@@ -21,8 +21,8 @@ namespace Content.Scripts.World.Generation {
       // Phase 1: Generate Biomes
       context.onProgress?.Invoke(0.05f);
       context.biomeMap = VoronoiGenerator.Generate(
-        bounds, config.biomes, config.biomeBorderBlend, seed,
-        config.minBiomeCells, config.maxBiomeCells
+        bounds, config.Data.biomes, config.Data.biomeBorderBlend, seed,
+        config.Data.minBiomeCells, config.Data.maxBiomeCells
       );
 
       if (context.biomeMap == null) {
@@ -33,14 +33,14 @@ namespace Content.Scripts.World.Generation {
       config.cachedBiomeMap = context.biomeMap;
 
       // Phase 2: Sculpt Terrain
-      if (config.sculptTerrain) {
+      if (config.Data.sculptTerrain) {
         context.onProgress?.Invoke(0.15f);
         TerrainSculptor.Sculpt(terrain, context.biomeMap, seed);
         await UniTask.Yield(ct);
       }
 
       // Phase 3: Paint Splatmap
-      if (config.paintSplatmap) {
+      if (config.Data.paintSplatmap) {
         context.onProgress?.Invoke(0.25f);
         SplatmapPainter.Paint(terrain, context.biomeMap, seed);
         await UniTask.Yield(ct);
@@ -52,9 +52,9 @@ namespace Content.Scripts.World.Generation {
       config.cachedFeatureMap = context.featureMap;
 
       // Phase 3.6: Paint Vegetation
-      if (config.paintVegetation) {
+      if (config.Data.paintVegetation) {
         context.onProgress?.Invoke(0.32f);
-        VegetationPainter.Paint(terrain, context.biomeMap, config.biomes, seed);
+        VegetationPainter.Paint(terrain, context.biomeMap, config.Data.biomes, seed);
         await UniTask.Yield(ct);
       }
 
@@ -66,7 +66,7 @@ namespace Content.Scripts.World.Generation {
       context.onProgress?.Invoke(0.50f);
       GenerateTransforms(context);
 
-      if (config.logGeneration) {
+      if (config.Data.logGeneration) {
         Debug.Log($"[FullGenerationStrategy] Generated {context.spawnDataList.Count} spawn entries");
       }
     }
@@ -82,7 +82,7 @@ namespace Content.Scripts.World.Generation {
       var allPositions = new List<(string actorKey, Vector3 position, ScatterRuleSO rule, BiomeType biomeType)>();
       var spawnedPositions = new List<Vector3>();
 
-      foreach (var biome in config.biomes) {
+      foreach (var biome in config.Data.biomes) {
         if (biome?.scatterConfigs == null) continue;
         if (ct.IsCancellationRequested) break;
 
@@ -93,7 +93,7 @@ namespace Content.Scripts.World.Generation {
           var rule = sc.rule;
           var targetCount = WorldPositionGenerator.CalculateTargetCount(rule, bounds);
 
-          if (config.logGeneration) {
+          if (config.Data.logGeneration) {
             Debug.Log($"[FullGenerationStrategy] {rule.actorName}: target={targetCount}, clustering={rule.useClustering}");
           }
 

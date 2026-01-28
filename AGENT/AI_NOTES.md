@@ -22,6 +22,7 @@
 | ANIMALS.md | Animal agents, herding |
 | INTERFACE_DECOMPOSITION.md | Agent interfaces |
 | WORLD_GENERATION.md | Biomes, terrain, scatters |
+| **WORLD_GENERATION_PIPELINE.md** | Phased generation, Artist Mode, Noise system (✅ Core done) |
 | INVENTORY_CRAFT.md | Items, storage, recipes |
 | CAMP.md | Camp system (legacy) |
 | BUILDING.md (GD_DOC) | Smart Blueprints building system |
@@ -58,7 +59,46 @@ WorldModule           // World generation
 
 ---
 
+## Editor Wizards
+
+| Wizard | Path | Purpose |
+|--------|------|--------|
+| AAWizard | `Editor/AAWizard/` | Tag, GOAP Features, Actor Integration, Recipes |
+| **WorldGenerationWizard** | `Editor/WorldGenerationWizard/` | 🆕 Biomes, Scatters, Vegetation databases |
+
+### WorldGenerationWizard Pages
+
+1. **Generation Config** — WorldGeneratorConfigSO inline editor + quick actions (generate/clear/preview)
+2. **Biomes Database** — TableList of all BiomeSO + create/edit/delete
+3. **Scatters Database** — TableList of all ScatterRuleSO + create/edit/delete  
+4. **Vegetation Database** — TableList of all VegetationPrototypeSO + create/edit/delete
+
+**Pattern**: `[Serializable]` composites + Odin attributes (no EditorGUILayout)
+- `[TableList]` for asset lists
+- `[InlineEditor]` for selected asset editing
+- `[Button]`, `[EnableIf]`, `[ShowIf]` for actions
+- Entry classes with table columns + edit/delete buttons
+
+---
+
 ## Current Focus
+
+### World Generation Pipeline ✅ Core Done
+See: `Docs/WORLD_GENERATION_PIPELINE.md`
+
+**Completed:**
+- [x] Noise System (6 samplers + 3 modifiers + 3 combinators)
+- [x] Pipeline Core (IGenerationPhase, GenerationContext, GenerationPipeline)
+- [x] All 5 Phases (BiomeLayout, TerrainSculpt, SplatmapPaint, Vegetation, Scatter)
+
+**TODO:**
+- [ ] 🚨 **ScriptableConfig Refactor** - вынести данные из ConfigSO в struct (5 штук)
+- [ ] ArtistModeWindow.cs (dockable EditorWindow)
+- [ ] Debug shaders (BiomeDebug, HeightGradient)
+- [ ] Integration (button in GenerationConfigComposite)
+- [ ] ⏸️ Preset system (отложено - напомнить когда устаканится)
+
+---
 
 ### UI System — Inspector for AI Debug 🆕
 See: `GD_DOC/UI.md`

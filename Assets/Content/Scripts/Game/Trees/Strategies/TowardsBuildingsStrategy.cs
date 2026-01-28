@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Content.Scripts.Game.Trees.Strategies {
   public class TowardsBuildingsStrategy : ITreeFallDirectionStrategy {
-    public Vector3 GetFallDirection(Transform tree, Vector3 chopperPosition, TreeFallConfigSO config) {
+    public Vector3 GetFallDirection(Transform tree, Vector3 chopperPosition, TreeFallConfigSO configSO) {
+      var config = configSO.Data;
       var structures = ActorRegistry<Structure>.all;
       if (structures.Count == 0) {
         return GetRandomDirection();

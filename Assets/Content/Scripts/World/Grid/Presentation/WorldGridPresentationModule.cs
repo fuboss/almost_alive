@@ -109,7 +109,7 @@ namespace Content.Scripts.World.Grid.Presentation {
 
       _lastSelectionCoord = coord;
       _selectionRenderer.HideAll();
-      _selectionRenderer.ShowTile(coord, _config.selectionColor, borderOnly: true);
+      _selectionRenderer.ShowTile(coord, _config.Data.selectionColor, borderOnly: true);
     }
 
     #endregion
@@ -138,7 +138,7 @@ namespace Content.Scripts.World.Grid.Presentation {
       var selectionObj = new GameObject("SelectionVisualizer");
       selectionObj.transform.SetParent(container.transform, false);
       _selectionRenderer = selectionObj.AddComponent<TileMeshRenderer>();
-      _selectionRenderer.Initialize(_config.tileMaterial);
+      _selectionRenderer.Initialize(_config.Data.tileMaterial);
 
       Debug.Log("[WorldGridPresentation] Visualizers created");
     }
@@ -148,7 +148,7 @@ namespace Content.Scripts.World.Grid.Presentation {
     #region Placement Preview
 
     private void UpdatePlacementPreview() {
-      if (_frameCounter % _config.hoverUpdateInterval != 0) return;
+      if (_frameCounter % _config.Data.hoverUpdateInterval != 0) return;
 
       if (_debugModule.PendingAction == null) {
         _hoverVisualizer?.Hide();

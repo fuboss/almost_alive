@@ -1,9 +1,15 @@
+using System;
+using Content.Scripts.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.World.Grid.Presentation {
-  [CreateAssetMenu(fileName = "GridPresentationConfig", menuName = "World/Grid Presentation Config")]
-  public class WorldGridPresentationConfigSO : ScriptableObject {
+  
+  /// <summary>
+  /// Configuration data for grid visualization (hover, footprint, selection).
+  /// </summary>
+  [Serializable]
+  public class WorldGridPresentationConfig {
     [Title("Grid Settings")]
     [Tooltip("Grid line thickness in world units")]
     [Range(0.01f, 0.5f)]
@@ -12,11 +18,11 @@ namespace Content.Scripts.World.Grid.Presentation {
     [Title("Hover Highlight")]
     [Tooltip("Hover color when placement is valid")]
     [ColorUsage(false, true)]
-    public Color hoverColorValid = new Color(0, 1, 0, 0.6f);
+    public Color hoverColorValid = new(0, 1, 0, 0.6f);
     
     [Tooltip("Hover color when placement is invalid")]
     [ColorUsage(false, true)]
-    public Color hoverColorInvalid = new Color(1, 0, 0, 0.6f);
+    public Color hoverColorInvalid = new(1, 0, 0, 0.6f);
     
     [Tooltip("Pulse animation speed")]
     [Range(0.5f, 5f)]
@@ -28,16 +34,16 @@ namespace Content.Scripts.World.Grid.Presentation {
     [Title("Selection Highlight")]
     [Tooltip("Color for selected actor cell highlight")]
     [ColorUsage(false, true)]
-    public Color selectionColor = new Color(0.36f, 0.54f, 0.36f, 0.5f);
+    public Color selectionColor = new(0.36f, 0.54f, 0.36f, 0.5f);
     
     [Title("Footprint Preview")]
     [Tooltip("Footprint color when placement is valid")]
     [ColorUsage(false, true)]
-    public Color footprintColorValid = new Color(0, 1, 0, 0.4f);
+    public Color footprintColorValid = new(0, 1, 0, 0.4f);
     
     [Tooltip("Footprint color when placement is invalid")]
     [ColorUsage(false, true)]
-    public Color footprintColorInvalid = new Color(1, 0, 0, 0.4f);
+    public Color footprintColorInvalid = new(1, 0, 0, 0.4f);
     
     [Title("Performance")]
     [Tooltip("Update hover highlight every N frames (higher = better performance)")]
@@ -49,4 +55,10 @@ namespace Content.Scripts.World.Grid.Presentation {
     [AssetsOnly, Required]
     public Material tileMaterial;
   }
+
+  /// <summary>
+  /// ScriptableObject container for WorldGridPresentationConfig.
+  /// </summary>
+  [CreateAssetMenu(fileName = "GridPresentationConfig", menuName = "World/Grid Presentation Config")]
+  public class WorldGridPresentationConfigSO : ScriptableConfig<WorldGridPresentationConfig> { }
 }

@@ -1,9 +1,15 @@
+using System;
+using Content.Scripts.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.Game.Trees {
-  [CreateAssetMenu(fileName = "TreeFallConfig", menuName = "Game/Features/Tree Fall Config")]
-  public class TreeFallConfigSO : ScriptableObject {
+  
+  /// <summary>
+  /// Configuration data for tree falling physics and effects.
+  /// </summary>
+  [Serializable]
+  public class TreeFallConfig {
     [FoldoutGroup("Physics")]
     [Tooltip("Default tree mass (if not specified in TreeTag)")]
     public float defaultMass = 50f;
@@ -84,4 +90,10 @@ namespace Content.Scripts.Game.Trees {
     [Tooltip("Building search radius for directed falling")]
     public float buildingSearchRadius = 20f;
   }
+
+  /// <summary>
+  /// ScriptableObject container for TreeFallConfig.
+  /// </summary>
+  [CreateAssetMenu(fileName = "TreeFallConfig", menuName = "Game/Features/Tree Fall Config")]
+  public class TreeFallConfigSO : ScriptableConfig<TreeFallConfig> { }
 }

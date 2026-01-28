@@ -104,24 +104,5 @@ namespace Content.Scripts.World {
         : prefab != null
           ? prefab.name
           : "NULL";
-
-    // ═══════════════════════════════════════════════════════════════
-    // DEBUG
-    // ═══════════════════════════════════════════════════════════════
-
-    [Button("Estimate Count"), BoxGroup("Debug")]
-    private void EstimateCount() {
-      if (fixedCount > 0) {
-        Debug.Log($"Fixed count: {fixedCount}");
-        return;
-      }
-
-      // Assume 500x500 terrain for estimate
-      var globalConfig = WorldGeneratorConfigSO.GetFromResources();
-      var size = globalConfig?.size ?? 500;
-      var area = size * size;
-      var estimated = Mathf.RoundToInt(area / 100f * density);
-      Debug.Log($"Estimated instances on 500x500 terrain: {estimated}");
-    }
   }
 }

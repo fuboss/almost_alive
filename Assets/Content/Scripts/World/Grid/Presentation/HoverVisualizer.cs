@@ -19,7 +19,7 @@ namespace Content.Scripts.World.Grid.Presentation {
       
       // Create tile renderer
       _tileRenderer = gameObject.AddComponent<TileMeshRenderer>();
-      _tileRenderer.Initialize(config.tileMaterial);
+      _tileRenderer.Initialize(config.Data.tileMaterial);
       
       Debug.Log("[HoverVisualizer] Initialized with TileMeshRenderer");
     }
@@ -31,7 +31,7 @@ namespace Content.Scripts.World.Grid.Presentation {
       _pulseTime = 0f;
       
       // Show tile with appropriate color
-      var color = isValid ? _config.hoverColorValid : _config.hoverColorInvalid;
+      var color = isValid ? _config.Data.hoverColorValid : _config.Data.hoverColorInvalid;
       _tileRenderer.HideAll();
       _tileRenderer.ShowTile(coord, color, borderOnly: true);
     }
@@ -45,11 +45,11 @@ namespace Content.Scripts.World.Grid.Presentation {
       if (!_isVisible || _tileRenderer == null) return;
       
       // Pulse animation
-      _pulseTime += Time.deltaTime * _config.hoverPulseSpeed;
-      var pulseValue = _config.hoverPulseCurve.Evaluate(_pulseTime % 1f);
+      _pulseTime += Time.deltaTime * _config.Data.hoverPulseSpeed;
+      var pulseValue = _config.Data.hoverPulseCurve.Evaluate(_pulseTime % 1f);
       
       // Update color with pulse
-      var baseColor = _isValid ? _config.hoverColorValid : _config.hoverColorInvalid;
+      var baseColor = _isValid ? _config.Data.hoverColorValid : _config.Data.hoverColorInvalid;
       var pulsedColor = baseColor;
       pulsedColor.a *= pulseValue;
       

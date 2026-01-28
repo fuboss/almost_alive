@@ -12,7 +12,7 @@ namespace Content.Scripts.Game.Trees {
   }
 
   public class FallingTreeBehaviour : MonoBehaviour {
-    private TreeFallConfigSO _config;
+    private TreeFallConfigSO _configSO;
     private EffectsModule _effectsModule;
     private Action<FallingTreeBehaviour> _onSettled;
 
@@ -25,6 +25,8 @@ namespace Content.Scripts.Game.Trees {
     private Bounds _originalBounds;
     private Material _originalMaterial;
     private Transform _crownPosition;
+
+    private TreeFallConfig Config => _configSO.Data;
 
     public TreeFallState state => _state;
     public Rigidbody treeRigidbody => _rigidbody;
@@ -39,7 +41,7 @@ namespace Content.Scripts.Game.Trees {
       Transform crownPos,
       Action<FallingTreeBehaviour> onSettled
     ) {
-      _config = config;
+      _configSO = config;
       _effectsModule = effectsModule;
       _originalBounds = bounds;
       _originalMaterial = material;
@@ -56,10 +58,10 @@ namespace Content.Scripts.Game.Trees {
       _rigidbody.constraints = RigidbodyConstraints.None;
 
       var torqueAxis = Vector3.Cross(Vector3.up, direction).normalized;
-      var torque = torqueAxis * _config.initialTorqueMultiplier * _rigidbody.mass;
+      var torque = torqueAxis * Config.initialTorqueMultiplier * _rigidbody.mass;
       _rigidbody.AddTorque(torque, ForceMode.Impulse);
 
-      var pushForce = direction * _config.initialTorqueMultiplier * 0.1f * _rigidbody.mass;
+      var pushForce = direction * Config.initialTorqueMultiplier * 0.1f * _rigidbody.mass;
       _rigidbody.AddForce(pushForce, ForceMode.Impulse);
     }
 
@@ -67,7 +69,7 @@ namespace Content.Scripts.Game.Trees {
       if (_state == TreeFallState.Settled) return;
 
       float elapsed = Time.time - _fallStartTime;
-      if (elapsed > _config.maxFallDuration) {
+      if (elapsed > Config.maxFallDuration) {
         TransitionToSettled();
         return;
       }
@@ -93,12 +95,12 @@ namespace Content.Scripts.Game.Trees {
       if (_rigidbody == null) return;
 
       float velocity = _rigidbody.linearVelocity.magnitude;
-      if (velocity < _config.minVelocityForDamage) return;
+      if (velocity < Config.minVelocityForDamage) return;
 
       var receiver = collision.gameObject.GetComponentInParent<IImpactReceiver>();
       if (receiver == null || !receiver.canReceiveImpact) return;
 
-      float damage = velocity * _rigidbody.mass * _config.impactDamageMultiplier;
+      float damage = velocity * _rigidbody.mass * Config.impactDamageMultiplier;
       var contact = collision.contacts[0];
       receiver.ReceiveImpact(damage, contact.point, contact.normal);
 
@@ -107,7 +109,7 @@ namespace Content.Scripts.Game.Trees {
 
     private void CheckSettled() {
       float timeSinceImpact = Time.time - _firstImpactTime;
-      if (timeSinceImpact < _config.settledCheckDelay) return;
+      if (timeSinceImpact < Config.settledCheckDelay) return;
 
       if (_rigidbody == null) {
         TransitionToSettled();
@@ -117,11 +119,11 @@ namespace Content.Scripts.Game.Trees {
       float linearVel = _rigidbody.linearVelocity.magnitude;
       float angularVel = _rigidbody.angularVelocity.magnitude;
 
-      if (linearVel > _config.settledVelocityThreshold) return;
-      if (angularVel > _config.settledAngularThreshold) return;
+      if (linearVel > Config.settledVelocityThreshold) return;
+      if (angularVel > Config.settledAngularThreshold) return;
 
       float angleFromVertical = Vector3.Angle(transform.up, Vector3.up);
-      if (angleFromVertical < _config.settledAngleFromVertical) return;
+      if (angleFromVertical < Config.settledAngleFromVertical) return;
 
       TransitionToSettled();
     }
@@ -139,14 +141,14 @@ namespace Content.Scripts.Game.Trees {
 
       var spawnPos = _crownPosition != null ? _crownPosition.position : GetCrownPosition();
       
-      if (_config.leafBurstPrefab != null) {
-        _effectsModule.SpawnAt(_config.leafBurstPrefab, spawnPos, _config.leafBurstDuration);
+      if (Config.leafBurstPrefab != null) {
+        _effectsModule.SpawnAt(Config.leafBurstPrefab, spawnPos, Config.leafBurstDuration);
       } else {
         var tempEffect = LeafBurstFactory.CreateLeafBurstPrefab();
         tempEffect.transform.position = spawnPos;
         var ps = tempEffect.GetComponent<ParticleSystem>();
         ps.Play();
-        Object.Destroy(tempEffect, _config.leafBurstDuration);
+        Object.Destroy(tempEffect, Config.leafBurstDuration);
       }
     }
 

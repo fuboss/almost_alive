@@ -32,7 +32,7 @@ namespace Content.Scripts.Editor.World {
         _config = Resources.Load<WorldGeneratorConfigSO>("Environment/WorldGeneratorConfig");
       }
 
-      if (_config == null || !_config.drawBiomeGizmos) return;
+      if (_config == null || !_config.Data.drawBiomeGizmos) return;
       if (_config.cachedBiomeMap == null) return;
 
       // Find terrain
@@ -43,7 +43,7 @@ namespace Content.Scripts.Editor.World {
 
       DrawBiomeOverlay();
       
-      if (_config.drawCellCenters) {
+      if (_config.Data.drawCellCenters) {
         DrawCellCenters();
       }
     }
@@ -61,7 +61,7 @@ namespace Content.Scripts.Editor.World {
     private static void DrawBiomeOverlay() {
       var map = _config.cachedBiomeMap;
       var bounds = map.bounds;
-      var resolution = _config.gizmoResolution;
+      var resolution = _config.Data.gizmoResolution;
 
       var stepX = bounds.size.x / resolution;
       var stepZ = bounds.size.z / resolution;

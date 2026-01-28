@@ -96,7 +96,7 @@ namespace Content.Scripts.Editor.World {
         return;
       }
 
-      if (config.biomes == null || config.biomes.Count == 0) {
+      if (config.Data.biomes == null || config.Data.biomes.Count == 0) {
         Debug.LogError("[WorldGenEditor] No biomes configured");
         return;
       }
@@ -110,15 +110,15 @@ namespace Content.Scripts.Editor.World {
       }
 
       // Init terrain size
-      terrain.terrainData.size = new Vector3(config.size, 200, config.size);
-      terrain.transform.localPosition = new Vector3(-config.size / 2f, 0, -config.size / 2f);
+      terrain.terrainData.size = new Vector3(config.Data.size, 200, config.Data.size);
+      terrain.transform.localPosition = new Vector3(-config.Data.size / 2f, 0, -config.Data.size / 2f);
 
       // Create container
       var container = new GameObject(CONTAINER_NAME).transform;
       Undo.RegisterCreatedObjectUndo(container.gameObject, "Generate World");
 
       // Create context
-      var seed = config.seed != 0 ? config.seed : Environment.TickCount;
+      var seed = config.Data.seed != 0 ? config.Data.seed : Environment.TickCount;
       var context = new EditorGenerationContext(config, terrain, seed, saveToPreload);
 
       // Configure vegetation mask settings so painting uses deterministic, size-aware defaults
@@ -126,7 +126,7 @@ namespace Content.Scripts.Editor.World {
         var maskSettings = Content.Scripts.World.Vegetation.VegetationPainter.VegetationMaskSettings;
         if (maskSettings != null) {
           // If vegetation painting turned off, disable mask
-          if (!config.paintVegetation) {
+          if (!config.Data.paintVegetation) {
             maskSettings.mode = Content.Scripts.World.Vegetation.Mask.MaskMode.None;
           } else {
             maskSettings.mode = Content.Scripts.World.Vegetation.Mask.MaskMode.Perlin;
@@ -136,7 +136,7 @@ namespace Content.Scripts.Editor.World {
           maskSettings.cacheEnabled = true;
 
           // choose a reasonable noise scale based on world size (smaller world -> larger scale)
-          var defaultScale = 0.02f * (400f / Mathf.Max(1f, config.size));
+          var defaultScale = 0.02f * (400f / Mathf.Max(1f, config.Data.size));
           maskSettings.scale = Mathf.Clamp(defaultScale, 0.005f, 0.05f);
         }
       } catch (System.Exception ex) {

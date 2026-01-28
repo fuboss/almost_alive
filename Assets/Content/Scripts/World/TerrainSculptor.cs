@@ -104,7 +104,7 @@ namespace Content.Scripts.World {
       var normalizedDist = Mathf.Clamp01(distToCenter / 100f);
 
       var profileHeight = biome.heightProfile.Evaluate(normalizedDist);
-      var baseHeight = biome.baseHeight + profileHeight * biome.heightAmplitude;
+      var baseHeight = biome.baseHeight + profileHeight * biome.heightVariation;
 
       var noise = SampleNoise(
         worldPos.x + noiseOffsetX, 
@@ -114,7 +114,7 @@ namespace Content.Scripts.World {
         biome.noisePersistence
       );
 
-      var finalHeight = baseHeight + noise * biome.heightAmplitude * 0.5f;
+      var finalHeight = baseHeight + noise * biome.heightVariation * 0.5f;
 
       return Mathf.Clamp01(finalHeight / terrainHeight);
     }

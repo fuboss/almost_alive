@@ -15,6 +15,8 @@ namespace Content.Scripts.Game.Trees {
     [Inject] private EffectsModule _effectsModule;
     [Inject] private TreeFallConfigSO _config;
 
+    private TreeFallConfig Config => _config.Data;
+
     //todo: inject all strategies and randomize them
     private readonly ITreeFallDirectionStrategy _fallStrategy = new DefaultFallStrategy();
 
@@ -48,7 +50,7 @@ namespace Content.Scripts.Game.Trees {
       var worldBounds = meshRenderer.bounds;
       var material = meshRenderer.sharedMaterial;
 
-      SetupPhysics(treeGO, treeActor.actorKey, meshFilter, treeDef?.mass ?? _config.defaultMass);
+      SetupPhysics(treeGO, treeActor.actorKey, meshFilter, treeDef?.mass ?? Config.defaultMass);
 
       var fallDirection = _fallStrategy.GetFallDirection(treeGO.transform, chopperPosition, _config);
 
@@ -77,7 +79,7 @@ namespace Content.Scripts.Game.Trees {
     }
 
     private void SetupPhysics(GameObject treeGO, string actorKey, MeshFilter meshFilter, float mass) {
-      var colliderMesh = TreeColliderCache.GetOrCreateColliderMesh(actorKey, meshFilter, _config.groundEmbedOffset);
+      var colliderMesh = TreeColliderCache.GetOrCreateColliderMesh(actorKey, meshFilter, Config.groundEmbedOffset);
 
       var treeRenderer = treeGO.GetComponentInChildren<MeshRenderer>();
       var meshCollider = treeRenderer.gameObject.AddComponent<MeshCollider>();
@@ -86,8 +88,8 @@ namespace Content.Scripts.Game.Trees {
 
       var rb = treeGO.AddComponent<Rigidbody>();
       rb.mass = mass;
-      rb.angularDamping = _config.angularDrag;
-      rb.linearDamping = _config.linearDrag;
+      rb.angularDamping = Config.angularDrag;
+      rb.linearDamping = Config.linearDrag;
       rb.interpolation = RigidbodyInterpolation.Interpolate;
       rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
@@ -128,8 +130,8 @@ namespace Content.Scripts.Game.Trees {
       TreeTag treeDef) {
       Debug.Log($"[TreeModule] SpawnLog at {position}, rotation: {rotation.eulerAngles}");
 
-      if (!_creationModule.TrySpawnActor(_config.logActorKey, position, out var logActor)) {
-        Debug.LogError($"[TreeModule] Failed to spawn log actor '{_config.logActorKey}'");
+      if (!_creationModule.TrySpawnActor(Config.logActorKey, position, out var logActor)) {
+        Debug.LogError($"[TreeModule] Failed to spawn log actor '{Config.logActorKey}'");
         return;
       }
 

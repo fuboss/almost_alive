@@ -2,16 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Content.Scripts.AI.Craft;
+using Content.Scripts.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Content.Scripts.Game.Progression {
+  
   /// <summary>
-  /// Configuration for colony progression - what's unlocked at each milestone.
-  /// Milestones can be levels, research, events, etc.
+  /// Entry for recipe unlock at specific milestone.
   /// </summary>
-  [CreateAssetMenu(fileName = "ColonyProgression", menuName = "Game/Colony Progression", order = 0)]
-  public class ColonyProgressionConfigSO : SerializedScriptableObject {
+  [Serializable]
+  public class RecipeUnlockEntry {
+    [HorizontalGroup("Row"), LabelWidth(70)]
+    [Tooltip("Milestone level required")]
+    public int milestone = 1;
+    
+    [HorizontalGroup("Row"), LabelWidth(50)]
+    public RecipeSO recipe;
+    
+    [LabelWidth(80)]
+    [Tooltip("Optional: requires specific research")]
+    public string requiresResearch;
+  }
+
+  /// <summary>
+  /// Configuration data for colony progression - what's unlocked at each milestone.
+  /// </summary>
+  [Serializable]
+  public class ColonyProgressionConfig {
     [Title("Recipe Unlocks")]
     [TableList]
     public List<RecipeUnlockEntry> recipeUnlocks = new();
@@ -19,12 +37,19 @@ namespace Content.Scripts.Game.Progression {
     [Title("Starting Unlocks")]
     [Tooltip("Recipes available from the start (milestone = 0)")]
     public List<RecipeSO> starterRecipes = new();
+  }
+
+  /// <summary>
+  /// ScriptableObject container for ColonyProgressionConfig.
+  /// </summary>
+  [CreateAssetMenu(fileName = "ColonyProgression", menuName = "Game/Colony Progression", order = 0)]
+  public class ColonyProgressionConfigSO : ScriptableConfig<ColonyProgressionConfig> {
 
     /// <summary>Get all recipes unlocked at or below given milestone.</summary>
     public List<RecipeSO> GetUnlockedRecipes(int milestone) {
-      var result = new List<RecipeSO>(starterRecipes.Where(r => r != null));
+      var result = new List<RecipeSO>(Data.starterRecipes.Where(r => r != null));
       
-      result.AddRange(recipeUnlocks
+      result.AddRange(Data.recipeUnlocks
         .Where(u => u.recipe != null && u.milestone <= milestone)
         .Select(u => u.recipe));
       
@@ -33,32 +58,18 @@ namespace Content.Scripts.Game.Progression {
 
     /// <summary>Get recipes unlocked exactly at this milestone.</summary>
     public List<RecipeSO> GetNewUnlocks(int milestone) {
-      if (milestone == 0) return starterRecipes.Where(r => r != null).ToList();
+      if (milestone == 0) return Data.starterRecipes.Where(r => r != null).ToList();
       
-      return recipeUnlocks
+      return Data.recipeUnlocks
         .Where(u => u.recipe != null && u.milestone == milestone)
         .Select(u => u.recipe)
         .ToList();
     }
 
-    [Serializable]
-    public class RecipeUnlockEntry {
-      [HorizontalGroup("Row"), LabelWidth(70)]
-      [Tooltip("Milestone level required")]
-      public int milestone = 1; //todo: change to smth more complex later(for research tree)
-      
-      [HorizontalGroup("Row"), LabelWidth(50)]
-      public RecipeSO recipe;
-      
-      [LabelWidth(80)]
-      [Tooltip("Optional: requires specific research")]
-      public string requiresResearch;
-    }
-
 #if UNITY_EDITOR
     [Button("Sort by Milestone"), PropertyOrder(-1)]
     private void SortByMilestone() {
-      recipeUnlocks = recipeUnlocks
+      Data.recipeUnlocks = Data.recipeUnlocks
         .OrderBy(u => u.milestone)
         .ThenBy(u => u.recipe?.name)
         .ToList();
@@ -73,10 +84,10 @@ namespace Content.Scripts.Game.Progression {
         .ToList();
 
       foreach (var recipe in allRecipes) {
-        if (starterRecipes.Contains(recipe)) continue;
-        if (recipeUnlocks.Any(u => u.recipe == recipe)) continue;
+        if (Data.starterRecipes.Contains(recipe)) continue;
+        if (Data.recipeUnlocks.Any(u => u.recipe == recipe)) continue;
         
-        starterRecipes.Add(recipe);
+        Data.starterRecipes.Add(recipe);
       }
       
       UnityEditor.EditorUtility.SetDirty(this);
