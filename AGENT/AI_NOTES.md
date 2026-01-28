@@ -12,6 +12,36 @@
 
 ---
 
+## Water System Overview
+
+**Water Level Sync**: TerrainSculptPhase syncs with scene `WaterPlane` object
+
+### Lake Biomes (BiomeSO)
+```
+isWaterBody = true
+waterDepth: 0.5-15m (depth at center)
+shoreGradient: 0-1 (0=steep, 1=gradual)
+```
+
+### River Shore Styles (per BiomeSO)
+```csharp
+enum RiverShoreStyle {
+  Natural,   // Standard smoothstep
+  Soft,      // Beach-like, double smoothstep
+  Rocky,     // Sharp cliffs + noise irregularity
+  Marshy,    // Very gradual, extended wet zone
+  Terraced   // Step-like geological profile
+}
+
+// BiomeSO fields:
+riverShoreStyle      // Shore type
+riverShoreGradient   // Slope steepness 0-1
+riverShoreWidth      // Transition zone (1-15m)
+rockyIrregularity    // Noise for rocky edges (0-1)
+```
+
+---
+
 ## Documentation Index
 
 | File | Topic |
@@ -22,8 +52,8 @@
 | ANIMALS.md | Animal agents, herding |
 | INTERFACE_DECOMPOSITION.md | Agent interfaces |
 | WORLD_GENERATION.md | Biomes, terrain, scatters |
-| **WORLD_GENERATION_PIPELINE.md** | Phased generation, Artist Mode, Noise system (✅ Core done) |
-| **ARTIST_MODE_WINDOW_REFACTOR.md** | 🆕 ArtistModeWindow SOLID refactor plan |
+| **WORLD_GENERATION_PIPELINE.md** | Phased generation, Artist Mode, Water System ✅ |
+| **ARTIST_MODE_WINDOW_REFACTOR.md** | ✅ ArtistModeWindow SOLID refactor (done) |
 | INVENTORY_CRAFT.md | Items, storage, recipes |
 | CAMP.md | Camp system (legacy) |
 | BUILDING.md (GD_DOC) | Smart Blueprints building system |
@@ -91,14 +121,41 @@ See: `Docs/WORLD_GENERATION_PIPELINE.md`
 - [x] Noise System (6 samplers + 3 modifiers + 3 combinators)
 - [x] Pipeline Core (IGenerationPhase, GenerationContext, GenerationPipeline)
 - [x] All 5 Phases (BiomeLayout, TerrainSculpt, SplatmapPaint, Vegetation, Scatter)
+- [x] ScriptableConfig Refactor — data in structs
+- [x] ArtistModeWindow.cs (dockable EditorWindow)
+- [x] Debug visualization (Quad overlay + BiomeGizmoDrawer)
+- [x] Domain Warping (organic biome borders)
+- [x] Context-sensitive phase settings in ArtistModeWindow
+- [x] **SOLID Refactor** — ArtistModeWindow decomposed into Drawers + State + PhaseSettings
+- [x] **Terrain Sculpt expanded** — global noise, slope limiting, river carving
+
+**Architecture:**
+```
+Editor/WorldGenerationWizard/
+├── ArtistModeWindow.cs              // 5KB coordinator
+└── ArtistMode/
+    ├── ArtistModeStyles.cs          // Shared GUI styles
+    ├── ArtistModeState.cs           // State + pipeline logic
+    ├── Drawers/                     // Section drawers
+    │   ├── HeaderDrawer.cs
+    │   ├── ConfigDrawer.cs
+    │   ├── SeedDrawer.cs
+    │   ├── PhasesListDrawer.cs
+    │   ├── ActionsDrawer.cs
+    │   └── StatusDrawer.cs
+    └── PhaseSettings/               // Per-phase settings
+        ├── IPhaseSettingsDrawer.cs
+        ├── BiomeLayoutSettingsDrawer.cs
+        ├── TerrainSculptSettingsDrawer.cs
+        └── ...
+```
+
+**TerrainSculptPhase Features:**
+- Global noise (large hills + fine detail)
+- Slope limiting (for NavMesh compatibility)
+- River carving along biome borders
 
 **TODO:**
-- [x] 🚨 **ScriptableConfig Refactor** - вынести данные из ConfigSO в struct (5 штук) ✅
-- [x] ArtistModeWindow.cs (dockable EditorWindow) ✅
-- [x] Debug visualization (Quad overlay + BiomeGizmoDrawer) ✅
-- [x] Domain Warping (organic biome borders) ✅
-- [x] Context-sensitive phase settings in ArtistModeWindow ✅
-- [x] Integration (button in GenerationConfigComposite) ✅
 - [ ] Debug shaders (HeightGradient, DensityHeatmap) - optional
 - [ ] ⏸️ Preset system (отложено)
 

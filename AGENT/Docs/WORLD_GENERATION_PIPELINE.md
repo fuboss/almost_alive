@@ -12,202 +12,183 @@
 | **Pipeline Core** | ✅ Complete | 4 files |
 | **Generation Phases** | ✅ Complete | 5 files |
 | **ScriptableConfig Refactor** | ✅ Complete | 5 configs |
-| **Artist Mode Window** | ✅ Complete | `Editor/WorldGenerationWizard/ArtistModeWindow.cs` |
-| **Debug Shaders** | ⏳ TODO | - |
-| **Integration** | ✅ Complete | Button in GenerationConfigComposite |
-
-### Completed Files
-
-```
-World/Generation/
-├── Noise/
-│   ├── INoiseSampler.cs              ✅
-│   ├── NoiseSO.cs                    ✅
-│   ├── Samplers/
-│   │   ├── PerlinNoiseSO.cs          ✅
-│   │   ├── SimplexNoiseSO.cs         ✅
-│   │   ├── CellularNoiseSO.cs        ✅
-│   │   ├── RidgedNoiseSO.cs          ✅
-│   │   ├── BillowNoiseSO.cs          ✅
-│   │   └── ValueNoiseSO.cs           ✅
-│   ├── Modifiers/
-│   │   ├── FBMNoiseSO.cs             ✅
-│   │   ├── TurbulenceNoiseSO.cs      ✅
-│   │   └── TerraceNoiseSO.cs         ✅
-│   └── Combinators/
-│       ├── NoiseBlendMode.cs         ✅
-│       ├── CompositeNoiseSO.cs       ✅
-│       └── NoiseMaskSO.cs            ✅
-│
-└── Pipeline/
-    ├── IGenerationPhase.cs           ✅
-    ├── GenerationPhaseBase.cs        ✅
-    ├── GenerationContext.cs          ✅
-    ├── GenerationPipeline.cs         ✅
-    └── Phases/
-        ├── BiomeLayoutPhase.cs       ✅
-        ├── TerrainSculptPhase.cs     ✅
-        ├── SplatmapPaintPhase.cs     ✅
-        ├── VegetationPhase.cs        ✅
-        └── ScatterPhase.cs           ✅
-
-Utility/
-└── ScriptableConfig.cs               ✅ Base class
-```
+| **Artist Mode Window** | ✅ Complete | SOLID refactored (15+ files) |
+| **Water System** | ✅ Complete | Rivers, Lakes, Shore Styles |
+| **Debug Visualization** | ✅ Complete | Overlay quad + Gizmos |
 
 ---
 
-## ScriptableConfig Pattern ✅
+## Water System ✅ NEW
 
 ### Overview
 
-Базовый класс для SO, оборачивающих конфигурационные данные. Разделяет данные (TData class) и контейнер (SO).
+Unified water handling with scene sync, per-biome shore styles, and automatic terrain carving.
+
+### WaterPlane Sync
+
+TerrainSculptPhase automatically syncs with scene `WaterPlane` object:
+- **Read**: If WaterPlane exists, reads Y position as water level
+- **Write**: After generation, updates WaterPlane Y to match config
+- **Create**: Settings drawer can create WaterPlane if missing
+
+### Lake Biomes (BiomeSO)
 
 ```csharp
-// Base class
-public abstract class ScriptableConfig<TData> : SerializedScriptableObject 
-  where TData : class, new() {
-  
-  [HideLabel, InlineProperty]
-  protected TData _data = new();
-  
-  public TData Data => _data;
-}
+// Identity section
+isWaterBody = true;              // Marks biome as lake/pond
+waterDepth = 3f;                 // Depth at center (0.5-15m)
+shoreGradient = 0.5f;            // Shore slope (0=steep, 1=gradual)
 ```
 
-### Refactored Configs
+Lakes are carved below water level with smooth bowl profile using quintic smootherstep.
 
-| ConfigSO | Data Class | Location |
-|----------|------------|----------|
-| `TreeFallConfigSO` | `TreeFallConfig` | Game/Trees/ |
-| `WorldGridPresentationConfigSO` | `WorldGridPresentationConfig` | World/Grid/Presentation/ |
-| `ColonyProgressionConfigSO` | `ColonyProgressionConfig` | Game/Progression/ |
-| `WorldGeneratorConfigSO` | `WorldGeneratorConfig` | World/ |
-| `BuildingManagerConfigSO` | `BuildingManagerConfig` | Building/Data/ |
+### River Shore Styles
 
-### Usage Pattern
+Each biome defines how rivers look when passing through it:
 
 ```csharp
-// Define data class
-[Serializable]
-public class MyConfig {
-  public float speed = 1f;
-  public int count = 10;
+// RiverShoreStyle.cs
+public enum RiverShoreStyle {
+  Natural,    // Standard smootherstep (default)
+  Soft,       // Beach-like, double smoothstep (meadows)
+  Rocky,      // Sharp cliffs + noise irregularity (hills, mountains)
+  Marshy,     // Very gradual, extended wet zone (swamps)
+  Terraced    // Step-like geological profile (man-made, canyons)
 }
 
-// Create SO wrapper
-[CreateAssetMenu(menuName = "Config/My Config")]
-public class MyConfigSO : ScriptableConfig<MyConfig> {
-  // Methods that use data go here
-  public float GetAdjustedSpeed() => Data.speed * 1.5f;
-}
-
-// Access in code
-var config = myConfigSO.Data;  // returns MyConfig
+// BiomeSO fields (River Shore foldout)
+riverShoreStyle;                 // Shore type enum
+riverShoreGradient;              // Slope steepness 0-1
+riverShoreWidth;                 // Transition zone (1-15m)
+rockyIrregularity;               // Noise for rocky edges (0-1, Rocky only)
 ```
 
-### Design Decision: Class vs Struct
+### Recommended Shore Settings
 
-**Chose class** because:
-- Honest about reference semantics
-- No false sense of "copy" when containing Lists
-- Explicit Clone() when deep copy needed
-- More flexible for complex configs
+| Biome | Style | Gradient | Width | Notes |
+|-------|-------|----------|-------|-------|
+| Forest | Natural | 0.5 | 4m | Standard |
+| Meadow | Soft | 0.8 | 6m | Sandy beaches |
+| Hills | Rocky | 0.3 | 2m | Cliffs, irregularity=0.6 |
+| Desert | Natural | 0.4 | 3m | Sandy |
+| Swamp | Marshy | 0.9 | 10m | Boggy wetlands |
+
+### River Carving Algorithm
+
+1. Find biome borders using `BiomeMap.GetDistanceToBorder()`
+2. Apply noise mask for river presence (`riverBorderChance`)
+3. Calculate profile based on biome's `RiverShoreStyle`
+4. Blend with terrain using smootherstep
+5. Ensure river bed is below water level
 
 ---
 
-## Remaining Tasks
+## Artist Mode Window ✅ SOLID Refactored
 
-### 1. ArtistModeWindow.cs ✅
+### Architecture
 
-**Location**: `Editor/WorldGenerationWizard/ArtistModeWindow.cs`
-
-**Features:**
-- Per-phase Run/Rollback controls
-- Status icons (○ Pending, ● Running, ◉ Completed, ✗ Failed)
-- Seed control with randomize button
-- Run All / Reset / Quick Generate actions
-- Debug visualization toggle
-- Opens from World Generation Wizard or menu `AA/Artist Mode Window`
-
-### 2. Debug Shaders
+Refactored from 27KB monolith to SOLID structure:
 
 ```
-Shaders/Debug/
-├── BiomeDebug.shader                 ⏳
-├── HeightGradient.shader             ⏳
-└── DensityHeatmap.shader             ⏳
+Editor/WorldGenerationWizard/ArtistMode/
+├── ArtistModeWindow.cs           # 4.8KB - minimal shell
+├── ArtistModeState.cs            # Pipeline state management
+├── ArtistModeStyles.cs           # Cached GUIStyles
+├── Drawers/
+│   ├── HeaderDrawer.cs           # Seed, terrain, config
+│   ├── PhaseListDrawer.cs        # Phase toggles + Run To
+│   ├── ActionsDrawer.cs          # Run All, Reset, Quick
+│   └── DebugDrawer.cs            # Debug visualization toggle
+└── PhaseSettings/
+    ├── IPhaseSettingsDrawer.cs   # Interface
+    ├── BiomeLayoutSettingsDrawer.cs
+    ├── TerrainSculptSettingsDrawer.cs  # Water settings UI
+    ├── SplatmapPaintSettingsDrawer.cs
+    ├── VegetationSettingsDrawer.cs
+    └── ScatterSettingsDrawer.cs
 ```
 
-### 3. Integration
+### Key Features
 
-```
-Editor/WorldGenerationWizard/
-├── ArtistModeWindow.cs               ⏳ Next
-└── PhaseProgressDrawer.cs            ⏳
+- **Run To Selected**: Always resets and runs fresh to target phase
+- **Phase Settings**: Context-sensitive UI per phase
+- **Debug Overlay**: Single quad system (never modifies terrain material)
+- **Water Sync**: Button to sync with scene WaterPlane
+- **Lake Counter**: Shows how many water body biomes configured
+
+---
+
+## Generation Phases
+
+### Phase 1: BiomeLayoutPhase
+- Generates Voronoi diagram with domain warping
+- Assigns biomes to cells based on weights
+- Output: `BiomeMap`, debug material (biome colors)
+
+### Phase 2: TerrainSculptPhase ✅ Enhanced
+- **Pass 1**: Base heights + biome heights + global noise + lakes
+- **Pass 2**: River carving along biome borders (style-aware)
+- **Pass 3**: Water edge smoothing (3 passes)
+- **Pass 4**: Slope limiting for NavMesh compatibility
+- Syncs with scene WaterPlane
+- Output: Terrain heightmap, `RiverMask`
+
+### Phase 3: SplatmapPaintPhase
+- Paints base texture per biome
+- Applies slope/cliff textures
+- Output: Terrain splatmap
+
+### Phase 4: VegetationPhase
+- Applies terrain detail layers (grass)
+- Uses mask system for distribution
+- Output: Detail layers
+
+### Phase 5: ScatterPhase
+- Spawns prefabs (trees, rocks)
+- Uses `biome.scatterConfigs`
+- Output: GameObjects under `[Generated_Scatters]`
+
+---
+
+## TerrainSculptPhase Config (WorldGeneratorConfig)
+
+```csharp
+// Global Noise
+bool useGlobalNoise = true;
+float globalNoiseAmplitude = 10f;    // Large hills (0-30m)
+float globalNoiseScale = 0.008f;
+float detailNoiseAmplitude = 2f;     // Fine detail (0-10m)
+float detailNoiseScale = 0.05f;
+
+// Slope Control
+bool limitSlopes = true;
+float maxSlopeAngle = 40f;           // NavMesh default = 45°
+int slopeSmoothingPasses = 2;
+
+// Rivers
+bool generateRivers = false;
+float riverWidth = 6f;               // 2-20m
+float riverBorderChance = 0.3f;      // 0-1
+float riverBedDepth = 1f;            // Below water (0.5-5m)
+
+// Water
+float waterLevel = 5f;               // Syncs with WaterPlane
 ```
 
 ---
 
-## Overview
+## Debug Visualization
 
-Система пошаговой генерации мира с возможностью остановки на каждой фазе для ручной калибровки. Включает богатую систему шумов с превью и комбинаторикой.
+### Overlay Quad System
+- Single quad positioned above terrain
+- Shader shows biome colors (Phase 1)
+- Auto-hides when no debug material returned
+- Never modifies terrain material directly
 
----
-
-## Architecture
-
-### Core Patterns
-
-| Pattern | Usage |
-|---------|-------|
-| **Pipeline** | Sequential phase execution with pause points |
-| **Strategy** | Interchangeable noise algorithms |
-| **Composite** | Noise combinations and layering |
-| **Observer** | Phase progress events for UI |
-| **Memento** | Seed-based deterministic state (implicit) |
-
-### Module Structure
-
-```
-World/
-├── Generation/
-│   ├── Pipeline/
-│   │   ├── IGenerationPhase.cs         # Phase interface
-│   │   ├── GenerationPhaseBase.cs      # Abstract base
-│   │   ├── GenerationContext.cs        # Shared state
-│   │   ├── GenerationPipeline.cs       # Orchestrator
-│   │   └── Phases/
-│   │       ├── BiomeLayoutPhase.cs     # Voronoi regions
-│   │       ├── TerrainSculptPhase.cs   # Heightmap
-│   │       ├── SplatmapPaintPhase.cs   # Terrain textures
-│   │       ├── VegetationPhase.cs      # Grass, bushes
-│   │       └── ScatterPhase.cs         # Trees, rocks, actors
-│   │
-│   └── Noise/
-│       ├── INoiseSampler.cs            # Sample interface
-│       ├── NoiseSO.cs                  # Abstract SO base
-│       ├── Samplers/
-│       │   ├── PerlinNoiseSO.cs
-│       │   ├── SimplexNoiseSO.cs
-│       │   ├── CellularNoiseSO.cs      # Worley/Voronoi
-│       │   ├── RidgedNoiseSO.cs
-│       │   ├── BillowNoiseSO.cs
-│       │   └── ValueNoiseSO.cs
-│       ├── Modifiers/
-│       │   ├── FBMNoiseSO.cs           # Fractal layering
-│       │   ├── TurbulenceNoiseSO.cs    # Domain warping
-│       │   └── TerraceNoiseSO.cs       # Stepped output
-│       └── Combinators/
-│           ├── CompositeNoiseSO.cs     # Multi-noise blend
-│           ├── NoiseBlendMode.cs       # Blend operations enum
-│           └── NoiseMaskSO.cs          # Masked combination
-
-Editor/
-└── WorldGenerationWizard/
-    ├── ArtistModeWindow.cs             # Dockable panel (TODO)
-    └── PhaseProgressDrawer.cs          # Phase toggle UI (TODO)
-```
+### River Gizmo (RiverGizmoDrawer.cs)
+- Blue water level plane
+- Blue discs at river locations
+- Activated after Phase 2 completion
 
 ---
 
@@ -232,89 +213,66 @@ Editor/
 | **Turbulence** | Domain warping - distorts coordinates |
 | **Terrace** | Stepped output - creates plateaus |
 
-### Combinators
-
-| Blend Mode | Formula |
-|------------|---------|
-| Lerp | `lerp(a, b, t)` |
-| Add | `a + b` |
-| Multiply | `a * b` |
-| Min | `min(a, b)` |
-| Max | `max(a, b)` |
-| Screen | `1 - (1-a)(1-b)` |
-| Overlay | Photoshop-style |
-| Mask | `lerp(a, b, mask)` |
-
 ---
 
-## Generation Phases
-
-### Phase 1: BiomeLayoutPhase
-- Generates Voronoi diagram
-- Assigns biomes to cells based on weights
-- Output: `BiomeMap`
-
-### Phase 2: TerrainSculptPhase
-- Applies heightmap per biome
-- Uses `biome.heightNoise` if configured
-- Output: Terrain heightmap
-
-### Phase 3: SplatmapPaintPhase
-- Paints base texture per biome
-- Uses `biome.GetBaseLayerIndex()`
-- Output: Terrain splatmap
-
-### Phase 4: VegetationPhase
-- Applies terrain detail layers (grass)
-- Uses `biome.vegetationConfig`
-- Output: Detail layers
-
-### Phase 5: ScatterPhase
-- Spawns prefabs (trees, rocks)
-- Uses `biome.scatterConfigs`
-- Output: GameObjects under `[Generated_Scatters]`
-
----
-
-## Artist Mode Window (TODO)
-
-### UI Layout
+## File Structure
 
 ```
-┌─────────────────────────────────────┐
-│ 🌍 World Generation      [≡] [×]    │
-├─────────────────────────────────────┤
-│ Seed: [1234567___] [🎲]             │
-├─────────────────────────────────────┤
-│ ○ Biome Layout          [▶][↺]     │
-│ ○ Terrain Sculpt        [▶][↺]     │
-│ ○ Splatmap Paint        [▶][↺]     │
-│ ○ Vegetation            [▶][↺]     │
-│ ○ Scatters              [▶][↺]     │
-├─────────────────────────────────────┤
-│ [▶▶ Run All]  [⟲ Reset]  [⚡Quick] │
-└─────────────────────────────────────┘
+World/
+├── Biomes/
+│   ├── BiomeSO.cs                  # Water body + river shore settings
+│   ├── BiomeType.cs
+│   ├── BiomeMap.cs                 # GetDistanceToBorder()
+│   └── RiverShoreStyle.cs          # NEW: Shore style enum
+│
+├── Generation/
+│   ├── Pipeline/
+│   │   ├── GenerationContext.cs    # RiverMask property
+│   │   ├── GenerationPipeline.cs
+│   │   └── Phases/
+│   │       ├── BiomeLayoutPhase.cs
+│   │       ├── TerrainSculptPhase.cs  # Water sync, lakes, rivers
+│   │       ├── SplatmapPaintPhase.cs
+│   │       ├── VegetationPhase.cs
+│   │       └── ScatterPhase.cs
+│   └── Noise/
+│       └── ... (12 files)
+│
+├── RiverGizmoDrawer.cs             # NEW: Scene gizmo visualization
+└── WorldGeneratorConfigSO.cs       # Water/river/slope settings
 
-○ = pending (gray)
-◉ = completed (green)
-● = current/running (blue pulse)
+Editor/WorldGenerationWizard/ArtistMode/
+├── ArtistModeWindow.cs
+├── ArtistModeState.cs
+├── ArtistModeStyles.cs
+├── Drawers/ (4 files)
+└── PhaseSettings/ (6 files)
 ```
 
 ---
 
-## Decisions Made
+## ScriptableConfig Pattern
 
-1. **Noise library**: ✅ Unity.Mathematics
-2. **Async generation**: ✅ Async с прогрессом для длинных операций
-3. **Preset system**: ⏸️ Заложить основу позже (НАПОМНИТЬ!)
-4. **Undo support**: ✅ Только в пределах фазы
-5. **ScriptableConfig TData**: ✅ Class (не struct) - честная семантика для reference types
+Base class for SO wrapping configuration data:
+
+```csharp
+public abstract class ScriptableConfig<TData> : SerializedScriptableObject 
+  where TData : class, new() {
+  
+  [HideLabel, InlineProperty]
+  protected TData _data = new();
+  
+  public TData Data => _data;
+}
+```
+
+**Refactored Configs**: TreeFallConfigSO, WorldGridPresentationConfigSO, ColonyProgressionConfigSO, WorldGeneratorConfigSO, BuildingManagerConfigSO
 
 ---
 
 ## Next Steps
 
-1. **ArtistModeWindow.cs** - Dockable EditorWindow
-2. **Debug shaders** - BiomeDebug, HeightGradient
-3. **Integration** - кнопка в GenerationConfigComposite
-4. **Testing** - создать тестовые noise assets
+1. ⏳ Test river styles with different biomes
+2. ⏳ Add water plane material (transparency, caustics)
+3. ⏳ NavMesh baking test with slope limits
+4. ⏳ Preset system for generation configs (REMINDER)

@@ -102,6 +102,82 @@ namespace Content.Scripts.World {
     public int warpOctaves = 2;
 
     // ═══════════════════════════════════════════════════════════════
+    // TERRAIN SCULPTING
+    // ═══════════════════════════════════════════════════════════════
+
+    [FoldoutGroup("Terrain Sculpting/Global Noise")]
+    [Tooltip("Add global terrain noise independent of biomes")]
+    public bool useGlobalNoise = true;
+
+    [FoldoutGroup("Terrain Sculpting/Global Noise")]
+    [ShowIf("useGlobalNoise")]
+    [Tooltip("Large-scale hills amplitude (meters)")]
+    [Range(0f, 30f)]
+    public float globalNoiseAmplitude = 10f;
+
+    [FoldoutGroup("Terrain Sculpting/Global Noise")]
+    [ShowIf("useGlobalNoise")]
+    [Tooltip("Large-scale hills frequency (smaller = bigger hills)")]
+    [Range(0.001f, 0.05f)]
+    public float globalNoiseScale = 0.008f;
+
+    [FoldoutGroup("Terrain Sculpting/Global Noise")]
+    [ShowIf("useGlobalNoise")]
+    [Tooltip("Fine detail amplitude (meters)")]
+    [Range(0f, 10f)]
+    public float detailNoiseAmplitude = 2f;
+
+    [FoldoutGroup("Terrain Sculpting/Global Noise")]
+    [ShowIf("useGlobalNoise")]
+    [Tooltip("Fine detail frequency")]
+    [Range(0.01f, 0.2f)]
+    public float detailNoiseScale = 0.05f;
+
+    [FoldoutGroup("Terrain Sculpting/Slope Control")]
+    [Tooltip("Limit maximum slope for NavMesh compatibility")]
+    public bool limitSlopes = true;
+
+    [FoldoutGroup("Terrain Sculpting/Slope Control")]
+    [ShowIf("limitSlopes")]
+    [Tooltip("Maximum slope angle (degrees) - NavMesh default is 45")]
+    [Range(15f, 60f)]
+    public float maxSlopeAngle = 40f;
+
+    [FoldoutGroup("Terrain Sculpting/Slope Control")]
+    [ShowIf("limitSlopes")]
+    [Tooltip("Smoothing iterations after slope limiting")]
+    [Range(0, 5)]
+    public int slopeSmoothingPasses = 2;
+
+    [FoldoutGroup("Terrain Sculpting/Rivers")]
+    [Tooltip("Generate rivers along biome borders")]
+    public bool generateRivers = false;
+
+    [FoldoutGroup("Terrain Sculpting/Rivers")]
+    [ShowIf("generateRivers")]
+    [Tooltip("River width (meters)")]
+    [Range(2f, 20f)]
+    public float riverWidth = 6f;
+
+    [FoldoutGroup("Terrain Sculpting/Rivers")]
+    [ShowIf("generateRivers")]
+    [Tooltip("Probability of river at biome border (0-1)")]
+    [Range(0f, 1f)]
+    public float riverBorderChance = 0.3f;
+
+    [FoldoutGroup("Terrain Sculpting/Rivers")]
+    [ShowIf("generateRivers")]
+    [Tooltip("Water surface height (meters) - rivers carved below this")]
+    [Range(0f, 20f)]
+    public float waterLevel = 5f;
+
+    [FoldoutGroup("Terrain Sculpting/Rivers")]
+    [ShowIf("generateRivers")]
+    [Tooltip("How much below water level to carve river bed (meters)")]
+    [Range(0.5f, 5f)]
+    public float riverBedDepth = 1f;
+
+    // ═══════════════════════════════════════════════════════════════
     // DEBUG
     // ═══════════════════════════════════════════════════════════════
 

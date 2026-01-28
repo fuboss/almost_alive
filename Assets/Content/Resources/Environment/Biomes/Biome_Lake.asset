@@ -24,6 +24,13 @@ MonoBehaviour:
   type: 2
   debugColor: {r: 0.055535804, g: 0.69468504, b: 0.9056604, a: 1}
   weight: 0.5
+  isWaterBody: 1
+  waterDepth: 3
+  shoreGradient: 0.5
+  riverShoreStyle: 1
+  riverShoreGradient: 0.5
+  riverShoreWidth: 4
+  rockyIrregularity: 0.5
   baseHeight: 0
   heightVariation: 5
   heightNoise: {fileID: 0}

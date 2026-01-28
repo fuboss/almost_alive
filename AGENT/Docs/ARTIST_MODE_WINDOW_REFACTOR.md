@@ -1,10 +1,37 @@
 # Artist Mode Window Architecture
 
+> ✅ **STATUS: COMPLETE** — Refactored Jan 2026
+
 ## Overview
 
 ArtistModeWindow — dockable EditorWindow for step-by-step world generation with per-phase iteration.
 
-## Current Problems (before refactor)
+## Implementation Summary
+
+Refactored from 27KB monolith to SOLID structure:
+
+```
+Editor/WorldGenerationWizard/ArtistMode/
+├── ArtistModeWindow.cs           # 4.8KB - minimal shell
+├── ArtistModeState.cs            # Pipeline state management
+├── ArtistModeStyles.cs           # Cached GUIStyles
+├── Drawers/
+│   ├── HeaderDrawer.cs           # Seed, terrain, config
+│   ├── PhaseListDrawer.cs        # Phase toggles + Run To
+│   ├── ActionsDrawer.cs          # Run All, Reset, Quick
+│   └── DebugDrawer.cs            # Debug visualization toggle
+└── PhaseSettings/
+    ├── IPhaseSettingsDrawer.cs   # Interface
+    ├── BiomeLayoutSettingsDrawer.cs
+    ├── TerrainSculptSettingsDrawer.cs  # Water/River settings
+    ├── SplatmapPaintSettingsDrawer.cs
+    ├── VegetationSettingsDrawer.cs
+    └── ScatterSettingsDrawer.cs
+```
+
+---
+
+## Original Problems (before refactor)
 
 - Single 700+ line file
 - Phase settings drawing mixed with window logic
@@ -212,16 +239,16 @@ public class BiomeLayoutSettingsDrawer : IPhaseSettingsDrawer {
 
 ## Migration Plan
 
-1. [ ] Create folder structure
-2. [ ] Extract ArtistModeStyles.cs
-3. [ ] Extract ArtistModeState.cs (state + pipeline management)
-4. [ ] Create IPhaseSettingsDrawer interface
-5. [ ] Extract each PhaseSettings drawer
-6. [ ] Create ArtistModeDrawerBase
-7. [ ] Extract section drawers (Header, Config, Seed, PhasesList, Actions, Status)
-8. [ ] Refactor ArtistModeWindow to coordinator
+1. [x] Create folder structure
+2. [x] Extract ArtistModeStyles.cs
+3. [x] Extract ArtistModeState.cs (state + pipeline management)
+4. [x] Create IPhaseSettingsDrawer interface
+5. [x] Extract each PhaseSettings drawer
+6. [x] Create ArtistModeDrawerBase
+7. [x] Extract section drawers (Header, Config, Seed, PhasesList, Actions, Status)
+8. [x] Refactor ArtistModeWindow to coordinator
 9. [ ] Test everything works
-10. [ ] Delete old code
+10. [x] Delete old code (replaced)
 
 ## File Sizes (target)
 

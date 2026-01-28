@@ -51,6 +51,9 @@ namespace Content.Scripts.World.Generation.Pipeline {
     /// <summary>Original splatmap for rollback</summary>
     public float[,,] OriginalSplatmap { get; set; }
     
+    /// <summary>River segment data for visualization</summary>
+    public float[,] RiverMask { get; set; }
+    
     /// <summary>Vegetation detail layers from Phase 4</summary>
     public int[][,] DetailLayers { get; set; }
     
@@ -62,6 +65,7 @@ namespace Content.Scripts.World.Generation.Pipeline {
     // ═══════════════════════════════════════════════════════════════
 
     /// <summary>Original terrain material (restore after debug viz)</summary>
+    [Obsolete("No longer used - debug visualization uses overlay quad only")]
     public Material OriginalTerrainMaterial { get; set; }
     
     /// <summary>Current debug material override</summary>
@@ -93,9 +97,6 @@ namespace Content.Scripts.World.Generation.Pipeline {
       
       // Calculate bounds
       Bounds = configSO.GetTerrainBounds(terrain);
-      
-      // Store original material for debug viz restoration
-      OriginalTerrainMaterial = terrain.materialTemplate;
       
       // Backup original terrain data for rollback
       BackupTerrainData();
@@ -147,16 +148,22 @@ namespace Content.Scripts.World.Generation.Pipeline {
           }
         }
       }
-      
-      // Restore material
-      Terrain.materialTemplate = OriginalTerrainMaterial;
     }
 
     /// <summary>
     /// Apply debug material override via overlay quad.
+    /// Pass null to hide the quad.
     /// </summary>
     public void SetDebugMaterial(Material mat) {
       CurrentDebugMaterial = mat;
+      
+      // Always try to find quad first (may exist from previous context)
+      if (_debugQuad == null) {
+        _debugQuad = GameObject.Find(DEBUG_QUAD_NAME);
+        if (_debugQuad != null) {
+          _debugRenderer = _debugQuad.GetComponent<MeshRenderer>();
+        }
+      }
       
       if (mat != null) {
         EnsureDebugQuad();
@@ -164,6 +171,7 @@ namespace Content.Scripts.World.Generation.Pipeline {
         _debugQuad.SetActive(true);
         Debug.Log($"[GenContext] Showing debug quad with material: {mat.name}");
       } else {
+        // Hide or destroy quad when no material
         if (_debugQuad != null) {
           _debugQuad.SetActive(false);
           Debug.Log("[GenContext] Hiding debug quad");

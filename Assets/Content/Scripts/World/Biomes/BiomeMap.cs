@@ -237,6 +237,40 @@ namespace Content.Scripts.World.Biomes {
       return 0f;
     }
 
+    /// <summary>
+    /// Get distance to the nearest biome border.
+    /// Border is where two different biomes meet (equidistant from two cell centers).
+    /// </summary>
+    public float GetDistanceToBorder(Vector3 worldPos) {
+      return GetDistanceToBorder(new Vector2(worldPos.x, worldPos.z));
+    }
+
+    public float GetDistanceToBorder(Vector2 pos) {
+      if (_cells.Count < 2) return float.MaxValue;
+
+      var (dist1, cell1, dist2, cell2) = FindTwoNearestCellsWithNoise(pos);
+      
+      // If same biome type, check next neighbors
+      if (cell1.type == cell2.type) {
+        // Find nearest cell with different biome
+        var minDistDiff = float.MaxValue;
+        foreach (var cell in _cells) {
+          if (cell.type != cell1.type) {
+            var dist = GetNoisyDistance(pos, cell);
+            var distDiff = Mathf.Abs(dist - dist1);
+            if (distDiff < minDistDiff) {
+              minDistDiff = distDiff;
+              dist2 = dist;
+            }
+          }
+        }
+      }
+
+      // Distance to border is half the difference between distances
+      // (border is where both distances are equal)
+      return Mathf.Abs(dist2 - dist1) * 0.5f;
+    }
+
     public float GetNormalizedDistanceToCenter(Vector2 pos) {
       if (_cells.Count == 0) return 0f;
 

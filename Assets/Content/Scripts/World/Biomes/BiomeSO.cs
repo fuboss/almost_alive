@@ -27,6 +27,46 @@ namespace Content.Scripts.World.Biomes {
     [Range(0.1f, 10f)]
     public float weight = 1f;
 
+    [BoxGroup("Identity")]
+    [Tooltip("This biome is a water body (lake, pond) - terrain will be carved below water level")]
+    public bool isWaterBody = false;
+
+    [BoxGroup("Identity")]
+    [ShowIf("isWaterBody")]
+    [Tooltip("Depth below water level at biome center (meters)")]
+    [Range(0.5f, 15f)]
+    public float waterDepth = 3f;
+
+    [BoxGroup("Identity")]
+    [ShowIf("isWaterBody")]
+    [Tooltip("How gradual the shore slope is (0 = steep, 1 = very gradual)")]
+    [Range(0f, 1f)]
+    public float shoreGradient = 0.5f;
+
+    // ═══════════════════════════════════════════════════════════════
+    // RIVER INTERACTION
+    // ═══════════════════════════════════════════════════════════════
+
+    [FoldoutGroup("River Shore")]
+    [Tooltip("How rivers interact with this biome's terrain")]
+    public RiverShoreStyle riverShoreStyle = RiverShoreStyle.Natural;
+
+    [FoldoutGroup("River Shore")]
+    [Tooltip("Shore slope steepness (0 = cliff, 1 = very gradual beach)")]
+    [Range(0f, 1f)]
+    public float riverShoreGradient = 0.5f;
+
+    [FoldoutGroup("River Shore")]
+    [Tooltip("Width of the shore transition zone (meters)")]
+    [Range(1f, 15f)]
+    public float riverShoreWidth = 4f;
+
+    [FoldoutGroup("River Shore")]
+    [ShowIf("@riverShoreStyle == RiverShoreStyle.Rocky")]
+    [Tooltip("How jagged/irregular the rocky shore is")]
+    [Range(0f, 1f)]
+    public float rockyIrregularity = 0.5f;
+
     // ═══════════════════════════════════════════════════════════════
     // HEIGHT (for TerrainSculptor)
     // ═══════════════════════════════════════════════════════════════

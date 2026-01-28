@@ -41,9 +41,22 @@ MonoBehaviour:
     minBiomeCells: 4
     maxBiomeCells: 75
     useDomainWarping: 1
-    warpStrength: 19.21
-    warpScale: 0.02
-    warpOctaves: 2
+    warpStrength: 48.57
+    warpScale: 0.026
+    warpOctaves: 4
+    useGlobalNoise: 1
+    globalNoiseAmplitude: 10.95
+    globalNoiseScale: 0.02271
+    detailNoiseAmplitude: 2.48
+    detailNoiseScale: 0.05
+    limitSlopes: 1
+    maxSlopeAngle: 20.05
+    slopeSmoothingPasses: 5
+    generateRivers: 1
+    riverWidth: 5.15
+    riverBorderChance: 0.3
+    waterLevel: 2
+    riverBedDepth: 0.774
     logGeneration: 0
     drawBiomeGizmos: 1
     gizmoResolution: 20
